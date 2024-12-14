@@ -1,7 +1,10 @@
 import { AuthForm } from "@/components/auth/AuthForm";
+import { ProfileForm } from "@/components/profile/ProfileForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, ShoppingBag, BarChart3, Globe2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 const features = [
   {
@@ -22,9 +25,16 @@ const features = [
 ];
 
 const Index = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+    });
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Hero Section avec Auth Form */}
       <section className="hero-gradient text-white py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -37,7 +47,7 @@ const Index = () => {
               </p>
             </div>
             <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6">
-              <AuthForm />
+              {isAuthenticated ? <ProfileForm /> : <AuthForm />}
             </div>
           </div>
         </div>
