@@ -1,3 +1,4 @@
+import { AuthForm } from "@/components/auth/AuthForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, ShoppingBag, BarChart3, Globe2 } from "lucide-react";
@@ -23,20 +24,21 @@ const features = [
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Hero Section */}
+      {/* Hero Section avec Auth Form */}
       <section className="hero-gradient text-white py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 animate-fadeIn">
-              Créez votre empire e-commerce
-            </h1>
-            <p className="text-lg sm:text-xl lg:text-2xl mb-8 text-gray-100 max-w-2xl mx-auto">
-              La plateforme tout-en-un pour lancer et développer votre boutique en ligne.
-            </p>
-            <Button size="lg" className="bg-white text-primary-700 hover:bg-gray-100">
-              Commencer gratuitement
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="text-left">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 animate-fadeIn">
+                Créez votre empire e-commerce
+              </h1>
+              <p className="text-lg sm:text-xl lg:text-2xl mb-8 text-gray-100">
+                La plateforme tout-en-un pour lancer et développer votre boutique en ligne.
+              </p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6">
+              <AuthForm />
+            </div>
           </div>
         </div>
       </section>
