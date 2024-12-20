@@ -13,8 +13,23 @@ export const AuthForm = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const validatePassword = (password: string) => {
+    const minLength = password.length >= 6;
+    return minLength;
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validatePassword(password)) {
+      toast({
+        title: "Erreur de validation",
+        description: "Le mot de passe doit contenir au moins 6 caractères",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -75,6 +90,11 @@ export const AuthForm = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          {!isLogin && (
+            <p className="text-sm text-gray-500 mt-1">
+              Le mot de passe doit contenir au moins 6 caractères
+            </p>
+          )}
         </div>
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? 'Chargement...' : isLogin ? 'Se connecter' : "S'inscrire"}
