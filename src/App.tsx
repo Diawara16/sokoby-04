@@ -14,6 +14,11 @@ import Parametres from "./pages/Parametres";
 import Onboarding from "./pages/Onboarding";
 import Applications from "./pages/Applications";
 import PlanTarifaire from "./pages/PlanTarifaire";
+import Domicile from "./pages/Domicile";
+import Environ from "./pages/Environ";
+import Services from "./pages/Services";
+import Themes from "./pages/Themes";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +43,11 @@ const App = () => (
                     <Route path="/onboarding" element={<Onboarding />} />
                     <Route path="/applications" element={<Applications />} />
                     <Route path="/plan-tarifaire" element={<PlanTarifaire />} />
+                    <Route path="/domicile" element={<Domicile />} />
+                    <Route path="/environ" element={<Environ />} />
+                    <Route path="/services" element={<Services />} />
+                    <Route path="/themes" element={<Themes />} />
+                    <Route path="/contact" element={<Contact />} />
                   </Routes>
                 </main>
               </div>
