@@ -11,6 +11,7 @@ import Checkout from "./pages/Checkout";
 import Boutique from "./pages/Boutique";
 import Profil from "./pages/Profil";
 import Parametres from "./pages/Parametres";
+import Onboarding from "./pages/Onboarding";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
                     <Route path="/boutique" element={<Boutique />} />
                     <Route path="/profil" element={<Profil />} />
                     <Route path="/parametres" element={<Parametres />} />
+                    <Route path="/onboarding" element={<Onboarding />} />
                   </Routes>
                 </main>
               </div>
