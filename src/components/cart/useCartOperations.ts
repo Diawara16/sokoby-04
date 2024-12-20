@@ -9,7 +9,7 @@ type CartItemResponse = {
     name: string;
     price: number;
     image: string | null;
-  } | null;
+  };
 };
 
 export const useCartOperations = () => {
@@ -33,7 +33,7 @@ export const useCartOperations = () => {
 
     if (!cartItems) return null;
 
-    return cartItems.map((item: CartItemResponse) => ({
+    return (cartItems as CartItemResponse[]).map((item) => ({
       id: item.id,
       product_id: item.product_id,
       quantity: item.quantity,
