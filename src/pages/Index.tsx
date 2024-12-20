@@ -2,9 +2,10 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, ShoppingBag, BarChart3, Globe2 } from "lucide-react";
+import { ArrowRight, ShoppingBag, BarChart3, Globe2, Languages } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useNavigate } from "react-router-dom";
 
 const features = [
   {
@@ -24,14 +25,27 @@ const features = [
   },
 ];
 
+const languages = [
+  { code: 'fr', name: 'Français' },
+  { code: 'en', name: 'English' },
+  { code: 'es', name: 'Español' },
+  { code: 'de', name: 'Deutsch' },
+];
+
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState('fr');
+  const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
       setIsAuthenticated(!!session);
     });
   }, []);
+
+  const handleCreateStore = () => {
+    navigate('/onboarding');
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -80,12 +94,40 @@ const Index = () => {
           <p className="text-lg text-gray-600 mb-8">
             Rejoignez des milliers d'entrepreneurs qui font confiance à notre plateforme.
           </p>
-          <Button size="lg" className="bg-primary-700 text-white hover:bg-primary-800">
+          <Button 
+            size="lg" 
+            className="bg-primary-700 text-white hover:bg-primary-800"
+            onClick={handleCreateStore}
+          >
             Créer ma boutique
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
       </section>
+
+      {/* Language Selector Footer */}
+      <footer className="py-6 bg-gray-50 border-t">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center gap-4">
+            <Languages className="h-5 w-5 text-gray-500" />
+            <div className="flex gap-4">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => setCurrentLanguage(lang.code)}
+                  className={`text-sm ${
+                    currentLanguage === lang.code
+                      ? 'text-primary-600 font-semibold'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {lang.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
