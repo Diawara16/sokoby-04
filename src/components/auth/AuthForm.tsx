@@ -20,6 +20,7 @@ export const AuthForm = () => {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Attempting authentication...', { isLogin, email }); // Debug log
     
     if (!validatePassword(password)) {
       toast({
@@ -34,22 +35,39 @@ export const AuthForm = () => {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        console.log('Attempting login...'); // Debug log
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
+        console.log('Login response:', { data, error }); // Debug log
+        
         if (error) throw error;
+        
         toast({
           title: "Connexion réussie",
           description: "Vous êtes maintenant connecté",
         });
         navigate('/');
       } else {
-        const { error } = await supabase.auth.signUp({
+        console.log('Attempting signup...'); // Debug log
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
         });
+        console.log('Signup response:', { data, error }); // Debug log
+        
         if (error) throw error;
+
+        if (data?.user?.identities?.length === 0) {
+          toast({
+            title: "Erreur",
+            description: "Un compte existe déjà avec cet email",
+            variant: "destructive",
+          });
+          return;
+        }
+        
         toast({
           title: "Inscription réussie",
           description: "Vérifiez votre email pour confirmer votre compte",
@@ -57,6 +75,7 @@ export const AuthForm = () => {
         navigate('/onboarding');
       }
     } catch (error: any) {
+      console.error('Auth error:', error); // Debug log
       toast({
         title: "Erreur",
         description: error.message,
@@ -80,7 +99,7 @@ export const AuthForm = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="text-gray-900 bg-white"
+            className="text-gray-900 bg-white border-gray-300"
           />
         </div>
         <div className="space-y-2">
@@ -90,7 +109,7 @@ export const AuthForm = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="text-gray-900 bg-white"
+            className="text-gray-900 bg-white border-gray-300"
           />
           {!isLogin && (
             <p className="text-sm text-gray-500 mt-1">
