@@ -33,13 +33,13 @@ export const useCartOperations = () => {
 
     if (!cartItems) return null;
 
-    return (cartItems as CartItemResponse[]).map((item) => ({
+    return cartItems.map((item: any) => ({
       id: item.id,
       product_id: item.product_id,
       quantity: item.quantity,
-      name: item.products?.name ?? '',
-      price: item.products?.price ?? 0,
-      image: item.products?.image ?? null,
+      name: item.products.name,
+      price: item.products.price,
+      image: item.products.image,
     }));
   };
 
