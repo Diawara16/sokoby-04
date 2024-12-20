@@ -1,4 +1,4 @@
-import { Globe, Mail, FileText, Facebook, Twitter, Instagram, CreditCard } from "lucide-react";
+import { Globe, Mail, FileText, Facebook, Twitter, Instagram, CreditCard, Linkedin, Youtube } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
@@ -53,15 +53,21 @@ const Footer = () => {
           {/* Deuxième colonne */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-4">Suivez-nous</h3>
-            <div className="flex space-x-4">
-              <a href="#" className="hover:text-red-400 transition-colors">
+            <div className="flex flex-wrap gap-4">
+              <a href="#" className="hover:text-red-400 transition-colors" aria-label="Facebook">
                 <Facebook className="h-6 w-6" />
               </a>
-              <a href="#" className="hover:text-red-400 transition-colors">
+              <a href="#" className="hover:text-red-400 transition-colors" aria-label="Twitter">
                 <Twitter className="h-6 w-6" />
               </a>
-              <a href="#" className="hover:text-red-400 transition-colors">
+              <a href="#" className="hover:text-red-400 transition-colors" aria-label="Instagram">
                 <Instagram className="h-6 w-6" />
+              </a>
+              <a href="#" className="hover:text-red-400 transition-colors" aria-label="LinkedIn">
+                <Linkedin className="h-6 w-6" />
+              </a>
+              <a href="#" className="hover:text-red-400 transition-colors" aria-label="YouTube">
+                <Youtube className="h-6 w-6" />
               </a>
             </div>
           </div>
@@ -101,7 +107,6 @@ const Footer = () => {
               <h3 className="text-lg font-semibold">Modes de paiement acceptés</h3>
               <div className="flex space-x-2">
                 <CreditCard className="h-6 w-6" />
-                {/* Ajoutez d'autres icônes de paiement si nécessaire */}
               </div>
             </div>
 
