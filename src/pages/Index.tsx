@@ -29,6 +29,9 @@ const languages = [
   { code: 'pt', name: 'Português' },
   { code: 'it', name: 'Italiano' },
   { code: 'nl', name: 'Nederlands' },
+  { code: 'zh', name: '中文' },
+  { code: 'ar', name: 'العربية' },
+  { code: 'ru', name: 'Русский' },
 ];
 
 const Index = () => {
