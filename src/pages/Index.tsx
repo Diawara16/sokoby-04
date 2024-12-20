@@ -110,16 +110,19 @@ const Index = () => {
       </section>
 
       {/* Language Selector Footer */}
-      <footer className="py-6 bg-gray-50 border-t">
+      <footer className="py-6 bg-gray-50 border-t mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center gap-4">
-            <Languages className="h-5 w-5 text-gray-500" />
-            <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-col items-center justify-center gap-4">
+            <div className="flex items-center gap-2">
+              <Languages className="h-5 w-5 text-gray-500" />
+              <span className="text-sm text-gray-600">Multilingue</span>
+            </div>
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
               {languages.map((lang) => (
                 <button
                   key={lang.code}
                   onClick={() => setCurrentLanguage(lang.code)}
-                  className={`text-sm ${
+                  className={`text-sm transition-colors ${
                     currentLanguage === lang.code
                       ? 'text-primary-600 font-semibold'
                       : 'text-gray-500 hover:text-gray-700'
