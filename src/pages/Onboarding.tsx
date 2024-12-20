@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ShoppingBag, UserCircle, Settings, Import, Store, Rocket, ChevronDown } from "lucide-react";
+import { ShoppingBag, UserCircle, Settings, Package, Users, ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 
@@ -65,13 +65,42 @@ const Onboarding = () => {
                   className="w-full text-left flex items-center justify-between hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    <Store className="h-6 w-6 text-primary" />
+                    <Package className="h-6 w-6 text-primary" />
                     <div>
                       <h3 className="font-semibold">Ajouter des produits</h3>
                       <p className="text-sm text-muted-foreground">Commencez à ajouter des produits à votre catalogue</p>
                     </div>
                   </div>
-                  <ChevronDown className="h-5 w-5" />
+                </button>
+              </Card>
+
+              <Card className="p-6">
+                <button 
+                  onClick={() => handleSetup("/commandes")}
+                  className="w-full text-left flex items-center justify-between hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <ShoppingCart className="h-6 w-6 text-primary" />
+                    <div>
+                      <h3 className="font-semibold">Gérer les commandes</h3>
+                      <p className="text-sm text-muted-foreground">Suivez et gérez vos commandes clients</p>
+                    </div>
+                  </div>
+                </button>
+              </Card>
+
+              <Card className="p-6">
+                <button 
+                  onClick={() => handleSetup("/clients")}
+                  className="w-full text-left flex items-center justify-between hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <Users className="h-6 w-6 text-primary" />
+                    <div>
+                      <h3 className="font-semibold">Gérer les clients</h3>
+                      <p className="text-sm text-muted-foreground">Consultez et gérez votre base clients</p>
+                    </div>
+                  </div>
                 </button>
               </Card>
 
@@ -87,7 +116,6 @@ const Onboarding = () => {
                       <p className="text-sm text-muted-foreground">Personnalisez votre profil et vos informations</p>
                     </div>
                   </div>
-                  <ChevronDown className="h-5 w-5" />
                 </button>
               </Card>
 
@@ -103,22 +131,6 @@ const Onboarding = () => {
                       <p className="text-sm text-muted-foreground">Configurez les paramètres généraux de votre boutique</p>
                     </div>
                   </div>
-                  <ChevronDown className="h-5 w-5" />
-                </button>
-              </Card>
-
-              <Card className="p-6">
-                <button 
-                  className="w-full text-left flex items-center justify-between hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <Rocket className="h-6 w-6 text-primary" />
-                    <div>
-                      <h3 className="font-semibold">Lancer votre boutique en ligne</h3>
-                      <p className="text-sm text-muted-foreground">Préparez le lancement de votre boutique</p>
-                    </div>
-                  </div>
-                  <ChevronDown className="h-5 w-5" />
                 </button>
               </Card>
             </div>
