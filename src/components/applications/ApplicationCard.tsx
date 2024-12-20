@@ -1,45 +1,66 @@
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { LucideIcon } from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ApplicationCardProps {
   name: string;
   description: string;
-  icon: LucideIcon;
+  icon: React.ComponentType<{ className?: string }>;
   isConnected: boolean;
   onConnect: () => void;
   onDisconnect: () => void;
   isLoading: boolean;
 }
 
-export const ApplicationCard = ({
+export function ApplicationCard({
   name,
   description,
   icon: Icon,
   isConnected,
   onConnect,
   onDisconnect,
-  isLoading
-}: ApplicationCardProps) => {
+  isLoading,
+}: ApplicationCardProps) {
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-6 w-24" />
+          <Skeleton className="h-4 w-full mt-2" />
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-10 w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="flex flex-col">
+    <Card>
       <CardHeader>
-        <div className="flex items-center gap-3 mb-2">
-          <Icon className="h-8 w-8 text-primary" />
-          <CardTitle>{name}</CardTitle>
-        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Icon className="h-5 w-5" />
+          <span>{name}</span>
+        </CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent className="mt-auto">
-        <Button 
-          onClick={() => isConnected ? onDisconnect() : onConnect()}
-          variant={isConnected ? "destructive" : "outline"}
+      <CardContent>
+        <p className="text-sm text-muted-foreground mb-2">
+          {isConnected ? "Application connectée" : "Application non connectée"}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Disponible avec le plan Pro ($19/mois) ou Entreprise ($49/mois)
+        </p>
+      </CardContent>
+      <CardFooter>
+        <Button
+          variant={isConnected ? "destructive" : "default"}
+          onClick={isConnected ? onDisconnect : onConnect}
           className="w-full"
-          disabled={isLoading}
         >
           {isConnected ? "Déconnecter" : "Connecter"}
         </Button>
-      </CardContent>
+      </CardFooter>
     </Card>
   );
-};
+}

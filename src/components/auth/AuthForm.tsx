@@ -1,84 +1,47 @@
-import { useState } from 'react';
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from '@/lib/supabase';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
-export const AuthForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export function AuthForm() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isLogin, setIsLogin] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const validatePassword = (password: string) => {
-    const minLength = password.length >= 6;
-    return minLength;
-  };
-
-  const handleAuth = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Attempting authentication...', { isLogin, email }); // Debug log
-    
-    if (!validatePassword(password)) {
-      toast({
-        title: "Erreur de validation",
-        description: "Le mot de passe doit contenir au moins 6 caractères",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      if (isLogin) {
-        console.log('Attempting login...'); // Debug log
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        console.log('Login response:', { data, error }); // Debug log
-        
-        if (error) throw error;
-        
-        toast({
-          title: "Connexion réussie",
-          description: "Vous êtes maintenant connecté",
-        });
-        navigate('/');
-      } else {
-        console.log('Attempting signup...'); // Debug log
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        console.log('Signup response:', { data, error }); // Debug log
-        
-        if (error) throw error;
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            plan: "gratuit", // Plan par défaut lors de l'inscription
+            trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 jours d'essai
+          },
+        },
+      });
 
-        if (data?.user?.identities?.length === 0) {
-          toast({
-            title: "Erreur",
-            description: "Un compte existe déjà avec cet email",
-            variant: "destructive",
-          });
-          return;
-        }
-        
-        toast({
-          title: "Inscription réussie",
-          description: "Vérifiez votre email pour confirmer votre compte",
-        });
-        navigate('/onboarding');
-      }
-    } catch (error: any) {
-      console.error('Auth error:', error); // Debug log
+      if (error) throw error;
+
+      toast({
+        title: "Compte créé avec succès",
+        description: "Profitez de votre essai gratuit de 14 jours !",
+      });
+      
+      navigate("/onboarding");
+    } catch (error) {
       toast({
         title: "Erreur",
-        description: error.message,
+        description: "Une erreur est survenue lors de la création du compte",
         variant: "destructive",
       });
     } finally {
@@ -87,47 +50,43 @@ export const AuthForm = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6 p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-center text-gray-900">
-        {isLogin ? 'Connexion' : 'Inscription'}
-      </h2>
-      <form onSubmit={handleAuth} className="space-y-4">
-        <div className="space-y-2">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="text-gray-900 bg-white border-gray-300"
-          />
-        </div>
-        <div className="space-y-2">
-          <Input
-            type="password"
-            placeholder="Mot de passe"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="text-gray-900 bg-white border-gray-300"
-          />
-          {!isLogin && (
-            <p className="text-sm text-gray-500 mt-1">
-              Le mot de passe doit contenir au moins 6 caractères
-            </p>
-          )}
-        </div>
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? 'Chargement...' : isLogin ? 'Se connecter' : "S'inscrire"}
-        </Button>
+    <Card>
+      <CardHeader>
+        <CardTitle>Créer un compte</CardTitle>
+        <CardDescription>
+          Commencez avec un essai gratuit de 14 jours. Pas de carte de crédit requise.
+        </CardDescription>
+      </CardHeader>
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="exemple@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Mot de passe</Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Création en cours..." : "Créer un compte"}
+          </Button>
+        </CardFooter>
       </form>
-      <Button
-        variant="link"
-        className="w-full"
-        onClick={() => setIsLogin(!isLogin)}
-      >
-        {isLogin ? "Pas encore de compte ? S'inscrire" : 'Déjà un compte ? Se connecter'}
-      </Button>
-    </div>
+    </Card>
   );
-};
+}

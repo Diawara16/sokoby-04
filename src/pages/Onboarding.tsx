@@ -1,155 +1,59 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { ShoppingBag, UserCircle, Settings, Package, Users, ShoppingCart, AppWindow } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ShoppingBag, UserCircle, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Onboarding = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSetup = async (path: string) => {
-    setIsLoading(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour accéder à cette page",
-          variant: "destructive",
-        });
-        navigate('/');
-        return;
-      }
-      
-      navigate(path);
-    } catch (error: any) {
-      toast({
-        title: "Erreur",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const options = [
+    {
+      title: "Configurer ma boutique",
+      description: "Créez votre première boutique en ligne et commencez à vendre (2 boutiques avec le plan Pro)",
+      icon: ShoppingBag,
+      path: "/boutique",
+    },
+    {
+      title: "Configurer mon profil",
+      description: "Personnalisez votre profil et vos informations",
+      icon: UserCircle,
+      path: "/profil",
+    },
+    {
+      title: "Paramètres avancés",
+      description: "Configurez les paramètres de votre compte",
+      icon: Settings,
+      path: "/parametres",
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">
-              Préparez-vous à vendre
-            </h1>
-            <p className="text-muted-foreground">
-              Voici un guide pour démarrer. Vous recevrez ici de nouveaux conseils et informations au fur et à mesure que votre entreprise se développera.
-            </p>
-          </div>
+    <div className="container mx-auto py-8 px-4">
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold mb-2">Configurez votre compte</h1>
+          <p className="text-muted-foreground">
+            Choisissez une option pour commencer à configurer votre compte
+          </p>
+        </div>
 
-          <div className="space-y-6">
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Guide de configuration</h2>
-              <p className="text-muted-foreground mb-2">Utilisez ce guide personnalisé pour rendre votre boutique opérationnelle.</p>
-              <p className="text-sm text-muted-foreground">0 sur 15 effectué(s)</p>
+        <div className="grid gap-6">
+          {options.map((option) => (
+            <Card key={option.title} className="cursor-pointer hover:shadow-md transition-shadow">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <option.icon className="h-5 w-5" />
+                  <span>{option.title}</span>
+                </CardTitle>
+                <CardDescription>{option.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button onClick={() => navigate(option.path)} className="w-full">
+                  Commencer
+                </Button>
+              </CardContent>
             </Card>
-
-            <div className="space-y-4">
-              <Card className="p-6">
-                <button 
-                  onClick={() => handleSetup("/boutique")}
-                  className="w-full text-left flex items-center justify-between hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <Package className="h-6 w-6 text-primary" />
-                    <div>
-                      <h3 className="font-semibold">Ajouter des produits</h3>
-                      <p className="text-sm text-muted-foreground">Commencez à ajouter des produits à votre catalogue</p>
-                    </div>
-                  </div>
-                </button>
-              </Card>
-
-              <Card className="p-6">
-                <button 
-                  onClick={() => handleSetup("/commandes")}
-                  className="w-full text-left flex items-center justify-between hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <ShoppingCart className="h-6 w-6 text-primary" />
-                    <div>
-                      <h3 className="font-semibold">Gérer les commandes</h3>
-                      <p className="text-sm text-muted-foreground">Suivez et gérez vos commandes clients</p>
-                    </div>
-                  </div>
-                </button>
-              </Card>
-
-              <Card className="p-6">
-                <button 
-                  onClick={() => handleSetup("/clients")}
-                  className="w-full text-left flex items-center justify-between hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <Users className="h-6 w-6 text-primary" />
-                    <div>
-                      <h3 className="font-semibold">Gérer les clients</h3>
-                      <p className="text-sm text-muted-foreground">Consultez et gérez votre base clients</p>
-                    </div>
-                  </div>
-                </button>
-              </Card>
-
-              <Card className="p-6">
-                <button 
-                  onClick={() => handleSetup("/profil")}
-                  className="w-full text-left flex items-center justify-between hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <UserCircle className="h-6 w-6 text-primary" />
-                    <div>
-                      <h3 className="font-semibold">Configurer votre profil</h3>
-                      <p className="text-sm text-muted-foreground">Personnalisez votre profil et vos informations</p>
-                    </div>
-                  </div>
-                </button>
-              </Card>
-
-              <Card className="p-6">
-                <button 
-                  onClick={() => handleSetup("/applications")}
-                  className="w-full text-left flex items-center justify-between hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <AppWindow className="h-6 w-6 text-primary" />
-                    <div>
-                      <h3 className="font-semibold">Applications</h3>
-                      <p className="text-sm text-muted-foreground">Gérez vos applications et intégrations</p>
-                    </div>
-                  </div>
-                </button>
-              </Card>
-
-              <Card className="p-6">
-                <button 
-                  onClick={() => handleSetup("/parametres")}
-                  className="w-full text-left flex items-center justify-between hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <Settings className="h-6 w-6 text-primary" />
-                    <div>
-                      <h3 className="font-semibold">Paramètres de la boutique</h3>
-                      <p className="text-sm text-muted-foreground">Configurez les paramètres généraux de votre boutique</p>
-                    </div>
-                  </div>
-                </button>
-              </Card>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>
