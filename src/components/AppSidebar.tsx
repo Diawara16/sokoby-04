@@ -1,4 +1,3 @@
-import { Home, ShoppingBag, UserCircle, Settings } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -12,6 +11,7 @@ import {
 import { Link, useLocation } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
+import { Home, ShoppingBag, UserCircle, Settings } from "lucide-react"
 
 const configMenuItems = [
   {
@@ -40,13 +40,17 @@ export function AppSidebar() {
     const checkOnboardingStatus = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        // On considère que l'utilisateur a complété l'onboarding s'il n'est pas sur la page d'accueil
         setHasCompletedOnboarding(!isHomePage)
       }
     }
 
     checkOnboardingStatus()
   }, [isHomePage])
+
+  // Ne pas afficher la barre latérale sur la page d'accueil
+  if (isHomePage) {
+    return null;
+  }
 
   return (
     <Sidebar>
@@ -64,7 +68,7 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
-              {hasCompletedOnboarding && configMenuItems.map((item) => (
+              {configMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link to={item.url}>

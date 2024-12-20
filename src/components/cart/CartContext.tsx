@@ -2,6 +2,7 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { CartState, CartItem } from '@/types/cart';
 import { cartReducer } from './cartReducer';
 import { useCartOperations } from './useCartOperations';
+import { supabase } from '@/lib/supabase';
 
 type CartContextType = {
   state: CartState;
@@ -15,7 +16,17 @@ const CartContext = createContext<CartContextType | null>(null);
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, { items: [], total: 0 });
-  const { loadCartItems, addCartItem, removeCartItem, updateCartItemQuantity, clearCart: clearCartItems } = useCartOperations();
+  const [userId, setUserId] = React.useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const getUserId = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUserId(user?.id);
+    };
+    getUserId();
+  }, []);
+
+  const { loadCartItems, addCartItem, removeCartItem, updateCartItemQuantity, clearCart: clearCartItems } = useCartOperations(userId);
 
   useEffect(() => {
     const initializeCart = async () => {
@@ -25,8 +36,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
-    initializeCart();
-  }, []);
+    if (userId) {
+      initializeCart();
+    }
+  }, [userId]);
 
   const addToCart = async (item: Omit<CartItem, 'id'>) => {
     const result = await addCartItem(item);
