@@ -30,6 +30,9 @@ const languages = [
   { code: 'en', name: 'English' },
   { code: 'es', name: 'Español' },
   { code: 'de', name: 'Deutsch' },
+  { code: 'pt', name: 'Português' },
+  { code: 'it', name: 'Italiano' },
+  { code: 'nl', name: 'Nederlands' },
 ];
 
 const Index = () => {
@@ -49,6 +52,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Hero Section */}
       <section className="hero-gradient text-white py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -110,7 +114,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center gap-4">
             <Languages className="h-5 w-5 text-gray-500" />
-            <div className="flex gap-4">
+            <div className="flex flex-wrap justify-center gap-4">
               {languages.map((lang) => (
                 <button
                   key={lang.code}
