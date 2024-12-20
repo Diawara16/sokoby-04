@@ -29,6 +29,7 @@ const PlanTarifaire = () => {
         "Domaine personnalisé",
       ],
       popular: true,
+      trial: true,
     },
     {
       name: "Entreprise",
@@ -44,6 +45,7 @@ const PlanTarifaire = () => {
         "Formation dédiée",
         "SLA garanti",
       ],
+      trial: true,
     },
   ];
 
@@ -88,6 +90,11 @@ const PlanTarifaire = () => {
                   <span className="text-gray-600 ml-1">{plan.period}</span>
                 )}
               </div>
+              {plan.trial && (
+                <div className="text-sm text-primary font-medium mb-2">
+                  Essai gratuit de 14 jours
+                </div>
+              )}
               <p className="text-gray-600 mb-6">{plan.description}</p>
             </div>
 
@@ -106,7 +113,7 @@ const PlanTarifaire = () => {
               } hover:opacity-90`}
             >
               <CreditCard className="mr-2 h-4 w-4" />
-              Choisir ce plan
+              {plan.trial ? "Commencer l'essai gratuit" : "Choisir ce plan"}
             </Button>
           </Card>
         ))}
