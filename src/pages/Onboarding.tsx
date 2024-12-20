@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ShoppingBag, UserCircle, Settings, Package, Users, ShoppingCart } from "lucide-react";
+import { ShoppingBag, UserCircle, Settings, Package, Users, ShoppingCart, AppWindow } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 
@@ -114,6 +114,21 @@ const Onboarding = () => {
                     <div>
                       <h3 className="font-semibold">Configurer votre profil</h3>
                       <p className="text-sm text-muted-foreground">Personnalisez votre profil et vos informations</p>
+                    </div>
+                  </div>
+                </button>
+              </Card>
+
+              <Card className="p-6">
+                <button 
+                  onClick={() => handleSetup("/applications")}
+                  className="w-full text-left flex items-center justify-between hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <AppWindow className="h-6 w-6 text-primary" />
+                    <div>
+                      <h3 className="font-semibold">Applications</h3>
+                      <p className="text-sm text-muted-foreground">Gérez vos applications et intégrations</p>
                     </div>
                   </div>
                 </button>
