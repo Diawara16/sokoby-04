@@ -1,39 +1,45 @@
+import { useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useToast } from '@/components/ui/use-toast';
 import { CartItem } from '@/types/cart';
 
-type CartItemResponse = {
+interface Product {
+  name: string;
+  price: number;
+  image: string;
+}
+
+interface CartItemResponse {
   id: string;
   product_id: string;
   quantity: number;
-  products: {
-    name: string;
-    price: number;
-    image: string | null;
-  };
-};
+  products: Product;
+}
 
-export const useCartOperations = () => {
-  const loadCartItems = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.user) return null;
+export const useCartOperations = (userId: string | undefined) => {
+  const { toast } = useToast();
 
-    const { data: cartItems } = await supabase
+  const loadCartItems = useCallback(async () => {
+    if (!userId) return null;
+
+    const { data: cartItems, error } = await supabase
       .from('cart_items')
-      .select(`
-        id,
-        product_id,
-        quantity,
-        products (
-          name,
-          price,
-          image
-        )
-      `)
-      .eq('user_id', session.user.id);
+      .select('*, products(*)')
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error('Error loading cart items:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de charger le panier',
+        variant: 'destructive',
+      });
+      return null;
+    }
 
     if (!cartItems) return null;
 
-    return cartItems.map((item: any) => ({
+    return cartItems.map((item: CartItemResponse) => ({
       id: item.id,
       product_id: item.product_id,
       quantity: item.quantity,
@@ -41,7 +47,7 @@ export const useCartOperations = () => {
       price: item.products.price,
       image: item.products.image,
     }));
-  };
+  }, [userId, toast]);
 
   const addCartItem = async (item: Omit<CartItem, 'id'>) => {
     const { data: { session } } = await supabase.auth.getSession();
