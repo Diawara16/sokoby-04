@@ -13,6 +13,7 @@ import Profil from "./pages/Profil";
 import Parametres from "./pages/Parametres";
 import Onboarding from "./pages/Onboarding";
 import Applications from "./pages/Applications";
+import PlanTarifaire from "./pages/PlanTarifaire";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
                     <Route path="/parametres" element={<Parametres />} />
                     <Route path="/onboarding" element={<Onboarding />} />
                     <Route path="/applications" element={<Applications />} />
+                    <Route path="/plan-tarifaire" element={<PlanTarifaire />} />
                   </Routes>
                 </main>
               </div>

@@ -89,6 +89,11 @@ const Index = () => {
                     Contact
                   </Link>
                 </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link to="/plan-tarifaire" className={navigationMenuTriggerStyle()}>
+                    Plan Tarifaire
+                  </Link>
+                </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
             <Button variant="default" className="bg-red-600 hover:bg-red-700">
