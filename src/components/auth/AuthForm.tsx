@@ -69,7 +69,7 @@ export const AuthForm = () => {
 
   return (
     <div className="w-full max-w-md mx-auto space-y-6 p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-center">
+      <h2 className="text-2xl font-bold text-center text-gray-900">
         {isLogin ? 'Connexion' : 'Inscription'}
       </h2>
       <form onSubmit={handleAuth} className="space-y-4">
@@ -80,6 +80,7 @@ export const AuthForm = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="text-gray-900 bg-white"
           />
         </div>
         <div className="space-y-2">
@@ -89,6 +90,7 @@ export const AuthForm = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="text-gray-900 bg-white"
           />
           {!isLogin && (
             <p className="text-sm text-gray-500 mt-1">
