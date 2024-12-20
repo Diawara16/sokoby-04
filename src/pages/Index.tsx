@@ -2,6 +2,7 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import Footer from "@/components/Footer";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -163,6 +164,9 @@ const Index = () => {
           </Button>
         </div>
       </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
