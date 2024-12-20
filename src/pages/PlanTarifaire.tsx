@@ -6,7 +6,7 @@ const PlanTarifaire = () => {
   const plans = [
     {
       name: "Gratuit",
-      price: "0€",
+      price: "$0",
       description: "Pour démarrer votre boutique en ligne",
       features: [
         "1 boutique en ligne",
@@ -17,7 +17,7 @@ const PlanTarifaire = () => {
     },
     {
       name: "Pro",
-      price: "29€",
+      price: "$19",
       period: "/mois",
       description: "Pour les entreprises en croissance",
       features: [
@@ -32,7 +32,7 @@ const PlanTarifaire = () => {
     },
     {
       name: "Entreprise",
-      price: "99€",
+      price: "$49",
       period: "/mois",
       description: "Pour les grandes entreprises",
       features: [
