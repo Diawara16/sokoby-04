@@ -1,6 +1,17 @@
 import { supabase } from '@/lib/supabase';
 import { CartItem } from '@/types/cart';
 
+type CartItemResponse = {
+  id: string;
+  product_id: string;
+  quantity: number;
+  products: {
+    name: string;
+    price: number;
+    image: string | null;
+  } | null;
+};
+
 export const useCartOperations = () => {
   const loadCartItems = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -22,13 +33,13 @@ export const useCartOperations = () => {
 
     if (!cartItems) return null;
 
-    return cartItems.map((item: any) => ({
+    return cartItems.map((item: CartItemResponse) => ({
       id: item.id,
       product_id: item.product_id,
       quantity: item.quantity,
-      name: item.products?.name,
-      price: item.products?.price,
-      image: item.products?.image,
+      name: item.products?.name ?? '',
+      price: item.products?.price ?? 0,
+      image: item.products?.image ?? null,
     }));
   };
 
