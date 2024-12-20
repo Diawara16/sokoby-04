@@ -56,19 +56,23 @@ const Onboarding = () => {
             {translations[currentLanguage].common?.back || "Retour"}
           </Button>
 
-          <div className="flex items-center gap-2 bg-secondary/10 p-2 rounded-lg">
+          <div className="flex items-center gap-2 bg-primary/10 p-3 rounded-lg shadow-sm">
             <Globe className="h-5 w-5 text-primary" />
-            <span className="text-sm font-medium text-muted-foreground mr-2">
+            <span className="text-sm font-medium text-foreground">
               {translations[currentLanguage].common?.language || "Langue"}:
             </span>
             <div className="flex flex-wrap gap-2">
-              {Object.keys(translations).map((lang) => (
+              {["fr", "en", "es", "de", "pt", "it", "nl"].map((lang) => (
                 <Button
                   key={lang}
                   variant={currentLanguage === lang ? "default" : "ghost"}
                   size="sm"
                   onClick={() => handleLanguageChange(lang)}
-                  className="min-w-[40px] transition-colors"
+                  className={`min-w-[40px] transition-colors ${
+                    currentLanguage === lang 
+                      ? "bg-primary text-primary-foreground" 
+                      : "hover:bg-primary/20"
+                  }`}
                 >
                   {lang.toUpperCase()}
                 </Button>
