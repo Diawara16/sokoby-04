@@ -2,12 +2,20 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
 import { ArrowRight, ShoppingBag, BarChart3, Globe2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 import { translations } from "@/translations";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 const features = [
   {
@@ -40,6 +48,56 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Navigation */}
+      <nav className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex-shrink-0">
+              <Link to="/" className="flex items-center">
+                <span className="text-xl font-bold text-primary">Sokoby</span>
+              </Link>
+            </div>
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <Link to="/domicile" className={navigationMenuTriggerStyle()}>
+                    Domicile
+                  </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link to="/environ" className={navigationMenuTriggerStyle()}>
+                    Environ
+                  </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link to="/services" className={navigationMenuTriggerStyle()}>
+                    Services
+                  </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link to="/themes" className={navigationMenuTriggerStyle()}>
+                    Des Thèmes Étonnants
+                  </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link to="/tarifs" className={navigationMenuTriggerStyle()}>
+                    Plan Tarifaire
+                  </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link to="/contact" className={navigationMenuTriggerStyle()}>
+                    Contact
+                  </Link>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+            <Button variant="default" className="bg-red-600 hover:bg-red-700">
+              Démarrer
+            </Button>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero Section */}
       <section className="hero-gradient text-white py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
