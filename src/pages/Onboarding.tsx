@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ShoppingBag, UserCircle, Settings, ArrowLeft, Globe } from "lucide-react";
+import { ShoppingBag, UserCircle, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { translations } from "@/translations";
@@ -17,13 +17,18 @@ const Onboarding = () => {
     setIsLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Utilisateur non connecté");
+      
+      if (!user) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour accéder à cette page",
+          variant: "destructive",
+        });
+        navigate('/');
+        return;
+      }
       
       navigate(path);
-      toast({
-        title: "Configuration terminée",
-        description: "Votre compte a été configuré avec succès",
-      });
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -35,58 +40,15 @@ const Onboarding = () => {
     }
   };
 
-  const handleLanguageChange = (lang: string) => {
-    setCurrentLanguage(lang);
-    toast({
-      title: translations[lang].languageChanged?.title || "Langue modifiée",
-      description: translations[lang].languageChanged?.description || `La langue a été changée en ${translations[lang].language}`,
-    });
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8 px-4">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            {translations[currentLanguage].common?.back || "Retour"}
-          </Button>
-
-          <div className="flex items-center gap-2 bg-primary/10 p-3 rounded-lg shadow-sm">
-            <Globe className="h-5 w-5 text-primary" />
-            <span className="text-sm font-medium text-foreground">
-              {translations[currentLanguage].common?.language || "Langue"}:
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {["fr", "en", "es", "de", "pt", "it", "nl"].map((lang) => (
-                <Button
-                  key={lang}
-                  variant={currentLanguage === lang ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => handleLanguageChange(lang)}
-                  className={`min-w-[40px] transition-colors ${
-                    currentLanguage === lang 
-                      ? "bg-primary text-primary-foreground" 
-                      : "hover:bg-primary/20"
-                  }`}
-                >
-                  {lang.toUpperCase()}
-                </Button>
-              ))}
-            </div>
-          </div>
-        </div>
-
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-center mb-4">
-            {translations[currentLanguage].onboarding?.title || "Configurez votre compte"}
+            Configurez votre compte
           </h1>
           <p className="text-center text-muted-foreground mb-12">
-            {translations[currentLanguage].onboarding?.subtitle || "Choisissez une option pour commencer à configurer votre compte"}
+            Choisissez une option pour commencer à configurer votre compte
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -97,10 +59,10 @@ const Onboarding = () => {
               <div className="text-center space-y-4">
                 <ShoppingBag className="h-12 w-12 mx-auto text-primary" />
                 <h3 className="text-xl font-semibold">
-                  {translations[currentLanguage].onboarding?.shop?.title || "Configurer ma boutique"}
+                  Configurer ma boutique
                 </h3>
                 <p className="text-muted-foreground">
-                  {translations[currentLanguage].onboarding?.shop?.description || "Créez votre boutique en ligne et commencez à vendre"}
+                  Créez votre boutique en ligne et commencez à vendre
                 </p>
               </div>
             </Card>
@@ -112,10 +74,10 @@ const Onboarding = () => {
               <div className="text-center space-y-4">
                 <UserCircle className="h-12 w-12 mx-auto text-primary" />
                 <h3 className="text-xl font-semibold">
-                  {translations[currentLanguage].onboarding?.profile?.title || "Configurer mon profil"}
+                  Configurer mon profil
                 </h3>
                 <p className="text-muted-foreground">
-                  {translations[currentLanguage].onboarding?.profile?.description || "Personnalisez votre profil et vos informations"}
+                  Personnalisez votre profil et vos informations
                 </p>
               </div>
             </Card>
@@ -127,10 +89,10 @@ const Onboarding = () => {
               <div className="text-center space-y-4">
                 <Settings className="h-12 w-12 mx-auto text-primary" />
                 <h3 className="text-xl font-semibold">
-                  {translations[currentLanguage].onboarding?.settings?.title || "Paramètres avancés"}
+                  Paramètres avancés
                 </h3>
                 <p className="text-muted-foreground">
-                  {translations[currentLanguage].onboarding?.settings?.description || "Configurez les paramètres de votre compte"}
+                  Configurez les paramètres de votre compte
                 </p>
               </div>
             </Card>
