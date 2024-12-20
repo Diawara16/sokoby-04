@@ -11,7 +11,7 @@ import {
 import { Link, useLocation } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
-import { Home, ShoppingBag, UserCircle, Settings, Clock, XOctagon } from "lucide-react"
+import { Home, ShoppingBag, UserCircle, Settings, Clock, XOctagon, AppWindow } from "lucide-react"
 
 const configMenuItems = [
   {
@@ -28,6 +28,11 @@ const configMenuItems = [
     title: "Paiements annulés",
     url: "/paiements-annules",
     icon: XOctagon,
+  },
+  {
+    title: "Applications",
+    url: "/applications",
+    icon: AppWindow,
   },
   {
     title: "Profil",
