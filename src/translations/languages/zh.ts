@@ -25,21 +25,5 @@ export const zh = {
     title: "准备将愿景变为现实？",
     subtitle: "加入数千名信任我们平台的企业家",
     button: "创建商店"
-  },
-  onboarding: {
-    title: "设置您的账户",
-    subtitle: "选择一个选项开始配置您的账户",
-    shop: {
-      title: "设置商店",
-      description: "创建您的在线商店并开始销售"
-    },
-    profile: {
-      title: "设置个人资料",
-      description: "自定义您的个人资料和信息"
-    },
-    settings: {
-      title: "高级设置",
-      description: "配置您的账户设置"
-    }
   }
 };
