@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { CartItem } from '@/types/cart';
 
 export const useCartOperations = () => {
@@ -17,7 +17,8 @@ export const useCartOperations = () => {
           price,
           image
         )
-      `);
+      `)
+      .eq('user_id', session.user.id);
 
     if (!cartItems) return null;
 
@@ -56,7 +57,8 @@ export const useCartOperations = () => {
     const { error } = await supabase
       .from('cart_items')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('user_id', session.user.id);
 
     return !error;
   };
@@ -68,7 +70,8 @@ export const useCartOperations = () => {
     const { error } = await supabase
       .from('cart_items')
       .update({ quantity })
-      .eq('id', id);
+      .eq('id', id)
+      .eq('user_id', session.user.id);
 
     return !error;
   };
