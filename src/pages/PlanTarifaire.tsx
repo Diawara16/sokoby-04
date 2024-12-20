@@ -21,7 +21,7 @@ const PlanTarifaire = () => {
       period: "/mois",
       description: "Pour les entreprises en croissance",
       features: [
-        "3 boutiques en ligne",
+        "2 boutiques en ligne",
         "Produits illimités",
         "Support prioritaire",
         "Analytics avancés",
@@ -37,7 +37,7 @@ const PlanTarifaire = () => {
       period: "/mois",
       description: "Pour les grandes entreprises",
       features: [
-        "Boutiques illimitées",
+        "5 boutiques en ligne",
         "Produits illimités",
         "Support dédié 24/7",
         "Analytics en temps réel",
