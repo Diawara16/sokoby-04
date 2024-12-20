@@ -11,13 +11,23 @@ import {
 import { Link, useLocation } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
-import { Home, ShoppingBag, UserCircle, Settings } from "lucide-react"
+import { Home, ShoppingBag, UserCircle, Settings, Clock, XOctagon } from "lucide-react"
 
 const configMenuItems = [
   {
     title: "Boutique",
     url: "/boutique",
     icon: ShoppingBag,
+  },
+  {
+    title: "Commandes temporaires",
+    url: "/commandes-temporaires",
+    icon: Clock,
+  },
+  {
+    title: "Paiements annulés",
+    url: "/paiements-annules",
+    icon: XOctagon,
   },
   {
     title: "Profil",
