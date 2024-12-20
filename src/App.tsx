@@ -8,6 +8,9 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { CartProvider } from "@/components/cart/CartContext";
 import Index from "./pages/Index";
 import Checkout from "./pages/Checkout";
+import Boutique from "./pages/Boutique";
+import Profil from "./pages/Profil";
+import Parametres from "./pages/Parametres";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +29,9 @@ const App = () => (
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/boutique" element={<Boutique />} />
+                    <Route path="/profil" element={<Profil />} />
+                    <Route path="/parametres" element={<Parametres />} />
                   </Routes>
                 </main>
               </div>
