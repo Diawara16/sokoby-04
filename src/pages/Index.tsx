@@ -80,18 +80,13 @@ const Index = () => {
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <Link to="/tarifs" className={navigationMenuTriggerStyle()}>
+                  <Link to="/plan-tarifaire" className={navigationMenuTriggerStyle()}>
                     Plan Tarifaire
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <Link to="/contact" className={navigationMenuTriggerStyle()}>
                     Contact
-                  </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link to="/plan-tarifaire" className={navigationMenuTriggerStyle()}>
-                    Plan Tarifaire
                   </Link>
                 </NavigationMenuItem>
               </NavigationMenuList>
