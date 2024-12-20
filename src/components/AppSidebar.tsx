@@ -3,20 +3,17 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabase"
 
-const menuItems = [
-  {
-    title: "Accueil",
-    url: "/",
-    icon: Home,
-  },
+const configMenuItems = [
   {
     title: "Boutique",
     url: "/boutique",
@@ -35,6 +32,22 @@ const menuItems = [
 ]
 
 export function AppSidebar() {
+  const location = useLocation()
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false)
+  const isHomePage = location.pathname === "/"
+
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        // On considère que l'utilisateur a complété l'onboarding s'il n'est pas sur la page d'accueil
+        setHasCompletedOnboarding(!isHomePage)
+      }
+    }
+
+    checkOnboardingStatus()
+  }, [isHomePage])
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -42,7 +55,16 @@ export function AppSidebar() {
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link to="/">
+                    <Home className="h-4 w-4" />
+                    <span>Accueil</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {hasCompletedOnboarding && configMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link to={item.url}>
