@@ -48,8 +48,8 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
                 </Button>
                 <Button 
                   onClick={() => handleAuthClick(false)}
-                  variant="outline" 
-                  className="border-white text-white hover:bg-white/10 w-full"
+                  variant="default"
+                  className="bg-red-600 hover:bg-red-700 text-white w-full"
                   size="lg"
                 >
                   Se connecter
