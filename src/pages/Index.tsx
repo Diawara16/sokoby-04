@@ -11,18 +11,15 @@ import { CTASection } from "@/components/home/CTASection";
 
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState(() => {
-    return localStorage.getItem('currentLanguage') || 'fr';
-  });
+  const [currentLanguage, setCurrentLanguage] = useState('fr');
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session);
-    });
-  }, []);
+    const storedLanguage = localStorage.getItem('currentLanguage');
+    if (storedLanguage) {
+      setCurrentLanguage(storedLanguage);
+    }
 
-  useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === 'currentLanguage') {
         setCurrentLanguage(event.newValue || 'fr');
@@ -30,7 +27,15 @@ const Index = () => {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+
+    // Vérification de l'authentification
+    supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const handleCreateStore = () => {
