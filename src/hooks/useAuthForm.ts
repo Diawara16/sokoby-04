@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
-import { translations } from "@/translations";
+import { authService } from "@/services/authService";
+import { UseAuthForm } from "@/types/auth";
 
-export const useAuthForm = () => {
+export const useAuthForm = (): UseAuthForm => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -13,10 +13,7 @@ export const useAuthForm = () => {
   const navigate = useNavigate();
 
   const handleSignUp = async () => {
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error: signInError } = await authService.signIn(email, password);
 
     if (!signInError) {
       toast({
@@ -28,16 +25,7 @@ export const useAuthForm = () => {
       return false;
     }
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          plan: "gratuit",
-          trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-        },
-      },
-    });
+    const { error } = await authService.signUp(email, password);
 
     if (error) {
       if (error.message.includes("User already registered")) {
@@ -56,11 +44,7 @@ export const useAuthForm = () => {
   };
 
   const handleSignIn = async () => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
+    const { error } = await authService.signIn(email, password);
     if (error) throw error;
     return true;
   };
@@ -77,7 +61,6 @@ export const useAuthForm = () => {
           title: isSignUp ? "Compte créé" : "Connexion réussie",
           description: isSignUp ? "Votre compte a été créé avec succès" : "Vous êtes maintenant connecté",
         });
-        // Redirection vers la page profil au lieu de la page d'accueil
         navigate(isSignUp ? "/onboarding" : "/profil");
       }
     } catch (error) {
