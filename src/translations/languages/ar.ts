@@ -1,51 +1,54 @@
 export const ar = {
-  language: "العربية",
+  hero: {
+    title: "بناء إمبراطوريتك للتجارة الإلكترونية",
+    subtitle: "المنصة الكاملة لإطلاق وتنمية متجرك عبر الإنترنت",
+  },
+  features: {
+    title: "مميزاتنا",
+    items: [
+      {
+        title: "إدارة المنتجات",
+        description: "إدارة كتالوج منتجاتك بسهولة"
+      },
+      {
+        title: "مدفوعات آمنة",
+        description: "قبول المدفوعات بشكل آمن"
+      },
+      {
+        title: "تحليلات متقدمة",
+        description: "تتبع أدائك في الوقت الفعلي"
+      }
+    ]
+  },
   navigation: {
     home: "الرئيسية",
     about: "حول",
     pricing: "التسعير",
     contact: "اتصل بنا",
-    themes: "قوالب رائعة",
-    services: "خدمات"
-  },
-  hero: {
-    title: "ابنِ إمبراطوريتك في التجارة الإلكترونية",
-    subtitle: "المنصة المتكاملة لإطلاق وتنمية متجرك الإلكتروني"
-  },
-  features: {
-    title: "كل ما تحتاجه للنجاح",
-    items: [
-      {
-        title: "متجر إلكتروني سهل",
-        description: "أنشئ متجرك الإلكتروني في دقائق، دون الحاجة لمهارات تقنية"
-      },
-      {
-        title: "تحليلات مفصلة",
-        description: "تتبع مبيعاتك وأداء متجرك مع تحليلات في الوقت الحقيقي"
-      },
-      {
-        title: "تواجد عالمي",
-        description: "بيع في جميع أنحاء العالم مع منصتنا المحسنة دولياً"
-      }
-    ]
+    themes: "السمات",
+    services: "الخدمات"
   },
   cta: {
-    title: "هل أنت مستعد لتحويل رؤيتك إلى واقع؟",
-    subtitle: "انضم إلى آلاف رواد الأعمال الذين يثقون بمنصتنا",
-    button: "إنشاء متجر"
+    title: "مستعد للبدء؟",
+    subtitle: "أطلق متجرك عبر الإنترنت في دقائق",
+    button: "إنشاء متجري"
   },
   footer: {
-    quickLinks: "روابط سريعة",
-    contactUs: "اتصل بنا",
-    termsOfUse: "شروط الاستخدام",
-    guidesAndTutorials: "الأدلة والدروس",
-    followUs: "تابعنا",
-    newsletter: "النشرة الإخبارية",
-    emailPlaceholder: "بريدك الإلكتروني",
-    subscribe: "اشترك",
     changeLanguage: "تغيير اللغة",
     acceptedPayments: "طرق الدفع المقبولة",
     legalNotice: "إشعار قانوني",
     accessibility: "إمكانية الوصول"
+  },
+  auth: {
+    createAccount: "إنشاء حساب",
+    trialDescription: "ابدأ مع تجربة مجانية لمدة 14 يومًا. لا تحتاج إلى بطاقة ائتمان.",
+    emailPlaceholder: "example@email.com",
+    password: "كلمة المرور",
+    creating: "جاري الإنشاء...",
+    create: "إنشاء حساب",
+    successTitle: "تم إنشاء الحساب بنجاح",
+    successDescription: "استمتع بتجربتك المجانية لمدة 14 يومًا!",
+    errorTitle: "خطأ",
+    errorDescription: "حدث خطأ أثناء إنشاء الحساب"
   }
-}
+};

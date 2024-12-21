@@ -1,51 +1,54 @@
 export const nl = {
-  language: "Nederlands",
+  hero: {
+    title: "Bouw je e-commerce imperium",
+    subtitle: "Het complete platform om je online winkel te lanceren en te laten groeien",
+  },
+  features: {
+    title: "Onze functies",
+    items: [
+      {
+        title: "Productbeheer",
+        description: "Beheer eenvoudig je productcatalogus"
+      },
+      {
+        title: "Veilige betalingen",
+        description: "Accepteer betalingen op een veilige manier"
+      },
+      {
+        title: "Geavanceerde analyses",
+        description: "Volg je prestaties in realtime"
+      }
+    ]
+  },
   navigation: {
     home: "Home",
     about: "Over ons",
     pricing: "Prijzen",
     contact: "Contact",
-    themes: "Geweldige thema's",
+    themes: "Thema's",
     services: "Diensten"
-  },
-  hero: {
-    title: "Maak uw online winkel in enkele klikken",
-    subtitle: "Een eenvoudige en krachtige oplossing voor online verkoop"
-  },
-  features: {
-    title: "Functies",
-    items: [
-      {
-        title: "Orderbeheer",
-        description: "Beheer eenvoudig uw bestellingen en voorraad"
-      },
-      {
-        title: "Gedetailleerde Analyses",
-        description: "Volg uw prestaties met gedetailleerde statistieken"
-      },
-      {
-        title: "Meertalig",
-        description: "Verkoop wereldwijd met meertalige ondersteuning"
-      }
-    ]
   },
   cta: {
     title: "Klaar om te beginnen?",
-    subtitle: "Sluit je aan bij duizenden verkopers die ons platform vertrouwen",
+    subtitle: "Launch je online winkel in enkele minuten",
     button: "Maak mijn winkel"
   },
   footer: {
-    quickLinks: "Snelle Links",
-    contactUs: "Contact",
-    termsOfUse: "Gebruiksvoorwaarden",
-    guidesAndTutorials: "Handleidingen & Tutorials",
-    followUs: "Volg Ons",
-    newsletter: "Nieuwsbrief",
-    emailPlaceholder: "Uw e-mail",
-    subscribe: "Abonneren",
-    changeLanguage: "Taal Wijzigen",
-    acceptedPayments: "Geaccepteerde Betalingen",
-    legalNotice: "Juridische Kennisgeving",
+    changeLanguage: "Taal wijzigen",
+    acceptedPayments: "Geaccepteerde betalingen",
+    legalNotice: "Juridische kennisgeving",
     accessibility: "Toegankelijkheid"
+  },
+  auth: {
+    createAccount: "Account aanmaken",
+    trialDescription: "Begin met een gratis proefperiode van 14 dagen. Geen creditcard vereist.",
+    emailPlaceholder: "voorbeeld@email.com",
+    password: "Wachtwoord",
+    creating: "Aanmaken...",
+    create: "Account aanmaken",
+    successTitle: "Account succesvol aangemaakt",
+    successDescription: "Geniet van je gratis proefperiode van 14 dagen!",
+    errorTitle: "Fout",
+    errorDescription: "Er is een fout opgetreden bij het aanmaken van het account"
   }
-}
+};

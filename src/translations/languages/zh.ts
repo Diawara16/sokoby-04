@@ -1,51 +1,54 @@
 export const zh = {
-  language: "中文",
-  navigation: {
-    home: "首页",
-    about: "关于我们",
-    pricing: "定价",
-    contact: "联系我们",
-    themes: "精美主题",
-    services: "服务"
-  },
   hero: {
     title: "建立您的电子商务帝国",
-    subtitle: "启动和发展您的在线商店的一体化平台"
+    subtitle: "完整的平台，助您启动和发展在线商店",
   },
   features: {
-    title: "成功所需的一切",
+    title: "我们的功能",
     items: [
       {
-        title: "简单的在线商店",
-        description: "无需技术知识，几分钟内创建您的在线商店"
+        title: "产品管理",
+        description: "轻松管理您的产品目录"
       },
       {
-        title: "详细分析",
-        description: "通过实时分析跟踪您的销售和商店表现"
+        title: "安全支付",
+        description: "安全接受付款"
       },
       {
-        title: "全球影响力",
-        description: "使用我们的国际化优化平台在全球范围内销售"
+        title: "高级分析",
+        description: "实时跟踪您的业绩"
       }
     ]
   },
+  navigation: {
+    home: "首页",
+    about: "关于",
+    pricing: "定价",
+    contact: "联系",
+    themes: "主题",
+    services: "服务"
+  },
   cta: {
-    title: "准备将您的愿景变为现实？",
-    subtitle: "加入数千名信任我们平台的企业家",
-    button: "创建商店"
+    title: "准备开始？",
+    subtitle: "几分钟内启动您的在线商店",
+    button: "创建我的商店"
   },
   footer: {
-    quickLinks: "快速链接",
-    contactUs: "联系我们",
-    termsOfUse: "使用条款",
-    guidesAndTutorials: "指南和教程",
-    followUs: "关注我们",
-    newsletter: "新闻通讯",
-    emailPlaceholder: "您的电子邮件",
-    subscribe: "订阅",
     changeLanguage: "更改语言",
-    acceptedPayments: "接受的付款方式",
+    acceptedPayments: "接受的支付方式",
     legalNotice: "法律声明",
     accessibility: "无障碍"
+  },
+  auth: {
+    createAccount: "创建账户",
+    trialDescription: "从14天免费试用开始。无需信用卡。",
+    emailPlaceholder: "示例@email.com",
+    password: "密码",
+    creating: "创建中...",
+    create: "创建账户",
+    successTitle: "账户创建成功",
+    successDescription: "享受14天免费试用！",
+    errorTitle: "错误",
+    errorDescription: "创建账户时发生错误"
   }
-}
+};

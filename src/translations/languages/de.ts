@@ -1,51 +1,54 @@
 export const de = {
-  language: 'Deutsch',
   hero: {
-    title: "Erstellen Sie Ihren Online-Shop mit wenigen Klicks",
-    subtitle: "Eine einfache und leistungsstarke Lösung für den Online-Verkauf"
+    title: "Bauen Sie Ihr E-Commerce-Imperium",
+    subtitle: "Die komplette Plattform zum Starten und Wachsen Ihres Online-Shops",
   },
   features: {
-    title: "Funktionen",
+    title: "Unsere Funktionen",
     items: [
       {
-        title: "Bestellverwaltung",
-        description: "Verwalten Sie Ihre Bestellungen und Ihr Inventar ganz einfach"
+        title: "Produktverwaltung",
+        description: "Verwalten Sie Ihren Produktkatalog einfach"
       },
       {
-        title: "Detaillierte Analysen",
-        description: "Verfolgen Sie Ihre Leistung mit detaillierten Statistiken"
+        title: "Sichere Zahlungen",
+        description: "Akzeptieren Sie Zahlungen sicher"
       },
       {
-        title: "Mehrsprachig",
-        description: "Verkaufen Sie weltweit mit mehrsprachiger Unterstützung"
+        title: "Erweiterte Analysen",
+        description: "Verfolgen Sie Ihre Leistung in Echtzeit"
       }
     ]
-  },
-  cta: {
-    title: "Bereit zu beginnen?",
-    subtitle: "Schließen Sie sich Tausenden von Verkäufern an, die unserer Plattform vertrauen",
-    button: "Shop erstellen"
   },
   navigation: {
     home: "Startseite",
     about: "Über uns",
     pricing: "Preise",
     contact: "Kontakt",
-    themes: "Erstaunliche Themen",
+    themes: "Themes",
     services: "Dienstleistungen"
   },
+  cta: {
+    title: "Bereit loszulegen?",
+    subtitle: "Starten Sie Ihren Online-Shop in Minuten",
+    button: "Shop erstellen"
+  },
   footer: {
-    quickLinks: "Schnellzugriff",
-    contactUs: "Kontakt",
-    termsOfUse: "Nutzungsbedingungen",
-    guidesAndTutorials: "Anleitungen & Tutorials",
-    followUs: "Folgen Sie uns",
-    newsletter: "Newsletter",
-    emailPlaceholder: "Ihre E-Mail",
-    subscribe: "Abonnieren",
     changeLanguage: "Sprache ändern",
     acceptedPayments: "Akzeptierte Zahlungen",
     legalNotice: "Rechtliche Hinweise",
     accessibility: "Barrierefreiheit"
+  },
+  auth: {
+    createAccount: "Konto erstellen",
+    trialDescription: "Starten Sie mit einer 14-tägigen kostenlosen Testversion. Keine Kreditkarte erforderlich.",
+    emailPlaceholder: "beispiel@email.com",
+    password: "Passwort",
+    creating: "Wird erstellt...",
+    create: "Konto erstellen",
+    successTitle: "Konto erfolgreich erstellt",
+    successDescription: "Genießen Sie Ihre 14-tägige kostenlose Testversion!",
+    errorTitle: "Fehler",
+    errorDescription: "Beim Erstellen des Kontos ist ein Fehler aufgetreten"
   }
-}
+};

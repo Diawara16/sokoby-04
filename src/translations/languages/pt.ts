@@ -1,51 +1,54 @@
 export const pt = {
-  language: "Português",
+  hero: {
+    title: "Construa seu império de e-commerce",
+    subtitle: "A plataforma completa para lançar e fazer crescer sua loja online",
+  },
+  features: {
+    title: "Nossos recursos",
+    items: [
+      {
+        title: "Gestão de produtos",
+        description: "Gerencie facilmente seu catálogo de produtos"
+      },
+      {
+        title: "Pagamentos seguros",
+        description: "Aceite pagamentos com segurança"
+      },
+      {
+        title: "Análises avançadas",
+        description: "Acompanhe seu desempenho em tempo real"
+      }
+    ]
+  },
   navigation: {
     home: "Início",
     about: "Sobre",
     pricing: "Preços",
     contact: "Contato",
-    themes: "Temas incríveis",
+    themes: "Temas",
     services: "Serviços"
   },
-  hero: {
-    title: "Construa seu império de e-commerce",
-    subtitle: "A plataforma completa para lançar e expandir sua loja online"
-  },
-  features: {
-    title: "Tudo que você precisa para ter sucesso",
-    items: [
-      {
-        title: "Loja online fácil",
-        description: "Crie sua loja online em minutos, sem conhecimentos técnicos"
-      },
-      {
-        title: "Análises detalhadas",
-        description: "Acompanhe suas vendas e desempenho da loja com análises em tempo real"
-      },
-      {
-        title: "Presença global",
-        description: "Venda mundialmente com nossa plataforma otimizada internacionalmente"
-      }
-    ]
-  },
   cta: {
-    title: "Pronto para transformar sua visão em realidade?",
-    subtitle: "Junte-se a milhares de empreendedores que confiam em nossa plataforma",
-    button: "Criar loja"
+    title: "Pronto para começar?",
+    subtitle: "Lance sua loja online em minutos",
+    button: "Criar minha loja"
   },
   footer: {
-    quickLinks: "Links rápidos",
-    contactUs: "Contate-nos",
-    termsOfUse: "Termos de uso",
-    guidesAndTutorials: "Guias e tutoriais",
-    followUs: "Siga-nos",
-    newsletter: "Newsletter",
-    emailPlaceholder: "Seu e-mail",
-    subscribe: "Inscrever-se",
     changeLanguage: "Mudar idioma",
     acceptedPayments: "Pagamentos aceitos",
     legalNotice: "Aviso legal",
     accessibility: "Acessibilidade"
+  },
+  auth: {
+    createAccount: "Criar conta",
+    trialDescription: "Comece com um teste gratuito de 14 dias. Não é necessário cartão de crédito.",
+    emailPlaceholder: "exemplo@email.com",
+    password: "Senha",
+    creating: "Criando...",
+    create: "Criar conta",
+    successTitle: "Conta criada com sucesso",
+    successDescription: "Aproveite seu teste gratuito de 14 dias!",
+    errorTitle: "Erro",
+    errorDescription: "Ocorreu um erro ao criar a conta"
   }
-}
+};
