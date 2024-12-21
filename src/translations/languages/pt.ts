@@ -25,5 +25,19 @@ export const pt = {
     title: "Pronto para transformar sua visão em realidade?",
     subtitle: "Junte-se a milhares de empreendedores que confiam em nossa plataforma",
     button: "Criar loja"
+  },
+  footer: {
+    quickLinks: "Links rápidos",
+    contactUs: "Contate-nos",
+    termsOfUse: "Termos de uso",
+    guidesAndTutorials: "Guias e tutoriais",
+    followUs: "Siga-nos",
+    newsletter: "Newsletter",
+    emailPlaceholder: "Seu e-mail",
+    subscribe: "Inscrever-se",
+    changeLanguage: "Mudar idioma",
+    acceptedPayments: "Pagamentos aceitos",
+    legalNotice: "Aviso legal",
+    accessibility: "Acessibilidade"
   }
-};
+}

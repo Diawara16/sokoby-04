@@ -25,5 +25,19 @@ export const ar = {
     title: "هل أنت مستعد لتحويل رؤيتك إلى واقع؟",
     subtitle: "انضم إلى آلاف رواد الأعمال الذين يثقون بمنصتنا",
     button: "إنشاء متجر"
+  },
+  footer: {
+    quickLinks: "روابط سريعة",
+    contactUs: "اتصل بنا",
+    termsOfUse: "شروط الاستخدام",
+    guidesAndTutorials: "الأدلة والدروس",
+    followUs: "تابعنا",
+    newsletter: "النشرة الإخبارية",
+    emailPlaceholder: "بريدك الإلكتروني",
+    subscribe: "اشترك",
+    changeLanguage: "تغيير اللغة",
+    acceptedPayments: "طرق الدفع المقبولة",
+    legalNotice: "إشعار قانوني",
+    accessibility: "إمكانية الوصول"
   }
-};
+}

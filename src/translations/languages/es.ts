@@ -25,5 +25,19 @@ export const es = {
     title: "¿Listo para convertir tu visión en realidad?",
     subtitle: "Únete a miles de emprendedores que confían en nuestra plataforma",
     button: "Crear tienda"
+  },
+  footer: {
+    quickLinks: "Enlaces rápidos",
+    contactUs: "Contáctanos",
+    termsOfUse: "Términos de uso",
+    guidesAndTutorials: "Guías y tutoriales",
+    followUs: "Síguenos",
+    newsletter: "Boletín",
+    emailPlaceholder: "Tu correo electrónico",
+    subscribe: "Suscribirse",
+    changeLanguage: "Cambiar idioma",
+    acceptedPayments: "Pagos aceptados",
+    legalNotice: "Aviso legal",
+    accessibility: "Accesibilidad"
   }
-};
+}

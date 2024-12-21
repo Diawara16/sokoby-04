@@ -25,5 +25,19 @@ export const de = {
     title: "Bereit, Ihre Vision Wirklichkeit werden zu lassen?",
     subtitle: "Schließen Sie sich Tausenden von Unternehmern an, die unserer Plattform vertrauen",
     button: "Shop erstellen"
+  },
+  footer: {
+    quickLinks: "Schnellzugriff",
+    contactUs: "Kontakt",
+    termsOfUse: "Nutzungsbedingungen",
+    guidesAndTutorials: "Anleitungen & Tutorials",
+    followUs: "Folgen Sie uns",
+    newsletter: "Newsletter",
+    emailPlaceholder: "Ihre E-Mail",
+    subscribe: "Abonnieren",
+    changeLanguage: "Sprache ändern",
+    acceptedPayments: "Akzeptierte Zahlungen",
+    legalNotice: "Rechtliche Hinweise",
+    accessibility: "Barrierefreiheit"
   }
-};
+}
