@@ -12,6 +12,7 @@ export function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState(() => {
     return localStorage.getItem('currentLanguage') || 'fr';
   });
@@ -36,25 +37,41 @@ export function AuthForm() {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            plan: "gratuit",
-            trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              plan: "gratuit",
+              trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+            },
           },
-        },
-      });
+        });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast({
-        title: t.auth.successTitle,
-        description: t.auth.successDescription,
-      });
-      
-      navigate("/onboarding");
+        toast({
+          title: t.auth.successTitle,
+          description: t.auth.successDescription,
+        });
+        
+        navigate("/onboarding");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Connexion réussie",
+          description: "Vous êtes maintenant connecté",
+        });
+        
+        navigate("/");
+      }
     } catch (error) {
       toast({
         title: t.auth.errorTitle,
@@ -69,9 +86,9 @@ export function AuthForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t.auth.createAccount}</CardTitle>
+        <CardTitle>{isSignUp ? t.auth.createAccount : "Se connecter"}</CardTitle>
         <CardDescription>
-          {t.auth.trialDescription}
+          {isSignUp ? t.auth.trialDescription : "Connectez-vous à votre compte"}
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
@@ -100,11 +117,15 @@ export function AuthForm() {
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? t.auth.creating : t.auth.create}
+            {isLoading ? (isSignUp ? t.auth.creating : "Connexion en cours...") : (isSignUp ? t.auth.create : "Se connecter")}
           </Button>
-          <p className="text-sm text-center text-muted-foreground">
-            S'inscrire
-          </p>
+          <button
+            type="button"
+            onClick={() => setIsSignUp(!isSignUp)}
+            className="text-sm text-center text-primary hover:underline"
+          >
+            {isSignUp ? "Déjà un compte ? Se connecter" : "S'inscrire"}
+          </button>
         </CardFooter>
       </form>
     </Card>
