@@ -6,7 +6,12 @@ import { useEffect, useState } from "react";
 import { translations } from "@/translations";
 import { useAuthForm } from "@/hooks/useAuthForm";
 
-export function AuthForm() {
+interface AuthFormProps {
+  defaultIsSignUp?: boolean;
+  onCancel?: () => void;
+}
+
+export function AuthForm({ defaultIsSignUp = true, onCancel }: AuthFormProps) {
   const [currentLanguage, setCurrentLanguage] = useState(() => {
     return localStorage.getItem('currentLanguage') || 'fr';
   });
@@ -20,7 +25,7 @@ export function AuthForm() {
     isSignUp,
     setIsSignUp,
     handleSubmit,
-  } = useAuthForm();
+  } = useAuthForm(defaultIsSignUp);
 
   useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
@@ -75,13 +80,24 @@ export function AuthForm() {
           >
             {isLoading ? (isSignUp ? t.auth.creating : "Connexion en cours...") : (isSignUp ? t.auth.create : "Se connecter")}
           </Button>
-          <button
-            type="button"
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="text-sm text-center text-red-600 hover:text-red-700 hover:underline"
-          >
-            {isSignUp ? "Déjà un compte ? Se connecter" : "S'inscrire"}
-          </button>
+          <div className="flex gap-2 w-full">
+            <button
+              type="button"
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-sm text-center text-red-600 hover:text-red-700 hover:underline"
+            >
+              {isSignUp ? "Déjà un compte ? Se connecter" : "Créer un compte"}
+            </button>
+            {onCancel && (
+              <button
+                type="button"
+                onClick={onCancel}
+                className="text-sm text-center text-gray-500 hover:text-gray-700 hover:underline ml-auto"
+              >
+                Retour
+              </button>
+            )}
+          </div>
         </CardFooter>
       </form>
     </Card>

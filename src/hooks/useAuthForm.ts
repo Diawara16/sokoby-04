@@ -4,11 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/authService";
 import { UseAuthForm } from "@/types/auth";
 
-export const useAuthForm = (): UseAuthForm => {
+export const useAuthForm = (defaultIsSignUp: boolean = false): UseAuthForm => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(defaultIsSignUp);
   const { toast } = useToast();
   const navigate = useNavigate();
 
