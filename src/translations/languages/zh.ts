@@ -25,5 +25,19 @@ export const zh = {
     title: "准备将您的愿景变为现实？",
     subtitle: "加入数千名信任我们平台的企业家",
     button: "创建商店"
+  },
+  footer: {
+    quickLinks: "快速链接",
+    contactUs: "联系我们",
+    termsOfUse: "使用条款",
+    guidesAndTutorials: "指南和教程",
+    followUs: "关注我们",
+    newsletter: "新闻通讯",
+    emailPlaceholder: "您的电子邮件",
+    subscribe: "订阅",
+    changeLanguage: "更改语言",
+    acceptedPayments: "接受的付款方式",
+    legalNotice: "法律声明",
+    accessibility: "无障碍"
   }
-};
+}
