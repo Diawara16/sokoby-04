@@ -2,17 +2,34 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
+import { translations } from "@/translations";
 
 export function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState(() => {
+    return localStorage.getItem('currentLanguage') || 'fr';
+  });
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'currentLanguage') {
+        setCurrentLanguage(event.newValue || 'fr');
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  const t = translations[currentLanguage as keyof typeof translations];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,8 +41,8 @@ export function AuthForm() {
         password,
         options: {
           data: {
-            plan: "gratuit", // Plan par défaut lors de l'inscription
-            trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 jours d'essai
+            plan: "gratuit",
+            trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
           },
         },
       });
@@ -33,15 +50,15 @@ export function AuthForm() {
       if (error) throw error;
 
       toast({
-        title: "Compte créé avec succès",
-        description: "Profitez de votre essai gratuit de 14 jours !",
+        title: t.auth.successTitle,
+        description: t.auth.successDescription,
       });
       
       navigate("/onboarding");
     } catch (error) {
       toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de la création du compte",
+        title: t.auth.errorTitle,
+        description: t.auth.errorDescription,
         variant: "destructive",
       });
     } finally {
@@ -52,9 +69,9 @@ export function AuthForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Créer un compte</CardTitle>
+        <CardTitle>{t.auth.createAccount}</CardTitle>
         <CardDescription>
-          Commencez avec un essai gratuit de 14 jours. Pas de carte de crédit requise.
+          {t.auth.trialDescription}
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
@@ -64,14 +81,14 @@ export function AuthForm() {
             <Input
               id="email"
               type="email"
-              placeholder="exemple@email.com"
+              placeholder={t.auth.emailPlaceholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Mot de passe</Label>
+            <Label htmlFor="password">{t.auth.password}</Label>
             <Input
               id="password"
               type="password"
@@ -83,7 +100,7 @@ export function AuthForm() {
         </CardContent>
         <CardFooter>
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Création en cours..." : "Créer un compte"}
+            {isLoading ? t.auth.creating : t.auth.create}
           </Button>
         </CardFooter>
       </form>
