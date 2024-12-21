@@ -98,10 +98,13 @@ export function AuthForm() {
             />
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex flex-col space-y-2">
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? t.auth.creating : t.auth.create}
           </Button>
+          <p className="text-sm text-center text-muted-foreground">
+            S'inscrire
+          </p>
         </CardFooter>
       </form>
     </Card>
