@@ -32,17 +32,26 @@ const features = [
 
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState('fr');
+  const [currentLanguage, setCurrentLanguage] = useState(() => {
+    return localStorage.getItem('currentLanguage') || 'fr';
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
       setIsAuthenticated(!!session);
     });
+  }, []);
 
-    // Récupérer la langue depuis le localStorage ou utiliser le français par défaut
-    const savedLanguage = localStorage.getItem('currentLanguage') || 'fr';
-    setCurrentLanguage(savedLanguage);
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'currentLanguage') {
+        setCurrentLanguage(event.newValue || 'fr');
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const handleCreateStore = () => {
@@ -50,18 +59,6 @@ const Index = () => {
   };
 
   const t = translations[currentLanguage as keyof typeof translations];
-
-  // Écouter les changements de langue
-  useEffect(() => {
-    const handleLanguageChange = (event: StorageEvent) => {
-      if (event.key === 'currentLanguage') {
-        setCurrentLanguage(event.newValue || 'fr');
-      }
-    };
-
-    window.addEventListener('storage', handleLanguageChange);
-    return () => window.removeEventListener('storage', handleLanguageChange);
-  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
