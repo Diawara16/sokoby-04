@@ -1,4 +1,4 @@
-import { Mail, FileText } from "lucide-react";
+import { Mail, FileText, HelpCircle, Book } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface QuickLinksProps {
@@ -24,8 +24,20 @@ export const QuickLinks = ({ t }: QuickLinksProps) => {
         </li>
         <li>
           <Link to="/guides" className="flex items-center hover:text-red-400 transition-colors">
-            <FileText className="h-4 w-4 mr-2" />
+            <Book className="h-4 w-4 mr-2" />
             {t.footer.guidesAndTutorials}
+          </Link>
+        </li>
+        <li>
+          <Link to="/faq" className="flex items-center hover:text-red-400 transition-colors">
+            <HelpCircle className="h-4 w-4 mr-2" />
+            {t.footer.faq}
+          </Link>
+        </li>
+        <li>
+          <Link to="/support" className="flex items-center hover:text-red-400 transition-colors">
+            <Mail className="h-4 w-4 mr-2" />
+            {t.footer.support}
           </Link>
         </li>
       </ul>
