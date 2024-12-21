@@ -2,22 +2,25 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
-import { useToast } from "@/components/ui/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { translations } from "@/translations";
+import { useAuthForm } from "@/hooks/useAuthForm";
 
 export function AuthForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState(() => {
     return localStorage.getItem('currentLanguage') || 'fr';
   });
-  const { toast } = useToast();
-  const navigate = useNavigate();
+
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    isLoading,
+    isSignUp,
+    setIsSignUp,
+    handleSubmit,
+  } = useAuthForm();
 
   useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
@@ -31,86 +34,6 @@ export function AuthForm() {
   }, []);
 
   const t = translations[currentLanguage as keyof typeof translations];
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      if (isSignUp) {
-        // Essayons d'abord de nous connecter pour voir si l'utilisateur existe
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        // Si pas d'erreur, cela signifie que l'utilisateur existe déjà
-        if (!signInError) {
-          toast({
-            title: "Compte existant",
-            description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
-            variant: "destructive",
-          });
-          setIsSignUp(false);
-          setIsLoading(false);
-          return;
-        }
-
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              plan: "gratuit",
-              trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-            },
-          },
-        });
-
-        if (error) {
-          if (error.message.includes("User already registered")) {
-            toast({
-              title: "Email déjà utilisé",
-              description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
-              variant: "destructive",
-            });
-            setIsSignUp(false);
-            return;
-          }
-          throw error;
-        }
-
-        toast({
-          title: t.auth.successTitle,
-          description: t.auth.successDescription,
-        });
-        
-        navigate("/onboarding");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) throw error;
-
-        toast({
-          title: "Connexion réussie",
-          description: "Vous êtes maintenant connecté",
-        });
-        
-        navigate("/");
-      }
-    } catch (error) {
-      toast({
-        title: t.auth.errorTitle,
-        description: t.auth.errorDescription,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Card>
