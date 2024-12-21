@@ -13,13 +13,11 @@ export const useAuthForm = () => {
   const navigate = useNavigate();
 
   const handleSignUp = async () => {
-    // Vérifions d'abord si l'utilisateur existe
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    // Si pas d'erreur, l'utilisateur existe déjà
     if (!signInError) {
       toast({
         title: "Compte existant",
@@ -79,7 +77,8 @@ export const useAuthForm = () => {
           title: isSignUp ? "Compte créé" : "Connexion réussie",
           description: isSignUp ? "Votre compte a été créé avec succès" : "Vous êtes maintenant connecté",
         });
-        navigate(isSignUp ? "/onboarding" : "/");
+        // Redirection vers la page profil au lieu de la page d'accueil
+        navigate(isSignUp ? "/onboarding" : "/profil");
       }
     } catch (error) {
       toast({
