@@ -30,7 +30,6 @@ const Footer = () => {
 
   const handleLanguageChange = (langCode: string) => {
     setCurrentLanguage(langCode);
-    // Vous pouvez ajouter ici la logique pour persister le choix de la langue
     console.log('Langue changée pour:', langCode);
   };
 
@@ -40,24 +39,24 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Première colonne */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold mb-4">Liens rapides</h3>
+            <h3 className="text-lg font-semibold mb-4">{t.footer.quickLinks}</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/contact" className="flex items-center hover:text-red-400 transition-colors">
                   <Mail className="h-4 w-4 mr-2" />
-                  Contactez-nous
+                  {t.footer.contactUs}
                 </Link>
               </li>
               <li>
                 <Link to="/conditions" className="flex items-center hover:text-red-400 transition-colors">
                   <FileText className="h-4 w-4 mr-2" />
-                  Conditions d'utilisation
+                  {t.footer.termsOfUse}
                 </Link>
               </li>
               <li>
                 <Link to="/guides" className="flex items-center hover:text-red-400 transition-colors">
                   <FileText className="h-4 w-4 mr-2" />
-                  Guides & Tutoriels
+                  {t.footer.guidesAndTutorials}
                 </Link>
               </li>
             </ul>
@@ -65,7 +64,7 @@ const Footer = () => {
 
           {/* Deuxième colonne - Réseaux sociaux */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold mb-4">Suivez-nous</h3>
+            <h3 className="text-lg font-semibold mb-4">{t.footer.followUs}</h3>
             <div className="grid grid-cols-3 gap-4">
               <a href="#" className="hover:text-red-400 transition-colors flex flex-col items-center" aria-label="Facebook">
                 <Facebook className="h-6 w-6" />
@@ -104,14 +103,14 @@ const Footer = () => {
 
           {/* Troisième colonne */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold mb-4">Newsletter</h3>
+            <h3 className="text-lg font-semibold mb-4">{t.footer.newsletter}</h3>
             <div className="flex space-x-2">
               <Input 
                 type="email" 
-                placeholder="Votre email" 
+                placeholder={t.footer.emailPlaceholder}
                 className="bg-gray-800 border-gray-700"
               />
-              <Button variant="secondary">S'inscrire</Button>
+              <Button variant="secondary">{t.footer.subscribe}</Button>
             </div>
           </div>
 
@@ -121,7 +120,7 @@ const Footer = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center hover:text-red-400 transition-colors">
                   <Globe className="h-4 w-4 mr-2" />
-                  Changer de langue
+                  {t.footer.changeLanguage}
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   {languages.map((lang) => (
@@ -138,7 +137,7 @@ const Footer = () => {
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-lg font-semibold">Modes de paiement acceptés</h3>
+              <h3 className="text-lg font-semibold">{t.footer.acceptedPayments}</h3>
               <div className="flex space-x-2">
                 <CreditCard className="h-6 w-6" />
               </div>
@@ -146,11 +145,11 @@ const Footer = () => {
 
             <div className="text-sm text-gray-400">
               <Link to="/legal" className="hover:text-red-400 transition-colors">
-                Mentions légales
+                {t.footer.legalNotice}
               </Link>
               {" | "}
               <Link to="/accessibility" className="hover:text-red-400 transition-colors">
-                Accessibilité
+                {t.footer.accessibility}
               </Link>
             </div>
           </div>

@@ -25,5 +25,19 @@ export const ru = {
     title: "Готовы воплотить свое видение в реальность?",
     subtitle: "Присоединяйтесь к тысячам предпринимателей, которые доверяют нашей платформе",
     button: "Создать магазин"
+  },
+  footer: {
+    quickLinks: "Быстрые ссылки",
+    contactUs: "Свяжитесь с нами",
+    termsOfUse: "Условия использования",
+    guidesAndTutorials: "Руководства и обучение",
+    followUs: "Подписывайтесь на нас",
+    newsletter: "Рассылка",
+    emailPlaceholder: "Ваш email",
+    subscribe: "Подписаться",
+    changeLanguage: "Изменить язык",
+    acceptedPayments: "Принимаемые способы оплаты",
+    legalNotice: "Правовая информация",
+    accessibility: "Доступность"
   }
 };

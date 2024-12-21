@@ -25,5 +25,19 @@ export const nl = {
     title: "Klaar om je visie werkelijkheid te maken?",
     subtitle: "Sluit je aan bij duizenden ondernemers die ons platform vertrouwen",
     button: "Winkel maken"
+  },
+  footer: {
+    quickLinks: "Snelle links",
+    contactUs: "Contact",
+    termsOfUse: "Gebruiksvoorwaarden",
+    guidesAndTutorials: "Handleidingen en tutorials",
+    followUs: "Volg ons",
+    newsletter: "Nieuwsbrief",
+    emailPlaceholder: "Jouw e-mail",
+    subscribe: "Abonneren",
+    changeLanguage: "Taal wijzigen",
+    acceptedPayments: "Geaccepteerde betaalmethoden",
+    legalNotice: "Juridische kennisgeving",
+    accessibility: "Toegankelijkheid"
   }
 };
