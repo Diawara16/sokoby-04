@@ -1,5 +1,4 @@
 import { AuthForm } from "@/components/auth/AuthForm";
-import { ProfileForm } from "@/components/profile/ProfileForm";
 import { translations } from "@/translations";
 
 interface HeroSectionProps {
@@ -24,7 +23,7 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
             </p>
           </div>
           <div className="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl">
-            {isAuthenticated ? <ProfileForm /> : <AuthForm />}
+            {!isAuthenticated && <AuthForm />}
           </div>
         </div>
       </div>
