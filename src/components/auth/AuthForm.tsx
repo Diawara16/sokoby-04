@@ -49,7 +49,18 @@ export function AuthForm() {
           },
         });
 
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes("User already registered")) {
+            toast({
+              title: "Email déjà utilisé",
+              description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
+              variant: "destructive",
+            });
+            setIsSignUp(false); // Bascule automatiquement vers le formulaire de connexion
+            return;
+          }
+          throw error;
+        }
 
         toast({
           title: t.auth.successTitle,
