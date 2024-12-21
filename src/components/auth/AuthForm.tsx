@@ -38,13 +38,14 @@ export function AuthForm() {
 
     try {
       if (isSignUp) {
-        // Vérifions d'abord si l'utilisateur existe
-        const { data: existingUser } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+        // Vérifions d'abord si l'utilisateur existe avec cet email
+        const { data: { users }, error: checkError } = await supabase.auth.admin.listUsers({
+          filters: {
+            email: email
+          }
         });
 
-        if (existingUser?.user) {
+        if (users && users.length > 0) {
           toast({
             title: "Compte existant",
             description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
