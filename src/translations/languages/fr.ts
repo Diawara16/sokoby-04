@@ -1,45 +1,43 @@
 export const fr = {
-  language: "Français",
+  language: 'Français',
   hero: {
-    title: "Créez votre empire e-commerce",
-    subtitle: "La plateforme tout-en-un pour lancer et développer votre boutique en ligne."
+    title: "Créez votre boutique en ligne en quelques clics",
+    subtitle: "Une solution simple et puissante pour vendre en ligne"
   },
   features: {
-    title: "Tout ce dont vous avez besoin pour réussir",
+    title: "Fonctionnalités",
     items: [
       {
-        title: "Boutique en ligne facile",
-        description: "Créez votre boutique en ligne en quelques minutes, sans compétences techniques requises."
+        title: "Gestion des commandes",
+        description: "Gérez facilement vos commandes et votre inventaire"
       },
       {
         title: "Analyses détaillées",
-        description: "Suivez vos ventes et la performance de votre boutique avec des analyses en temps réel."
+        description: "Suivez vos performances avec des statistiques détaillées"
       },
       {
-        title: "Présence mondiale",
-        description: "Vendez partout dans le monde avec notre plateforme optimisée pour l'international."
+        title: "Multi-langues",
+        description: "Vendez dans le monde entier avec le support multilingue"
       }
     ]
   },
   cta: {
-    title: "Prêt à transformer votre vision en réalité ?",
-    subtitle: "Rejoignez des milliers d'entrepreneurs qui font confiance à notre plateforme.",
+    title: "Prêt à commencer ?",
+    subtitle: "Rejoignez des milliers de vendeurs qui font confiance à notre plateforme",
     button: "Créer ma boutique"
   },
-  onboarding: {
-    title: "Configurez votre compte",
-    subtitle: "Choisissez une option pour commencer à configurer votre compte",
-    shop: {
-      title: "Configurer ma boutique",
-      description: "Créez votre boutique en ligne et commencez à vendre"
-    },
-    profile: {
-      title: "Configurer mon profil",
-      description: "Personnalisez votre profil et vos informations"
-    },
-    settings: {
-      title: "Paramètres avancés",
-      description: "Configurez les paramètres de votre compte"
-    }
+  footer: {
+    quickLinks: "Liens rapides",
+    contactUs: "Nous contacter",
+    termsOfUse: "Conditions d'utilisation",
+    guidesAndTutorials: "Guides et tutoriels",
+    followUs: "Suivez-nous",
+    newsletter: "Newsletter",
+    emailPlaceholder: "Votre email",
+    subscribe: "S'abonner",
+    changeLanguage: "Changer de langue",
+    acceptedPayments: "Paiements acceptés",
+    legalNotice: "Mentions légales",
+    accessibility: "Accessibilité"
   }
-};
+}

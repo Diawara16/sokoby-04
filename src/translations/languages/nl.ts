@@ -1,43 +1,43 @@
 export const nl = {
-  language: "Nederlands",
+  language: 'Nederlands',
   hero: {
-    title: "Bouw je e-commerce imperium",
-    subtitle: "Het alles-in-één platform om je online winkel te lanceren en te laten groeien"
+    title: "Maak uw online winkel in enkele klikken",
+    subtitle: "Een eenvoudige en krachtige oplossing voor online verkoop"
   },
   features: {
-    title: "Alles wat je nodig hebt om te slagen",
+    title: "Functies",
     items: [
       {
-        title: "Eenvoudige online winkel",
-        description: "Maak je online winkel in enkele minuten, zonder technische kennis"
+        title: "Orderbeheer",
+        description: "Beheer eenvoudig uw bestellingen en voorraad"
       },
       {
-        title: "Gedetailleerde analyses",
-        description: "Volg je verkoop en winkelprestaties met realtime analyses"
+        title: "Gedetailleerde Analyses",
+        description: "Volg uw prestaties met gedetailleerde statistieken"
       },
       {
-        title: "Wereldwijde aanwezigheid",
-        description: "Verkoop wereldwijd met ons internationaal geoptimaliseerd platform"
+        title: "Meertalig",
+        description: "Verkoop wereldwijd met meertalige ondersteuning"
       }
     ]
   },
   cta: {
-    title: "Klaar om je visie werkelijkheid te maken?",
-    subtitle: "Sluit je aan bij duizenden ondernemers die ons platform vertrouwen",
-    button: "Winkel maken"
+    title: "Klaar om te beginnen?",
+    subtitle: "Sluit je aan bij duizenden verkopers die ons platform vertrouwen",
+    button: "Maak mijn winkel"
   },
   footer: {
-    quickLinks: "Snelle links",
+    quickLinks: "Snelle Links",
     contactUs: "Contact",
     termsOfUse: "Gebruiksvoorwaarden",
-    guidesAndTutorials: "Handleidingen en tutorials",
-    followUs: "Volg ons",
+    guidesAndTutorials: "Handleidingen & Tutorials",
+    followUs: "Volg Ons",
     newsletter: "Nieuwsbrief",
-    emailPlaceholder: "Jouw e-mail",
+    emailPlaceholder: "Uw e-mail",
     subscribe: "Abonneren",
-    changeLanguage: "Taal wijzigen",
-    acceptedPayments: "Geaccepteerde betaalmethoden",
-    legalNotice: "Juridische kennisgeving",
+    changeLanguage: "Taal Wijzigen",
+    acceptedPayments: "Geaccepteerde Betalingen",
+    legalNotice: "Juridische Kennisgeving",
     accessibility: "Toegankelijkheid"
   }
-};
+}

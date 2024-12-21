@@ -1,29 +1,43 @@
 export const en = {
-  language: "English",
+  language: 'English',
   hero: {
-    title: "Build your e-commerce empire",
-    subtitle: "The all-in-one platform to launch and grow your online store"
+    title: "Create your online store in just a few clicks",
+    subtitle: "A simple and powerful solution for selling online"
   },
   features: {
-    title: "Everything you need to succeed",
+    title: "Features",
     items: [
       {
-        title: "Easy online store",
-        description: "Create your online store in minutes, no technical skills required"
+        title: "Order Management",
+        description: "Easily manage your orders and inventory"
       },
       {
-        title: "Detailed analytics",
-        description: "Track your sales and store performance with real-time analytics"
+        title: "Detailed Analytics",
+        description: "Track your performance with detailed statistics"
       },
       {
-        title: "Global presence",
-        description: "Sell worldwide with our internationally optimized platform"
+        title: "Multi-language",
+        description: "Sell worldwide with multilingual support"
       }
     ]
   },
   cta: {
-    title: "Ready to turn your vision into reality?",
-    subtitle: "Join thousands of entrepreneurs who trust our platform",
-    button: "Create store"
+    title: "Ready to start?",
+    subtitle: "Join thousands of sellers who trust our platform",
+    button: "Create my store"
+  },
+  footer: {
+    quickLinks: "Quick Links",
+    contactUs: "Contact Us",
+    termsOfUse: "Terms of Use",
+    guidesAndTutorials: "Guides & Tutorials",
+    followUs: "Follow Us",
+    newsletter: "Newsletter",
+    emailPlaceholder: "Your email",
+    subscribe: "Subscribe",
+    changeLanguage: "Change Language",
+    acceptedPayments: "Accepted Payments",
+    legalNotice: "Legal Notice",
+    accessibility: "Accessibility"
   }
-};
+}
