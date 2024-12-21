@@ -1,5 +1,13 @@
 export const es = {
   language: "Español",
+  navigation: {
+    home: "Inicio",
+    about: "Acerca de",
+    pricing: "Precios",
+    contact: "Contacto",
+    themes: "Temas increíbles",
+    services: "Servicios"
+  },
   hero: {
     title: "Construye tu imperio de comercio electrónico",
     subtitle: "La plataforma todo en uno para lanzar y hacer crecer tu tienda en línea"

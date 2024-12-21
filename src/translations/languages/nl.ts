@@ -1,5 +1,13 @@
 export const nl = {
-  language: 'Nederlands',
+  language: "Nederlands",
+  navigation: {
+    home: "Home",
+    about: "Over ons",
+    pricing: "Prijzen",
+    contact: "Contact",
+    themes: "Geweldige thema's",
+    services: "Diensten"
+  },
   hero: {
     title: "Maak uw online winkel in enkele klikken",
     subtitle: "Een eenvoudige en krachtige oplossing voor online verkoop"

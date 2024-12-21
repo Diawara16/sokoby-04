@@ -1,5 +1,13 @@
 export const zh = {
   language: "中文",
+  navigation: {
+    home: "首页",
+    about: "关于我们",
+    pricing: "定价",
+    contact: "联系我们",
+    themes: "精美主题",
+    services: "服务"
+  },
   hero: {
     title: "建立您的电子商务帝国",
     subtitle: "启动和发展您的在线商店的一体化平台"

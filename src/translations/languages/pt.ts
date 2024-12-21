@@ -1,5 +1,13 @@
 export const pt = {
   language: "Português",
+  navigation: {
+    home: "Início",
+    about: "Sobre",
+    pricing: "Preços",
+    contact: "Contato",
+    themes: "Temas incríveis",
+    services: "Serviços"
+  },
   hero: {
     title: "Construa seu império de e-commerce",
     subtitle: "A plataforma completa para lançar e expandir sua loja online"

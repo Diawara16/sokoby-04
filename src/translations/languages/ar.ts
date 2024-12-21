@@ -1,5 +1,13 @@
 export const ar = {
   language: "العربية",
+  navigation: {
+    home: "الرئيسية",
+    about: "حول",
+    pricing: "التسعير",
+    contact: "اتصل بنا",
+    themes: "قوالب رائعة",
+    services: "خدمات"
+  },
   hero: {
     title: "ابنِ إمبراطوريتك في التجارة الإلكترونية",
     subtitle: "المنصة المتكاملة لإطلاق وتنمية متجرك الإلكتروني"

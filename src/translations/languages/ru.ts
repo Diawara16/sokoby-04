@@ -1,5 +1,13 @@
 export const ru = {
-  language: 'Русский',
+  language: "Русский",
+  navigation: {
+    home: "Главная",
+    about: "О нас",
+    pricing: "Цены",
+    contact: "Контакты",
+    themes: "Потрясающие темы",
+    services: "Услуги"
+  },
   hero: {
     title: "Создайте свой интернет-магазин в несколько кликов",
     subtitle: "Простое и мощное решение для онлайн-продаж"

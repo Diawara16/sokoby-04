@@ -1,5 +1,13 @@
 export const it = {
-  language: 'Italiano',
+  language: "Italiano",
+  navigation: {
+    home: "Home",
+    about: "Chi siamo",
+    pricing: "Prezzi",
+    contact: "Contatti",
+    themes: "Temi fantastici",
+    services: "Servizi"
+  },
   hero: {
     title: "Crea il tuo negozio online in pochi clic",
     subtitle: "Una soluzione semplice e potente per vendere online"
