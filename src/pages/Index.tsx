@@ -50,7 +50,7 @@ const Index = () => {
                 <img 
                   src="/lovable-uploads/e423a6d8-87e5-4ef9-af43-7e96b44fd685.png" 
                   alt="Sokoby" 
-                  className="h-10 w-auto"
+                  className="h-14 w-auto" // Augmenté de h-10 à h-14
                 />
               </Link>
             </div>
