@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { translations } from "@/translations";
 import { QuickLinks } from "./footer/QuickLinks";
 import { SocialLinks } from "./footer/SocialLinks";
@@ -19,13 +19,32 @@ const languages = [
 ];
 
 const Footer = () => {
-  const [currentLanguage, setCurrentLanguage] = useState('fr');
-  const t = translations[currentLanguage as keyof typeof translations];
+  const [currentLanguage, setCurrentLanguage] = useState(() => {
+    return localStorage.getItem('currentLanguage') || 'fr';
+  });
+
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'currentLanguage') {
+        setCurrentLanguage(event.newValue || 'fr');
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const handleLanguageChange = (langCode: string) => {
+    localStorage.setItem('currentLanguage', langCode);
     setCurrentLanguage(langCode);
-    console.log('Langue changée pour:', langCode);
+    // Déclencher un événement storage pour informer les autres composants
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'currentLanguage',
+      newValue: langCode
+    }));
   };
+
+  const t = translations[currentLanguage as keyof typeof translations];
 
   return (
     <footer className="bg-gradient-to-br from-red-700 via-red-800 to-red-900 text-gray-100 py-12 mt-20">
