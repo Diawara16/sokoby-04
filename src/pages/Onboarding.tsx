@@ -48,7 +48,10 @@ const Onboarding = () => {
                 <CardDescription>{option.description}</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button onClick={() => navigate(option.path)} className="w-full">
+                <Button 
+                  onClick={() => navigate(option.path)} 
+                  className="w-full bg-red-600 hover:bg-red-700 text-white"
+                >
                   Commencer
                 </Button>
               </CardContent>
