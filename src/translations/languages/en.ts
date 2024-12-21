@@ -1,23 +1,22 @@
 export const en = {
-  language: 'English',
   hero: {
-    title: "Create your online store in just a few clicks",
-    subtitle: "A simple and powerful solution for selling online"
+    title: "Build your e-commerce empire",
+    subtitle: "The complete platform to launch and grow your online store",
   },
   features: {
-    title: "Features",
+    title: "Our features",
     items: [
       {
-        title: "Order Management",
-        description: "Easily manage your orders and inventory"
+        title: "Product management",
+        description: "Easily manage your product catalog"
       },
       {
-        title: "Detailed Analytics",
-        description: "Track your performance with detailed statistics"
+        title: "Secure payments",
+        description: "Accept payments securely"
       },
       {
-        title: "Multi-language",
-        description: "Sell worldwide with multilingual support"
+        title: "Advanced analytics",
+        description: "Track your performance in real-time"
       }
     ]
   },
@@ -26,26 +25,30 @@ export const en = {
     about: "About",
     pricing: "Pricing",
     contact: "Contact",
-    themes: "Amazing Themes",
+    themes: "Themes",
     services: "Services"
   },
   cta: {
     title: "Ready to start?",
-    subtitle: "Join thousands of sellers who trust our platform",
+    subtitle: "Launch your online store in minutes",
     button: "Create my store"
   },
   footer: {
-    quickLinks: "Quick Links",
-    contactUs: "Contact Us",
-    termsOfUse: "Terms of Use",
-    guidesAndTutorials: "Guides & Tutorials",
-    followUs: "Follow Us",
-    newsletter: "Newsletter",
-    emailPlaceholder: "Your email",
-    subscribe: "Subscribe",
-    changeLanguage: "Change Language",
-    acceptedPayments: "Accepted Payments",
-    legalNotice: "Legal Notice",
+    changeLanguage: "Change language",
+    acceptedPayments: "Accepted payments",
+    legalNotice: "Legal notice",
     accessibility: "Accessibility"
+  },
+  auth: {
+    createAccount: "Create account",
+    trialDescription: "Start with a 14-day free trial. No credit card required.",
+    emailPlaceholder: "example@email.com",
+    password: "Password",
+    creating: "Creating...",
+    create: "Create account",
+    successTitle: "Account created successfully",
+    successDescription: "Enjoy your 14-day free trial!",
+    errorTitle: "Error",
+    errorDescription: "An error occurred while creating the account"
   }
-}
+};
