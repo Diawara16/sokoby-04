@@ -21,6 +21,14 @@ export const en = {
       }
     ]
   },
+  navigation: {
+    home: "Home",
+    about: "About",
+    pricing: "Pricing",
+    contact: "Contact",
+    themes: "Amazing Themes",
+    services: "Services"
+  },
   cta: {
     title: "Ready to start?",
     subtitle: "Join thousands of sellers who trust our platform",

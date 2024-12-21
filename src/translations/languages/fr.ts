@@ -21,6 +21,14 @@ export const fr = {
       }
     ]
   },
+  navigation: {
+    home: "Domicile",
+    about: "À propos",
+    pricing: "Tarification",
+    contact: "Contact",
+    themes: "Thèmes étonnants",
+    services: "Services"
+  },
   cta: {
     title: "Prêt à commencer ?",
     subtitle: "Rejoignez des milliers de vendeurs qui font confiance à notre plateforme",

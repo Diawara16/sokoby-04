@@ -1,30 +1,38 @@
 export const de = {
-  language: "Deutsch",
+  language: 'Deutsch',
   hero: {
-    title: "Bauen Sie Ihr E-Commerce-Imperium auf",
-    subtitle: "Die All-in-One-Plattform zum Starten und Wachsen Ihres Online-Shops"
+    title: "Erstellen Sie Ihren Online-Shop mit wenigen Klicks",
+    subtitle: "Eine einfache und leistungsstarke Lösung für den Online-Verkauf"
   },
   features: {
-    title: "Alles, was Sie für den Erfolg brauchen",
+    title: "Funktionen",
     items: [
       {
-        title: "Einfacher Online-Shop",
-        description: "Erstellen Sie Ihren Online-Shop in Minuten, ohne technische Kenntnisse"
+        title: "Bestellverwaltung",
+        description: "Verwalten Sie Ihre Bestellungen und Ihr Inventar ganz einfach"
       },
       {
         title: "Detaillierte Analysen",
-        description: "Verfolgen Sie Ihre Verkäufe und Shop-Performance mit Echtzeit-Analysen"
+        description: "Verfolgen Sie Ihre Leistung mit detaillierten Statistiken"
       },
       {
-        title: "Globale Präsenz",
-        description: "Verkaufen Sie weltweit mit unserer international optimierten Plattform"
+        title: "Mehrsprachig",
+        description: "Verkaufen Sie weltweit mit mehrsprachiger Unterstützung"
       }
     ]
   },
   cta: {
-    title: "Bereit, Ihre Vision Wirklichkeit werden zu lassen?",
-    subtitle: "Schließen Sie sich Tausenden von Unternehmern an, die unserer Plattform vertrauen",
+    title: "Bereit zu beginnen?",
+    subtitle: "Schließen Sie sich Tausenden von Verkäufern an, die unserer Plattform vertrauen",
     button: "Shop erstellen"
+  },
+  navigation: {
+    home: "Startseite",
+    about: "Über uns",
+    pricing: "Preise",
+    contact: "Kontakt",
+    themes: "Erstaunliche Themen",
+    services: "Dienstleistungen"
   },
   footer: {
     quickLinks: "Schnellzugriff",

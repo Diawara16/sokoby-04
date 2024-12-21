@@ -66,32 +66,32 @@ const Index = () => {
               <NavigationMenuList className="space-x-1">
                 <NavigationMenuItem>
                   <Link to="/domicile" className={navigationMenuTriggerStyle() + " text-gray-700 hover:text-red-600"}>
-                    Domicile
+                    {t.navigation.home}
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <Link to="/environ" className={navigationMenuTriggerStyle() + " text-gray-700 hover:text-red-600"}>
-                    Environ
+                    {t.navigation.about}
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <Link to="/services" className={navigationMenuTriggerStyle() + " text-gray-700 hover:text-red-600"}>
-                    Services
+                    {t.navigation.services}
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <Link to="/themes" className={navigationMenuTriggerStyle() + " text-gray-700 hover:text-red-600"}>
-                    Des Thèmes Étonnants
+                    {t.navigation.themes}
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <Link to="/plan-tarifaire" className={navigationMenuTriggerStyle() + " text-gray-700 hover:text-red-600"}>
-                    Plan Tarifaire
+                    {t.navigation.pricing}
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <Link to="/contact" className={navigationMenuTriggerStyle() + " text-gray-700 hover:text-red-600"}>
-                    Contact
+                    {t.navigation.contact}
                   </Link>
                 </NavigationMenuItem>
               </NavigationMenuList>
@@ -101,7 +101,7 @@ const Index = () => {
               className="bg-red-600 hover:bg-red-700 transition-colors duration-200"
               onClick={handleCreateStore}
             >
-              Démarrer
+              {t.cta.button}
             </Button>
           </div>
         </div>
@@ -165,7 +165,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Footer */}
       <Footer />
     </div>
   );
