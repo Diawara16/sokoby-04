@@ -39,6 +39,10 @@ const Index = () => {
     supabase.auth.onAuthStateChange((event, session) => {
       setIsAuthenticated(!!session);
     });
+
+    // Récupérer la langue depuis le localStorage ou utiliser le français par défaut
+    const savedLanguage = localStorage.getItem('currentLanguage') || 'fr';
+    setCurrentLanguage(savedLanguage);
   }, []);
 
   const handleCreateStore = () => {
@@ -46,6 +50,18 @@ const Index = () => {
   };
 
   const t = translations[currentLanguage as keyof typeof translations];
+
+  // Écouter les changements de langue
+  useEffect(() => {
+    const handleLanguageChange = (event: StorageEvent) => {
+      if (event.key === 'currentLanguage') {
+        setCurrentLanguage(event.newValue || 'fr');
+      }
+    };
+
+    window.addEventListener('storage', handleLanguageChange);
+    return () => window.removeEventListener('storage', handleLanguageChange);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
