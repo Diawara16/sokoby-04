@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { translations } from "@/translations";
 
 const languages = [
   { code: 'fr', name: 'Français' },
@@ -17,10 +19,21 @@ const languages = [
   { code: 'pt', name: 'Português' },
   { code: 'de', name: 'Deutsch' },
   { code: 'ar', name: 'العربية' },
-  { code: 'ru', name: 'Русский' }
+  { code: 'ru', name: 'Русский' },
+  { code: 'it', name: 'Italiano' },
+  { code: 'nl', name: 'Nederlands' }
 ];
 
 const Footer = () => {
+  const [currentLanguage, setCurrentLanguage] = useState('fr');
+  const t = translations[currentLanguage as keyof typeof translations];
+
+  const handleLanguageChange = (langCode: string) => {
+    setCurrentLanguage(langCode);
+    // Vous pouvez ajouter ici la logique pour persister le choix de la langue
+    console.log('Langue changée pour:', langCode);
+  };
+
   return (
     <footer className="bg-gradient-to-br from-red-700 via-red-800 to-red-900 text-gray-100 py-12 mt-20">
       <div className="container mx-auto px-4">
@@ -112,7 +125,11 @@ const Footer = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   {languages.map((lang) => (
-                    <DropdownMenuItem key={lang.code}>
+                    <DropdownMenuItem 
+                      key={lang.code}
+                      onClick={() => handleLanguageChange(lang.code)}
+                      className="cursor-pointer"
+                    >
                       {lang.name}
                     </DropdownMenuItem>
                   ))}
