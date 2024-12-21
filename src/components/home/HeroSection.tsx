@@ -30,11 +30,11 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
             <p className="text-lg sm:text-xl lg:text-2xl mb-8 text-red-100">
               {t.hero.subtitle}
             </p>
-            {!isAuthenticated && !showAuthForm && (
-              <div className="flex gap-4">
+            {!showAuthForm && (
+              <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   onClick={() => handleAuthClick(true)}
-                  className="bg-white text-red-600 hover:bg-red-50"
+                  className="bg-white text-red-600 hover:bg-red-50 w-full sm:w-auto"
                   size="lg"
                 >
                   Créer mon compte
@@ -42,7 +42,7 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
                 <Button 
                   onClick={() => handleAuthClick(false)}
                   variant="outline" 
-                  className="border-white text-white hover:bg-white/10"
+                  className="border-white text-white hover:bg-white/10 w-full sm:w-auto"
                   size="lg"
                 >
                   Se connecter
@@ -51,7 +51,7 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
             )}
           </div>
           <div className="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl">
-            {!isAuthenticated && showAuthForm && (
+            {showAuthForm && (
               <AuthForm 
                 defaultIsSignUp={isSignUp}
                 onCancel={() => setShowAuthForm(false)}
