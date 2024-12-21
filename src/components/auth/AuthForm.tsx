@@ -56,7 +56,7 @@ export function AuthForm() {
               description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
               variant: "destructive",
             });
-            setIsSignUp(false); // Bascule automatiquement vers le formulaire de connexion
+            setIsSignUp(false);
             return;
           }
           throw error;
@@ -127,13 +127,17 @@ export function AuthForm() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button 
+            type="submit" 
+            className="w-full bg-red-600 hover:bg-red-700" 
+            disabled={isLoading}
+          >
             {isLoading ? (isSignUp ? t.auth.creating : "Connexion en cours...") : (isSignUp ? t.auth.create : "Se connecter")}
           </Button>
           <button
             type="button"
             onClick={() => setIsSignUp(!isSignUp)}
-            className="text-sm text-center text-primary hover:underline"
+            className="text-sm text-center text-red-600 hover:text-red-700 hover:underline"
           >
             {isSignUp ? "Déjà un compte ? Se connecter" : "S'inscrire"}
           </button>
