@@ -44,14 +44,22 @@ export const cartReducer = (state: CartState, action: CartAction): CartState => 
 
     case 'CLEAR_CART':
       return {
+        ...state,
         items: [],
         total: 0,
       };
 
-    case 'SET_CART':
+    case 'SET_ITEMS':
       return {
+        ...state,
         items: action.payload,
         total: action.payload.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+      };
+
+    case 'SET_LOADING':
+      return {
+        ...state,
+        isLoading: action.payload,
       };
 
     default:

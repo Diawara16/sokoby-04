@@ -12,7 +12,7 @@ export const useCartOperations = () => {
         .select(`
           id,
           quantity,
-          product:product_id (
+          product:products!inner (
             id,
             name,
             price,
@@ -22,7 +22,15 @@ export const useCartOperations = () => {
         .eq('user_id', user.id);
 
       if (error) throw error;
-      return data || [];
+
+      return data.map((item: any) => ({
+        id: item.id,
+        product_id: item.product.id,
+        quantity: item.quantity,
+        name: item.product.name,
+        price: item.product.price,
+        image: item.product.image
+      }));
     } catch (error) {
       console.error('Error fetching cart items:', error);
       return [];

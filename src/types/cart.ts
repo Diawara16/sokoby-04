@@ -10,6 +10,7 @@ export type CartItem = {
 export type CartState = {
   items: CartItem[];
   total: number;
+  isLoading: boolean;
 };
 
 export type CartAction =
@@ -17,4 +18,10 @@ export type CartAction =
   | { type: 'REMOVE_ITEM'; payload: string }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
   | { type: 'CLEAR_CART' }
-  | { type: 'SET_CART'; payload: CartItem[] };
+  | { type: 'SET_ITEMS'; payload: CartItem[] }
+  | { type: 'SET_LOADING'; payload: boolean };
+
+export type CartContextType = {
+  state: CartState;
+  dispatch: React.Dispatch<CartAction>;
+};

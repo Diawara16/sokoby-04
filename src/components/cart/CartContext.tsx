@@ -1,13 +1,19 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { cartReducer } from './cartReducer';
-import { CartItem, CartContextType } from '@/types/cart';
+import { CartItem, CartContextType, CartState } from '@/types/cart';
 import { useCartOperations } from './useCartOperations';
 import { supabase } from '@/lib/supabase';
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const initialState: CartState = {
+  items: [],
+  total: 0,
+  isLoading: true
+};
+
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
-  const [state, dispatch] = useReducer(cartReducer, { items: [], isLoading: true });
+  const [state, dispatch] = useReducer(cartReducer, initialState);
   const { fetchCartItems } = useCartOperations();
 
   const initializeCart = async () => {
