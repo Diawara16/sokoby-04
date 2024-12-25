@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { translations } from "@/translations";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface NavigationProps {
   currentLanguage: string;
 }
 
 export const Navigation = ({ currentLanguage }: NavigationProps) => {
+  const navigate = useNavigate();
   const t = translations[currentLanguage as keyof typeof translations];
 
   return (
@@ -34,6 +35,7 @@ export const Navigation = ({ currentLanguage }: NavigationProps) => {
       <Button 
         variant="default" 
         className="bg-red-600 hover:bg-red-700 text-white"
+        onClick={() => navigate('/essai-gratuit')}
       >
         Démarrer l'essai gratuit
       </Button>
