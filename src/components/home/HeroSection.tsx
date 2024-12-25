@@ -31,7 +31,7 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
               {t.hero.subtitle}
             </p>
           </div>
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl border-2 border-black">
+          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl">
             {showAuthForm ? (
               <AuthForm 
                 defaultIsSignUp={isSignUp}
@@ -41,7 +41,7 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
               <div className="flex flex-col gap-4">
                 <Button 
                   onClick={() => handleAuthClick(true)}
-                  className="bg-white text-red-600 hover:bg-red-50 w-full"
+                  className="bg-white text-red-600 hover:bg-red-50 w-full border-2 border-black"
                   size="lg"
                 >
                   Créer mon compte
