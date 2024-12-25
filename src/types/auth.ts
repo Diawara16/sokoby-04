@@ -3,6 +3,7 @@ export type AuthFormState = {
   password: string;
   isLoading: boolean;
   isSignUp: boolean;
+  error: string | null;
 };
 
 export type AuthFormActions = {

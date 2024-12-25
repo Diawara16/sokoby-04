@@ -9,49 +9,41 @@ export const useAuthForm = (defaultIsSignUp: boolean = false): UseAuthForm => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(defaultIsSignUp);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   const handleSignUp = async () => {
-    const { error: signInError } = await authService.signIn(email, password);
+    const { error: signUpError } = await authService.signUp(email, password);
 
-    if (!signInError) {
-      toast({
-        title: "Compte existant",
-        description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
-        variant: "destructive",
-      });
-      setIsSignUp(false);
-      return false;
-    }
-
-    const { error } = await authService.signUp(email, password);
-
-    if (error) {
-      if (error.message.includes("User already registered")) {
-        toast({
-          title: "Email déjà utilisé",
-          description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
-          variant: "destructive",
-        });
+    if (signUpError) {
+      if (signUpError.message.includes("User already registered")) {
+        setError("Un compte existe déjà avec cet email. Veuillez vous connecter.");
         setIsSignUp(false);
         return false;
       }
-      throw error;
+      throw signUpError;
     }
 
     return true;
   };
 
   const handleSignIn = async () => {
-    const { error } = await authService.signIn(email, password);
-    if (error) throw error;
+    const { error: signInError } = await authService.signIn(email, password);
+    if (signInError) {
+      if (signInError.message.includes("Invalid login credentials")) {
+        setError("Email ou mot de passe incorrect");
+        return false;
+      }
+      throw signInError;
+    }
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
       const success = isSignUp ? await handleSignUp() : await handleSignIn();
@@ -63,7 +55,7 @@ export const useAuthForm = (defaultIsSignUp: boolean = false): UseAuthForm => {
         });
         navigate(isSignUp ? "/onboarding" : "/profil");
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Erreur",
         description: "Une erreur est survenue. Veuillez réessayer.",
@@ -82,6 +74,7 @@ export const useAuthForm = (defaultIsSignUp: boolean = false): UseAuthForm => {
     isLoading,
     isSignUp,
     setIsSignUp,
+    error,
     handleSubmit,
   };
 };

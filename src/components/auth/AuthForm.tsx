@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import { translations } from "@/translations";
 import { useAuthForm } from "@/hooks/useAuthForm";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface AuthFormProps {
   defaultIsSignUp?: boolean;
@@ -25,6 +26,7 @@ export function AuthForm({ defaultIsSignUp = true, onCancel }: AuthFormProps) {
     isSignUp,
     setIsSignUp,
     handleSubmit,
+    error,
   } = useAuthForm(defaultIsSignUp);
 
   useEffect(() => {
@@ -41,7 +43,7 @@ export function AuthForm({ defaultIsSignUp = true, onCancel }: AuthFormProps) {
   const t = translations[currentLanguage as keyof typeof translations];
 
   return (
-    <Card>
+    <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle>{isSignUp ? t.auth.createAccount : "Se connecter"}</CardTitle>
         <CardDescription>
@@ -50,6 +52,11 @@ export function AuthForm({ defaultIsSignUp = true, onCancel }: AuthFormProps) {
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
