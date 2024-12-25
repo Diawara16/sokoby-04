@@ -2,8 +2,83 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Mail, Apple, Facebook } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
+import { supabase } from "@/lib/supabase";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { AuthForm } from "@/components/auth/AuthForm";
+import { useState } from "react";
 
 const EssaiGratuit = () => {
+  const [showAuthForm, setShowAuthForm] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleEmailSignup = () => {
+    setShowAuthForm(true);
+  };
+
+  const handleGoogleSignup = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/onboarding`
+      }
+    });
+
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la connexion avec Google",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAppleSignup = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'apple',
+      options: {
+        redirectTo: `${window.location.origin}/onboarding`
+      }
+    });
+
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la connexion avec Apple",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleFacebookSignup = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'facebook',
+      options: {
+        redirectTo: `${window.location.origin}/onboarding`
+      }
+    });
+
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la connexion avec Facebook",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (showAuthForm) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50 flex items-center justify-center p-4">
+        <AuthForm 
+          defaultIsSignUp={true}
+          onCancel={() => setShowAuthForm(false)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-8 space-y-6">
@@ -12,7 +87,7 @@ const EssaiGratuit = () => {
             Commencez votre essai gratuit
           </h1>
           <p className="text-gray-500">
-            Obtenez 3 jours gratuits, puis 1 mois pour 1 $
+            Obtenez 14 jours gratuits
           </p>
         </div>
 
@@ -20,7 +95,7 @@ const EssaiGratuit = () => {
           <Button 
             variant="outline" 
             className="w-full justify-center gap-2"
-            onClick={() => {/* TODO: Implement email signup */}}
+            onClick={handleEmailSignup}
           >
             <Mail className="h-5 w-5" />
             Inscrivez-vous par e-mail
@@ -29,7 +104,7 @@ const EssaiGratuit = () => {
           <Button 
             variant="outline" 
             className="w-full justify-center gap-2"
-            onClick={() => {/* TODO: Implement Google signup */}}
+            onClick={handleGoogleSignup}
           >
             <FcGoogle className="h-5 w-5" />
             S'inscrire avec Google
@@ -38,7 +113,7 @@ const EssaiGratuit = () => {
           <Button 
             variant="outline" 
             className="w-full justify-center gap-2"
-            onClick={() => {/* TODO: Implement Apple signup */}}
+            onClick={handleAppleSignup}
           >
             <Apple className="h-5 w-5" />
             S'inscrire avec Apple
@@ -47,7 +122,7 @@ const EssaiGratuit = () => {
           <Button 
             variant="outline" 
             className="w-full justify-center gap-2"
-            onClick={() => {/* TODO: Implement Facebook signup */}}
+            onClick={handleFacebookSignup}
           >
             <Facebook className="h-5 w-5 text-blue-600" />
             S'inscrire avec Facebook
@@ -68,7 +143,7 @@ const EssaiGratuit = () => {
           <Button 
             variant="link" 
             className="p-0 text-blue-600 hover:text-blue-800"
-            onClick={() => {/* TODO: Implement login */}}
+            onClick={() => navigate("/login")}
           >
             S'identifier
           </Button>
