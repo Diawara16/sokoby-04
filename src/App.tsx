@@ -21,6 +21,7 @@ import Themes from "./pages/Themes";
 import Contact from "./pages/Contact";
 import EssaiGratuit from "./pages/EssaiGratuit";
 import Confidentialite from "./pages/Confidentialite";
+import VerifyEmail from "./pages/VerifyEmail";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/essai-gratuit" element={<EssaiGratuit />} />
                     <Route path="/confidentialite" element={<Confidentialite />} />
+                    <Route path="/verify-email" element={<VerifyEmail />} />
                   </Routes>
                 </main>
               </div>

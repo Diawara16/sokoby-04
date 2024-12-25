@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { translations } from "@/translations";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { supabase } from "@/lib/supabase";
+import { useNavigate } from "react-router-dom";
 
 interface AuthFormProps {
   defaultIsSignUp?: boolean;
@@ -16,6 +18,7 @@ export function AuthForm({ defaultIsSignUp = true, onCancel }: AuthFormProps) {
   const [currentLanguage, setCurrentLanguage] = useState(() => {
     return localStorage.getItem('currentLanguage') || 'fr';
   });
+  const navigate = useNavigate();
 
   const {
     email,
@@ -40,6 +43,40 @@ export function AuthForm({ defaultIsSignUp = true, onCancel }: AuthFormProps) {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user && !session.user.email_confirmed_at) {
+        navigate('/verify-email');
+      }
+    };
+
+    checkSession();
+  }, [navigate]);
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const success = await handleSubmit(e);
+    
+    if (success && isSignUp) {
+      // Send verification email using our edge function
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          await supabase.functions.invoke('send-verification-email', {
+            body: {
+              email: email,
+              confirmationUrl: `${window.location.origin}/verify-email`,
+            },
+          });
+          navigate('/verify-email');
+        }
+      } catch (error) {
+        console.error('Error sending verification email:', error);
+      }
+    }
+  };
+
   const t = translations[currentLanguage as keyof typeof translations];
 
   return (
@@ -50,7 +87,7 @@ export function AuthForm({ defaultIsSignUp = true, onCancel }: AuthFormProps) {
           {isSignUp ? t.auth.trialDescription : "Connectez-vous à votre compte"}
         </CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleFormSubmit}>
         <CardContent className="space-y-4">
           {error && (
             <Alert variant="destructive">
