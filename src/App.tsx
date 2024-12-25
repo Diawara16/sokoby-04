@@ -20,6 +20,7 @@ import Services from "./pages/Services";
 import Themes from "./pages/Themes";
 import Contact from "./pages/Contact";
 import EssaiGratuit from "./pages/EssaiGratuit";
+import Confidentialite from "./pages/Confidentialite";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
                     <Route path="/themes" element={<Themes />} />
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/essai-gratuit" element={<EssaiGratuit />} />
+                    <Route path="/confidentialite" element={<Confidentialite />} />
                   </Routes>
                 </main>
               </div>
