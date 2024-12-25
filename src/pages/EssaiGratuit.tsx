@@ -21,7 +21,7 @@ const EssaiGratuit = () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: 'https://sokoby.com',
         queryParams: {
           trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
         }
@@ -42,7 +42,7 @@ const EssaiGratuit = () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'apple',
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: 'https://sokoby.com',
         queryParams: {
           trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
         }
@@ -63,7 +63,7 @@ const EssaiGratuit = () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: 'https://sokoby.com',
         queryParams: {
           trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
         }
