@@ -18,18 +18,18 @@ const EssaiGratuit = () => {
   };
 
   const handleGoogleSignup = async () => {
-    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/onboarding`,
+        redirectTo: window.location.origin,
         queryParams: {
-          trial_ends_at: trialEndsAt
+          trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
         }
       }
     });
 
     if (error) {
+      console.error("Erreur Google Auth:", error);
       toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de la connexion avec Google",
@@ -39,18 +39,18 @@ const EssaiGratuit = () => {
   };
 
   const handleAppleSignup = async () => {
-    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'apple',
       options: {
-        redirectTo: `${window.location.origin}/onboarding`,
+        redirectTo: window.location.origin,
         queryParams: {
-          trial_ends_at: trialEndsAt
+          trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
         }
       }
     });
 
     if (error) {
+      console.error("Erreur Apple Auth:", error);
       toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de la connexion avec Apple",
@@ -60,18 +60,18 @@ const EssaiGratuit = () => {
   };
 
   const handleFacebookSignup = async () => {
-    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: {
-        redirectTo: `${window.location.origin}/onboarding`,
+        redirectTo: window.location.origin,
         queryParams: {
-          trial_ends_at: trialEndsAt
+          trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
         }
       }
     });
 
     if (error) {
+      console.error("Erreur Facebook Auth:", error);
       toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de la connexion avec Facebook",
