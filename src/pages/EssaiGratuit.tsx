@@ -18,12 +18,13 @@ const EssaiGratuit = () => {
   };
 
   const handleGoogleSignup = async () => {
+    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/onboarding`,
-        data: {
-          trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        queryParams: {
+          trial_ends_at: trialEndsAt
         }
       }
     });
@@ -38,12 +39,13 @@ const EssaiGratuit = () => {
   };
 
   const handleAppleSignup = async () => {
+    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'apple',
       options: {
         redirectTo: `${window.location.origin}/onboarding`,
-        data: {
-          trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        queryParams: {
+          trial_ends_at: trialEndsAt
         }
       }
     });
@@ -58,12 +60,13 @@ const EssaiGratuit = () => {
   };
 
   const handleFacebookSignup = async () => {
+    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: {
         redirectTo: `${window.location.origin}/onboarding`,
-        data: {
-          trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        queryParams: {
+          trial_ends_at: trialEndsAt
         }
       }
     });
