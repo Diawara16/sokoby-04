@@ -56,10 +56,9 @@ export function AuthForm({ defaultIsSignUp = true, onCancel }: AuthFormProps) {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await handleSubmit(e);
+    await handleSubmit(e);
     
-    if (success && isSignUp) {
-      // Send verification email using our edge function
+    if (isSignUp) {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
