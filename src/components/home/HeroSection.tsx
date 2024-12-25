@@ -31,7 +31,7 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
               {t.hero.subtitle}
             </p>
           </div>
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl">
+          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl border-2 border-[#9b87f5]">
             {showAuthForm ? (
               <AuthForm 
                 defaultIsSignUp={isSignUp}
