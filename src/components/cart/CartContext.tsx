@@ -46,8 +46,28 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
+  const removeFromCart = (id: string) => {
+    dispatch({ type: 'REMOVE_ITEM', payload: id });
+  };
+
+  const updateQuantity = (id: string, quantity: number) => {
+    dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
+  };
+
+  const clearCart = () => {
+    dispatch({ type: 'CLEAR_CART' });
+  };
+
+  const value = {
+    state,
+    dispatch,
+    removeFromCart,
+    updateQuantity,
+    clearCart
+  };
+
   return (
-    <CartContext.Provider value={{ state, dispatch }}>
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );
