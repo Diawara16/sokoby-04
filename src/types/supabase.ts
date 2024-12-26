@@ -47,6 +47,29 @@ export type Database = {
           created_at?: string;
         };
       };
+      app_connections: {
+        Row: {
+          id: string;
+          user_id: string;
+          app_name: string;
+          status: string;
+          connected_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          app_name: string;
+          status: string;
+          connected_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          app_name?: string;
+          status?: string;
+          connected_at?: string;
+        };
+      };
     };
   };
 };
