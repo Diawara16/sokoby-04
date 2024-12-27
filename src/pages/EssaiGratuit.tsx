@@ -22,10 +22,7 @@ const EssaiGratuit = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/onboarding`,
-          queryParams: {
-            prompt: 'select_account'
-          }
+          redirectTo: 'https://preview-sokoby.lovable.app/onboarding',
         }
       });
 
