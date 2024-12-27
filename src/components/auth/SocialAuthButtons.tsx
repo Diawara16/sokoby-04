@@ -6,13 +6,18 @@ import { useToast } from "@/hooks/use-toast";
 
 export const SocialAuthButtons = () => {
   const { toast } = useToast();
+  const redirectURL = `${window.location.origin}/onboarding`;
 
   const handleGoogleSignup = async () => {
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/onboarding`,
+          redirectTo: redirectURL,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         },
       });
 
@@ -39,10 +44,9 @@ export const SocialAuthButtons = () => {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          redirectTo: `${window.location.origin}/onboarding`,
+          redirectTo: redirectURL,
           queryParams: {
             display: 'popup',
-            response_type: 'token',
             auth_type: 'rerequest',
             scope: 'email,public_profile'
           }
