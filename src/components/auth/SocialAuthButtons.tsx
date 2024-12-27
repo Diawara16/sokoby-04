@@ -14,7 +14,8 @@ export const SocialAuthButtons = () => {
         options: {
           redirectTo: `${window.location.origin}/onboarding`,
           queryParams: {
-            prompt: 'select_account'
+            prompt: 'select_account',
+            access_type: 'offline'
           }
         }
       });
