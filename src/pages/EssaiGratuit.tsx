@@ -18,21 +18,31 @@ const EssaiGratuit = () => {
   };
 
   const handleGoogleSignup = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin,
-        queryParams: {
-          trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/profil`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
-      }
-    });
+      });
 
-    if (error) {
-      console.error("Erreur Google Auth:", error);
+      if (error) {
+        console.error("Erreur Google Auth:", error);
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de la connexion avec Google",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la connexion avec Google",
+        description: "Une erreur est survenue lors de la connexion",
         variant: "destructive",
       });
     }
