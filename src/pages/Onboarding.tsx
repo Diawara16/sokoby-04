@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingBag, UserCircle, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -32,9 +33,22 @@ const Onboarding = () => {
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Configurez votre compte</h1>
-          <p className="text-muted-foreground">
-            Choisissez une option pour commencer à configurer votre compte
+          <p className="text-muted-foreground mb-6">
+            Connectez-vous avec un réseau social ou choisissez une option pour commencer
           </p>
+          
+          {/* Section de connexion sociale */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Connexion rapide</CardTitle>
+              <CardDescription>
+                Utilisez vos réseaux sociaux pour vous connecter
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SocialAuthButtons />
+            </CardContent>
+          </Card>
         </div>
 
         <div className="grid gap-6">
