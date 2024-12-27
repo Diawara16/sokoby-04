@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 export const SocialAuthButtons = () => {
   const { toast } = useToast();
   const redirectURL = `${window.location.origin}/onboarding`;
+  console.log("Redirect URL:", redirectURL); // Pour le debugging
 
   const handleGoogleSignup = async () => {
     try {
@@ -41,6 +42,7 @@ export const SocialAuthButtons = () => {
 
   const handleFacebookSignup = async () => {
     try {
+      console.log("Tentative de connexion Facebook..."); // Pour le debugging
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
@@ -48,7 +50,8 @@ export const SocialAuthButtons = () => {
           queryParams: {
             display: 'popup',
             auth_type: 'rerequest',
-            scope: 'email,public_profile'
+            scope: 'email,public_profile',
+            response_type: 'code'
           }
         }
       });
