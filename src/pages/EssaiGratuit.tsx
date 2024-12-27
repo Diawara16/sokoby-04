@@ -22,11 +22,7 @@ const EssaiGratuit = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'https://preview-sokoby.lovable.app/',
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          }
+          redirectTo: `${window.location.origin}/onboarding`,
         }
       });
 
