@@ -7,10 +7,11 @@ import { useToast } from "@/hooks/use-toast";
 export const SocialAuthButtons = () => {
   const { toast } = useToast();
   const redirectURL = `${window.location.origin}/onboarding`;
-  console.log("Redirect URL:", redirectURL); // Pour le debugging
+  console.log("Configuration de l'URL de redirection:", redirectURL);
 
   const handleGoogleSignup = async () => {
     try {
+      console.log("Démarrage de l'authentification Google...");
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -23,15 +24,17 @@ export const SocialAuthButtons = () => {
       });
 
       if (error) {
-        console.error("Erreur Google Auth:", error);
+        console.error("Erreur détaillée Google Auth:", error);
         toast({
           title: "Erreur de connexion",
           description: "Une erreur est survenue lors de la connexion avec Google. Veuillez réessayer.",
           variant: "destructive",
         });
+      } else {
+        console.log("Redirection Google réussie:", data);
       }
     } catch (error) {
-      console.error("Erreur:", error);
+      console.error("Erreur inattendue Google:", error);
       toast({
         title: "Erreur",
         description: "Une erreur inattendue est survenue. Veuillez réessayer.",
@@ -42,7 +45,9 @@ export const SocialAuthButtons = () => {
 
   const handleFacebookSignup = async () => {
     try {
-      console.log("Tentative de connexion Facebook..."); // Pour le debugging
+      console.log("Démarrage de l'authentification Facebook...");
+      console.log("URL de redirection Facebook:", redirectURL);
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
@@ -57,15 +62,17 @@ export const SocialAuthButtons = () => {
       });
 
       if (error) {
-        console.error("Erreur Facebook Auth:", error);
+        console.error("Erreur détaillée Facebook Auth:", error);
         toast({
           title: "Erreur de connexion",
           description: "Une erreur est survenue lors de la connexion avec Facebook. Veuillez réessayer.",
           variant: "destructive",
         });
+      } else {
+        console.log("Redirection Facebook réussie:", data);
       }
     } catch (error) {
-      console.error("Erreur:", error);
+      console.error("Erreur inattendue Facebook:", error);
       toast({
         title: "Erreur",
         description: "Une erreur inattendue est survenue. Veuillez réessayer.",
