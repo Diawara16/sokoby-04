@@ -23,14 +23,17 @@ const EssaiGratuit = () => {
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/onboarding`,
+          queryParams: {
+            prompt: 'select_account'
+          }
         }
       });
 
       if (error) {
         console.error("Erreur Google Auth:", error);
         toast({
-          title: "Erreur",
-          description: "Une erreur est survenue lors de la connexion avec Google",
+          title: "Erreur de connexion",
+          description: "Une erreur est survenue lors de la connexion avec Google. Veuillez réessayer.",
           variant: "destructive",
         });
       }
@@ -38,7 +41,7 @@ const EssaiGratuit = () => {
       console.error("Erreur:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la connexion",
+        description: "Une erreur inattendue est survenue. Veuillez réessayer.",
         variant: "destructive",
       });
     }
