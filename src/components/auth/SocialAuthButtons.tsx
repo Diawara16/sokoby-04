@@ -8,11 +8,30 @@ export const SocialAuthButtons = () => {
   const { toast } = useToast();
 
   const handleGoogleSignup = async () => {
-    toast({
-      title: "Google Auth",
-      description: "L'authentification Google est temporairement désactivée.",
-      variant: "destructive",
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/onboarding`,
+        },
+      });
+
+      if (error) {
+        console.error("Erreur Google Auth:", error);
+        toast({
+          title: "Erreur de connexion",
+          description: "Une erreur est survenue lors de la connexion avec Google. Veuillez réessayer.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur inattendue est survenue. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleFacebookSignup = async () => {

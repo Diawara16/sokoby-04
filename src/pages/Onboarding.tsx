@@ -3,9 +3,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ShoppingBag, UserCircle, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
+import { useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 const Onboarding = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/essai-gratuit');
+      }
+    };
+    checkSession();
+  }, [navigate]);
 
   const options = [
     {
@@ -37,7 +49,6 @@ const Onboarding = () => {
             Connectez-vous avec un réseau social ou choisissez une option pour commencer
           </p>
           
-          {/* Section de connexion sociale */}
           <Card className="mb-8">
             <CardHeader>
               <CardTitle>Connexion rapide</CardTitle>
@@ -53,7 +64,11 @@ const Onboarding = () => {
 
         <div className="grid gap-6">
           {options.map((option) => (
-            <Card key={option.title} className="cursor-pointer hover:shadow-md transition-shadow">
+            <Card 
+              key={option.title} 
+              className="cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => navigate(option.path)}
+            >
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <option.icon className="h-5 w-5" />
@@ -63,7 +78,6 @@ const Onboarding = () => {
               </CardHeader>
               <CardContent>
                 <Button 
-                  onClick={() => navigate(option.path)} 
                   className="w-full bg-red-600 hover:bg-red-700 text-white"
                 >
                   Commencer
