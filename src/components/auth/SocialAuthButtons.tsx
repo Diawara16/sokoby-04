@@ -8,23 +8,33 @@ export const SocialAuthButtons = () => {
   const { toast } = useToast();
 
   const handleGoogleSignup = async () => {
+    toast({
+      title: "Google Auth",
+      description: "L'authentification Google est temporairement désactivée.",
+      variant: "destructive",
+    });
+  };
+
+  const handleFacebookSignup = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'facebook',
         options: {
           redirectTo: `${window.location.origin}/onboarding`,
           queryParams: {
-            prompt: 'select_account',
-            access_type: 'offline'
+            display: 'popup',
+            response_type: 'token',
+            auth_type: 'rerequest',
+            scope: 'email,public_profile'
           }
         }
       });
 
       if (error) {
-        console.error("Erreur Google Auth:", error);
+        console.error("Erreur Facebook Auth:", error);
         toast({
           title: "Erreur de connexion",
-          description: "Une erreur est survenue lors de la connexion avec Google. Veuillez réessayer.",
+          description: "Une erreur est survenue lors de la connexion avec Facebook. Veuillez réessayer.",
           variant: "destructive",
         });
       }
@@ -39,54 +49,11 @@ export const SocialAuthButtons = () => {
   };
 
   const handleAppleSignup = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'apple',
-        options: {
-          redirectTo: window.location.origin,
-          queryParams: {
-            trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
-          }
-        }
-      });
-
-      if (error) {
-        console.error("Erreur Apple Auth:", error);
-        toast({
-          title: "Configuration requise",
-          description: "La connexion avec Apple n'est pas encore configurée. Veuillez utiliser une autre méthode pour le moment.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("Erreur:", error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de la connexion avec Apple",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleFacebookSignup = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'facebook',
-      options: {
-        redirectTo: window.location.origin,
-        queryParams: {
-          trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
-        }
-      }
+    toast({
+      title: "Configuration requise",
+      description: "La connexion avec Apple n'est pas encore configurée. Veuillez utiliser une autre méthode pour le moment.",
+      variant: "destructive",
     });
-
-    if (error) {
-      console.error("Erreur Facebook Auth:", error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de la connexion avec Facebook",
-        variant: "destructive",
-      });
-    }
   };
 
   return (
@@ -106,16 +73,16 @@ export const SocialAuthButtons = () => {
         onClick={handleGoogleSignup}
       >
         <FcGoogle className="h-5 w-5" />
-        S'inscrire avec Google
+        Continuer avec Google
       </Button>
 
       <Button 
         variant="outline" 
-        className="w-full justify-center gap-2"
+        className="w-full justify-center gap-2 bg-blue-600 text-white hover:bg-blue-700"
         onClick={handleFacebookSignup}
       >
-        <Facebook className="h-5 w-5 text-blue-600" />
-        S'inscrire avec Facebook
+        <Facebook className="h-5 w-5" />
+        Continuer avec Facebook
       </Button>
     </div>
   );
