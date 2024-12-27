@@ -6,12 +6,32 @@ import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const EssaiGratuit = () => {
   const [showAuthForm, setShowAuthForm] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate('/onboarding');
+      }
+    };
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        navigate('/onboarding');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const handleEmailSignup = () => {
     setShowAuthForm(true);
@@ -22,7 +42,10 @@ const EssaiGratuit = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'https://preview-sokoby.lovable.app/onboarding',
+          redirectTo: `${window.location.origin}/onboarding`,
+          queryParams: {
+            prompt: 'select_account'
+          }
         }
       });
 
