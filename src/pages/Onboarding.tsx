@@ -3,21 +3,58 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ShoppingBag, UserCircle, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useToast } from "@/hooks/use-toast";
 
 const Onboarding = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Erreur lors de la vérification de la session:", error);
+          toast({
+            title: "Erreur",
+            description: "Impossible de vérifier votre session. Veuillez réessayer.",
+            variant: "destructive",
+          });
+          navigate('/essai-gratuit');
+          return;
+        }
+
+        if (!session) {
+          console.log("Aucune session trouvée, redirection vers la page d'essai gratuit");
+          navigate('/essai-gratuit');
+          return;
+        }
+
+        console.log("Session utilisateur valide:", session.user.id);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Erreur inattendue:", error);
         navigate('/essai-gratuit');
       }
     };
+
     checkSession();
-  }, [navigate]);
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Changement d'état d'authentification:", event, session?.user?.id);
+      if (event === 'SIGNED_OUT') {
+        navigate('/essai-gratuit');
+      }
+    });
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
 
   const options = [
     {
@@ -39,6 +76,16 @@ const Onboarding = () => {
       path: "/parametres",
     },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-lg text-gray-600">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8 px-4">

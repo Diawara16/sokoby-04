@@ -3,11 +3,27 @@ import { Apple, Facebook } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 export const SocialAuthButtons = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const redirectURL = `${window.location.origin}/onboarding`;
+  
   console.log("Configuration de l'URL de redirection:", redirectURL);
+
+  const handleAuthResponse = (error: any, provider: string) => {
+    if (error) {
+      console.error(`Erreur détaillée ${provider}:`, error);
+      toast({
+        title: "Erreur de connexion",
+        description: `Une erreur est survenue lors de la connexion avec ${provider}. Veuillez réessayer.`,
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
+  };
 
   const handleGoogleSignup = async () => {
     try {
@@ -23,15 +39,9 @@ export const SocialAuthButtons = () => {
         },
       });
 
-      if (error) {
-        console.error("Erreur détaillée Google Auth:", error);
-        toast({
-          title: "Erreur de connexion",
-          description: "Une erreur est survenue lors de la connexion avec Google. Veuillez réessayer.",
-          variant: "destructive",
-        });
-      } else {
+      if (handleAuthResponse(error, 'Google')) {
         console.log("Redirection Google réussie:", data);
+        navigate('/onboarding');
       }
     } catch (error) {
       console.error("Erreur inattendue Google:", error);
@@ -61,15 +71,9 @@ export const SocialAuthButtons = () => {
         }
       });
 
-      if (error) {
-        console.error("Erreur détaillée Facebook Auth:", error);
-        toast({
-          title: "Erreur de connexion",
-          description: "Une erreur est survenue lors de la connexion avec Facebook. Veuillez réessayer.",
-          variant: "destructive",
-        });
-      } else {
+      if (handleAuthResponse(error, 'Facebook')) {
         console.log("Redirection Facebook réussie:", data);
+        navigate('/onboarding');
       }
     } catch (error) {
       console.error("Erreur inattendue Facebook:", error);
