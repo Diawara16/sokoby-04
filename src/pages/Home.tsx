@@ -1,5 +1,8 @@
 import { useLanguageContext } from "@/contexts/LanguageContext";
-import { translations } from "@/translations";
+import { HeroSection } from "@/components/home/HeroSection";
+import { FeaturesSection } from "@/components/home/FeaturesSection";
+import { CTASection } from "@/components/home/CTASection";
+import { useNavigate } from "react-router-dom";
 
 interface HomeProps {
   isAuthenticated: boolean;
@@ -7,22 +10,25 @@ interface HomeProps {
 
 function Home({ isAuthenticated }: HomeProps) {
   const { currentLanguage } = useLanguageContext();
-  const t = translations[currentLanguage as keyof typeof translations];
+  const navigate = useNavigate();
+
+  const handleCreateStore = () => {
+    navigate('/onboarding');
+  };
 
   return (
     <div className="min-h-screen bg-white">
-      <main>
-        <div className="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-              {t.hero.title}
-            </h1>
-            <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-              {t.hero.subtitle}
-            </p>
-          </div>
-        </div>
-      </main>
+      <HeroSection 
+        isAuthenticated={isAuthenticated}
+        currentLanguage={currentLanguage}
+      />
+      
+      <FeaturesSection currentLanguage={currentLanguage} />
+      
+      <CTASection 
+        currentLanguage={currentLanguage}
+        onCreateStore={handleCreateStore}
+      />
     </div>
   );
 }
