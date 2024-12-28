@@ -8,13 +8,12 @@ import { useNavigate } from "react-router-dom";
 export const SocialAuthButtons = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const redirectURL = `${window.location.origin}/onboarding`;
   
-  console.log("Configuration de l'URL de redirection:", redirectURL);
-
-  const handleAuthResponse = (error: any, provider: string) => {
+  console.log("Initialisation des boutons d'authentification sociale");
+  
+  const handleAuthResponse = async (error: any, provider: string) => {
     if (error) {
-      console.error(`Erreur détaillée ${provider}:`, error);
+      console.error(`Erreur d'authentification ${provider}:`, error);
       toast({
         title: "Erreur de connexion",
         description: `Une erreur est survenue lors de la connexion avec ${provider}. Veuillez réessayer.`,
@@ -22,6 +21,15 @@ export const SocialAuthButtons = () => {
       });
       return false;
     }
+    
+    // Vérifier la session après l'authentification
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session) {
+      console.error("Erreur lors de la vérification de la session:", sessionError);
+      return false;
+    }
+    
+    console.log(`Authentification ${provider} réussie, ID utilisateur:`, session.user.id);
     return true;
   };
 
@@ -31,7 +39,7 @@ export const SocialAuthButtons = () => {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectURL,
+          redirectTo: `${window.location.origin}/onboarding`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -39,9 +47,8 @@ export const SocialAuthButtons = () => {
         },
       });
 
-      if (handleAuthResponse(error, 'Google')) {
+      if (await handleAuthResponse(error, 'Google')) {
         console.log("Redirection Google réussie:", data);
-        navigate('/onboarding');
       }
     } catch (error) {
       console.error("Erreur inattendue Google:", error);
@@ -56,24 +63,21 @@ export const SocialAuthButtons = () => {
   const handleFacebookSignup = async () => {
     try {
       console.log("Démarrage de l'authentification Facebook...");
-      console.log("URL de redirection Facebook:", redirectURL);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          redirectTo: redirectURL,
+          redirectTo: `${window.location.origin}/onboarding`,
           queryParams: {
             display: 'popup',
             auth_type: 'rerequest',
-            scope: 'email,public_profile',
-            response_type: 'code'
+            scope: 'email,public_profile'
           }
         }
       });
 
-      if (handleAuthResponse(error, 'Facebook')) {
+      if (await handleAuthResponse(error, 'Facebook')) {
         console.log("Redirection Facebook réussie:", data);
-        navigate('/onboarding');
       }
     } catch (error) {
       console.error("Erreur inattendue Facebook:", error);
