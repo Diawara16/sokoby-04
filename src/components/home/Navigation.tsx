@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { translations } from "@/translations";
 import { Link, useNavigate } from "react-router-dom";
-import { Info, Briefcase, Palette, MessageSquare } from "lucide-react";
+import { Info, Briefcase, Palette, MessageSquare, CreditCard } from "lucide-react";
 
 interface NavigationProps {
   currentLanguage: string;
@@ -28,6 +28,10 @@ export const Navigation = ({ currentLanguage }: NavigationProps) => {
         <Link to="/themes" className="text-gray-700 hover:text-gray-900 flex items-center gap-2">
           <Palette className="h-4 w-4" />
           {t.navigation.themes}
+        </Link>
+        <Link to="/plan-tarifaire" className="text-gray-700 hover:text-gray-900 flex items-center gap-2">
+          <CreditCard className="h-4 w-4" />
+          {t.navigation.pricing}
         </Link>
         <Link to="/contact" className="text-gray-700 hover:text-gray-900 flex items-center gap-2">
           <MessageSquare className="h-4 w-4" />
