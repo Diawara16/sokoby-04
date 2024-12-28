@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/authService";
 import { UseAuthForm } from "@/types/auth";
@@ -50,12 +50,22 @@ export const useAuthForm = (defaultIsSignUp: boolean = false): UseAuthForm => {
 
       if (success) {
         toast({
-          title: isSignUp ? "Compte créé" : "Connexion réussie",
-          description: isSignUp ? "Votre compte a été créé avec succès" : "Vous êtes maintenant connecté",
+          title: "Connexion réussie",
+          description: "Vous êtes maintenant connecté",
         });
-        navigate(isSignUp ? "/onboarding" : "/profil");
+        
+        // Redirection après une connexion réussie
+        if (isSignUp) {
+          navigate("/onboarding");
+        } else {
+          // Redirection vers la page d'accueil après la connexion
+          navigate("/");
+          // Recharger la page pour mettre à jour l'état de l'authentification
+          window.location.reload();
+        }
       }
     } catch (error: any) {
+      console.error("Erreur d'authentification:", error);
       toast({
         title: "Erreur",
         description: "Une erreur est survenue. Veuillez réessayer.",
