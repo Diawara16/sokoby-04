@@ -55,5 +55,13 @@ export const en = {
     alreadyHaveAccount: "Already have an account? Sign in",
     back: "Back",
     continueWithGoogle: "Continue with Google"
+  },
+  pricing: {
+    title: "Plans and pricing",
+    subtitle: "Choose the plan that fits your needs",
+    startTrial: "Start free trial",
+    mostPopular: "Most popular",
+    freeTrial: "14-day free trial",
+    perMonth: "/month"
   }
 };

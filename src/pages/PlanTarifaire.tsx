@@ -1,13 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, CreditCard } from "lucide-react";
+import { translations } from "@/translations";
+import { useLanguageContext } from "@/contexts/LanguageContext"; // Assurez-vous que ce contexte existe
 
 const PlanTarifaire = () => {
+  const { currentLanguage } = useLanguageContext();
+  const t = translations[currentLanguage as keyof typeof translations];
+
   const plans = [
     {
       name: "Démarrage",
       price: "$11",
-      period: "/mois",
+      period: t.pricing.perMonth,
       description: "Pour démarrer votre boutique en ligne",
       features: [
         "1 boutique en ligne",
@@ -20,7 +25,7 @@ const PlanTarifaire = () => {
     {
       name: "Pro",
       price: "$19",
-      period: "/mois",
+      period: t.pricing.perMonth,
       description: "Pour les entreprises en croissance",
       features: [
         "1 boutique en ligne",
@@ -38,7 +43,7 @@ const PlanTarifaire = () => {
     {
       name: "Entreprise",
       price: "$49",
-      period: "/mois",
+      period: t.pricing.perMonth,
       description: "Pour les grandes entreprises",
       features: [
         "1 boutique en ligne premium",
@@ -62,10 +67,10 @@ const PlanTarifaire = () => {
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-black mb-4">
-          Plans et tarification
+          {t.pricing.title}
         </h1>
         <p className="text-xl text-black">
-          Choisissez le plan qui correspond à vos besoins
+          {t.pricing.subtitle}
         </p>
       </div>
 
@@ -82,7 +87,7 @@ const PlanTarifaire = () => {
             {plan.popular && (
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm">
-                  Plus populaire
+                  {t.pricing.mostPopular}
                 </span>
               </div>
             )}
@@ -101,7 +106,7 @@ const PlanTarifaire = () => {
               </div>
               {plan.trial && (
                 <div className="text-sm text-red-600 font-medium mb-2">
-                  Essai gratuit de 14 jours
+                  {t.pricing.freeTrial}
                 </div>
               )}
               <p className="text-black mb-6">{plan.description}</p>
@@ -119,12 +124,12 @@ const PlanTarifaire = () => {
             <Button
               className={`w-full ${
                 plan.popular
-                  ? "bg-red-600 hover:bg-red-700"
-                  : "bg-red-700 hover:bg-red-800"
-              } text-white transition-colors`}
+                  ? "bg-red-600 hover:bg-red-700 text-white"
+                  : "bg-red-700 hover:bg-red-800 text-white"
+              } transition-colors`}
             >
               <CreditCard className="mr-2 h-4 w-4" />
-              Commencer l'essai gratuit
+              {t.pricing.startTrial}
             </Button>
           </Card>
         ))}

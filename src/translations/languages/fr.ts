@@ -55,5 +55,13 @@ export const fr = {
     alreadyHaveAccount: "Déjà un compte ? Se connecter",
     back: "Retour",
     continueWithGoogle: "Continuer avec Google"
+  },
+  pricing: {
+    title: "Plans et tarification",
+    subtitle: "Choisissez le plan qui correspond à vos besoins",
+    startTrial: "Commencer l'essai gratuit",
+    mostPopular: "Plus populaire",
+    freeTrial: "Essai gratuit de 14 jours",
+    perMonth: "/mois"
   }
 };
