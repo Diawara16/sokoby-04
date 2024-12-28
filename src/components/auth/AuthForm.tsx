@@ -31,7 +31,7 @@ export function AuthForm({ defaultIsSignUp = true, onCancel }: AuthFormProps) {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>{isSignUp ? t.auth.createAccount : "Se connecter"}</CardTitle>
+        <CardTitle>{isSignUp ? t.auth.createAccount : t.auth.signIn}</CardTitle>
         <CardDescription>
           {isSignUp ? t.auth.trialDescription : "Connectez-vous à votre compte"}
         </CardDescription>
