@@ -70,5 +70,14 @@ export const en = {
     mostPopular: "Most popular",
     freeTrial: "14-day free trial",
     perMonth: "/month"
+  },
+  profile: {
+    title: "My Profile",
+    fullName: "Full Name",
+    phoneNumber: "Phone Number",
+    update: "Update",
+    updating: "Updating...",
+    success: "Profile updated successfully",
+    error: "Error updating profile"
   }
 };

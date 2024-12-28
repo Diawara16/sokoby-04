@@ -3,12 +3,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from '@/lib/supabase';
+import { translations } from "@/translations";
 
 export const ProfileForm = () => {
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  
+  const currentLanguage = localStorage.getItem('currentLanguage') || 'fr';
+  const t = translations[currentLanguage as keyof typeof translations];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,7 +21,7 @@ export const ProfileForm = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
-      if (!user) throw new Error("Non connecté");
+      if (!user) throw new Error(t.auth.errorDescription);
 
       const { error } = await supabase
         .from('profiles')
@@ -31,12 +35,12 @@ export const ProfileForm = () => {
       if (error) throw error;
 
       toast({
-        title: "Profil mis à jour",
-        description: "Vos informations ont été enregistrées",
+        title: t.profile.success,
+        description: t.profile.success,
       });
     } catch (error: any) {
       toast({
-        title: "Erreur",
+        title: t.profile.error,
         description: error.message,
         variant: "destructive",
       });
@@ -47,12 +51,12 @@ export const ProfileForm = () => {
 
   return (
     <div className="w-full max-w-md mx-auto space-y-6 p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-center">Mon Profil</h2>
+      <h2 className="text-2xl font-bold text-center">{t.profile.title}</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Input
             type="text"
-            placeholder="Nom complet"
+            placeholder={t.profile.fullName}
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             required
@@ -61,14 +65,14 @@ export const ProfileForm = () => {
         <div className="space-y-2">
           <Input
             type="tel"
-            placeholder="Numéro de téléphone"
+            placeholder={t.profile.phoneNumber}
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             required
           />
         </div>
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? 'Enregistrement...' : 'Mettre à jour le profil'}
+          {isLoading ? t.profile.updating : t.profile.update}
         </Button>
       </form>
     </div>

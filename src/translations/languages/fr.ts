@@ -70,5 +70,14 @@ export const fr = {
     mostPopular: "Le plus populaire",
     freeTrial: "Essai gratuit de 14 jours",
     perMonth: "/mois"
+  },
+  profile: {
+    title: "Mon Profil",
+    fullName: "Nom complet",
+    phoneNumber: "Numéro de téléphone",
+    update: "Mettre à jour",
+    updating: "Mise à jour en cours...",
+    success: "Profil mis à jour avec succès",
+    error: "Erreur lors de la mise à jour du profil"
   }
 };
