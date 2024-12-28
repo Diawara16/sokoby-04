@@ -1,24 +1,24 @@
-export const fr = {
+export default {
   hero: {
-    title: "Construisez votre empire e-commerce",
-    subtitle: "La plateforme complète pour lancer et développer votre boutique en ligne",
+    title: "Créez votre boutique en ligne",
+    subtitle: "Simple, rapide et professionnel",
   },
   features: {
-    title: "Nos fonctionnalités",
+    title: "Fonctionnalités",
     items: [
       {
         title: "Gestion des produits",
-        description: "Gérez facilement votre catalogue de produits"
+        description: "Gérez facilement vos produits et votre inventaire",
       },
       {
         title: "Paiements sécurisés",
-        description: "Acceptez les paiements en toute sécurité"
+        description: "Acceptez les paiements en toute sécurité",
       },
       {
-        title: "Analyses avancées",
-        description: "Suivez vos performances en temps réel"
-      }
-    ]
+        title: "Design personnalisable",
+        description: "Personnalisez l'apparence de votre boutique",
+      },
+    ],
   },
   navigation: {
     home: "Accueil",
@@ -27,57 +27,85 @@ export const fr = {
     contact: "Contact",
     themes: "Thèmes",
     services: "Services",
-    profile: "Profil"
+    profile: "Profil",
   },
   cta: {
     title: "Prêt à commencer ?",
-    subtitle: "Lancez votre boutique en ligne en quelques minutes",
-    button: "Créer ma boutique"
+    subtitle: "Créez votre boutique en ligne dès aujourd'hui",
+    button: "Commencer maintenant",
   },
   footer: {
-    changeLanguage: "Changer de langue",
-    acceptedPayments: "Paiements acceptés",
-    legalNotice: "Mentions légales",
-    accessibility: "Accessibilité",
-    quickLinks: "Liens rapides",
-    contactUs: "Nous contacter",
-    termsOfUse: "Conditions d'utilisation",
-    guidesAndTutorials: "Guides et tutoriels",
-    faq: "FAQ",
-    support: "Support"
+    newsletter: {
+      title: "Newsletter",
+      subtitle: "Restez informé de nos dernières nouveautés",
+      button: "S'inscrire",
+    },
   },
   auth: {
     createAccount: "Créer un compte",
-    trialDescription: "Commencez avec un essai gratuit de 14 jours. Pas de carte bancaire requise.",
-    emailPlaceholder: "exemple@email.com",
+    signIn: "Se connecter",
+    trialDescription: "Essai gratuit de 14 jours, sans carte bancaire",
+    emailPlaceholder: "Votre adresse email",
     password: "Mot de passe",
     creating: "Création en cours...",
-    create: "Créer un compte",
-    successTitle: "Compte créé avec succès",
-    successDescription: "Profitez de votre essai gratuit de 14 jours !",
-    errorTitle: "Erreur",
-    errorDescription: "Une erreur est survenue lors de la création du compte",
-    signIn: "Se connecter",
     signingIn: "Connexion en cours...",
-    alreadyHaveAccount: "Vous avez déjà un compte ? Connectez-vous",
+    create: "Créer mon compte",
+    successTitle: "Compte créé avec succès",
+    successDescription: "Votre compte a été créé avec succès",
+    errorTitle: "Erreur",
+    errorDescription: "Une erreur est survenue",
+    alreadyHaveAccount: "Déjà un compte ? Se connecter",
     back: "Retour",
     continueWithGoogle: "Continuer avec Google"
   },
-  pricing: {
-    title: "Plans et tarifs",
-    subtitle: "Choisissez le plan qui correspond à vos besoins",
-    startTrial: "Commencer l'essai gratuit",
-    mostPopular: "Le plus populaire",
-    freeTrial: "Essai gratuit de 14 jours",
-    perMonth: "/mois"
-  },
   profile: {
-    title: "Mon Profil",
-    fullName: "Nom complet",
-    phoneNumber: "Numéro de téléphone",
-    update: "Mettre à jour",
-    updating: "Mise à jour en cours...",
-    success: "Profil mis à jour avec succès",
-    error: "Erreur lors de la mise à jour du profil"
+    title: "Mon profil",
+    subtitle: "Gérez vos informations personnelles",
+    personalInfo: "Informations personnelles",
+    email: "Email",
+    name: "Nom",
+    save: "Enregistrer",
+    password: "Mot de passe",
+    currentPassword: "Mot de passe actuel",
+    newPassword: "Nouveau mot de passe",
+    confirmPassword: "Confirmer le mot de passe"
+  },
+  pricing: {
+    title: "Nos tarifs",
+    subtitle: "Choisissez le plan qui vous convient",
+    monthly: "Mensuel",
+    yearly: "Annuel",
+    basic: {
+      name: "Basic",
+      price: "9.99",
+      description: "Pour démarrer",
+      features: [
+        "1 boutique",
+        "100 produits",
+        "Support email"
+      ]
+    },
+    pro: {
+      name: "Pro",
+      price: "19.99",
+      description: "Pour les professionnels",
+      features: [
+        "3 boutiques",
+        "1000 produits",
+        "Support prioritaire",
+        "Analytics avancés"
+      ]
+    },
+    enterprise: {
+      name: "Enterprise",
+      price: "49.99",
+      description: "Pour les grandes entreprises",
+      features: [
+        "Boutiques illimitées",
+        "Produits illimités",
+        "Support dédié",
+        "API personnalisée"
+      ]
+    }
   }
 };

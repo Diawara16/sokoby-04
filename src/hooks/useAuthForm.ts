@@ -50,11 +50,10 @@ export const useAuthForm = (defaultIsSignUp: boolean = false): UseAuthForm => {
 
       if (success) {
         toast({
-          title: "Connexion réussie",
-          description: "Vous êtes maintenant connecté",
+          title: isSignUp ? "Compte créé" : "Connexion réussie",
+          description: isSignUp ? "Votre compte a été créé avec succès" : "Vous êtes maintenant connecté",
         });
-        
-        // Redirection après une connexion réussie
+
         if (isSignUp) {
           navigate("/onboarding");
         } else {
