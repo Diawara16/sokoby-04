@@ -61,10 +61,10 @@ const PlanTarifaire = () => {
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <h1 className="text-4xl font-bold text-[#6E59A5] mb-4">
           Plans et tarification
         </h1>
-        <p className="text-xl text-gray-600">
+        <p className="text-xl text-[#7E69AB]">
           Choisissez le plan qui correspond à vos besoins
         </p>
       </div>
@@ -75,51 +75,53 @@ const PlanTarifaire = () => {
             key={plan.name}
             className={`relative p-8 rounded-lg ${
               plan.popular
-                ? "border-2 border-primary shadow-lg"
-                : "border border-gray-200"
+                ? "border-2 border-[#9b87f5] shadow-lg"
+                : "border border-[#E5DEFF]"
             }`}
           >
             {plan.popular && (
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm">
+                <span className="bg-[#9b87f5] text-white px-3 py-1 rounded-full text-sm">
                   Plus populaire
                 </span>
               </div>
             )}
 
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              <h3 className="text-2xl font-bold text-[#6E59A5] mb-2">
                 {plan.name}
               </h3>
               <div className="flex justify-center items-baseline mb-2">
-                <span className="text-5xl font-extrabold text-gray-900">
+                <span className="text-5xl font-extrabold text-[#7E69AB]">
                   {plan.price}
                 </span>
                 {plan.period && (
-                  <span className="text-gray-600 ml-1">{plan.period}</span>
+                  <span className="text-[#7E69AB] ml-1">{plan.period}</span>
                 )}
               </div>
               {plan.trial && (
-                <div className="text-sm text-primary font-medium mb-2">
+                <div className="text-sm text-[#8B5CF6] font-medium mb-2">
                   Essai gratuit de 14 jours
                 </div>
               )}
-              <p className="text-gray-600 mb-6">{plan.description}</p>
+              <p className="text-[#7E69AB] mb-6">{plan.description}</p>
             </div>
 
             <ul className="space-y-4 mb-8">
               {plan.features.map((feature) => (
                 <li key={feature} className="flex items-center">
-                  <Check className="h-5 w-5 text-primary mr-2" />
-                  <span className="text-gray-600">{feature}</span>
+                  <Check className="h-5 w-5 text-[#9b87f5] mr-2" />
+                  <span className="text-[#7E69AB]">{feature}</span>
                 </li>
               ))}
             </ul>
 
             <Button
               className={`w-full ${
-                plan.popular ? "bg-primary" : "bg-gray-800"
-              } hover:opacity-90`}
+                plan.popular
+                  ? "bg-[#9b87f5] hover:bg-[#8B5CF6]"
+                  : "bg-[#7E69AB] hover:bg-[#6E59A5]"
+              } text-white transition-colors`}
             >
               <CreditCard className="mr-2 h-4 w-4" />
               Commencer l'essai gratuit
