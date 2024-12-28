@@ -26,7 +26,8 @@ export const fr = {
     pricing: "Tarifs",
     contact: "Contact",
     themes: "Thèmes",
-    services: "Services"
+    services: "Services",
+    profile: "Profil"
   },
   cta: {
     title: "Prêt à commencer ?",

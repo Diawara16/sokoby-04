@@ -26,7 +26,8 @@ export const en = {
     pricing: "Pricing",
     contact: "Contact",
     themes: "Themes",
-    services: "Services"
+    services: "Services",
+    profile: "Profile"
   },
   cta: {
     title: "Ready to start?",
