@@ -15,7 +15,7 @@ export const fr = {
         description: "Acceptez les paiements en toute sécurité"
       },
       {
-        title: "Analytics avancés",
+        title: "Analyses avancées",
         description: "Suivez vos performances en temps réel"
       }
     ]
@@ -36,7 +36,7 @@ export const fr = {
   },
   footer: {
     changeLanguage: "Changer de langue",
-    acceptedPayments: "Modes de paiement acceptés",
+    acceptedPayments: "Paiements acceptés",
     legalNotice: "Mentions légales",
     accessibility: "Accessibilité",
     quickLinks: "Liens rapides",
@@ -48,7 +48,7 @@ export const fr = {
   },
   auth: {
     createAccount: "Créer un compte",
-    trialDescription: "Commencez avec un essai gratuit de 14 jours. Pas de carte de crédit requise.",
+    trialDescription: "Commencez avec un essai gratuit de 14 jours. Pas de carte bancaire requise.",
     emailPlaceholder: "exemple@email.com",
     password: "Mot de passe",
     creating: "Création en cours...",
@@ -59,15 +59,15 @@ export const fr = {
     errorDescription: "Une erreur est survenue lors de la création du compte",
     signIn: "Se connecter",
     signingIn: "Connexion en cours...",
-    alreadyHaveAccount: "Déjà un compte ? Se connecter",
+    alreadyHaveAccount: "Vous avez déjà un compte ? Connectez-vous",
     back: "Retour",
     continueWithGoogle: "Continuer avec Google"
   },
   pricing: {
-    title: "Plans et tarification",
+    title: "Plans et tarifs",
     subtitle: "Choisissez le plan qui correspond à vos besoins",
     startTrial: "Commencer l'essai gratuit",
-    mostPopular: "Plus populaire",
+    mostPopular: "Le plus populaire",
     freeTrial: "Essai gratuit de 14 jours",
     perMonth: "/mois"
   }
