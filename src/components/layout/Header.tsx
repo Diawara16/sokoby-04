@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { translations } from "@/translations";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { AuthForm } from "@/components/auth/AuthForm";
 
 interface HeaderProps {
   isAuthenticated: boolean;
@@ -9,10 +11,19 @@ interface HeaderProps {
 
 export function Header({ isAuthenticated }: HeaderProps) {
   const { currentLanguage } = useLanguageContext();
+  const [showAuthForm, setShowAuthForm] = useState(false);
   const t = translations[currentLanguage as keyof typeof translations];
 
+  console.log("État d'authentification:", isAuthenticated);
+  console.log("Formulaire d'authentification visible:", showAuthForm);
+
+  const handleAuthClick = () => {
+    console.log("Clic sur le bouton d'authentification");
+    setShowAuthForm(true);
+  };
+
   return (
-    <header className="bg-white border-b">
+    <header className="bg-white border-b relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
@@ -37,19 +48,18 @@ export function Header({ isAuthenticated }: HeaderProps) {
           <div className="flex items-center space-x-4">
             {!isAuthenticated ? (
               <>
-                <Link
-                  to="/essai-gratuit"
+                <Button
+                  variant="ghost"
+                  onClick={handleAuthClick}
                   className="text-gray-900 hover:text-red-600"
                 >
-                  Log in
-                </Link>
+                  Se connecter
+                </Button>
                 <Button
-                  asChild
+                  onClick={handleAuthClick}
                   className="bg-red-600 hover:bg-red-700 text-white"
                 >
-                  <Link to="/essai-gratuit">
-                    Start free trial
-                  </Link>
+                  Démarrer l'essai gratuit
                 </Button>
               </>
             ) : (
@@ -63,6 +73,17 @@ export function Header({ isAuthenticated }: HeaderProps) {
           </div>
         </div>
       </div>
+
+      {showAuthForm && (
+        <div className="absolute top-full left-0 right-0 z-50 p-4 bg-white/80 backdrop-blur-sm">
+          <div className="max-w-md mx-auto">
+            <AuthForm 
+              defaultIsSignUp={false}
+              onCancel={() => setShowAuthForm(false)}
+            />
+          </div>
+        </div>
+      )}
     </header>
   );
 }
