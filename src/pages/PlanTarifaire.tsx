@@ -5,8 +5,9 @@ import { Check, CreditCard } from "lucide-react";
 const PlanTarifaire = () => {
   const plans = [
     {
-      name: "Gratuit",
-      price: "$0",
+      name: "Démarrage",
+      price: "$11",
+      period: "/mois",
       description: "Pour démarrer votre boutique en ligne",
       features: [
         "1 boutique en ligne",
@@ -14,6 +15,7 @@ const PlanTarifaire = () => {
         "Support par email",
         "Analytics de base",
       ],
+      trial: true,
     },
     {
       name: "Pro",
@@ -113,7 +115,7 @@ const PlanTarifaire = () => {
               } hover:opacity-90`}
             >
               <CreditCard className="mr-2 h-4 w-4" />
-              {plan.trial ? "Commencer l'essai gratuit" : "Choisir ce plan"}
+              Commencer l'essai gratuit
             </Button>
           </Card>
         ))}
