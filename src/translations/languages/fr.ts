@@ -37,7 +37,13 @@ export const fr = {
     changeLanguage: "Changer de langue",
     acceptedPayments: "Modes de paiement acceptés",
     legalNotice: "Mentions légales",
-    accessibility: "Accessibilité"
+    accessibility: "Accessibilité",
+    quickLinks: "Liens rapides",
+    contactUs: "Nous contacter",
+    termsOfUse: "Conditions d'utilisation",
+    guidesAndTutorials: "Guides et tutoriels",
+    faq: "FAQ",
+    support: "Support"
   },
   auth: {
     createAccount: "Créer un compte",

@@ -1,70 +1,67 @@
+import { BrowserRouter } from "react-router-dom";
+import { LanguageProvider } from "./contexts/LanguageContext";
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
-import { CartProvider } from "@/components/cart/CartContext";
-import Index from "./pages/Index";
-import Checkout from "./pages/Checkout";
-import Boutique from "./pages/Boutique";
-import Profil from "./pages/Profil";
-import Parametres from "./pages/Parametres";
-import Onboarding from "./pages/Onboarding";
-import Applications from "./pages/Applications";
-import PlanTarifaire from "./pages/PlanTarifaire";
-import Domicile from "./pages/Domicile";
-import Environ from "./pages/Environ";
-import Services from "./pages/Services";
-import Themes from "./pages/Themes";
-import Contact from "./pages/Contact";
-import EssaiGratuit from "./pages/EssaiGratuit";
-import Confidentialite from "./pages/Confidentialite";
-import Conditions from "./pages/Conditions";
-import VerifyEmail from "./pages/VerifyEmail";
+import { Routes, Route } from "react-router-dom";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import Home from "@/pages/Home";
+import PlanTarifaire from "@/pages/PlanTarifaire";
+import Contact from "@/pages/Contact";
+import Conditions from "@/pages/Conditions";
+import Guides from "@/pages/Guides";
+import FAQ from "@/pages/FAQ";
+import Support from "@/pages/Support";
+import Legal from "@/pages/Legal";
+import Accessibility from "@/pages/Accessibility";
+import Profile from "@/pages/Profile";
+import Onboarding from "@/pages/Onboarding";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { User } from "@supabase/supabase-js";
 
-const queryClient = new QueryClient();
+function App() {
+  const [user, setUser] = useState<User | null>(null);
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <CartProvider>
-        <div className="min-h-screen bg-background font-sans">
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <SidebarProvider>
-              <div className="flex min-h-screen w-full">
-                <AppSidebar />
-                <main className="flex-1">
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/checkout" element={<Checkout />} />
-                    <Route path="/boutique" element={<Boutique />} />
-                    <Route path="/profil" element={<Profil />} />
-                    <Route path="/parametres" element={<Parametres />} />
-                    <Route path="/onboarding" element={<Onboarding />} />
-                    <Route path="/applications" element={<Applications />} />
-                    <Route path="/plan-tarifaire" element={<PlanTarifaire />} />
-                    <Route path="/domicile" element={<Domicile />} />
-                    <Route path="/environ" element={<Environ />} />
-                    <Route path="/services" element={<Services />} />
-                    <Route path="/themes" element={<Themes />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/essai-gratuit" element={<EssaiGratuit />} />
-                    <Route path="/confidentialite" element={<Confidentialite />} />
-                    <Route path="/conditions" element={<Conditions />} />
-                    <Route path="/verify-email" element={<VerifyEmail />} />
-                  </Routes>
-                </main>
-              </div>
-            </SidebarProvider>
-          </BrowserRouter>
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  return (
+    <BrowserRouter>
+      <LanguageProvider>
+        <div className="min-h-screen flex flex-col">
+          <Header isAuthenticated={!!user} />
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<Home isAuthenticated={!!user} />} />
+              <Route path="/plan-tarifaire" element={<PlanTarifaire />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/conditions" element={<Conditions />} />
+              <Route path="/guides" element={<Guides />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/legal" element={<Legal />} />
+              <Route path="/accessibility" element={<Accessibility />} />
+              <Route path="/profil" element={<Profile />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+            </Routes>
+          </main>
+          <Footer />
         </div>
-      </CartProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+        <Toaster />
+      </LanguageProvider>
+    </BrowserRouter>
+  );
+}
 
 export default App;

@@ -37,7 +37,13 @@ export const en = {
     changeLanguage: "Change language",
     acceptedPayments: "Accepted payments",
     legalNotice: "Legal notice",
-    accessibility: "Accessibility"
+    accessibility: "Accessibility",
+    quickLinks: "Quick links",
+    contactUs: "Contact us",
+    termsOfUse: "Terms of use",
+    guidesAndTutorials: "Guides and tutorials",
+    faq: "FAQ",
+    support: "Support"
   },
   auth: {
     createAccount: "Create account",
