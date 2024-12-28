@@ -49,6 +49,11 @@ export const en = {
     successTitle: "Account created successfully",
     successDescription: "Enjoy your 14-day free trial!",
     errorTitle: "Error",
-    errorDescription: "An error occurred while creating the account"
+    errorDescription: "An error occurred while creating the account",
+    signIn: "Sign in",
+    signingIn: "Signing in...",
+    alreadyHaveAccount: "Already have an account? Sign in",
+    back: "Back",
+    continueWithGoogle: "Continue with Google"
   }
 };

@@ -96,7 +96,7 @@ export function AuthFormContent({
           onClick={handleGoogleSignIn}
         >
           <FcGoogle className="mr-2 h-5 w-5" />
-          Continuer avec Google
+          {t.auth.continueWithGoogle}
         </Button>
       </CardContent>
       <CardFooter className="flex flex-col space-y-2">
@@ -105,7 +105,7 @@ export function AuthFormContent({
           className="w-full bg-red-600 hover:bg-red-700" 
           disabled={isLoading}
         >
-          {isLoading ? (isSignUp ? t.auth.creating : "Connexion en cours...") : (isSignUp ? t.auth.create : "Se connecter")}
+          {isLoading ? (isSignUp ? t.auth.creating : t.auth.signingIn) : (isSignUp ? t.auth.create : t.auth.signIn)}
         </Button>
         <div className="flex gap-2 w-full">
           <button
@@ -113,7 +113,7 @@ export function AuthFormContent({
             onClick={() => setIsSignUp(!isSignUp)}
             className="text-sm text-center text-red-600 hover:text-red-700 hover:underline"
           >
-            {isSignUp ? "Déjà un compte ? Se connecter" : "Créer un compte"}
+            {isSignUp ? t.auth.alreadyHaveAccount : t.auth.createAccount}
           </button>
           {onCancel && (
             <button
@@ -121,7 +121,7 @@ export function AuthFormContent({
               onClick={onCancel}
               className="text-sm text-center text-gray-500 hover:text-gray-700 hover:underline ml-auto"
             >
-              Retour
+              {t.auth.back}
             </button>
           )}
         </div>

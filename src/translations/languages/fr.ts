@@ -49,6 +49,11 @@ export const fr = {
     successTitle: "Compte créé avec succès",
     successDescription: "Profitez de votre essai gratuit de 14 jours !",
     errorTitle: "Erreur",
-    errorDescription: "Une erreur est survenue lors de la création du compte"
+    errorDescription: "Une erreur est survenue lors de la création du compte",
+    signIn: "Se connecter",
+    signingIn: "Connexion en cours...",
+    alreadyHaveAccount: "Déjà un compte ? Se connecter",
+    back: "Retour",
+    continueWithGoogle: "Continuer avec Google"
   }
 };
