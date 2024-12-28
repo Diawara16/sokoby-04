@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { translations } from "@/translations";
+import { Button } from "@/components/ui/button";
 
 interface HeaderProps {
   isAuthenticated: boolean;
@@ -35,12 +36,22 @@ export function Header({ isAuthenticated }: HeaderProps) {
 
           <div className="flex items-center space-x-4">
             {!isAuthenticated ? (
-              <Link
-                to="/essai-gratuit"
-                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
-              >
-                {t.cta.button}
-              </Link>
+              <>
+                <Link
+                  to="/essai-gratuit"
+                  className="text-gray-900 hover:text-red-600"
+                >
+                  Log in
+                </Link>
+                <Button
+                  asChild
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  <Link to="/essai-gratuit">
+                    Start free trial
+                  </Link>
+                </Button>
+              </>
             ) : (
               <Link
                 to="/profil"
