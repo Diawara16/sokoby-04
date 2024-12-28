@@ -11,7 +11,7 @@ const PlanTarifaire = () => {
       description: "Pour démarrer votre boutique en ligne",
       features: [
         "1 boutique en ligne",
-        "Jusqu'à 10 produits",
+        "Jusqu'à 20 produits",
         "Support par email",
         "Analytics de base",
       ],
