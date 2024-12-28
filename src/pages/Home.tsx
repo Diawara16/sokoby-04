@@ -1,36 +1,22 @@
-import { useLanguageContext } from "@/contexts/LanguageContext";
 import { HeroSection } from "@/components/home/HeroSection";
-import { FeaturesSection } from "@/components/home/FeaturesSection";
-import { CTASection } from "@/components/home/CTASection";
-import { useNavigate } from "react-router-dom";
+import { useLanguageContext } from "@/contexts/LanguageContext";
+import { TextAnalysis } from "@/components/ai/TextAnalysis";
 
 interface HomeProps {
   isAuthenticated: boolean;
 }
 
-function Home({ isAuthenticated }: HomeProps) {
+const Home = ({ isAuthenticated }: HomeProps) => {
   const { currentLanguage } = useLanguageContext();
-  const navigate = useNavigate();
-
-  const handleCreateStore = () => {
-    navigate('/onboarding');
-  };
 
   return (
-    <div className="min-h-screen bg-white">
-      <HeroSection 
-        isAuthenticated={isAuthenticated}
-        currentLanguage={currentLanguage}
-      />
-      
-      <FeaturesSection currentLanguage={currentLanguage} />
-      
-      <CTASection 
-        currentLanguage={currentLanguage}
-        onCreateStore={handleCreateStore}
-      />
+    <div className="min-h-screen">
+      <HeroSection isAuthenticated={isAuthenticated} currentLanguage={currentLanguage} />
+      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <TextAnalysis />
+      </div>
     </div>
   );
-}
+};
 
 export default Home;
