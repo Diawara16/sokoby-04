@@ -61,10 +61,10 @@ const PlanTarifaire = () => {
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-red-800 mb-4">
+        <h1 className="text-4xl font-bold text-black mb-4">
           Plans et tarification
         </h1>
-        <p className="text-xl text-red-700">
+        <p className="text-xl text-black">
           Choisissez le plan qui correspond à vos besoins
         </p>
       </div>
@@ -76,7 +76,7 @@ const PlanTarifaire = () => {
             className={`relative p-8 rounded-lg ${
               plan.popular
                 ? "border-2 border-red-600 shadow-lg"
-                : "border border-red-100"
+                : "border border-gray-200"
             }`}
           >
             {plan.popular && (
@@ -88,15 +88,15 @@ const PlanTarifaire = () => {
             )}
 
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-red-800 mb-2">
+              <h3 className="text-2xl font-bold text-black mb-2">
                 {plan.name}
               </h3>
               <div className="flex justify-center items-baseline mb-2">
-                <span className="text-5xl font-extrabold text-red-700">
+                <span className="text-5xl font-extrabold text-black">
                   {plan.price}
                 </span>
                 {plan.period && (
-                  <span className="text-red-700 ml-1">{plan.period}</span>
+                  <span className="text-black ml-1">{plan.period}</span>
                 )}
               </div>
               {plan.trial && (
@@ -104,14 +104,14 @@ const PlanTarifaire = () => {
                   Essai gratuit de 14 jours
                 </div>
               )}
-              <p className="text-red-700 mb-6">{plan.description}</p>
+              <p className="text-black mb-6">{plan.description}</p>
             </div>
 
             <ul className="space-y-4 mb-8">
               {plan.features.map((feature) => (
                 <li key={feature} className="flex items-center">
                   <Check className="h-5 w-5 text-red-600 mr-2" />
-                  <span className="text-red-700">{feature}</span>
+                  <span className="text-black">{feature}</span>
                 </li>
               ))}
             </ul>
