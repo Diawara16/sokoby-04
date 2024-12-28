@@ -18,7 +18,7 @@ const languages = [
   { code: 'nl', name: 'Nederlands' }
 ];
 
-const Footer = () => {
+export const Footer = () => {
   const [currentLanguage, setCurrentLanguage] = useState(() => {
     return localStorage.getItem('currentLanguage') || 'fr';
   });
@@ -37,7 +37,6 @@ const Footer = () => {
   const handleLanguageChange = (langCode: string) => {
     localStorage.setItem('currentLanguage', langCode);
     setCurrentLanguage(langCode);
-    // Déclencher un événement storage pour informer les autres composants
     window.dispatchEvent(new StorageEvent('storage', {
       key: 'currentLanguage',
       newValue: langCode
