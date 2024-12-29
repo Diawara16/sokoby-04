@@ -11,7 +11,7 @@ const PlanTarifaire = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubscribe = async (planType: 'starter' | 'pro' | 'enterprise', paymentMethod: 'card' | 'paypal' = 'card') => {
+  const handleSubscribe = async (planType: 'starter' | 'pro' | 'enterprise', paymentMethod: 'card' | 'apple_pay' | 'google_pay') => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
