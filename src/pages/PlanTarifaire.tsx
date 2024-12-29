@@ -56,7 +56,7 @@ const PlanTarifaire = () => {
         {/* Plan Starter */}
         <div className="border rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow">
           <h2 className="text-2xl font-bold mb-4">Starter</h2>
-          <p className="text-3xl font-bold mb-6">29€ <span className="text-base font-normal text-gray-600">/mois</span></p>
+          <p className="text-3xl font-bold mb-6">11$ <span className="text-base font-normal text-gray-600">/mois</span></p>
           <ul className="space-y-3 mb-8">
             <li className="flex items-center">
               <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,7 +91,7 @@ const PlanTarifaire = () => {
             Populaire
           </div>
           <h2 className="text-2xl font-bold mb-4">Pro</h2>
-          <p className="text-3xl font-bold mb-6">79€ <span className="text-base font-normal text-gray-600">/mois</span></p>
+          <p className="text-3xl font-bold mb-6">19$ <span className="text-base font-normal text-gray-600">/mois</span></p>
           <ul className="space-y-3 mb-8">
             <li className="flex items-center">
               <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,7 +129,7 @@ const PlanTarifaire = () => {
         {/* Plan Enterprise */}
         <div className="border rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow">
           <h2 className="text-2xl font-bold mb-4">Enterprise</h2>
-          <p className="text-3xl font-bold mb-6">Sur mesure</p>
+          <p className="text-3xl font-bold mb-6">49$ <span className="text-base font-normal text-gray-600">/mois</span></p>
           <ul className="space-y-3 mb-8">
             <li className="flex items-center">
               <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
