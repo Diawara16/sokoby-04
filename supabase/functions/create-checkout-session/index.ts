@@ -16,7 +16,6 @@ serve(async (req) => {
   try {
     console.log('Starting checkout session creation...');
     
-    // Get the Stripe secret key from environment
     const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
     if (!stripeKey) {
       console.error('STRIPE_SECRET_KEY is not set');
@@ -24,25 +23,21 @@ serve(async (req) => {
     }
     console.log('Stripe key retrieved successfully');
 
-    // Initialize Stripe with the secret key
     const stripe = new Stripe(stripeKey, {
       apiVersion: '2023-10-16',
     });
     console.log('Stripe instance created');
 
-    // Get user information from the request
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
-    // Get the authorization header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       throw new Error('No authorization header');
     }
 
-    // Get user from Supabase
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     
@@ -53,11 +48,9 @@ serve(async (req) => {
 
     console.log('User authenticated:', user.email);
 
-    // Get request body
     const { planType } = await req.json();
     console.log('Plan type:', planType);
 
-    // Define price IDs for different plans
     const PRICE_IDS = {
       starter: 'price_1QbAUrI7adlqeYfap1MWxujV',
       pro: 'price_1QbAWeI7adlqeYfaUNskkYXF',
@@ -69,7 +62,6 @@ serve(async (req) => {
       throw new Error('Invalid plan type');
     }
 
-    // Create Stripe checkout session
     console.log('Creating checkout session...');
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
@@ -82,7 +74,6 @@ serve(async (req) => {
       mode: 'subscription',
       success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get('origin')}/plan-tarifaire`,
-      automatic_tax: { enabled: true },
     });
 
     console.log('Checkout session created successfully:', session.id);
