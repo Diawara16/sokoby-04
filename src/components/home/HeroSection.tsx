@@ -13,6 +13,7 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
   const [isSignUp, setIsSignUp] = useState(true);
   const t = translations[currentLanguage as keyof typeof translations];
 
+  // Vérification stricte des types pour les traductions
   if (!t?.hero?.title || !t?.hero?.subtitle || !t?.auth?.createAccount || 
       !t?.auth?.signIn || typeof t.hero.title !== 'string' || 
       typeof t.hero.subtitle !== 'string' || 
