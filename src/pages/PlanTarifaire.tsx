@@ -6,10 +6,28 @@ import { PaymentHistory } from "@/components/payments/PaymentHistory";
 import { ReferralCard } from "@/components/referral/ReferralCard";
 import { PlanComparison } from "@/components/pricing/PlanComparison";
 import { PricingPlans } from "@/components/pricing/PricingPlans";
+import { UserDashboard } from "@/components/dashboard/UserDashboard";
+import { useState, useEffect } from "react";
 
 const PlanTarifaire = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+    
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleSubscribe = async (
     planType: 'starter' | 'pro' | 'enterprise',
@@ -58,17 +76,27 @@ const PlanTarifaire = () => {
 
   return (
     <div className="container mx-auto px-4 py-16">
-      <h1 className="text-4xl font-bold text-center mb-12">Nos Plans Tarifaires</h1>
-      
-      <PricingPlans currentLanguage="fr" onSubscribe={handleSubscribe} />
-
-      <PlanComparison currentLanguage="fr" />
-
-      <div className="mt-16">
-        <ReferralCard />
-      </div>
-
-      <PaymentHistory />
+      {isAuthenticated ? (
+        <>
+          <h1 className="text-4xl font-bold text-center mb-12">Tableau de bord</h1>
+          <UserDashboard />
+          <div className="mt-16">
+            <h2 className="text-3xl font-bold text-center mb-8">Nos Plans Tarifaires</h2>
+            <PricingPlans currentLanguage="fr" onSubscribe={handleSubscribe} />
+            <PlanComparison currentLanguage="fr" />
+            <div className="mt-16">
+              <ReferralCard />
+            </div>
+            <PaymentHistory />
+          </div>
+        </>
+      ) : (
+        <>
+          <h1 className="text-4xl font-bold text-center mb-12">Nos Plans Tarifaires</h1>
+          <PricingPlans currentLanguage="fr" onSubscribe={handleSubscribe} />
+          <PlanComparison currentLanguage="fr" />
+        </>
+      )}
     </div>
   );
 };
