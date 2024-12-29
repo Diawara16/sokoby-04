@@ -41,6 +41,9 @@ export function Header({ isAuthenticated }: HeaderProps) {
               <Link to="/tableau-de-bord">
                 <Button variant="ghost">Tableau de bord</Button>
               </Link>
+              <Link to="/parametres">
+                <Button variant="outline">Paramètres</Button>
+              </Link>
               <Link to="/profil">
                 <Button variant="outline">Mon profil</Button>
               </Link>
