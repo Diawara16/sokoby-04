@@ -5,12 +5,17 @@ import { supabase } from "@/lib/supabase";
 import { PaymentHistory } from "@/components/payments/PaymentHistory";
 import { ReferralCard } from "@/components/referral/ReferralCard";
 import { PlanComparison } from "@/components/pricing/PlanComparison";
+import { PricingPlans } from "@/components/pricing/PricingPlans";
 
 const PlanTarifaire = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubscribe = async (planType: 'starter' | 'pro' | 'enterprise') => {
+  const handleSubscribe = async (
+    planType: 'starter' | 'pro' | 'enterprise',
+    paymentMethod: 'card' | 'apple_pay' | 'google_pay',
+    couponCode?: string
+  ) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
@@ -25,7 +30,7 @@ const PlanTarifaire = () => {
       }
 
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { planType }
+        body: { planType, paymentMethod, couponCode }
       });
 
       if (error) {
@@ -55,135 +60,14 @@ const PlanTarifaire = () => {
     <div className="container mx-auto px-4 py-16">
       <h1 className="text-4xl font-bold text-center mb-12">Nos Plans Tarifaires</h1>
       
-      <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
-        {/* Plan Starter */}
-        <div className="border rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow">
-          <h2 className="text-2xl font-bold mb-4">Starter</h2>
-          <p className="text-3xl font-bold mb-6">11$ <span className="text-base font-normal text-gray-600">/mois</span></p>
-          <ul className="space-y-3 mb-8">
-            <li className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              1 boutique en ligne
-            </li>
-            <li className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              Jusqu'à 20 produits
-            </li>
-            <li className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              Support par email
-            </li>
-            <li className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              Analytics de base
-            </li>
-          </ul>
-          <Button 
-            onClick={() => handleSubscribe('starter')}
-            className="w-full"
-          >
-            Commencer
-          </Button>
-        </div>
+      <PricingPlans currentLanguage="fr" onSubscribe={handleSubscribe} />
 
-        {/* Plan Pro */}
-        <div className="border rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow bg-primary-50 relative">
-          <div className="absolute top-0 right-0 bg-primary text-white px-4 py-1 rounded-bl-lg">
-            Populaire
-          </div>
-          <h2 className="text-2xl font-bold mb-4">Pro</h2>
-          <p className="text-3xl font-bold mb-6">19$ <span className="text-base font-normal text-gray-600">/mois</span></p>
-          <ul className="space-y-3 mb-8">
-            <li className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              3 boutiques en ligne
-            </li>
-            <li className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              Jusqu'à 500 produits
-            </li>
-            <li className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              Support prioritaire
-            </li>
-            <li className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              Analytics avancés
-            </li>
-          </ul>
-          <Button 
-            onClick={() => handleSubscribe('pro')}
-            className="w-full bg-primary hover:bg-primary-600"
-          >
-            Commencer
-          </Button>
-        </div>
-
-        {/* Plan Enterprise */}
-        <div className="border rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow">
-          <h2 className="text-2xl font-bold mb-4">Enterprise</h2>
-          <p className="text-3xl font-bold mb-6">49$ <span className="text-base font-normal text-gray-600">/mois</span></p>
-          <ul className="space-y-3 mb-8">
-            <li className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              Boutiques illimitées
-            </li>
-            <li className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              Produits illimités
-            </li>
-            <li className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              Support 24/7
-            </li>
-            <li className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              Toutes les fonctionnalités
-            </li>
-          </ul>
-          <Button 
-            onClick={() => handleSubscribe('enterprise')}
-            className="w-full"
-            variant="outline"
-          >
-            Contactez-nous
-          </Button>
-        </div>
-      </div>
-
-      {/* Ajout du tableau de comparaison détaillé */}
       <PlanComparison currentLanguage="fr" />
 
-      {/* Ajout de la carte de parrainage */}
       <div className="mt-16">
         <ReferralCard />
       </div>
 
-      {/* Ajout du composant PaymentHistory */}
       <PaymentHistory />
     </div>
   );
