@@ -15,7 +15,7 @@ export function Header({ isAuthenticated }: HeaderProps) {
             <img 
               src="/lovable-uploads/e423a6d8-87e5-4ef9-af43-7e96b44fd685.png" 
               alt="Sokoby" 
-              className="h-14 w-auto" // Réduit de h-18 à h-14
+              className="h-14 w-auto"
             />
           </Link>
           <nav className="hidden md:flex items-center space-x-6">
@@ -49,7 +49,7 @@ export function Header({ isAuthenticated }: HeaderProps) {
               </Link>
               <Link to="/plan-tarifaire">
                 <Button className="bg-red-600 hover:bg-red-700 text-white">
-                  Commencer
+                  Démarrer l'essai gratuit
                 </Button>
               </Link>
             </div>
