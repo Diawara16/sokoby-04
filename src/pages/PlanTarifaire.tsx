@@ -7,6 +7,7 @@ import { ReferralCard } from "@/components/referral/ReferralCard";
 import { PlanComparison } from "@/components/pricing/PlanComparison";
 import { PricingPlans } from "@/components/pricing/PricingPlans";
 import { UserDashboard } from "@/components/dashboard/UserDashboard";
+import { LoadingSpinner } from "@/components/pricing/LoadingSpinner";
 import { useState, useEffect } from "react";
 
 const PlanTarifaire = () => {
@@ -23,13 +24,17 @@ const PlanTarifaire = () => {
         setIsAuthenticated(!!session);
         
         if (session) {
-          const { data: profile, error } = await supabase
+          // Simplified query to just check if the profile exists
+          const { data, error } = await supabase
             .from('profiles')
-            .select('*')
+            .select('id')
             .eq('id', session.user.id)
             .single();
             
-          if (!error && profile) {
+          if (error) {
+            console.error('Error fetching profile:', error);
+            setHasProfile(false);
+          } else {
             setHasProfile(true);
           }
         }
@@ -95,11 +100,7 @@ const PlanTarifaire = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-16 flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
