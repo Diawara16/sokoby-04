@@ -35,11 +35,21 @@ export const fr = {
     button: "Commencer maintenant",
   },
   footer: {
-    newsletter: {
-      title: "Newsletter",
-      subtitle: "Restez informé de nos dernières nouveautés",
-      button: "S'inscrire",
-    },
+    newsletter: "Newsletter",
+    emailPlaceholder: "Votre adresse email",
+    subscribe: "S'abonner",
+    followUs: "Suivez-nous",
+    socialMedia: "Restez connecté avec nous sur les réseaux sociaux",
+    quickLinks: "Liens rapides",
+    contactUs: "Nous contacter",
+    termsOfUse: "Conditions d'utilisation",
+    guidesAndTutorials: "Guides et tutoriels",
+    faq: "FAQ",
+    support: "Support",
+    changeLanguage: "Changer de langue",
+    acceptedPayments: "Paiements acceptés",
+    legalNotice: "Mentions légales",
+    accessibility: "Accessibilité"
   },
   auth: {
     createAccount: "Créer un compte",
