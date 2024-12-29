@@ -8,59 +8,56 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-  );
-
   try {
     console.log('Starting checkout session creation...');
     
-    // Get the session or user object
-    const authHeader = req.headers.get('Authorization')!;
-    const token = authHeader.replace('Bearer ', '');
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
-    const email = user?.email;
-
-    if (!email) {
-      console.error('No email found for user');
-      throw new Error('No email found');
-    }
-
-    console.log('User email found:', email);
-
-    const { planType } = await req.json();
-    console.log('Plan type:', planType);
-    
+    // Get the Stripe secret key from environment
     const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
     if (!stripeKey) {
       console.error('STRIPE_SECRET_KEY is not set');
       throw new Error('Stripe secret key is not configured');
     }
-    
-    console.log('Creating Stripe instance...');
+    console.log('Stripe key retrieved successfully');
+
+    // Initialize Stripe with the secret key
     const stripe = new Stripe(stripeKey, {
       apiVersion: '2023-10-16',
     });
+    console.log('Stripe instance created');
 
-    // Vérifier si l'utilisateur existe déjà comme client Stripe
-    console.log('Checking for existing Stripe customer...');
-    const customers = await stripe.customers.list({
-      email: email,
-      limit: 1
-    });
+    // Get user information from the request
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+    );
 
-    let customer_id = undefined;
-    if (customers.data.length > 0) {
-      customer_id = customers.data[0].id;
-      console.log('Found existing customer:', customer_id);
+    // Get the authorization header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('No authorization header');
     }
 
+    // Get user from Supabase
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
+    
+    if (userError || !user) {
+      console.error('Error getting user:', userError);
+      throw new Error('Unauthorized');
+    }
+
+    console.log('User authenticated:', user.email);
+
+    // Get request body
+    const { planType } = await req.json();
+    console.log('Plan type:', planType);
+
+    // Define price IDs for different plans
     const PRICE_IDS = {
       starter: 'price_1QbAUrI7adlqeYfap1MWxujV',
       pro: 'price_1QbAWeI7adlqeYfaUNskkYXF',
@@ -72,10 +69,10 @@ serve(async (req) => {
       throw new Error('Invalid plan type');
     }
 
-    console.log('Creating payment session...');
+    // Create Stripe checkout session
+    console.log('Creating checkout session...');
     const session = await stripe.checkout.sessions.create({
-      customer: customer_id,
-      customer_email: customer_id ? undefined : email,
+      customer_email: user.email,
       line_items: [
         {
           price: priceId,
@@ -88,7 +85,8 @@ serve(async (req) => {
       automatic_tax: { enabled: true },
     });
 
-    console.log('Payment session created:', session.id);
+    console.log('Checkout session created successfully:', session.id);
+
     return new Response(
       JSON.stringify({ url: session.url }),
       { 
@@ -97,7 +95,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('Error creating payment session:', error);
+    console.error('Error in checkout session creation:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
