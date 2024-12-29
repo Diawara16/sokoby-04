@@ -126,14 +126,15 @@ const Index = () => {
           </Button>
         </div>
         
-        <FeaturesSection currentLanguage={currentLanguage} />
+        <div className="mt-12">
+          <FeaturesSection currentLanguage={currentLanguage} />
+        </div>
         
         <CTASection 
           currentLanguage={currentLanguage}
           onCreateStore={handleCreateStore}
         />
 
-        {/* Ajout d'un espace blanc entre le contenu et le footer */}
         <div className="h-24" />
       </div>
 
