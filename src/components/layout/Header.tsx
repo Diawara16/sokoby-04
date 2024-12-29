@@ -31,6 +31,9 @@ export function Header({ isAuthenticated }: HeaderProps) {
             <Link to="/contact" className="text-sm text-gray-600 hover:text-gray-900">
               Contact
             </Link>
+            <Link to="/parametres" className="text-sm font-semibold text-red-600 hover:text-red-700">
+              Paramètres boutique
+            </Link>
           </nav>
         </div>
         
