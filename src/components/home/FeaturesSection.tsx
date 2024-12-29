@@ -31,8 +31,12 @@ export const FeaturesSection = ({ currentLanguage }: FeaturesSectionProps) => {
           {features.map((feature, index) => (
             <Card key={index} className="p-8 hover:shadow-lg transition-all duration-300 border-none bg-gray-50">
               <feature.icon className="h-12 w-12 text-red-600 mb-6" />
-              <h3 className="text-xl font-semibold mb-4 text-gray-900">{t.features.items[index].title}</h3>
-              <p className="text-gray-600 leading-relaxed">{t.features.items[index].description}</p>
+              <h3 className="text-xl font-semibold mb-4 text-gray-900">
+                {t.features.items[index].title}
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                {t.features.items[index].description}
+              </p>
             </Card>
           ))}
         </div>
