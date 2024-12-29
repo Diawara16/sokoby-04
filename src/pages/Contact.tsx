@@ -115,7 +115,7 @@ const Contact = () => {
 
           <Button 
             type="submit" 
-            className="w-full"
+            className="w-full bg-[#ea384c] hover:bg-[#ea384c]/90"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
