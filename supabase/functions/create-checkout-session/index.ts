@@ -18,6 +18,8 @@ serve(async (req) => {
   );
 
   try {
+    console.log('Starting checkout session creation...');
+    
     // Get the session or user object
     const authHeader = req.headers.get('Authorization')!;
     const token = authHeader.replace('Bearer ', '');
@@ -26,10 +28,14 @@ serve(async (req) => {
     const email = user?.email;
 
     if (!email) {
+      console.error('No email found for user');
       throw new Error('No email found');
     }
 
+    console.log('User email found:', email);
+
     const { planType } = await req.json();
+    console.log('Plan type:', planType);
     
     const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
     if (!stripeKey) {
