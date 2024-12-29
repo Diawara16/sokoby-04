@@ -39,7 +39,6 @@ const Index = () => {
 
   const t = translations[currentLanguage as keyof typeof translations];
 
-  // Ensure all required translation strings exist and are of the correct type
   if (!t?.navigation?.home || !t?.cta?.button || 
       typeof t.navigation.home !== 'string' || 
       typeof t.cta.button !== 'string') {
@@ -61,13 +60,6 @@ const Index = () => {
               </Link>
             </div>
             <Navigation currentLanguage={currentLanguage} />
-            <Button 
-              variant="default" 
-              className="bg-red-600 hover:bg-red-700 transition-colors duration-200"
-              onClick={handleCreateStore}
-            >
-              {t.cta.button}
-            </Button>
           </div>
         </div>
       </nav>

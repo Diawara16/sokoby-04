@@ -13,7 +13,14 @@ export const Navigation = ({ currentLanguage }: NavigationProps) => {
 
   if (!t?.navigation?.home || !t?.navigation?.about || !t?.navigation?.services || 
       !t?.navigation?.themes || !t?.navigation?.pricing || !t?.navigation?.contact || 
-      !t?.cta?.button || typeof t.cta.button !== 'string') {
+      !t?.cta?.button ||
+      typeof t.navigation.home !== 'string' ||
+      typeof t.navigation.about !== 'string' ||
+      typeof t.navigation.services !== 'string' ||
+      typeof t.navigation.themes !== 'string' ||
+      typeof t.navigation.pricing !== 'string' ||
+      typeof t.navigation.contact !== 'string' ||
+      typeof t.cta.button !== 'string') {
     return null;
   }
 
