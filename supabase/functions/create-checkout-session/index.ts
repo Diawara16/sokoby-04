@@ -73,6 +73,14 @@ serve(async (req) => {
     console.log('Création de la session de paiement...');
     console.log('Payment method:', paymentMethod);
     
+    // Configurer les méthodes de paiement en fonction du choix de l'utilisateur
+    let payment_method_types = ['card'];
+    if (paymentMethod === 'apple_pay') {
+      payment_method_types = ['card', 'apple_pay'];
+    } else if (paymentMethod === 'google_pay') {
+      payment_method_types = ['card', 'google_pay'];
+    }
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -83,7 +91,7 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
-      payment_method_types: paymentMethod === 'paypal' ? ['paypal'] : ['card'],
+      payment_method_types,
       success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get('origin')}/plan-tarifaire`,
     });
