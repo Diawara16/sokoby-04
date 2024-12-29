@@ -24,9 +24,9 @@ const PaymentMethods = ({ t }: { t: any }) => {
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">{t.footer.acceptedPayments}</h3>
       <div className="flex space-x-4">
-        <CreditCard className="w-8 h-8" />
-        <DollarSign className="w-8 h-8" />
-        <Bitcoin className="w-8 h-8" />
+        <CreditCard className="w-8 h-8 text-white" />
+        <DollarSign className="w-8 h-8 text-white" />
+        <Bitcoin className="w-8 h-8 text-white" />
       </div>
     </div>
   );
