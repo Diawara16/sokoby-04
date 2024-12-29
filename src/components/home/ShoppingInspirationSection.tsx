@@ -7,17 +7,17 @@ const ShoppingInspirationSection = () => {
         <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">Inspirations Shopping</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <ShoppingCard
-            imageUrl="https://images.unsplash.com/photo-1441986300917-64674bd600d8"
+            imageUrl="https://images.unsplash.com/photo-1483985988355-763728e1935b"
             title="Découvrez notre collection"
             description="Explorez nos dernières tendances"
           />
           <ShoppingCard
-            imageUrl="https://images.unsplash.com/photo-1472851294608-062f824d29cc"
+            imageUrl="https://images.unsplash.com/photo-1573855619003-97b4799dcd8b"
             title="Nouveautés de la saison"
             description="Découvrez les dernières arrivées"
           />
           <ShoppingCard
-            imageUrl="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04"
+            imageUrl="https://images.unsplash.com/photo-1591085686350-798c0f9faa7f"
             title="Meilleures ventes"
             description="Nos produits les plus populaires"
           />
@@ -36,7 +36,7 @@ interface ShoppingCardProps {
 const ShoppingCard = ({ imageUrl, title, description }: ShoppingCardProps) => {
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105">
-      <div className="relative h-[300px]">
+      <div className="relative h-[400px]">
         <img
           src={imageUrl}
           alt={title}
