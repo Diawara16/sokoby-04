@@ -57,7 +57,7 @@ export function Header({ isAuthenticated }: HeaderProps) {
                 </Button>
                 <Button
                   onClick={handleAuthClick}
-                  className="bg-red-600 hover:bg-red-700 text-white"
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold"
                 >
                   Démarrer l'essai gratuit
                 </Button>
