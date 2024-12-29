@@ -31,8 +31,14 @@ serve(async (req) => {
 
     const { planType } = await req.json();
     
-    console.log('Creating Stripe instance with secret key...');
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+    const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
+    if (!stripeKey) {
+      console.error('STRIPE_SECRET_KEY is not set');
+      throw new Error('Stripe secret key is not configured');
+    }
+    
+    console.log('Creating Stripe instance...');
+    const stripe = new Stripe(stripeKey, {
       apiVersion: '2023-10-16',
     });
 
