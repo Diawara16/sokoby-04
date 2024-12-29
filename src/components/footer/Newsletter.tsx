@@ -6,6 +6,14 @@ interface NewsletterProps {
 }
 
 export const Newsletter = ({ t }: NewsletterProps) => {
+  // Vérification que les traductions nécessaires existent et sont des chaînes
+  if (!t?.footer?.newsletter || !t?.footer?.emailPlaceholder || !t?.footer?.subscribe ||
+      typeof t.footer.newsletter !== 'string' ||
+      typeof t.footer.emailPlaceholder !== 'string' ||
+      typeof t.footer.subscribe !== 'string') {
+    return null;
+  }
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold mb-4">{t.footer.newsletter}</h3>

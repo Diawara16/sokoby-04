@@ -15,6 +15,16 @@ interface LanguageSelectorProps {
 }
 
 export const LanguageSelector = ({ t, currentLanguage, onLanguageChange, languages }: LanguageSelectorProps) => {
+  // Vérification que les traductions nécessaires existent et sont des chaînes
+  if (!t?.footer?.changeLanguage || !t?.footer?.acceptedPayments || 
+      !t?.footer?.legalNotice || !t?.footer?.accessibility ||
+      typeof t.footer.changeLanguage !== 'string' ||
+      typeof t.footer.acceptedPayments !== 'string' ||
+      typeof t.footer.legalNotice !== 'string' ||
+      typeof t.footer.accessibility !== 'string') {
+    return null;
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
