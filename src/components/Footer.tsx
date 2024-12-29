@@ -4,7 +4,7 @@ import { QuickLinks } from "./footer/QuickLinks";
 import { SocialLinks } from "./footer/SocialLinks";
 import { Newsletter } from "./footer/Newsletter";
 import { LanguageSelector } from "./footer/LanguageSelector";
-import { CreditCard, Bitcoin, DollarSign } from "lucide-react";
+import { CreditCard, Bitcoin, DollarSign, Paypal } from "lucide-react";
 
 const languages = [
   { code: 'fr', name: 'Français' },
@@ -27,6 +27,7 @@ const PaymentMethods = ({ t }: { t: any }) => {
         <CreditCard className="w-8 h-8 text-white" />
         <DollarSign className="w-8 h-8 text-white" />
         <Bitcoin className="w-8 h-8 text-white" />
+        <Paypal className="w-8 h-8 text-white" />
       </div>
     </div>
   );
