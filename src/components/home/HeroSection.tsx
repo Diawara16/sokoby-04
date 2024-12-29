@@ -44,7 +44,7 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
                   className="bg-white text-red-600 hover:bg-red-50 w-full border-2 border-black"
                   size="lg"
                 >
-                  Créer mon compte
+                  {t.auth.createAccount}
                 </Button>
                 <Button 
                   onClick={() => handleAuthClick(false)}
@@ -52,7 +52,7 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
                   className="bg-red-600 hover:bg-red-700 text-white w-full"
                   size="lg"
                 >
-                  Se connecter
+                  {t.auth.login}
                 </Button>
               </div>
             )}
