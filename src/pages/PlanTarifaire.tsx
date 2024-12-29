@@ -15,11 +15,18 @@ const PlanTarifaire = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [showAuthForm, setShowAuthForm] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setIsAuthenticated(!!session);
+      } catch (error) {
+        console.error("Erreur lors de la vérification de l'authentification:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     
     checkAuth();
@@ -133,6 +140,14 @@ const PlanTarifaire = () => {
       trial: true,
     },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
+      </div>
+    );
+  }
 
   if (showAuthForm) {
     return (
