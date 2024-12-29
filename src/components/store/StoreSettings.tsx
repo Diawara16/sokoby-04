@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { Store, Globe } from "lucide-react";
+import { Store, Globe, Check, X } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const StoreSettings = () => {
   const [settings, setSettings] = useState({
@@ -17,6 +18,8 @@ export const StoreSettings = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isCheckingDomain, setIsCheckingDomain] = useState(false);
+  const [domainStatus, setDomainStatus] = useState<'available' | 'taken' | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -51,6 +54,59 @@ export const StoreSettings = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const checkDomainAvailability = async (domain: string) => {
+    if (!domain) {
+      setDomainStatus(null);
+      return;
+    }
+
+    setIsCheckingDomain(true);
+    try {
+      // Vérifier d'abord dans notre base de données
+      const { data: existingDomain, error } = await supabase
+        .from("store_settings")
+        .select("domain_name")
+        .eq("domain_name", domain)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      // Si le domaine existe déjà dans notre base de données
+      if (existingDomain) {
+        setDomainStatus('taken');
+        return;
+      }
+
+      // Simulation d'une vérification DNS (à remplacer par une vraie vérification)
+      // Dans une vraie implémentation, on utiliserait un service de vérification de domaines
+      const response = await fetch(`https://dns.google/resolve?name=${domain}`);
+      const data = await response.json();
+      
+      setDomainStatus(data.Answer ? 'taken' : 'available');
+    } catch (error) {
+      console.error("Error checking domain:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de vérifier la disponibilité du domaine",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCheckingDomain(false);
+    }
+  };
+
+  const handleDomainChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDomain = e.target.value;
+    setSettings({ ...settings, domain_name: newDomain });
+    
+    // Debounce la vérification du domaine
+    const timeoutId = setTimeout(() => {
+      checkDomainAvailability(newDomain);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
   };
 
   const handleSave = async () => {
@@ -116,14 +172,39 @@ export const StoreSettings = () => {
             <Globe className="h-4 w-4" />
             Nom de domaine
           </Label>
-          <Input
-            id="domain_name"
-            value={settings.domain_name}
-            onChange={(e) => setSettings({ ...settings, domain_name: e.target.value })}
-            placeholder="maboutique.com"
-          />
-          <p className="text-sm text-gray-500 mt-1">
-            Entrez votre nom de domaine personnalisé ou utilisez notre sous-domaine gratuit
+          <div className="relative">
+            <Input
+              id="domain_name"
+              value={settings.domain_name}
+              onChange={handleDomainChange}
+              placeholder="maboutique.com"
+              className={`pr-10 ${
+                domainStatus === 'available' ? 'border-green-500' : 
+                domainStatus === 'taken' ? 'border-red-500' : ''
+              }`}
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              {isCheckingDomain ? (
+                <Skeleton className="h-4 w-4 rounded-full" />
+              ) : domainStatus === 'available' ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : domainStatus === 'taken' ? (
+                <X className="h-4 w-4 text-red-500" />
+              ) : null}
+            </div>
+          </div>
+          <p className="text-sm mt-1">
+            {isCheckingDomain ? (
+              <span className="text-gray-500">Vérification de la disponibilité...</span>
+            ) : domainStatus === 'available' ? (
+              <span className="text-green-600">Ce domaine est disponible !</span>
+            ) : domainStatus === 'taken' ? (
+              <span className="text-red-600">Ce domaine est déjà pris</span>
+            ) : (
+              <span className="text-gray-500">
+                Entrez votre nom de domaine personnalisé ou utilisez notre sous-domaine gratuit
+              </span>
+            )}
           </p>
         </div>
 
