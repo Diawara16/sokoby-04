@@ -9,7 +9,7 @@ const Home = ({ isAuthenticated }: HomeProps) => {
   const { currentLanguage } = useLanguageContext();
 
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col flex-1 w-full">
       <HeroSection isAuthenticated={isAuthenticated} currentLanguage={currentLanguage} />
     </div>
   );
