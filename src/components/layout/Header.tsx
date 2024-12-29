@@ -39,10 +39,10 @@ export function Header({ isAuthenticated }: HeaderProps) {
             <NotificationBell />
           ) : (
             <div className="flex items-center gap-3">
-              <Link to="/plan-tarifaire">
-                <Button variant="ghost">Se connecter</Button>
+              <Link to="/essai-gratuit">
+                <Button variant="ghost">S'identifier</Button>
               </Link>
-              <Link to="/plan-tarifaire">
+              <Link to="/essai-gratuit">
                 <Button className="bg-red-600 hover:bg-red-700 text-white">
                   Démarrer l'essai gratuit
                 </Button>
