@@ -13,9 +13,11 @@ const PlanTarifaire = () => {
 
   const handleSubscribe = async (planType: 'starter' | 'pro' | 'enterprise', paymentMethod: 'card' | 'apple_pay' | 'google_pay') => {
     try {
+      console.log('Début de la création de la session de paiement...');
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
+        console.log('Utilisateur non connecté');
         toast({
           title: "Erreur",
           description: "Vous devez être connecté pour souscrire à un abonnement",
@@ -25,16 +27,24 @@ const PlanTarifaire = () => {
         return;
       }
 
+      console.log('Appel de la fonction create-checkout-session...');
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: { planType, paymentMethod },
       });
 
+      console.log('Réponse reçue:', { data, error });
+
       if (error) {
+        console.error('Erreur lors de la création de la session:', error);
         throw error;
       }
 
       if (data?.url) {
+        console.log('Redirection vers:', data.url);
         window.location.href = data.url;
+      } else {
+        console.error('Pas d\'URL de redirection dans la réponse');
+        throw new Error('Pas d\'URL de redirection dans la réponse');
       }
     } catch (error) {
       console.error('Erreur lors de la création de la session de paiement:', error);
