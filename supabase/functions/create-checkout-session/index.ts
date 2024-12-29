@@ -8,7 +8,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -48,8 +47,8 @@ serve(async (req) => {
 
     console.log('User authenticated:', user.email);
 
-    const { planType } = await req.json();
-    console.log('Plan type:', planType);
+    const { planType, couponCode } = await req.json();
+    console.log('Plan type:', planType, 'Coupon code:', couponCode);
 
     const PRICE_IDS = {
       starter: 'price_1QbAUrI7adlqeYfap1MWxujV',
@@ -62,6 +61,42 @@ serve(async (req) => {
       throw new Error('Invalid plan type');
     }
 
+    let discounts = [];
+    if (couponCode) {
+      // Vérifier la validité du coupon
+      const { data: coupon, error: couponError } = await supabaseClient
+        .from('coupons')
+        .select('*')
+        .eq('code', couponCode.toUpperCase())
+        .single();
+
+      if (couponError) {
+        console.error('Error fetching coupon:', couponError);
+        throw new Error('Invalid coupon code');
+      }
+
+      if (coupon) {
+        const now = new Date();
+        if ((!coupon.valid_until || new Date(coupon.valid_until) > now) &&
+            (!coupon.max_uses || coupon.current_uses < coupon.max_uses)) {
+          
+          // Créer un coupon Stripe avec la réduction
+          const stripeCoupon = await stripe.coupons.create({
+            percent_off: coupon.discount_percent,
+            duration: 'once',
+          });
+
+          discounts.push({ coupon: stripeCoupon.id });
+
+          // Mettre à jour le nombre d'utilisations
+          await supabaseClient
+            .from('coupons')
+            .update({ current_uses: coupon.current_uses + 1 })
+            .eq('id', coupon.id);
+        }
+      }
+    }
+
     console.log('Creating checkout session...');
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
@@ -72,6 +107,7 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
+      discounts: discounts,
       success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get('origin')}/plan-tarifaire`,
     });
