@@ -3,6 +3,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { PaymentHistory } from "@/components/payments/PaymentHistory";
+import { ReferralCard } from "@/components/referral/ReferralCard";
 
 const PlanTarifaire = () => {
   const { toast } = useToast();
@@ -53,7 +54,7 @@ const PlanTarifaire = () => {
     <div className="container mx-auto px-4 py-16">
       <h1 className="text-4xl font-bold text-center mb-12">Nos Plans Tarifaires</h1>
       
-      <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
         {/* Plan Starter */}
         <div className="border rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow">
           <h2 className="text-2xl font-bold mb-4">Starter</h2>
@@ -171,6 +172,11 @@ const PlanTarifaire = () => {
             Contactez-nous
           </Button>
         </div>
+      </div>
+
+      {/* Ajout de la carte de parrainage */}
+      <div className="mt-16">
+        <ReferralCard />
       </div>
 
       {/* Ajout du composant PaymentHistory */}
