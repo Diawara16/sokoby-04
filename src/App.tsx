@@ -41,7 +41,7 @@ function App() {
       <LanguageProvider>
         <div className="min-h-screen flex flex-col bg-white">
           <Header isAuthenticated={!!user} />
-          <main className="flex-1">
+          <main className="flex-1 pt-16">
             <Routes>
               <Route path="/" element={<Home isAuthenticated={!!user} />} />
               <Route path="/plan-tarifaire" element={<PlanTarifaire />} />
