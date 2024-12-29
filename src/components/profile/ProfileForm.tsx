@@ -93,7 +93,7 @@ export const ProfileForm = () => {
             </div>
             <Button 
               type="submit" 
-              className="w-full bg-primary hover:bg-primary-600 text-white py-3" 
+              className="w-full bg-red-600 hover:bg-red-700 text-white py-3" 
               disabled={isLoading}
             >
               {isLoading ? t.profile.updating : t.profile.update}
