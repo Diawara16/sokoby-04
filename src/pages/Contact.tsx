@@ -57,11 +57,11 @@ const Contact = () => {
       <h1 className="text-3xl font-bold mb-6">Contact</h1>
       
       {/* Support Email Section */}
-      <div className="bg-primary-50 p-6 rounded-lg mb-8 flex items-center gap-4">
-        <Mail className="w-6 h-6 text-primary-700" />
+      <div className="bg-[#ea384c] p-6 rounded-lg mb-8 flex items-center gap-4">
+        <Mail className="w-6 h-6 text-white" />
         <div>
-          <h2 className="text-lg font-semibold text-primary-700">Email Support</h2>
-          <a href="mailto:support@sokoby.com" className="text-primary-600 hover:text-primary-800 transition-colors">
+          <h2 className="text-lg font-semibold text-white">Email Support</h2>
+          <a href="mailto:support@sokoby.com" className="text-white hover:text-white/90 transition-colors">
             support@sokoby.com
           </a>
         </div>
