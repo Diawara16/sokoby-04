@@ -14,27 +14,26 @@ const PRICE_IDS = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
+  const supabaseClient = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+  );
+
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-    );
+    // Get the session or user object
+    const authHeader = req.headers.get('Authorization')!;
+    const token = authHeader.replace('Bearer ', '');
+    const { data } = await supabaseClient.auth.getUser(token);
+    const user = data.user;
+    const email = user?.email;
 
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      throw new Error('No authorization header');
-    }
-
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    );
-
-    if (userError || !user) {
-      throw new Error('Invalid user');
+    if (!email) {
+      throw new Error('No email found');
     }
 
     const { planType, paymentMethod = 'card' } = await req.json();
@@ -44,19 +43,21 @@ serve(async (req) => {
       throw new Error('Invalid plan type');
     }
 
+    console.log('Creating Stripe instance...');
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
     });
 
     // Vérifier si l'utilisateur existe déjà comme client Stripe
+    console.log('Checking if customer exists...');
     const customers = await stripe.customers.list({
-      email: user.email,
+      email: email,
       limit: 1
     });
 
-    let customerId = undefined;
+    let customer_id = undefined;
     if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
+      customer_id = customers.data[0].id;
       // Vérifier si déjà abonné à ce prix
       const subscriptions = await stripe.subscriptions.list({
         customer: customers.data[0].id,
@@ -70,7 +71,7 @@ serve(async (req) => {
       }
     }
 
-    console.log('Création de la session de paiement...');
+    console.log('Creating payment session...');
     console.log('Payment method:', paymentMethod);
     
     // Configuration des méthodes de paiement
@@ -89,8 +90,8 @@ serve(async (req) => {
     } : undefined;
 
     const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      customer_email: customerId ? undefined : user.email,
+      customer: customer_id,
+      customer_email: customer_id ? undefined : email,
       line_items: [
         {
           price: priceId,
@@ -105,7 +106,7 @@ serve(async (req) => {
       automatic_tax: { enabled: true },
     });
 
-    console.log('Session de paiement créée:', session.id);
+    console.log('Payment session created:', session.id);
     return new Response(
       JSON.stringify({ url: session.url }),
       { 
@@ -114,12 +115,12 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('Erreur lors de la création de la session de paiement:', error);
+    console.error('Error creating payment session:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
+        status: 500,
       }
     );
   }
