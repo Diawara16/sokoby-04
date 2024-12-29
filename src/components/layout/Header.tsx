@@ -14,11 +14,7 @@ export function Header({ isAuthenticated }: HeaderProps) {
   const [showAuthForm, setShowAuthForm] = useState(false);
   const t = translations[currentLanguage as keyof typeof translations];
 
-  console.log("État d'authentification:", isAuthenticated);
-  console.log("Formulaire d'authentification visible:", showAuthForm);
-
   const handleAuthClick = () => {
-    console.log("Clic sur le bouton d'authentification");
     setShowAuthForm(true);
   };
 
@@ -37,11 +33,23 @@ export function Header({ isAuthenticated }: HeaderProps) {
           </div>
           
           <nav className="hidden md:flex space-x-8">
+            <Link to="/" className="text-gray-900 hover:text-red-600">
+              Accueil
+            </Link>
+            <Link to="/a-propos" className="text-gray-900 hover:text-red-600">
+              À propos
+            </Link>
+            <Link to="/services" className="text-gray-900 hover:text-red-600">
+              Services
+            </Link>
+            <Link to="/themes" className="text-gray-900 hover:text-red-600">
+              Thèmes
+            </Link>
             <Link to="/plan-tarifaire" className="text-gray-900 hover:text-red-600">
-              {t.navigation.pricing}
+              Tarifs
             </Link>
             <Link to="/contact" className="text-gray-900 hover:text-red-600">
-              {t.navigation.contact}
+              Contact
             </Link>
           </nav>
 
@@ -59,7 +67,7 @@ export function Header({ isAuthenticated }: HeaderProps) {
                   onClick={handleAuthClick}
                   className="bg-red-600 hover:bg-red-700 text-white font-bold"
                 >
-                  Démarrer l'essai gratuit
+                  Créer ma boutique
                 </Button>
               </>
             ) : (
@@ -67,7 +75,7 @@ export function Header({ isAuthenticated }: HeaderProps) {
                 to="/profil"
                 className="text-gray-900 hover:text-red-600"
               >
-                {t.navigation.profile}
+                Mon profil
               </Link>
             )}
           </div>
