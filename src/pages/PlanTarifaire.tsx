@@ -2,11 +2,58 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check, CreditCard } from "lucide-react";
 import { translations } from "@/translations";
-import { useLanguageContext } from "@/contexts/LanguageContext"; // Assurez-vous que ce contexte existe
+import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/lib/supabase";
+import { useNavigate } from "react-router-dom";
 
 const PlanTarifaire = () => {
   const { currentLanguage } = useLanguageContext();
   const t = translations[currentLanguage as keyof typeof translations];
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handleSubscribe = async (planType: 'starter' | 'pro' | 'enterprise') => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour souscrire à un abonnement",
+          variant: "destructive",
+        });
+        navigate('/login');
+        return;
+      }
+
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ planType }),
+      });
+
+      const { url, error } = await response.json();
+
+      if (error) {
+        throw new Error(error);
+      }
+
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error('Erreur lors de la création de la session de paiement:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la création de la session de paiement",
+        variant: "destructive",
+      });
+    }
+  };
 
   const plans = [
     {
@@ -14,6 +61,7 @@ const PlanTarifaire = () => {
       price: "$11",
       period: t.pricing.perMonth,
       description: "Pour démarrer votre boutique en ligne",
+      planType: "starter" as const,
       features: [
         "1 boutique en ligne",
         "Jusqu'à 20 produits",
@@ -27,6 +75,7 @@ const PlanTarifaire = () => {
       price: "$19",
       period: t.pricing.perMonth,
       description: "Pour les entreprises en croissance",
+      planType: "pro" as const,
       features: [
         "1 boutique en ligne",
         "Jusqu'à 100 produits",
@@ -45,6 +94,7 @@ const PlanTarifaire = () => {
       price: "$49",
       period: t.pricing.perMonth,
       description: "Pour les grandes entreprises",
+      planType: "enterprise" as const,
       features: [
         "1 boutique en ligne premium",
         "Produits illimités",
@@ -127,6 +177,7 @@ const PlanTarifaire = () => {
                   ? "bg-red-600 hover:bg-red-700 text-white"
                   : "bg-red-700 hover:bg-red-800 text-white"
               } transition-colors`}
+              onClick={() => handleSubscribe(plan.planType)}
             >
               <CreditCard className="mr-2 h-4 w-4" />
               {t.pricing.startTrial}
