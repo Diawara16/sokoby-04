@@ -35,55 +35,6 @@ const Index = () => {
     };
   }, []);
 
-  const handleCreateStore = () => {
-    navigate('/onboarding');
-  };
-
-  const handleTestPayment = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour effectuer un paiement",
-          variant: "destructive",
-        });
-        navigate('/login');
-        return;
-      }
-
-      console.log('Création de la session de paiement...');
-      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { planType: 'starter' }
-      });
-
-      console.log('Réponse reçue:', { data, error });
-
-      if (error) {
-        console.error('Erreur lors de la création de la session:', error);
-        toast({
-          title: "Erreur",
-          description: "Une erreur est survenue lors de la création de la session de paiement",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (data?.url) {
-        console.log('Redirection vers:', data.url);
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error('Erreur:', error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de la création de la session de paiement",
-        variant: "destructive",
-      });
-    }
-  };
-
   const t = translations[currentLanguage as keyof typeof translations];
 
   if (!t?.navigation?.home || !t?.cta?.button || 
@@ -117,12 +68,12 @@ const Index = () => {
           currentLanguage={currentLanguage}
         />
         
+        <FeaturesSection currentLanguage={currentLanguage} />
+        
         <CTASection 
           currentLanguage={currentLanguage}
-          onCreateStore={handleCreateStore}
+          onCreateStore={() => navigate('/onboarding')}
         />
-
-        <FeaturesSection currentLanguage={currentLanguage} />
 
         <ShoppingInspirationSection />
       </main>
