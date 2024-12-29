@@ -1,16 +1,15 @@
 import { useLanguageContext } from "@/contexts/LanguageContext";
-import { translations } from "@/translations";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
-import { PricingPlan } from "@/components/pricing/PricingPlan";
-import { useEffect, useState } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { PricingHeader } from "@/components/pricing/PricingHeader";
+import { LoadingSpinner } from "@/components/pricing/LoadingSpinner";
+import { PricingPlans } from "@/components/pricing/PricingPlans";
 
 const PlanTarifaire = () => {
   const { currentLanguage } = useLanguageContext();
-  const t = translations[currentLanguage as keyof typeof translations];
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -83,70 +82,8 @@ const PlanTarifaire = () => {
     }
   };
 
-  const plans = [
-    {
-      name: "Démarrage",
-      price: "$11",
-      period: t.pricing.perMonth,
-      description: "Pour démarrer votre boutique en ligne",
-      planType: "starter" as const,
-      features: [
-        "1 boutique en ligne",
-        "Jusqu'à 20 produits",
-        "Support par email",
-        "Analytics de base",
-      ],
-      trial: true,
-    },
-    {
-      name: "Pro",
-      price: "$19",
-      period: t.pricing.perMonth,
-      description: "Pour les entreprises en croissance",
-      planType: "pro" as const,
-      features: [
-        "1 boutique en ligne",
-        "Jusqu'à 100 produits",
-        "Support prioritaire",
-        "Analytics avancés",
-        "Personnalisation avancée",
-        "Domaine personnalisé",
-        "Intégration des médias sociaux",
-        "Gestion des stocks avancée",
-      ],
-      popular: true,
-      trial: true,
-    },
-    {
-      name: "Entreprise",
-      price: "$49",
-      period: t.pricing.perMonth,
-      description: "Pour les grandes entreprises",
-      planType: "enterprise" as const,
-      features: [
-        "1 boutique en ligne premium",
-        "Produits illimités",
-        "Support dédié 24/7",
-        "Analytics en temps réel",
-        "API personnalisée",
-        "Formation dédiée",
-        "SLA garanti",
-        "Optimisation SEO avancée",
-        "Intégration CRM",
-        "Rapports personnalisés",
-        "Backup quotidien",
-        "Migration assistée",
-      ],
-      trial: true,
-    },
-  ];
-
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (showAuthForm) {
@@ -164,38 +101,15 @@ const PlanTarifaire = () => {
 
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-black mb-4">
-          {t.pricing.title}
-        </h1>
-        <p className="text-xl text-black mb-6">
-          {t.pricing.subtitle}
-        </p>
-        {!isAuthenticated && (
-          <div className="mb-8">
-            <p className="text-lg text-gray-600 mb-4">
-              Connectez-vous pour commencer votre abonnement
-            </p>
-            <Button 
-              onClick={() => setShowAuthForm(true)}
-              className="bg-red-600 hover:bg-red-700 text-white"
-            >
-              Se connecter
-            </Button>
-          </div>
-        )}
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-8">
-        {plans.map((plan) => (
-          <PricingPlan
-            key={plan.name}
-            {...plan}
-            onSubscribe={handleSubscribe}
-            currentLanguage={currentLanguage}
-          />
-        ))}
-      </div>
+      <PricingHeader
+        currentLanguage={currentLanguage}
+        isAuthenticated={isAuthenticated}
+        onShowAuthForm={() => setShowAuthForm(true)}
+      />
+      <PricingPlans
+        currentLanguage={currentLanguage}
+        onSubscribe={handleSubscribe}
+      />
     </div>
   );
 };
