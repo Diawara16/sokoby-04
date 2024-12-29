@@ -19,7 +19,7 @@ export const SocialLinks = ({ t }: SocialLinksProps) => {
       <p className="text-sm text-gray-300 mb-4">{t.footer.socialMedia}</p>
       <div className="flex space-x-4">
         <a 
-          href="https://facebook.com/sokoby" 
+          href="https://www.facebook.com/sokobyonline/" 
           target="_blank" 
           rel="noopener noreferrer" 
           className="hover:text-red-400 transition-colors"
