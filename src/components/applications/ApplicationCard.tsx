@@ -10,6 +10,10 @@ interface ApplicationCardProps {
   onConnect: () => void;
   onDisconnect: () => void;
   isLoading: boolean;
+  price?: {
+    monthly: number;
+    annual?: number;
+  };
 }
 
 export function ApplicationCard({
@@ -20,6 +24,7 @@ export function ApplicationCard({
   onConnect,
   onDisconnect,
   isLoading,
+  price,
 }: ApplicationCardProps) {
   if (isLoading) {
     return (
@@ -44,13 +49,25 @@ export function ApplicationCard({
         </CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground mb-2">
+      <CardContent className="space-y-2">
+        <p className="text-sm text-muted-foreground">
           {isConnected ? "Application connectée" : "Application non connectée"}
         </p>
-        <p className="text-xs text-muted-foreground">
-          Disponible avec le plan Pro ($19/mois) ou Entreprise ($49/mois)
-        </p>
+        {price && (
+          <div className="space-y-1">
+            <p className="text-sm font-medium">
+              {price.monthly}€/mois
+              {price.annual && (
+                <span className="text-xs text-muted-foreground ml-2">
+                  ou {price.annual}€/an
+                </span>
+              )}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Disponible avec le plan Pro (19€/mois) ou Entreprise (49€/mois)
+            </p>
+          </div>
+        )}
       </CardContent>
       <CardFooter>
         <Button
