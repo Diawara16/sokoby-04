@@ -4,9 +4,10 @@ import { useToast } from "@/hooks/use-toast";
 import { TrialStatus } from "./TrialStatus";
 import { FeatureUsage } from "./FeatureUsage";
 import { Recommendations } from "./Recommendations";
-import { differenceInDays } from "date-fns";
+import { format, differenceInDays } from "date-fns";
+import { fr } from "date-fns/locale";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, ShoppingBag, Users } from "lucide-react";
+import { ShoppingBag, Settings, Users } from "lucide-react";
 
 interface UserProfile {
   trial_ends_at: string | null;
@@ -71,7 +72,7 @@ export const UserDashboard = () => {
           },
           {
             title: "Dernière connexion",
-            value: data?.last_login ? new Date(data.last_login).toLocaleDateString() : "Jamais",
+            value: data?.last_login ? format(new Date(data.last_login), "dd/MM/yyyy", { locale: fr }) : "Jamais",
             description: "Date de votre dernière connexion",
             icon: <Users className="h-6 w-6 text-muted-foreground" />,
           },
@@ -103,8 +104,7 @@ export const UserDashboard = () => {
 
   const getDaysRemaining = () => {
     if (!profile?.trial_ends_at) return 0;
-    const daysRemaining = differenceInDays(new Date(profile.trial_ends_at), new Date());
-    return Math.max(0, daysRemaining);
+    return Math.max(0, differenceInDays(new Date(profile.trial_ends_at), new Date()));
   };
 
   const hasFeatures = profile?.features_usage ? Object.keys(profile.features_usage).length > 0 : false;
@@ -115,7 +115,7 @@ export const UserDashboard = () => {
       
       <div className="grid gap-4 md:grid-cols-3">
         {metrics.map((metric, index) => (
-          <Card key={index}>
+          <Card key={index} className="hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {metric.title}
@@ -132,7 +132,7 @@ export const UserDashboard = () => {
         ))}
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid gap-6 md:grid-cols-2">
         <FeatureUsage features={profile?.features_usage || {}} />
         <Recommendations 
           daysRemaining={getDaysRemaining()} 

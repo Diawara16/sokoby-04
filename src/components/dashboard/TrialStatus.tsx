@@ -19,7 +19,7 @@ export const TrialStatus = ({ trialEndsAt }: TrialStatusProps) => {
   const trialProgress = ((14 - daysRemaining) / 14) * 100;
 
   return (
-    <Card>
+    <Card className="hover:shadow-md transition-shadow">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="h-5 w-5" />

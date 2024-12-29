@@ -8,7 +8,7 @@ interface RecommendationsProps {
 
 export const Recommendations = ({ daysRemaining, hasFeatures }: RecommendationsProps) => {
   return (
-    <Card>
+    <Card className="hover:shadow-md transition-shadow">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Star className="h-5 w-5" />
