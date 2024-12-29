@@ -15,17 +15,17 @@ export function Header({ isAuthenticated }: HeaderProps) {
             <img 
               src="/lovable-uploads/e423a6d8-87e5-4ef9-af43-7e96b44fd685.png" 
               alt="Sokoby" 
-              className="h-10 w-auto"
+              className="h-12 w-auto" // Augmenté de h-10 à h-12
             />
           </Link>
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/plan-tarifaire" className="text-gray-600 hover:text-gray-900">
+            <Link to="/plan-tarifaire" className="text-sm text-gray-600 hover:text-gray-900">
               Tarifs
             </Link>
-            <Link to="/guides" className="text-gray-600 hover:text-gray-900">
+            <Link to="/guides" className="text-sm text-gray-600 hover:text-gray-900">
               Guides
             </Link>
-            <Link to="/contact" className="text-gray-600 hover:text-gray-900">
+            <Link to="/contact" className="text-sm text-gray-600 hover:text-gray-900">
               Contact
             </Link>
           </nav>
