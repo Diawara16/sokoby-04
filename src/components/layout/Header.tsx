@@ -25,7 +25,7 @@ export function Header({ isAuthenticated }: HeaderProps) {
             <Link to="/plan-tarifaire" className="text-sm text-gray-600 hover:text-gray-900">
               Tarifs
             </Link>
-            <Link to="/guides" className="text-sm text-gray-600 hover:text-gray-900">
+            <Link to="/guides" className="text-sm text-gray-600 hover:text-gray-900 font-medium">
               Guides
             </Link>
             <Link to="/contact" className="text-sm text-gray-600 hover:text-gray-900">
@@ -40,10 +40,12 @@ export function Header({ isAuthenticated }: HeaderProps) {
           ) : (
             <div className="flex items-center gap-3">
               <Link to="/essai-gratuit">
-                <Button variant="ghost">S'identifier</Button>
+                <Button variant="ghost" className="font-medium">
+                  S'identifier
+                </Button>
               </Link>
               <Link to="/essai-gratuit">
-                <Button className="bg-red-600 hover:bg-red-700 text-white">
+                <Button className="bg-[#ea384c] hover:bg-[#ea384c]/90 text-white font-medium">
                   Démarrer l'essai gratuit
                 </Button>
               </Link>
