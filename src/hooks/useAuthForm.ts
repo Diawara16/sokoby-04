@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { authService } from "@/services/authService";
 import { UseAuthForm } from "@/types/auth";
 
@@ -12,6 +12,7 @@ export const useAuthForm = (defaultIsSignUp: boolean = false): UseAuthForm => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSignUp = async () => {
     const { error: signUpError } = await authService.signUp(email, password);
@@ -57,10 +58,12 @@ export const useAuthForm = (defaultIsSignUp: boolean = false): UseAuthForm => {
         if (isSignUp) {
           navigate("/onboarding");
         } else {
-          // Redirection vers la page d'accueil après la connexion
-          navigate("/");
-          // Recharger la page pour mettre à jour l'état de l'authentification
-          window.location.reload();
+          // Si l'utilisateur vient de la page des tarifs, on le redirige vers celle-ci
+          if (location.state?.from === "/plan-tarifaire") {
+            navigate("/plan-tarifaire");
+          } else {
+            navigate("/plan-tarifaire");
+          }
         }
       }
     } catch (error: any) {
