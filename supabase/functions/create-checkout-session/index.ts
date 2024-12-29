@@ -71,6 +71,8 @@ serve(async (req) => {
     }
 
     console.log('Création de la session de paiement...');
+    console.log('Payment method:', paymentMethod);
+    
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -81,7 +83,7 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
-      payment_method_types: ['card', 'paypal'],
+      payment_method_types: paymentMethod === 'paypal' ? ['paypal'] : ['card'],
       success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get('origin')}/plan-tarifaire`,
     });
