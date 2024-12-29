@@ -31,12 +31,13 @@ serve(async (req) => {
 
     const { planType } = await req.json();
     
-    // Utilisation de la clé secrète Stripe depuis les variables d'environnement
+    console.log('Creating Stripe instance with secret key...');
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
     });
 
     // Vérifier si l'utilisateur existe déjà comme client Stripe
+    console.log('Checking for existing Stripe customer...');
     const customers = await stripe.customers.list({
       email: email,
       limit: 1
@@ -45,6 +46,7 @@ serve(async (req) => {
     let customer_id = undefined;
     if (customers.data.length > 0) {
       customer_id = customers.data[0].id;
+      console.log('Found existing customer:', customer_id);
     }
 
     const PRICE_IDS = {
