@@ -20,6 +20,7 @@ import Dashboard from "@/pages/Dashboard";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import Parametres from "@/pages/Parametres";
+import Themes from "@/pages/Themes";
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -58,6 +59,7 @@ function App() {
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/tableau-de-bord" element={<Dashboard />} />
               <Route path="/parametres" element={<Parametres />} />
+              <Route path="/themes" element={<Themes />} />
             </Routes>
           </main>
           <Footer />

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useState } from "react";
 import {
   Sheet,
@@ -21,6 +21,7 @@ export function Header({ isAuthenticated }: HeaderProps) {
   const navigationLinks = [
     { to: "/", label: "Accueil" },
     { to: "/plan-tarifaire", label: "Tarifs" },
+    { to: "/themes", label: "Thèmes" },
     { to: "/guides", label: "Guides" },
     { to: "/contact", label: "Contact" },
   ];
