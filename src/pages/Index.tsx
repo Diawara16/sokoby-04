@@ -111,32 +111,19 @@ const Index = () => {
         </div>
       </nav>
 
-      <div className="flex-1">
+      <main className="flex-1">
         <HeroSection 
           isAuthenticated={isAuthenticated}
           currentLanguage={currentLanguage}
         />
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Button 
-            onClick={handleTestPayment}
-            className="bg-red-600 hover:bg-red-700 text-white"
-          >
-            Tester le paiement Stripe
-          </Button>
-        </div>
-        
-        <div className="mt-12">
-          <FeaturesSection currentLanguage={currentLanguage} />
-        </div>
         
         <CTASection 
           currentLanguage={currentLanguage}
           onCreateStore={handleCreateStore}
         />
 
-        <div className="h-24" />
-      </div>
+        <FeaturesSection currentLanguage={currentLanguage} />
+      </main>
 
       <Footer />
     </div>

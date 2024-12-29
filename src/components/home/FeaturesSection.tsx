@@ -29,27 +29,27 @@ export const FeaturesSection = ({ currentLanguage }: FeaturesSectionProps) => {
   }
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
-      <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900">
+    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+      <div className="max-w-5xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-16 text-gray-900">
           Nos fonctionnalités
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {features.map((feature, index) => {
             const featureItem = t.features?.items?.[index];
             if (!featureItem) return null;
             
             return (
-              <Card key={index} className="p-6 hover:shadow-lg transition-all duration-300 border-none bg-gray-50 text-center">
+              <Card key={index} className="p-8 hover:shadow-lg transition-all duration-300 border-none bg-gray-50 text-center">
                 <div className="flex justify-center">
-                  <feature.icon className={`h-10 w-10 ${feature.iconColor} mb-4`} />
+                  <feature.icon className={`h-12 w-12 ${feature.iconColor} mb-6`} />
                 </div>
-                <h3 className="text-lg font-semibold mb-3 text-gray-900">
+                <h3 className="text-xl font-semibold mb-4 text-gray-900">
                   {index === 0 && "Gestion des produits"}
                   {index === 1 && "Paiements sécurisés"}
                   {index === 2 && "Analyses avancées"}
                 </h3>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed">
                   {index === 0 && "Gérez facilement tous vos catalogues de produits"}
                   {index === 1 && "Acceptez les paiements en toute sécurité"}
                   {index === 2 && "Suivez vos performances en temps réel"}
