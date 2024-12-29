@@ -29,6 +29,7 @@ const PlanTarifaire = () => {
         return;
       }
 
+      console.log("Creating checkout session for plan:", planType);
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: { planType, paymentMethod, couponCode }
       });
