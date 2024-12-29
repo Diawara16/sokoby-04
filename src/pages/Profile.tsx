@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { ProfileForm } from "@/components/profile/ProfileForm";
+import { SubscriptionDetails } from "@/components/profile/SubscriptionDetails";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -27,9 +28,14 @@ const Profile = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="max-w-md mx-auto p-6">
-        <ProfileForm />
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Mon Profil</h1>
+        
+        <div className="space-y-8">
+          <SubscriptionDetails />
+          <ProfileForm />
+        </div>
       </div>
     </div>
   );
