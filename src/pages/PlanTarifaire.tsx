@@ -13,11 +13,31 @@ const PlanTarifaire = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasProfile, setHasProfile] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setIsAuthenticated(!!session);
+        
+        if (session) {
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+            
+          if (!error && profile) {
+            setHasProfile(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     
     checkAuth();
@@ -74,21 +94,41 @@ const PlanTarifaire = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-16 flex justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-16">
       {isAuthenticated ? (
         <>
           <h1 className="text-4xl font-bold text-center mb-12">Tableau de bord</h1>
-          <UserDashboard />
-          <div className="mt-16">
-            <h2 className="text-3xl font-bold text-center mb-8">Nos Plans Tarifaires</h2>
-            <PricingPlans currentLanguage="fr" onSubscribe={handleSubscribe} />
-            <PlanComparison currentLanguage="fr" />
-            <div className="mt-16">
-              <ReferralCard />
+          {hasProfile ? (
+            <>
+              <UserDashboard />
+              <div className="mt-16">
+                <h2 className="text-3xl font-bold text-center mb-8">Nos Plans Tarifaires</h2>
+                <PricingPlans currentLanguage="fr" onSubscribe={handleSubscribe} />
+                <PlanComparison currentLanguage="fr" />
+                <div className="mt-16">
+                  <ReferralCard />
+                </div>
+                <PaymentHistory />
+              </div>
+            </>
+          ) : (
+            <div className="text-center">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Profil non trouvé</h2>
+              <p className="text-gray-600 mb-8">Impossible de charger votre profil</p>
+              <Button onClick={() => window.location.reload()}>
+                Réessayer
+              </Button>
             </div>
-            <PaymentHistory />
-          </div>
+          )}
         </>
       ) : (
         <>
