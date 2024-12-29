@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { PaymentHistory } from "@/components/payments/PaymentHistory";
 
 const PlanTarifaire = () => {
   const { toast } = useToast();
@@ -171,6 +172,9 @@ const PlanTarifaire = () => {
           </Button>
         </div>
       </div>
+
+      {/* Ajout du composant PaymentHistory */}
+      <PaymentHistory />
     </div>
   );
 };
