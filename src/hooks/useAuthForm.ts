@@ -1,44 +1,16 @@
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
-import { authService } from "@/services/authService";
-import { UseAuthForm } from "@/types/auth";
+import { useToast } from "./use-toast";
 
-export const useAuthForm = (defaultIsSignUp: boolean = false): UseAuthForm => {
+export const useAuthForm = (defaultIsSignUp: boolean = false) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(defaultIsSignUp);
   const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
   const navigate = useNavigate();
-
-  const handleSignUp = async () => {
-    const { error: signUpError } = await authService.signUp(email, password);
-
-    if (signUpError) {
-      if (signUpError.message.includes("User already registered")) {
-        setError("Un compte existe déjà avec cet email. Veuillez vous connecter.");
-        setIsSignUp(false);
-        return false;
-      }
-      throw signUpError;
-    }
-
-    return true;
-  };
-
-  const handleSignIn = async () => {
-    const { error: signInError } = await authService.signIn(email, password);
-    if (signInError) {
-      if (signInError.message.includes("Invalid login credentials")) {
-        setError("Email ou mot de passe incorrect");
-        return false;
-      }
-      throw signInError;
-    }
-    return true;
-  };
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,25 +18,45 @@ export const useAuthForm = (defaultIsSignUp: boolean = false): UseAuthForm => {
     setError(null);
 
     try {
-      const success = isSignUp ? await handleSignUp() : await handleSignIn();
-
-      if (success) {
-        toast({
-          title: isSignUp ? "Compte créé" : "Connexion réussie",
-          description: isSignUp ? "Votre compte a été créé avec succès" : "Vous êtes maintenant connecté",
+      if (isSignUp) {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/onboarding`,
+          },
         });
 
-        if (isSignUp) {
+        if (error) throw error;
+
+        if (data.user) {
+          toast({
+            title: "Compte créé avec succès",
+            description: "Veuillez vérifier votre email pour confirmer votre compte.",
+          });
+        }
+      } else {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+
+        if (data.user) {
+          toast({
+            title: "Connexion réussie",
+            description: "Vous êtes maintenant connecté.",
+          });
           navigate("/onboarding");
-        } else {
-          navigate("/plan-tarifaire");
         }
       }
     } catch (error: any) {
       console.error("Erreur d'authentification:", error);
+      setError(error.message);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue. Veuillez réessayer.",
+        description: error.message,
         variant: "destructive",
       });
     } finally {
@@ -80,7 +72,7 @@ export const useAuthForm = (defaultIsSignUp: boolean = false): UseAuthForm => {
     isLoading,
     isSignUp,
     setIsSignUp,
-    error,
     handleSubmit,
+    error,
   };
 };
