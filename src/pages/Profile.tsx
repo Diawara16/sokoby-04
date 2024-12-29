@@ -7,17 +7,32 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkSession = async () => {
+    const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        navigate('/');
+        console.log("Utilisateur non connecté, redirection vers la page d'accueil");
+        navigate("/");
       }
     };
 
-    checkSession();
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        navigate("/");
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
-  return <ProfileForm />;
+  return (
+    <div className="min-h-screen bg-gray-50 pt-20">
+      <div className="max-w-md mx-auto p-6">
+        <ProfileForm />
+      </div>
+    </div>
+  );
 };
 
 export default Profile;
