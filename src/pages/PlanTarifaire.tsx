@@ -4,62 +4,12 @@ import { supabase } from "@/lib/supabase";
 import { LoadingSpinner } from "@/components/pricing/LoadingSpinner";
 import { AuthenticatedPricingContent } from "@/components/pricing/AuthenticatedPricingContent";
 import { UnauthenticatedPricingContent } from "@/components/pricing/UnauthenticatedPricingContent";
-import { useState, useEffect } from "react";
+import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 
 const PlanTarifaire = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasProfile, setHasProfile] = useState(false);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setIsAuthenticated(!!session);
-        
-        if (session) {
-          // Utilisation de maybeSingle() au lieu de single() pour éviter l'erreur 406
-          const { data: profile, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .maybeSingle();
-            
-          if (error) {
-            console.error('Error fetching profile:', error);
-            toast({
-              title: "Erreur",
-              description: "Impossible de charger votre profil",
-              variant: "destructive",
-            });
-            setHasProfile(false);
-          } else {
-            console.log('Profile data:', profile);
-            setHasProfile(!!profile);
-          }
-        }
-      } catch (error) {
-        console.error('Error checking auth:', error);
-        toast({
-          title: "Erreur",
-          description: "Une erreur est survenue lors de la vérification de l'authentification",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [toast]);
+  const { isAuthenticated, isLoading, hasProfile } = useAuthAndProfile();
 
   const handleSubscribe = async (
     planType: 'starter' | 'pro' | 'enterprise',
