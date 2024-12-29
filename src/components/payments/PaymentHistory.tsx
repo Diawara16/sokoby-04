@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useToast } from "@/hooks/use-toast";
 
 interface Payment {
   id: string;
@@ -16,26 +17,64 @@ interface Payment {
 export const PaymentHistory = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const { data, error } = await supabase
+        console.log("Fetching payment history...");
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          console.log("No authenticated user found");
+          setError("Vous devez être connecté pour voir votre historique de paiements");
+          setLoading(false);
+          return;
+        }
+
+        const { data, error: fetchError } = await supabase
           .from("payment_history")
           .select("*")
+          .eq('user_id', user.id)
           .order("created_at", { ascending: false });
 
-        if (error) throw error;
+        if (fetchError) {
+          console.error("Error fetching payments:", fetchError);
+          setError("Erreur lors du chargement de l'historique des paiements");
+          toast({
+            title: "Erreur",
+            description: "Impossible de charger l'historique des paiements",
+            variant: "destructive",
+          });
+          throw fetchError;
+        }
+
+        console.log("Payments fetched successfully:", data);
         setPayments(data || []);
       } catch (error) {
-        console.error("Erreur lors du chargement de l'historique:", error);
+        console.error("Error in payment history:", error);
+        setError("Une erreur est survenue lors du chargement de l'historique");
       } finally {
         setLoading(false);
       }
     };
 
     fetchPayments();
-  }, []);
+  }, [toast]);
+
+  if (error) {
+    return (
+      <Card className="mt-8">
+        <CardHeader>
+          <CardTitle>Historique des paiements</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-center text-red-500">{error}</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (loading) {
     return (
