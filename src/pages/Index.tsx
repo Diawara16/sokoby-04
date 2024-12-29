@@ -39,7 +39,10 @@ const Index = () => {
 
   const t = translations[currentLanguage as keyof typeof translations];
 
-  if (!t?.cta?.button || typeof t.cta.button !== 'string') {
+  // Ensure all required translation strings exist and are of the correct type
+  if (!t?.navigation?.home || !t?.cta?.button || 
+      typeof t.navigation.home !== 'string' || 
+      typeof t.cta.button !== 'string') {
     return null;
   }
 
