@@ -36,9 +36,7 @@ export function Header({ isAuthenticated }: HeaderProps) {
         
         <div className="flex items-center gap-4">
           {isAuthenticated ? (
-            <>
-              <NotificationBell />
-            </>
+            <NotificationBell />
           ) : (
             <div className="flex items-center gap-3">
               <Link to="/plan-tarifaire">
