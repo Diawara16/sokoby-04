@@ -28,8 +28,8 @@ export const PricingPlans = ({ currentLanguage, onSubscribe }: PricingPlansProps
       description: "Pour les entreprises en croissance",
       planType: "pro" as const,
       features: [
-        "1 boutique en ligne",
-        "Jusqu'à 100 produits",
+        "3 boutiques en ligne",
+        "Jusqu'à 500 produits",
         "Support prioritaire",
         "Analytics avancés",
         "Personnalisation avancée",
@@ -47,7 +47,7 @@ export const PricingPlans = ({ currentLanguage, onSubscribe }: PricingPlansProps
       description: "Pour les grandes entreprises",
       planType: "enterprise" as const,
       features: [
-        "1 boutique en ligne premium",
+        "Boutiques en ligne illimitées",
         "Produits illimités",
         "Support dédié 24/7",
         "Analytics en temps réel",

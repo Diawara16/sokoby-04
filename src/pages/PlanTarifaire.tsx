@@ -62,7 +62,13 @@ const PlanTarifaire = () => {
               <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
-              Jusqu'à 100 produits
+              1 boutique en ligne
+            </li>
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Jusqu'à 20 produits
             </li>
             <li className="flex items-center">
               <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,7 +92,7 @@ const PlanTarifaire = () => {
         </div>
 
         {/* Plan Pro */}
-        <div className="border rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow bg-primary-50">
+        <div className="border rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow bg-primary-50 relative">
           <div className="absolute top-0 right-0 bg-primary text-white px-4 py-1 rounded-bl-lg">
             Populaire
           </div>
@@ -97,7 +103,13 @@ const PlanTarifaire = () => {
               <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
-              Produits illimités
+              3 boutiques en ligne
+            </li>
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Jusqu'à 500 produits
             </li>
             <li className="flex items-center">
               <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,12 +122,6 @@ const PlanTarifaire = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
               Analytics avancés
-            </li>
-            <li className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              Personnalisation avancée
             </li>
           </ul>
           <Button 
@@ -135,25 +141,25 @@ const PlanTarifaire = () => {
               <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
-              Tout du plan Pro
+              Boutiques illimitées
             </li>
             <li className="flex items-center">
               <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
-              Support dédié 24/7
+              Produits illimités
             </li>
             <li className="flex items-center">
               <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
-              Intégrations sur mesure
+              Support 24/7
             </li>
             <li className="flex items-center">
               <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
-              SLA garanti
+              Toutes les fonctionnalités
             </li>
           </ul>
           <Button 
