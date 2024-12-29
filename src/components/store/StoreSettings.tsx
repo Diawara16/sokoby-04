@@ -1,50 +1,60 @@
 import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase";
-import { Store } from "lucide-react";
-import { DomainChecker } from "./DomainChecker";
-import { ContactFields } from "./ContactFields";
+
+interface StoreSettings {
+  id: string;
+  store_name: string;
+  store_email: string | null;
+  store_phone: string | null;
+  store_address: string | null;
+  domain_name: string | null;
+  is_custom_domain: boolean;
+}
 
 export const StoreSettings = () => {
-  const [settings, setSettings] = useState({
-    store_name: "",
-    domain_name: "",
-    store_email: "",
-    store_phone: "",
-    store_address: "",
-  });
+  const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
-
-  useEffect(() => {
-    loadStoreSettings();
-  }, []);
 
   const loadStoreSettings = async () => {
     try {
-      const { data: storeData, error } = await supabase
-        .from("store_settings")
-        .select("*")
-        .single();
-
-      if (error) throw error;
-
-      if (storeData) {
-        setSettings({
-          store_name: storeData.store_name || "",
-          domain_name: storeData.domain_name || "",
-          store_email: storeData.store_email || "",
-          store_phone: storeData.store_phone || "",
-          store_address: storeData.store_address || "",
-        });
+      console.log("Chargement des paramètres de la boutique...");
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        console.log("Aucun utilisateur connecté");
+        setIsLoading(false);
+        return;
       }
-    } catch (error) {
-      console.error("Error loading store settings:", error);
+
+      const { data, error } = await supabase
+        .from('store_settings')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Erreur lors du chargement des paramètres:", error);
+        throw error;
+      }
+
+      console.log("Paramètres chargés:", data);
+      setSettings(data || {
+        id: '',
+        store_name: 'Ma boutique',
+        store_email: '',
+        store_phone: '',
+        store_address: '',
+        domain_name: '',
+        is_custom_domain: false
+      });
+    } catch (error: any) {
+      console.error("Erreur lors du chargement des paramètres de la boutique:", error);
       toast({
         title: "Erreur",
         description: "Impossible de charger les paramètres de la boutique",
@@ -55,86 +65,104 @@ export const StoreSettings = () => {
     }
   };
 
+  useEffect(() => {
+    loadStoreSettings();
+  }, []);
+
   const handleSave = async () => {
-    setIsSaving(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour sauvegarder les paramètres",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!settings) return;
+
       const { error } = await supabase
-        .from("store_settings")
+        .from('store_settings')
         .upsert({
           ...settings,
-          updated_at: new Date().toISOString(),
+          user_id: user.id,
         });
 
       if (error) throw error;
 
       toast({
         title: "Succès",
-        description: "Les paramètres de la boutique ont été enregistrés",
+        description: "Les paramètres ont été sauvegardés",
       });
-    } catch (error) {
-      console.error("Error saving store settings:", error);
+    } catch (error: any) {
+      console.error("Erreur lors de la sauvegarde:", error);
       toast({
         title: "Erreur",
-        description: "Impossible d'enregistrer les paramètres de la boutique",
+        description: "Impossible de sauvegarder les paramètres",
         variant: "destructive",
       });
-    } finally {
-      setIsSaving(false);
     }
-  };
-
-  const handleContactFieldChange = (field: string, value: string) => {
-    setSettings(prev => ({ ...prev, [field]: value }));
   };
 
   if (isLoading) {
     return (
-      <Card className="p-6 mb-8">
-        <div className="animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-          <div className="h-8 bg-gray-200 rounded mb-4"></div>
-          <div className="h-8 bg-gray-200 rounded"></div>
-        </div>
-      </Card>
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
     );
   }
 
   return (
-    <Card className="p-6 mb-8">
-      <div className="flex items-center gap-2 mb-6">
-        <Store className="h-5 w-5 text-gray-600" />
-        <h3 className="text-xl font-semibold">Paramètres de la boutique</h3>
-      </div>
-
-      <div className="space-y-6">
+    <Card className="p-6">
+      <h2 className="text-2xl font-bold mb-6">Paramètres de la boutique</h2>
+      <div className="space-y-4">
         <div>
           <Label htmlFor="store_name">Nom de la boutique</Label>
           <Input
             id="store_name"
-            value={settings.store_name}
-            onChange={(e) => setSettings({ ...settings, store_name: e.target.value })}
-            placeholder="Ma boutique en ligne"
+            value={settings?.store_name || ''}
+            onChange={(e) => setSettings(prev => prev ? {...prev, store_name: e.target.value} : null)}
           />
         </div>
-
-        <DomainChecker
-          value={settings.domain_name}
-          onChange={(value) => setSettings({ ...settings, domain_name: value })}
-        />
-
-        <ContactFields
-          storeEmail={settings.store_email}
-          storePhone={settings.store_phone}
-          storeAddress={settings.store_address}
-          onChange={handleContactFieldChange}
-        />
-
-        <Button 
-          onClick={handleSave} 
-          disabled={isSaving}
-          className="w-full"
-        >
-          {isSaving ? "Enregistrement..." : "Enregistrer les modifications"}
+        <div>
+          <Label htmlFor="store_email">Email</Label>
+          <Input
+            id="store_email"
+            type="email"
+            value={settings?.store_email || ''}
+            onChange={(e) => setSettings(prev => prev ? {...prev, store_email: e.target.value} : null)}
+          />
+        </div>
+        <div>
+          <Label htmlFor="store_phone">Téléphone</Label>
+          <Input
+            id="store_phone"
+            type="tel"
+            value={settings?.store_phone || ''}
+            onChange={(e) => setSettings(prev => prev ? {...prev, store_phone: e.target.value} : null)}
+          />
+        </div>
+        <div>
+          <Label htmlFor="store_address">Adresse</Label>
+          <Input
+            id="store_address"
+            value={settings?.store_address || ''}
+            onChange={(e) => setSettings(prev => prev ? {...prev, store_address: e.target.value} : null)}
+          />
+        </div>
+        <div>
+          <Label htmlFor="domain_name">Nom de domaine</Label>
+          <Input
+            id="domain_name"
+            value={settings?.domain_name || ''}
+            onChange={(e) => setSettings(prev => prev ? {...prev, domain_name: e.target.value} : null)}
+          />
+        </div>
+        <Button onClick={handleSave} className="w-full">
+          Sauvegarder les modifications
         </Button>
       </div>
     </Card>
