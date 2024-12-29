@@ -39,8 +39,8 @@ const Index = () => {
 
   const t = translations[currentLanguage as keyof typeof translations];
 
-  if (!t || !t.cta) {
-    return null; // Return null if translations are not loaded
+  if (!t || !t.cta || typeof t.cta.button !== 'string') {
+    return null; // Return null if translations are not loaded or invalid
   }
 
   return (
@@ -63,7 +63,7 @@ const Index = () => {
               className="bg-red-600 hover:bg-red-700 transition-colors duration-200"
               onClick={handleCreateStore}
             >
-              {typeof t.cta.button === 'string' ? t.cta.button : ''}
+              {t.cta.button}
             </Button>
           </div>
         </div>
