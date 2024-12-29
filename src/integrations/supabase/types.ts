@@ -215,6 +215,45 @@ export type Database = {
         }
         Relationships: []
       }
+      store_settings: {
+        Row: {
+          created_at: string
+          domain_name: string | null
+          id: string
+          is_custom_domain: boolean | null
+          store_address: string | null
+          store_email: string | null
+          store_name: string
+          store_phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          domain_name?: string | null
+          id?: string
+          is_custom_domain?: boolean | null
+          store_address?: string | null
+          store_email?: string | null
+          store_name: string
+          store_phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          domain_name?: string | null
+          id?: string
+          is_custom_domain?: boolean | null
+          store_address?: string | null
+          store_email?: string | null
+          store_name?: string
+          store_phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string

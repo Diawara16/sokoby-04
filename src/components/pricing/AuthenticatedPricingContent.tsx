@@ -3,6 +3,7 @@ import { ReferralCard } from "@/components/referral/ReferralCard";
 import { PlanComparison } from "@/components/pricing/PlanComparison";
 import { PricingPlans } from "@/components/pricing/PricingPlans";
 import { UserDashboard } from "@/components/dashboard/UserDashboard";
+import { StoreSettings } from "@/components/store/StoreSettings";
 
 interface AuthenticatedPricingContentProps {
   hasProfile: boolean;
@@ -40,6 +41,7 @@ export const AuthenticatedPricingContent = ({
         <PricingPlans currentLanguage="fr" onSubscribe={onSubscribe} />
         <PlanComparison currentLanguage="fr" />
         <div className="mt-16">
+          <StoreSettings />
           <ReferralCard />
         </div>
         <PaymentHistory />
