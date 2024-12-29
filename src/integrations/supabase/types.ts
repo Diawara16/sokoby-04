@@ -41,6 +41,36 @@ export type Database = {
           },
         ]
       }
+      coupons: {
+        Row: {
+          code: string
+          created_at: string
+          current_uses: number | null
+          discount_percent: number
+          id: string
+          max_uses: number | null
+          valid_until: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          current_uses?: number | null
+          discount_percent: number
+          id?: string
+          max_uses?: number | null
+          valid_until?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          current_uses?: number | null
+          discount_percent?: number
+          id?: string
+          max_uses?: number | null
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           content: string
