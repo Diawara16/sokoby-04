@@ -34,6 +34,7 @@ export const useAuthForm = (defaultIsSignUp: boolean = false) => {
             title: "Compte créé avec succès",
             description: "Veuillez vérifier votre email pour confirmer votre compte.",
           });
+          navigate("/onboarding");
         }
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -44,11 +45,25 @@ export const useAuthForm = (defaultIsSignUp: boolean = false) => {
         if (error) throw error;
 
         if (data.user) {
+          // Vérifier si l'utilisateur a déjà une configuration de boutique
+          const { data: storeSettings } = await supabase
+            .from('store_settings')
+            .select('*')
+            .eq('user_id', data.user.id)
+            .single();
+
           toast({
             title: "Connexion réussie",
             description: "Vous êtes maintenant connecté.",
           });
-          navigate("/onboarding");
+
+          // Si l'utilisateur a déjà configuré sa boutique, le rediriger vers le tableau de bord
+          // Sinon, le rediriger vers l'onboarding
+          if (storeSettings) {
+            navigate("/dashboard");
+          } else {
+            navigate("/onboarding");
+          }
         }
       }
     } catch (error: any) {
