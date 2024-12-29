@@ -37,7 +37,7 @@ serve(async (req) => {
       throw new Error('Invalid user');
     }
 
-    const { planType } = await req.json();
+    const { planType, paymentMethod = 'card' } = await req.json();
     const priceId = PRICE_IDS[planType as keyof typeof PRICE_IDS];
 
     if (!priceId) {
@@ -81,6 +81,7 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
+      payment_method_types: ['card', 'paypal'],
       success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get('origin')}/plan-tarifaire`,
     });

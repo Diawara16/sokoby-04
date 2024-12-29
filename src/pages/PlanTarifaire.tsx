@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Check, CreditCard } from "lucide-react";
+import { Check, CreditCard, Paypal } from "lucide-react";
 import { translations } from "@/translations";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { useToast } from "@/components/ui/use-toast";
@@ -13,7 +13,7 @@ const PlanTarifaire = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubscribe = async (planType: 'starter' | 'pro' | 'enterprise') => {
+  const handleSubscribe = async (planType: 'starter' | 'pro' | 'enterprise', paymentMethod: 'card' | 'paypal' = 'card') => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
@@ -33,7 +33,7 @@ const PlanTarifaire = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ planType }),
+        body: JSON.stringify({ planType, paymentMethod }),
       });
 
       const { url, error } = await response.json();
@@ -171,17 +171,32 @@ const PlanTarifaire = () => {
               ))}
             </ul>
 
-            <Button
-              className={`w-full ${
-                plan.popular
-                  ? "bg-red-600 hover:bg-red-700 text-white"
-                  : "bg-red-700 hover:bg-red-800 text-white"
-              } transition-colors`}
-              onClick={() => handleSubscribe(plan.planType)}
-            >
-              <CreditCard className="mr-2 h-4 w-4" />
-              {t.pricing.startTrial}
-            </Button>
+            <div className="space-y-3">
+              <Button
+                className={`w-full ${
+                  plan.popular
+                    ? "bg-red-600 hover:bg-red-700 text-white"
+                    : "bg-red-700 hover:bg-red-800 text-white"
+                } transition-colors`}
+                onClick={() => handleSubscribe(plan.planType, 'card')}
+              >
+                <CreditCard className="mr-2 h-4 w-4" />
+                {t.pricing.startTrial}
+              </Button>
+
+              <Button
+                variant="outline"
+                className="w-full border-2 hover:bg-blue-50"
+                onClick={() => handleSubscribe(plan.planType, 'paypal')}
+              >
+                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19.5 8.5h-2.5a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2h-2.5" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M17.5 8.5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M12 14v2" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Payer avec PayPal
+              </Button>
+            </div>
           </Card>
         ))}
       </div>
