@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/lib/supabase";
-import { format, differenceInDays } from "date-fns";
-import { fr } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
-import { Clock, Activity, Star } from "lucide-react";
+import { TrialStatus } from "./TrialStatus";
+import { FeatureUsage } from "./FeatureUsage";
+import { Recommendations } from "./Recommendations";
 
 interface UserProfile {
   trial_ends_at: string | null;
@@ -69,83 +67,18 @@ export const UserDashboard = () => {
     return Math.max(0, daysRemaining);
   };
 
-  const daysRemaining = getDaysRemaining();
-  const trialProgress = ((14 - daysRemaining) / 14) * 100;
+  const hasFeatures = profile?.features_usage ? Object.keys(profile.features_usage).length > 0 : false;
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Statut de votre période d'essai
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {profile?.trial_ends_at ? (
-            <div className="space-y-4">
-              <Progress value={trialProgress} className="h-2" />
-              <p className="text-sm text-muted-foreground">
-                Il vous reste {daysRemaining} jours d'essai gratuit
-                {daysRemaining > 0 && ` (se termine le ${format(new Date(profile.trial_ends_at), "d MMMM yyyy", { locale: fr })})`}
-              </p>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              Période d'essai terminée
-            </p>
-          )}
-        </CardContent>
-      </Card>
-
+      <TrialStatus trialEndsAt={profile?.trial_ends_at} />
+      
       <div className="grid md:grid-cols-2 gap-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5" />
-              Utilisation des fonctionnalités
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {profile?.features_usage && Object.keys(profile.features_usage).length > 0 ? (
-                Object.entries(profile.features_usage).map(([feature, count]) => (
-                  <div key={feature} className="flex justify-between items-center">
-                    <span className="text-sm">{feature}</span>
-                    <span className="text-sm font-medium">{count} utilisations</span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  Aucune utilisation enregistrée
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Star className="h-5 w-5" />
-              Recommandations
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {daysRemaining <= 3 && (
-                <p className="text-sm text-amber-600">
-                  Votre période d'essai se termine bientôt. Pensez à souscrire à un abonnement pour continuer à utiliser nos services.
-                </p>
-              )}
-              {(!profile?.features_usage || Object.keys(profile.features_usage).length === 0) && (
-                <p className="text-sm text-muted-foreground">
-                  Explorez nos différentes fonctionnalités pour tirer le meilleur parti de votre période d'essai !
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <FeatureUsage features={profile?.features_usage || {}} />
+        <Recommendations 
+          daysRemaining={getDaysRemaining()} 
+          hasFeatures={hasFeatures}
+        />
       </div>
     </div>
   );
