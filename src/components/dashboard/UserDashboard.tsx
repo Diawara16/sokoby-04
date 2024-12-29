@@ -42,20 +42,33 @@ export const UserDashboard = () => {
           return;
         }
 
+        // Utiliser maybeSingle() au lieu de single() pour éviter les erreurs
         const { data, error } = await supabase
           .from("profiles")
           .select("*")
           .eq("id", user.id)
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
+
+        if (!data) {
+          toast({
+            title: "Profil non trouvé",
+            description: "Impossible de charger votre profil",
+            variant: "destructive",
+          });
+          return;
+        }
+
         setProfile(data);
 
         // Charger les métriques du tableau de bord
-        const { data: cartItems } = await supabase
+        const { data: cartItems, error: cartError } = await supabase
           .from("cart_items")
           .select("*")
           .eq("user_id", user.id);
+
+        if (cartError) throw cartError;
 
         const dashboardMetrics: DashboardMetric[] = [
           {
