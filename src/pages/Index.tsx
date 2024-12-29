@@ -132,6 +132,9 @@ const Index = () => {
           currentLanguage={currentLanguage}
           onCreateStore={handleCreateStore}
         />
+
+        {/* Ajout d'un espace blanc entre le contenu et le footer */}
+        <div className="h-24" />
       </div>
 
       <Footer />
