@@ -50,12 +50,14 @@ const Themes = () => {
       
       <div className="flex gap-4 mb-8">
         <Button
+          className={`${selectedTheme === 'free' ? 'bg-red-700 hover:bg-red-800' : ''}`}
           variant={selectedTheme === 'free' ? 'default' : 'outline'}
           onClick={() => setSelectedTheme('free')}
         >
           Thème Gratuit
         </Button>
         <Button
+          className={`${selectedTheme === 'private' ? 'bg-red-700 hover:bg-red-800' : ''}`}
           variant={selectedTheme === 'private' ? 'default' : 'outline'}
           onClick={() => setSelectedTheme('private')}
         >
@@ -73,7 +75,7 @@ const Themes = () => {
             <ul className="space-y-2">
               {currentTheme.features.map((feature, index) => (
                 <li key={index} className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-primary"></span>
+                  <span className="w-2 h-2 rounded-full bg-red-600"></span>
                   {feature}
                 </li>
               ))}
@@ -94,7 +96,7 @@ const Themes = () => {
             </div>
           </div>
 
-          <Button className="w-full">
+          <Button className="w-full bg-red-700 hover:bg-red-800">
             {selectedTheme === 'free' ? 'Utiliser ce thème' : 'Passer à la version Premium'}
           </Button>
         </Card>
