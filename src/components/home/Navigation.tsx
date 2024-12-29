@@ -11,8 +11,8 @@ export const Navigation = ({ currentLanguage }: NavigationProps) => {
   const navigate = useNavigate();
   const t = translations[currentLanguage as keyof typeof translations];
 
-  if (!t || !t.navigation || !t.cta) {
-    return null; // Return null if translations are not loaded
+  if (!t || !t.navigation || !t.cta || typeof t.cta.button !== 'string') {
+    return null;
   }
 
   return (
@@ -47,7 +47,7 @@ export const Navigation = ({ currentLanguage }: NavigationProps) => {
         className="bg-red-600 hover:bg-red-700 text-white"
         onClick={() => navigate('/essai-gratuit')}
       >
-        {typeof t.cta.button === 'string' ? t.cta.button : ''}
+        {t.cta.button}
       </Button>
     </div>
   );

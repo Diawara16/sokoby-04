@@ -40,7 +40,7 @@ const Index = () => {
   const t = translations[currentLanguage as keyof typeof translations];
 
   if (!t || !t.cta || typeof t.cta.button !== 'string') {
-    return null; // Return null if translations are not loaded or invalid
+    return null;
   }
 
   return (

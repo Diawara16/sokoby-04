@@ -10,8 +10,8 @@ interface CTASectionProps {
 export const CTASection = ({ currentLanguage, onCreateStore }: CTASectionProps) => {
   const t = translations[currentLanguage as keyof typeof translations];
 
-  if (!t || !t.cta) {
-    return null; // Return null if translations are not loaded
+  if (!t || !t.cta || typeof t.cta.button !== 'string') {
+    return null;
   }
 
   return (
@@ -28,7 +28,7 @@ export const CTASection = ({ currentLanguage, onCreateStore }: CTASectionProps) 
           className="bg-red-600 hover:bg-red-700 text-white transition-colors duration-200"
           onClick={onCreateStore}
         >
-          {typeof t.cta.button === 'string' ? t.cta.button : ''}
+          {t.cta.button}
           <ArrowRight className="ml-2 h-5 w-5" />
         </Button>
       </div>
