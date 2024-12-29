@@ -50,28 +50,36 @@ export const ProfileForm = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">Mon Profil</h1>
-      <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
+    <div className="w-full max-w-md mx-auto mt-16">
+      <div className="bg-white rounded-lg shadow-lg p-8">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-6 text-center">Mon Profil</h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
+              {t.profile.fullName}
+            </label>
             <Input
+              id="fullName"
               type="text"
-              placeholder={t.profile.fullName}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
               className="w-full"
+              placeholder={t.profile.fullName}
             />
           </div>
-          <div className="space-y-2">
+          <div>
+            <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+              {t.profile.phoneNumber}
+            </label>
             <Input
+              id="phoneNumber"
               type="tel"
-              placeholder={t.profile.phoneNumber}
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               required
               className="w-full"
+              placeholder={t.profile.phoneNumber}
             />
           </div>
           <Button 
