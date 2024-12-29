@@ -17,11 +17,7 @@ const Profile = () => {
     checkSession();
   }, [navigate]);
 
-  return (
-    <div className="container mx-auto px-4">
-      <ProfileForm />
-    </div>
-  );
+  return <ProfileForm />;
 };
 
 export default Profile;
