@@ -19,6 +19,9 @@ export function Header({ isAuthenticated }: HeaderProps) {
             />
           </Link>
           <nav className="hidden md:flex items-center space-x-6">
+            <Link to="/" className="text-sm text-gray-600 hover:text-gray-900">
+              Accueil
+            </Link>
             <Link to="/plan-tarifaire" className="text-sm text-gray-600 hover:text-gray-900">
               Tarifs
             </Link>
