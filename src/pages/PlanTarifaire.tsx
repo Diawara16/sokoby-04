@@ -25,23 +25,16 @@ const PlanTarifaire = () => {
         return;
       }
 
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ planType, paymentMethod }),
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: { planType, paymentMethod },
       });
 
-      const { url, error } = await response.json();
-
       if (error) {
-        throw new Error(error);
+        throw error;
       }
 
-      if (url) {
-        window.location.href = url;
+      if (data?.url) {
+        window.location.href = data.url;
       }
     } catch (error) {
       console.error('Erreur lors de la création de la session de paiement:', error);
