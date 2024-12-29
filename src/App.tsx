@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { Toaster } from "@/components/ui/toaster";
@@ -15,7 +16,6 @@ import Legal from "@/pages/Legal";
 import Accessibility from "@/pages/Accessibility";
 import Profile from "@/pages/Profile";
 import Onboarding from "@/pages/Onboarding";
-import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 
