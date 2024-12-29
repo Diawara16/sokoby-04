@@ -5,6 +5,9 @@ import { PricingPlans } from "@/components/pricing/PricingPlans";
 import { UserDashboard } from "@/components/dashboard/UserDashboard";
 import { StoreSettings } from "@/components/store/StoreSettings";
 import { UserPermissions } from "@/components/store/UserPermissions";
+import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 interface AuthenticatedPricingContentProps {
   hasProfile: boolean;
@@ -19,17 +22,54 @@ export const AuthenticatedPricingContent = ({
   hasProfile,
   onSubscribe,
 }: AuthenticatedPricingContentProps) => {
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const createProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: existingProfile } = await supabase
+          .from('profiles')
+          .select()
+          .eq('id', user.id)
+          .single();
+
+        if (!existingProfile) {
+          const { error } = await supabase
+            .from('profiles')
+            .insert([{ id: user.id, email: user.email }]);
+
+          if (error) throw error;
+
+          toast({
+            title: "Profil créé",
+            description: "Votre profil a été créé avec succès",
+          });
+        }
+      } catch (error: any) {
+        console.error("Erreur lors de la création du profil:", error);
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de la création de votre profil",
+          variant: "destructive",
+        });
+      }
+    };
+
+    if (!hasProfile) {
+      createProfile();
+    }
+  }, [hasProfile, toast]);
+
   if (!hasProfile) {
     return (
-      <div className="text-center">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Profil non trouvé</h2>
-        <p className="text-gray-600 mb-8">Impossible de charger votre profil</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
-        >
-          Réessayer
-        </button>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Création de votre profil en cours...</p>
+        </div>
       </div>
     );
   }
