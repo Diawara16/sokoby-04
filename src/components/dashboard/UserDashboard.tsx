@@ -9,7 +9,7 @@ import { Clock, Activity, Star } from "lucide-react";
 
 interface UserProfile {
   trial_ends_at: string | null;
-  features_usage: any;
+  features_usage: Record<string, number>;
   last_login: string | null;
 }
 
@@ -98,7 +98,7 @@ export const UserDashboard = () => {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid md:grid-cols-2 gap-8">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -108,7 +108,7 @@ export const UserDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {profile?.features_usage ? (
+              {profile?.features_usage && Object.keys(profile.features_usage).length > 0 ? (
                 Object.entries(profile.features_usage).map(([feature, count]) => (
                   <div key={feature} className="flex justify-between items-center">
                     <span className="text-sm">{feature}</span>
@@ -138,7 +138,7 @@ export const UserDashboard = () => {
                   Votre période d'essai se termine bientôt. Pensez à souscrire à un abonnement pour continuer à utiliser nos services.
                 </p>
               )}
-              {!profile?.features_usage && (
+              {(!profile?.features_usage || Object.keys(profile.features_usage).length === 0) && (
                 <p className="text-sm text-muted-foreground">
                   Explorez nos différentes fonctionnalités pour tirer le meilleur parti de votre période d'essai !
                 </p>
