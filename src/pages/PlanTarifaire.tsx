@@ -4,12 +4,37 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 import { PricingPlan } from "@/components/pricing/PricingPlan";
+import { useEffect, useState } from "react";
+import { AuthForm } from "@/components/auth/AuthForm";
+import { Button } from "@/components/ui/button";
 
 const PlanTarifaire = () => {
   const { currentLanguage } = useLanguageContext();
   const t = translations[currentLanguage as keyof typeof translations];
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [showAuthForm, setShowAuthForm] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+    
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+      if (event === 'SIGNED_IN') {
+        setShowAuthForm(false);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const handleSubscribe = async (planType: 'starter' | 'pro' | 'enterprise', paymentMethod: 'card' | 'apple_pay' | 'google_pay') => {
     try {
@@ -18,12 +43,7 @@ const PlanTarifaire = () => {
       
       if (!session) {
         console.log('Utilisateur non connecté');
-        toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour souscrire à un abonnement",
-          variant: "destructive",
-        });
-        navigate('/login');
+        setShowAuthForm(true);
         return;
       }
 
@@ -114,15 +134,41 @@ const PlanTarifaire = () => {
     },
   ];
 
+  if (showAuthForm) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <AuthForm 
+            defaultIsSignUp={false}
+            onCancel={() => setShowAuthForm(false)}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-black mb-4">
           {t.pricing.title}
         </h1>
-        <p className="text-xl text-black">
+        <p className="text-xl text-black mb-6">
           {t.pricing.subtitle}
         </p>
+        {!isAuthenticated && (
+          <div className="mb-8">
+            <p className="text-lg text-gray-600 mb-4">
+              Connectez-vous pour commencer votre abonnement
+            </p>
+            <Button 
+              onClick={() => setShowAuthForm(true)}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Se connecter
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="grid md:grid-cols-3 gap-8">
