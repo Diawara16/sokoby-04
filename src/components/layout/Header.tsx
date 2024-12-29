@@ -15,7 +15,7 @@ export function Header({ isAuthenticated }: HeaderProps) {
             <img 
               src="/lovable-uploads/e423a6d8-87e5-4ef9-af43-7e96b44fd685.png" 
               alt="Sokoby" 
-              className="h-18 w-auto" // Augmenté de h-14 à h-18
+              className="h-14 w-auto" // Réduit de h-18 à h-14
             />
           </Link>
           <nav className="hidden md:flex items-center space-x-6">
