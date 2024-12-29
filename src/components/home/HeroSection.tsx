@@ -13,15 +13,6 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
   const [isSignUp, setIsSignUp] = useState(true);
   const t = translations[currentLanguage as keyof typeof translations];
 
-  // Vérification stricte des types pour les traductions
-  if (!t?.hero?.title || !t?.hero?.subtitle || !t?.auth?.createAccount || 
-      !t?.auth?.signIn || typeof t.hero.title !== 'string' || 
-      typeof t.hero.subtitle !== 'string' || 
-      typeof t.auth.createAccount !== 'string' || 
-      typeof t.auth.signIn !== 'string') {
-    return null;
-  }
-
   const handleAuthClick = (signup: boolean) => {
     setIsSignUp(signup);
     setShowAuthForm(true);
@@ -34,10 +25,10 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="text-left space-y-8">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 animate-fadeIn leading-tight">
-              {t.hero.title}
+              Construisez votre empire e-commerce
             </h1>
             <p className="text-lg sm:text-xl lg:text-2xl mb-8 text-red-100">
-              {t.hero.subtitle}
+              La plateforme complète pour lancer et développer votre boutique en ligne
             </p>
           </div>
           <div className="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl">
@@ -50,10 +41,10 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
               <div className="flex flex-col gap-4">
                 <Button 
                   onClick={() => handleAuthClick(true)}
-                  className="bg-white text-red-600 hover:bg-red-50 w-full border-2 border-black"
+                  className="bg-white text-red-600 hover:bg-red-50 w-full"
                   size="lg"
                 >
-                  {t.auth.createAccount}
+                  Créer mon compte
                 </Button>
                 <Button 
                   onClick={() => handleAuthClick(false)}
@@ -61,7 +52,7 @@ export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionPro
                   className="bg-red-600 hover:bg-red-700 text-white w-full"
                   size="lg"
                 >
-                  {t.auth.signIn}
+                  Se connecter
                 </Button>
               </div>
             )}

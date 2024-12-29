@@ -12,9 +12,11 @@ interface HeaderProps {
 export function Header({ isAuthenticated }: HeaderProps) {
   const { currentLanguage } = useLanguageContext();
   const [showAuthForm, setShowAuthForm] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const t = translations[currentLanguage as keyof typeof translations];
 
-  const handleAuthClick = () => {
+  const handleAuthClick = (signup: boolean) => {
+    setIsSignUp(signup);
     setShowAuthForm(true);
   };
 
@@ -58,16 +60,16 @@ export function Header({ isAuthenticated }: HeaderProps) {
               <>
                 <Button
                   variant="ghost"
-                  onClick={handleAuthClick}
+                  onClick={() => handleAuthClick(false)}
                   className="text-gray-900 hover:text-red-600"
                 >
-                  Se connecter
+                  S'identifier
                 </Button>
                 <Button
-                  onClick={handleAuthClick}
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold"
+                  onClick={() => handleAuthClick(true)}
+                  className="bg-red-600 hover:bg-red-700 text-white"
                 >
-                  Créer ma boutique
+                  Démarrer l'essai gratuit
                 </Button>
               </>
             ) : (
@@ -83,11 +85,11 @@ export function Header({ isAuthenticated }: HeaderProps) {
       </div>
 
       {showAuthForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
             <div className="p-4">
               <AuthForm 
-                defaultIsSignUp={false}
+                defaultIsSignUp={isSignUp}
                 onCancel={() => setShowAuthForm(false)}
               />
             </div>
