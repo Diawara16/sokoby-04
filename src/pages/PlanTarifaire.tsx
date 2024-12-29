@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { PaymentHistory } from "@/components/payments/PaymentHistory";
 import { ReferralCard } from "@/components/referral/ReferralCard";
+import { PlanComparison } from "@/components/pricing/PlanComparison";
 
 const PlanTarifaire = () => {
   const { toast } = useToast();
@@ -173,6 +174,9 @@ const PlanTarifaire = () => {
           </Button>
         </div>
       </div>
+
+      {/* Ajout du tableau de comparaison détaillé */}
+      <PlanComparison currentLanguage="fr" />
 
       {/* Ajout de la carte de parrainage */}
       <div className="mt-16">
