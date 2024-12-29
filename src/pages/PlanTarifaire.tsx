@@ -1,11 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Check, CreditCard, Paypal } from "lucide-react";
-import { translations } from "@/translations";
 import { useLanguageContext } from "@/contexts/LanguageContext";
+import { translations } from "@/translations";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
+import { PricingPlan } from "@/components/pricing/PricingPlan";
 
 const PlanTarifaire = () => {
   const { currentLanguage } = useLanguageContext();
@@ -126,78 +124,12 @@ const PlanTarifaire = () => {
 
       <div className="grid md:grid-cols-3 gap-8">
         {plans.map((plan) => (
-          <Card
+          <PricingPlan
             key={plan.name}
-            className={`relative p-8 rounded-lg ${
-              plan.popular
-                ? "border-2 border-red-600 shadow-lg"
-                : "border border-gray-200"
-            }`}
-          >
-            {plan.popular && (
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm">
-                  {t.pricing.mostPopular}
-                </span>
-              </div>
-            )}
-
-            <div className="text-center">
-              <h3 className="text-2xl font-bold text-black mb-2">
-                {plan.name}
-              </h3>
-              <div className="flex justify-center items-baseline mb-2">
-                <span className="text-5xl font-extrabold text-black">
-                  {plan.price}
-                </span>
-                {plan.period && (
-                  <span className="text-black ml-1">{plan.period}</span>
-                )}
-              </div>
-              {plan.trial && (
-                <div className="text-sm text-red-600 font-medium mb-2">
-                  {t.pricing.freeTrial}
-                </div>
-              )}
-              <p className="text-black mb-6">{plan.description}</p>
-            </div>
-
-            <ul className="space-y-4 mb-8">
-              {plan.features.map((feature) => (
-                <li key={feature} className="flex items-center">
-                  <Check className="h-5 w-5 text-red-600 mr-2" />
-                  <span className="text-black">{feature}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="space-y-3">
-              <Button
-                className={`w-full ${
-                  plan.popular
-                    ? "bg-red-600 hover:bg-red-700 text-white"
-                    : "bg-red-700 hover:bg-red-800 text-white"
-                } transition-colors`}
-                onClick={() => handleSubscribe(plan.planType, 'card')}
-              >
-                <CreditCard className="mr-2 h-4 w-4" />
-                {t.pricing.startTrial}
-              </Button>
-
-              <Button
-                variant="outline"
-                className="w-full border-2 hover:bg-blue-50"
-                onClick={() => handleSubscribe(plan.planType, 'paypal')}
-              >
-                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M19.5 8.5h-2.5a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2h-2.5" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M17.5 8.5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 14v2" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                Payer avec PayPal
-              </Button>
-            </div>
-          </Card>
+            {...plan}
+            onSubscribe={handleSubscribe}
+            currentLanguage={currentLanguage}
+          />
         ))}
       </div>
     </div>
