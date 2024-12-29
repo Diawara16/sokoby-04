@@ -4,8 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { translations } from "@/translations";
-import { FcGoogle } from "react-icons/fc";
-import { supabase } from "@/lib/supabase";
 
 interface AuthFormContentProps {
   email: string;
@@ -36,95 +34,88 @@ export function AuthFormContent({
 }: AuthFormContentProps) {
   const t = translations[currentLanguage as keyof typeof translations];
 
-  const handleGoogleSignIn = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
-      });
-      if (error) throw error;
-    } catch (error) {
-      console.error("Erreur lors de la connexion avec Google:", error);
-    }
-  };
-
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} className="space-y-4">
       <CardContent className="space-y-4">
         {error && (
           <Alert variant="destructive">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
+        
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             type="email"
-            placeholder={t.auth.emailPlaceholder}
+            placeholder="nom@entreprise.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="w-full"
           />
         </div>
+
         <div className="space-y-2">
-          <Label htmlFor="password">{t.auth.password}</Label>
+          <Label htmlFor="password">Mot de passe</Label>
           <Input
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="w-full"
           />
         </div>
-        
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">Ou continuer avec</span>
-          </div>
-        </div>
-
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={handleGoogleSignIn}
-        >
-          <FcGoogle className="mr-2 h-5 w-5" />
-          {t.auth.continueWithGoogle}
-        </Button>
       </CardContent>
-      <CardFooter className="flex flex-col space-y-2">
+
+      <CardFooter className="flex flex-col space-y-4">
         <Button 
           type="submit" 
-          className="w-full bg-red-600 hover:bg-red-700" 
+          className="w-full bg-red-600 hover:bg-red-700 text-white" 
           disabled={isLoading}
         >
-          {isLoading ? (isSignUp ? t.auth.creating : t.auth.signingIn) : (isSignUp ? t.auth.create : t.auth.signIn)}
+          {isLoading 
+            ? (isSignUp ? "Création en cours..." : "Connexion en cours...") 
+            : (isSignUp ? "Commencer l'essai gratuit" : "Se connecter")}
         </Button>
-        <div className="flex gap-2 w-full">
-          <button
-            type="button"
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="text-sm text-center text-red-600 hover:text-red-700 hover:underline"
-          >
-            {isSignUp ? t.auth.alreadyHaveAccount : t.auth.createAccount}
-          </button>
-          {onCancel && (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="text-sm text-center text-gray-500 hover:text-gray-700 hover:underline ml-auto"
-            >
-              {t.auth.back}
-            </button>
+
+        <div className="text-center text-sm text-gray-600">
+          {isSignUp ? (
+            <p>
+              Vous avez déjà un compte ?{" "}
+              <button
+                type="button"
+                onClick={() => setIsSignUp(false)}
+                className="text-red-600 hover:text-red-700 hover:underline"
+              >
+                Se connecter
+              </button>
+            </p>
+          ) : (
+            <p>
+              Pas encore de compte ?{" "}
+              <button
+                type="button"
+                onClick={() => setIsSignUp(true)}
+                className="text-red-600 hover:text-red-700 hover:underline"
+              >
+                Créer un compte
+              </button>
+            </p>
           )}
         </div>
+
+        <p className="text-xs text-center text-gray-500">
+          En continuant, vous acceptez les{" "}
+          <a href="/conditions" className="text-red-600 hover:text-red-700 hover:underline">
+            conditions générales
+          </a>{" "}
+          et la{" "}
+          <a href="/confidentialite" className="text-red-600 hover:text-red-700 hover:underline">
+            politique de confidentialité
+          </a>
+        </p>
       </CardFooter>
     </form>
   );
