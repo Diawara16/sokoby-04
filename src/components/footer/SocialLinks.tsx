@@ -18,18 +18,38 @@ export const SocialLinks = ({ t }: SocialLinksProps) => {
       <h3 className="text-lg font-semibold mb-4">{t.footer.followUs}</h3>
       <p className="text-sm text-gray-300 mb-4">{t.footer.socialMedia}</p>
       <div className="flex space-x-4">
-        <Link to="#" className="hover:text-red-400 transition-colors">
+        <a 
+          href="https://facebook.com/sokoby" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="hover:text-red-400 transition-colors"
+        >
           <Facebook className="h-6 w-6" />
-        </Link>
-        <Link to="#" className="hover:text-red-400 transition-colors">
+        </a>
+        <a 
+          href="https://twitter.com/sokoby" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="hover:text-red-400 transition-colors"
+        >
           <Twitter className="h-6 w-6" />
-        </Link>
-        <Link to="#" className="hover:text-red-400 transition-colors">
+        </a>
+        <a 
+          href="https://instagram.com/sokoby" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="hover:text-red-400 transition-colors"
+        >
           <Instagram className="h-6 w-6" />
-        </Link>
-        <Link to="#" className="hover:text-red-400 transition-colors">
+        </a>
+        <a 
+          href="https://linkedin.com/company/sokoby" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="hover:text-red-400 transition-colors"
+        >
           <Linkedin className="h-6 w-6" />
-        </Link>
+        </a>
       </div>
     </div>
   );
