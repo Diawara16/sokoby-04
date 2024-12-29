@@ -30,19 +30,33 @@ export const AuthenticatedPricingContent = ({
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        const { data: existingProfile } = await supabase
+        console.log("Vérification du profil pour l'utilisateur:", user.id);
+
+        const { data: existingProfile, error: profileError } = await supabase
           .from('profiles')
           .select()
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
+
+        if (profileError) {
+          console.error("Erreur lors de la vérification du profil:", profileError);
+          throw profileError;
+        }
+
+        console.log("Profil existant:", existingProfile);
 
         if (!existingProfile) {
-          const { error } = await supabase
+          console.log("Création d'un nouveau profil...");
+          const { error: insertError } = await supabase
             .from('profiles')
             .insert([{ id: user.id, email: user.email }]);
 
-          if (error) throw error;
+          if (insertError) {
+            console.error("Erreur lors de l'insertion du profil:", insertError);
+            throw insertError;
+          }
 
+          console.log("Profil créé avec succès");
           toast({
             title: "Profil créé",
             description: "Votre profil a été créé avec succès",
