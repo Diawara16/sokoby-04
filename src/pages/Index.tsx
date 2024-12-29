@@ -17,7 +17,6 @@ const Index = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Vérification de l'authentification
     supabase.auth.onAuthStateChange((event, session) => {
       setIsAuthenticated(!!session);
     });
@@ -40,6 +39,10 @@ const Index = () => {
 
   const t = translations[currentLanguage as keyof typeof translations];
 
+  if (!t || !t.cta) {
+    return null; // Return null if translations are not loaded
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <nav className="border-b bg-white shadow-sm">
@@ -50,7 +53,7 @@ const Index = () => {
                 <img 
                   src="/lovable-uploads/e423a6d8-87e5-4ef9-af43-7e96b44fd685.png" 
                   alt="Sokoby" 
-                  className="h-14 w-auto" // Augmenté de h-10 à h-14
+                  className="h-14 w-auto"
                 />
               </Link>
             </div>
@@ -60,7 +63,7 @@ const Index = () => {
               className="bg-red-600 hover:bg-red-700 transition-colors duration-200"
               onClick={handleCreateStore}
             >
-              {t.cta.button}
+              {typeof t.cta.button === 'string' ? t.cta.button : ''}
             </Button>
           </div>
         </div>
