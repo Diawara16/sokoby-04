@@ -8,8 +8,8 @@ export const applications = [
     icon: ShoppingBag,
     authUrl: "https://login.dsers.com/oauth/authorize",
     price: {
-      monthly: 29,
-      annual: 290,
+      monthly: 14.99,
+      annual: 149.99,
     }
   },
   {
@@ -19,8 +19,8 @@ export const applications = [
     icon: Truck,
     authUrl: "https://app.zendrop.com/oauth/authorize",
     price: {
-      monthly: 39,
-      annual: 390,
+      monthly: 19.99,
+      annual: 199.99,
     }
   },
   {
@@ -30,8 +30,8 @@ export const applications = [
     icon: Image,
     authUrl: "https://admin.loox.io/oauth/authorize",
     price: {
-      monthly: 19,
-      annual: 190,
+      monthly: 9.99,
+      annual: 99.99,
     }
   },
   {
@@ -41,8 +41,8 @@ export const applications = [
     icon: TrendingUp,
     authUrl: "https://auth.tiktok-shops.com/oauth/authorize",
     price: {
-      monthly: 49,
-      annual: 490,
+      monthly: 24.99,
+      annual: 249.99,
     }
   },
   {
@@ -52,8 +52,8 @@ export const applications = [
     icon: Star,
     authUrl: "https://app.alireviews.io/oauth/authorize",
     price: {
-      monthly: 19,
-      annual: 190,
+      monthly: 9.99,
+      annual: 99.99,
     }
   },
   {
@@ -63,8 +63,8 @@ export const applications = [
     icon: Package,
     authUrl: "https://developers.cjdropshipping.com/oauth2/authorize",
     price: {
-      monthly: 39,
-      annual: 390,
+      monthly: 19.99,
+      annual: 199.99,
     }
   },
 ];
