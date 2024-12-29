@@ -23,7 +23,7 @@ export function Header({ isAuthenticated }: HeaderProps) {
   };
 
   return (
-    <header className="bg-white border-b relative">
+    <header className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
@@ -75,12 +75,14 @@ export function Header({ isAuthenticated }: HeaderProps) {
       </div>
 
       {showAuthForm && (
-        <div className="absolute top-full left-0 right-0 z-50 p-4 bg-white/80 backdrop-blur-sm">
-          <div className="max-w-md mx-auto">
-            <AuthForm 
-              defaultIsSignUp={false}
-              onCancel={() => setShowAuthForm(false)}
-            />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div className="p-4">
+              <AuthForm 
+                defaultIsSignUp={false}
+                onCancel={() => setShowAuthForm(false)}
+              />
+            </div>
           </div>
         </div>
       )}
