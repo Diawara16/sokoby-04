@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Palette, Settings, Rocket, Magic, Store } from "lucide-react";
+import { ShoppingBag, Palette, Settings, Rocket, Wand, Store } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ConfigurationStep {
@@ -85,7 +85,7 @@ const Configuration = () => {
     {
       title: "Assistant IA",
       description: "Utilisez notre assistant IA pour générer des descriptions de produits uniques et optimisées.",
-      icon: Magic,
+      icon: Wand,
       action: "Essayer l'assistant",
       link: "/assistant"
     },
