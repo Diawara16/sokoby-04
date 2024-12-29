@@ -29,7 +29,7 @@ export const PricingPlans = ({ currentLanguage, onSubscribe }: PricingPlansProps
       planType: "pro" as const,
       features: [
         "3 boutiques en ligne",
-        "Jusqu'à 500 produits",
+        "Jusqu'à 100 produits",
         "Support prioritaire",
         "Analytics avancés",
         "Personnalisation avancée",
