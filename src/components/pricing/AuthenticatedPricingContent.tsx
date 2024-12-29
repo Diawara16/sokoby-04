@@ -4,6 +4,7 @@ import { PlanComparison } from "@/components/pricing/PlanComparison";
 import { PricingPlans } from "@/components/pricing/PricingPlans";
 import { UserDashboard } from "@/components/dashboard/UserDashboard";
 import { StoreSettings } from "@/components/store/StoreSettings";
+import { UserPermissions } from "@/components/store/UserPermissions";
 
 interface AuthenticatedPricingContentProps {
   hasProfile: boolean;
@@ -37,14 +38,15 @@ export const AuthenticatedPricingContent = ({
     <>
       <UserDashboard />
       <div className="mt-16">
-        <h2 className="text-3xl font-bold text-center mb-8">Nos Plans Tarifaires</h2>
-        <PricingPlans currentLanguage="fr" onSubscribe={onSubscribe} />
-        <PlanComparison currentLanguage="fr" />
-        <div className="mt-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Configuration de la boutique</h2>
+        <div className="space-y-8">
           <StoreSettings />
+          <UserPermissions />
+          <PricingPlans currentLanguage="fr" onSubscribe={onSubscribe} />
+          <PlanComparison currentLanguage="fr" />
           <ReferralCard />
+          <PaymentHistory />
         </div>
-        <PaymentHistory />
       </div>
     </>
   );
