@@ -10,7 +10,7 @@ interface CTASectionProps {
 export const CTASection = ({ currentLanguage, onCreateStore }: CTASectionProps) => {
   const t = translations[currentLanguage as keyof typeof translations];
 
-  if (!t || !t.cta || typeof t.cta.button !== 'string') {
+  if (!t || !t.cta || typeof t.cta.title !== 'string' || typeof t.cta.subtitle !== 'string' || typeof t.cta.button !== 'string') {
     return null;
   }
 
@@ -18,10 +18,10 @@ export const CTASection = ({ currentLanguage, onCreateStore }: CTASectionProps) 
     <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="max-w-4xl mx-auto text-center space-y-8">
         <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-gray-900">
-          {t.cta.title || ''}
+          {t.cta.title}
         </h2>
         <p className="text-xl text-gray-600 mb-8">
-          {t.cta.subtitle || ''}
+          {t.cta.subtitle}
         </p>
         <Button 
           size="lg" 
