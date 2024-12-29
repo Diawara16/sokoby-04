@@ -21,21 +21,32 @@ const PlanTarifaire = () => {
         
         if (session) {
           // Utilisation de maybeSingle() au lieu de single() pour éviter l'erreur 406
-          const { data, error } = await supabase
+          const { data: profile, error } = await supabase
             .from('profiles')
-            .select('id')
+            .select('*')
             .eq('id', session.user.id)
             .maybeSingle();
             
           if (error) {
             console.error('Error fetching profile:', error);
+            toast({
+              title: "Erreur",
+              description: "Impossible de charger votre profil",
+              variant: "destructive",
+            });
             setHasProfile(false);
           } else {
-            setHasProfile(!!data);
+            console.log('Profile data:', profile);
+            setHasProfile(!!profile);
           }
         }
       } catch (error) {
         console.error('Error checking auth:', error);
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de la vérification de l'authentification",
+          variant: "destructive",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -48,7 +59,7 @@ const PlanTarifaire = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [toast]);
 
   const handleSubscribe = async (
     planType: 'starter' | 'pro' | 'enterprise',
@@ -102,13 +113,10 @@ const PlanTarifaire = () => {
   return (
     <div className="container mx-auto px-4 py-16">
       {isAuthenticated ? (
-        <>
-          <h1 className="text-4xl font-bold text-center mb-12">Tableau de bord</h1>
-          <AuthenticatedPricingContent 
-            hasProfile={hasProfile}
-            onSubscribe={handleSubscribe}
-          />
-        </>
+        <AuthenticatedPricingContent 
+          hasProfile={hasProfile}
+          onSubscribe={handleSubscribe}
+        />
       ) : (
         <UnauthenticatedPricingContent onSubscribe={handleSubscribe} />
       )}
