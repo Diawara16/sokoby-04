@@ -10,6 +10,7 @@ interface CTASectionProps {
 export const CTASection = ({ currentLanguage, onCreateStore }: CTASectionProps) => {
   const t = translations[currentLanguage as keyof typeof translations];
 
+  // Vérification que les champs nécessaires existent et sont des chaînes
   if (!t?.cta?.title || !t?.cta?.subtitle || !t?.cta?.button || 
       typeof t.cta.title !== 'string' || 
       typeof t.cta.subtitle !== 'string' || 
