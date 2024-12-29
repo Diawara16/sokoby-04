@@ -123,6 +123,52 @@ const Index = () => {
         />
 
         <FeaturesSection currentLanguage={currentLanguage} />
+
+        {/* Shopping Inspiration Section */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="relative overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105">
+                <img
+                  src="https://images.unsplash.com/photo-1506744038136-46273834b3fb"
+                  alt="Inspiration shopping 1"
+                  className="w-full h-72 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                  <div className="p-6 text-white">
+                    <h3 className="text-xl font-semibold">Découvrez notre collection</h3>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="relative overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105">
+                <img
+                  src="https://images.unsplash.com/photo-1513836279014-a89f7a76ae86"
+                  alt="Inspiration shopping 2"
+                  className="w-full h-72 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                  <div className="p-6 text-white">
+                    <h3 className="text-xl font-semibold">Nouveautés de la saison</h3>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="relative overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105">
+                <img
+                  src="https://images.unsplash.com/photo-1469474968028-56623f02e42e"
+                  alt="Inspiration shopping 3"
+                  className="w-full h-72 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                  <div className="p-6 text-white">
+                    <h3 className="text-xl font-semibold">Meilleures ventes</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />
