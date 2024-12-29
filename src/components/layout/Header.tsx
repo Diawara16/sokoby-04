@@ -31,9 +31,6 @@ export function Header({ isAuthenticated }: HeaderProps) {
             <Link to="/contact" className="text-sm text-gray-600 hover:text-gray-900">
               Contact
             </Link>
-            <Link to="/parametres" className="text-sm font-semibold text-red-600 hover:text-red-700">
-              Paramètres boutique
-            </Link>
           </nav>
         </div>
         
@@ -41,15 +38,6 @@ export function Header({ isAuthenticated }: HeaderProps) {
           {isAuthenticated ? (
             <>
               <NotificationBell />
-              <Link to="/tableau-de-bord">
-                <Button variant="ghost">Tableau de bord</Button>
-              </Link>
-              <Link to="/parametres">
-                <Button variant="outline">Paramètres</Button>
-              </Link>
-              <Link to="/profil">
-                <Button variant="outline">Mon profil</Button>
-              </Link>
             </>
           ) : (
             <div className="flex items-center gap-3">
