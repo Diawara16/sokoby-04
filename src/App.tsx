@@ -16,6 +16,7 @@ import Legal from "@/pages/Legal";
 import Accessibility from "@/pages/Accessibility";
 import Profile from "@/pages/Profile";
 import Onboarding from "@/pages/Onboarding";
+import Configuration from "@/pages/Configuration";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 
@@ -54,6 +55,7 @@ function App() {
               <Route path="/accessibility" element={<Accessibility />} />
               <Route path="/profil" element={<Profile />} />
               <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/configuration" element={<Configuration />} />
             </Routes>
           </main>
           <Footer />
