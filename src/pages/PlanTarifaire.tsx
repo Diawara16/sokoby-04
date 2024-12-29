@@ -20,17 +20,18 @@ const PlanTarifaire = () => {
         setIsAuthenticated(!!session);
         
         if (session) {
+          // Utilisation de maybeSingle() au lieu de single() pour éviter l'erreur 406
           const { data, error } = await supabase
             .from('profiles')
             .select('id')
             .eq('id', session.user.id)
-            .single();
+            .maybeSingle();
             
           if (error) {
             console.error('Error fetching profile:', error);
             setHasProfile(false);
           } else {
-            setHasProfile(true);
+            setHasProfile(!!data);
           }
         }
       } catch (error) {
