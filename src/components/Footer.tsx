@@ -4,6 +4,7 @@ import { QuickLinks } from "./footer/QuickLinks";
 import { SocialLinks } from "./footer/SocialLinks";
 import { Newsletter } from "./footer/Newsletter";
 import { LanguageSelector } from "./footer/LanguageSelector";
+import { CreditCard, Bitcoin, DollarSign } from "lucide-react";
 
 const languages = [
   { code: 'fr', name: 'Français' },
@@ -17,6 +18,19 @@ const languages = [
   { code: 'it', name: 'Italiano' },
   { code: 'nl', name: 'Nederlands' }
 ];
+
+const PaymentMethods = ({ t }: { t: any }) => {
+  return (
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold">{t.footer.acceptedPayments}</h3>
+      <div className="flex space-x-4">
+        <CreditCard className="w-8 h-8" />
+        <DollarSign className="w-8 h-8" />
+        <Bitcoin className="w-8 h-8" />
+      </div>
+    </div>
+  );
+};
 
 export const Footer = () => {
   const [currentLanguage, setCurrentLanguage] = useState(() => {
@@ -48,10 +62,11 @@ export const Footer = () => {
   return (
     <footer className="w-full bg-gradient-to-br from-red-700 via-red-800 to-red-900 text-gray-100 py-12 mt-auto">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           <QuickLinks t={t} />
           <SocialLinks t={t} />
           <Newsletter t={t} />
+          <PaymentMethods t={t} />
           <LanguageSelector 
             t={t}
             currentLanguage={currentLanguage}
