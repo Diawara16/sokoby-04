@@ -1,17 +1,12 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { translations } from "@/translations";
 
 interface HeaderProps {
   isAuthenticated: boolean;
 }
 
 export function Header({ isAuthenticated }: HeaderProps) {
-  const { currentLanguage } = useLanguage();
-  const t = translations[currentLanguage as keyof typeof translations];
-
   return (
     <header className="fixed top-0 left-0 right-0 h-16 border-b bg-white z-50">
       <div className="container h-full mx-auto px-4 flex items-center justify-between">
