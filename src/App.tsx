@@ -39,9 +39,9 @@ function App() {
   return (
     <BrowserRouter>
       <LanguageProvider>
-        <div className="min-h-screen flex flex-col">
+        <div className="flex flex-col min-h-screen w-full">
           <Header isAuthenticated={!!user} />
-          <main className="flex-grow">
+          <main className="flex-1">
             <Routes>
               <Route path="/" element={<Home isAuthenticated={!!user} />} />
               <Route path="/plan-tarifaire" element={<PlanTarifaire />} />
