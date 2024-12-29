@@ -7,6 +7,8 @@ import { Navigation } from "@/components/home/Navigation";
 import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturesSection } from "@/components/home/FeaturesSection";
 import { CTASection } from "@/components/home/CTASection";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -14,6 +16,7 @@ const Index = () => {
     return localStorage.getItem('currentLanguage') || 'fr';
   });
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
@@ -34,6 +37,51 @@ const Index = () => {
 
   const handleCreateStore = () => {
     navigate('/onboarding');
+  };
+
+  const handleTestPayment = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour effectuer un paiement",
+          variant: "destructive",
+        });
+        navigate('/login');
+        return;
+      }
+
+      console.log('Création de la session de paiement...');
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: { planType: 'starter' }
+      });
+
+      console.log('Réponse reçue:', { data, error });
+
+      if (error) {
+        console.error('Erreur lors de la création de la session:', error);
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de la création de la session de paiement",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data?.url) {
+        console.log('Redirection vers:', data.url);
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la création de la session de paiement",
+        variant: "destructive",
+      });
+    }
   };
 
   const t = translations[currentLanguage as keyof typeof translations];
@@ -63,17 +111,28 @@ const Index = () => {
         </div>
       </nav>
 
-      <HeroSection 
-        isAuthenticated={isAuthenticated}
-        currentLanguage={currentLanguage}
-      />
-      
-      <FeaturesSection currentLanguage={currentLanguage} />
-      
-      <CTASection 
-        currentLanguage={currentLanguage}
-        onCreateStore={handleCreateStore}
-      />
+      <div className="flex-1">
+        <HeroSection 
+          isAuthenticated={isAuthenticated}
+          currentLanguage={currentLanguage}
+        />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Button 
+            onClick={handleTestPayment}
+            className="bg-red-600 hover:bg-red-700 text-white"
+          >
+            Tester le paiement Stripe
+          </Button>
+        </div>
+        
+        <FeaturesSection currentLanguage={currentLanguage} />
+        
+        <CTASection 
+          currentLanguage={currentLanguage}
+          onCreateStore={handleCreateStore}
+        />
+      </div>
 
       <Footer />
     </div>
