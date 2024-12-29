@@ -1,79 +1,45 @@
-import { useLanguageContext } from "@/contexts/LanguageContext";
-import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/lib/supabase";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { AuthForm } from "@/components/auth/AuthForm";
-import { useState, useEffect } from "react";
-import { PricingHeader } from "@/components/pricing/PricingHeader";
-import { LoadingSpinner } from "@/components/pricing/LoadingSpinner";
-import { PricingPlans } from "@/components/pricing/PricingPlans";
+import { supabase } from "@/lib/supabase";
 
 const PlanTarifaire = () => {
-  const { currentLanguage } = useLanguageContext();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [showAuthForm, setShowAuthForm] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setIsAuthenticated(!!session);
-      } catch (error) {
-        console.error("Erreur lors de la vérification de l'authentification:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session);
-      if (event === 'SIGNED_IN') {
-        setShowAuthForm(false);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const handleSubscribe = async (planType: 'starter' | 'pro' | 'enterprise', paymentMethod: 'card' | 'apple_pay' | 'google_pay') => {
+  const handleSubscribe = async (planType: 'starter' | 'pro' | 'enterprise') => {
     try {
-      console.log('Début de la création de la session de paiement...');
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        console.log('Utilisateur non connecté');
-        setShowAuthForm(true);
+        toast({
+          title: "Connexion requise",
+          description: "Veuillez vous connecter pour souscrire à un abonnement",
+          variant: "destructive",
+        });
+        navigate('/login');
         return;
       }
 
-      console.log('Appel de la fonction create-checkout-session...');
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { planType, paymentMethod },
+        body: { planType }
       });
-
-      console.log('Réponse reçue:', { data, error });
 
       if (error) {
         console.error('Erreur lors de la création de la session:', error);
-        throw error;
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de la création de la session de paiement",
+          variant: "destructive",
+        });
+        return;
       }
 
       if (data?.url) {
-        console.log('Redirection vers:', data.url);
         window.location.href = data.url;
-      } else {
-        console.error('Pas d\'URL de redirection dans la réponse');
-        throw new Error('Pas d\'URL de redirection dans la réponse');
       }
     } catch (error) {
-      console.error('Erreur lors de la création de la session de paiement:', error);
+      console.error('Erreur:', error);
       toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de la création de la session de paiement",
@@ -82,34 +48,123 @@ const PlanTarifaire = () => {
     }
   };
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+  return (
+    <div className="container mx-auto px-4 py-16">
+      <h1 className="text-4xl font-bold text-center mb-12">Nos Plans Tarifaires</h1>
+      
+      <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        {/* Plan Starter */}
+        <div className="border rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow">
+          <h2 className="text-2xl font-bold mb-4">Starter</h2>
+          <p className="text-3xl font-bold mb-6">29€ <span className="text-base font-normal text-gray-600">/mois</span></p>
+          <ul className="space-y-3 mb-8">
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Jusqu'à 100 produits
+            </li>
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Support par email
+            </li>
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Analytics de base
+            </li>
+          </ul>
+          <Button 
+            onClick={() => handleSubscribe('starter')}
+            className="w-full"
+          >
+            Commencer
+          </Button>
+        </div>
 
-  if (showAuthForm) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <AuthForm 
-            defaultIsSignUp={false}
-            onCancel={() => setShowAuthForm(false)}
-          />
+        {/* Plan Pro */}
+        <div className="border rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow bg-primary-50">
+          <div className="absolute top-0 right-0 bg-primary text-white px-4 py-1 rounded-bl-lg">
+            Populaire
+          </div>
+          <h2 className="text-2xl font-bold mb-4">Pro</h2>
+          <p className="text-3xl font-bold mb-6">79€ <span className="text-base font-normal text-gray-600">/mois</span></p>
+          <ul className="space-y-3 mb-8">
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Produits illimités
+            </li>
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Support prioritaire
+            </li>
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Analytics avancés
+            </li>
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Personnalisation avancée
+            </li>
+          </ul>
+          <Button 
+            onClick={() => handleSubscribe('pro')}
+            className="w-full bg-primary hover:bg-primary-600"
+          >
+            Commencer
+          </Button>
+        </div>
+
+        {/* Plan Enterprise */}
+        <div className="border rounded-lg p-8 shadow-sm hover:shadow-md transition-shadow">
+          <h2 className="text-2xl font-bold mb-4">Enterprise</h2>
+          <p className="text-3xl font-bold mb-6">Sur mesure</p>
+          <ul className="space-y-3 mb-8">
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Tout du plan Pro
+            </li>
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Support dédié 24/7
+            </li>
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Intégrations sur mesure
+            </li>
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              SLA garanti
+            </li>
+          </ul>
+          <Button 
+            onClick={() => handleSubscribe('enterprise')}
+            className="w-full"
+            variant="outline"
+          >
+            Contactez-nous
+          </Button>
         </div>
       </div>
-    );
-  }
-
-  return (
-    <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <PricingHeader
-        currentLanguage={currentLanguage}
-        isAuthenticated={isAuthenticated}
-        onShowAuthForm={() => setShowAuthForm(true)}
-      />
-      <PricingPlans
-        currentLanguage={currentLanguage}
-        onSubscribe={handleSubscribe}
-      />
     </div>
   );
 };
