@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { ProfileForm } from "@/components/profile/ProfileForm";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -18,10 +19,8 @@ const Profile = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <h1 className="text-2xl font-bold mb-4">Mon Profil</h1>
-      <div className="bg-white shadow rounded-lg p-6">
-        <p>Page en construction...</p>
-      </div>
+      <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">Mon Profil</h1>
+      <ProfileForm />
     </div>
   );
 };
