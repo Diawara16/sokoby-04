@@ -12,7 +12,7 @@ interface PricingPlanProps {
   features: string[];
   popular?: boolean;
   trial?: boolean;
-  onSubscribe: (planType: 'starter' | 'pro' | 'enterprise', paymentMethod: 'card' | 'paypal') => void;
+  onSubscribe: (planType: 'starter' | 'pro' | 'enterprise', paymentMethod: 'card') => void;
   currentLanguage: string;
 }
 
@@ -69,32 +69,17 @@ export function PricingPlan({
         ))}
       </ul>
 
-      <div className="space-y-3">
-        <Button
-          className={`w-full ${
-            popular
-              ? "bg-red-600 hover:bg-red-700 text-white"
-              : "bg-red-700 hover:bg-red-800 text-white"
-          } transition-colors`}
-          onClick={() => onSubscribe(planType, 'card')}
-        >
-          <CreditCard className="mr-2 h-4 w-4" />
-          {t.pricing.startTrial}
-        </Button>
-
-        <Button
-          variant="outline"
-          className="w-full border-2 hover:bg-blue-50"
-          onClick={() => onSubscribe(planType, 'paypal')}
-        >
-          <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M19.5 8.5h-2.5a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2h-2.5" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M17.5 8.5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M12 14v2" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          Payer avec PayPal
-        </Button>
-      </div>
+      <Button
+        className={`w-full ${
+          popular
+            ? "bg-red-600 hover:bg-red-700 text-white"
+            : "bg-red-700 hover:bg-red-800 text-white"
+        } transition-colors`}
+        onClick={() => onSubscribe(planType, 'card')}
+      >
+        <CreditCard className="mr-2 h-4 w-4" />
+        {t.pricing.startTrial}
+      </Button>
     </Card>
   );
 }
