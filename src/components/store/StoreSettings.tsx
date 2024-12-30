@@ -92,6 +92,8 @@ export const StoreSettings = () => {
         .upsert({
           ...settings,
           user_id: user.id,
+          domain_name: 'sokoby.com', // Force le domaine à sokoby.com
+          is_custom_domain: true
         });
 
       if (error) throw error;
@@ -126,14 +128,12 @@ export const StoreSettings = () => {
     <Card className="p-6">
       <h2 className="text-2xl font-bold mb-6">Paramètres de la boutique</h2>
       
-      {settings?.is_custom_domain && settings?.domain_name && (
-        <Alert className="mb-6">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Votre boutique utilise le domaine personnalisé : {settings.domain_name}
-          </AlertDescription>
-        </Alert>
-      )}
+      <Alert className="mb-6">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
+          Votre boutique utilise le domaine : sokoby.com
+        </AlertDescription>
+      </Alert>
 
       <div className="space-y-4">
         <div>
