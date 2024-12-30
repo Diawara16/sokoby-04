@@ -33,7 +33,6 @@ const Onboarding = () => {
           return;
         }
 
-        // Récupérer les paramètres de la boutique
         const { data: existingSettings, error: settingsError } = await supabase
           .from('store_settings')
           .select('*')
@@ -47,28 +46,7 @@ const Onboarding = () => {
           return;
         }
 
-        if (!existingSettings) {
-          console.log("Aucun paramètre trouvé, création des paramètres par défaut");
-          const { data: newSettings, error: createError } = await supabase
-            .from('store_settings')
-            .insert([{
-              user_id: session.user.id,
-              store_name: 'Ma boutique'
-            }])
-            .select()
-            .maybeSingle();
-
-          if (createError) {
-            console.error("Erreur lors de la création des paramètres:", createError);
-            setError("Impossible de créer les paramètres de votre boutique");
-          } else {
-            console.log("Paramètres créés avec succès:", newSettings);
-            setStoreSettings(newSettings);
-          }
-        } else {
-          console.log("Paramètres existants trouvés:", existingSettings);
-          setStoreSettings(existingSettings);
-        }
+        setStoreSettings(existingSettings);
       } catch (error) {
         console.error("Erreur inattendue:", error);
         setError("Une erreur inattendue s'est produite");
@@ -78,38 +56,22 @@ const Onboarding = () => {
     };
 
     checkSession();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
-        navigate('/');
-      }
-    });
-
-    return () => {
-      authListener?.subscription.unsubscribe();
-    };
   }, [navigate, toast]);
 
-  const options = [
-    {
-      title: "Configurer ma boutique",
-      description: "Créez votre première boutique en ligne et commencez à vendre",
-      icon: ShoppingBag,
-      path: "/boutique",
-    },
-    {
-      title: "Configurer mon profil",
-      description: "Personnalisez votre profil et vos informations",
-      icon: UserCircle,
-      path: "/profil",
-    },
-    {
-      title: "Paramètres avancés",
-      description: "Configurez les paramètres de votre compte",
-      icon: Settings,
-      path: "/parametres",
-    },
-  ];
+  const handleConfigureStore = () => {
+    console.log("Navigation vers la configuration de la boutique");
+    navigate('/parametres');
+  };
+
+  const handleConfigureProfile = () => {
+    console.log("Navigation vers la configuration du profil");
+    navigate('/profil');
+  };
+
+  const handleAdvancedSettings = () => {
+    console.log("Navigation vers les paramètres avancés");
+    navigate('/parametres');
+  };
 
   if (isLoading) {
     return (
@@ -139,34 +101,71 @@ const Onboarding = () => {
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Bienvenue sur votre espace</h1>
-          <p className="text-muted-foreground mb-6">
+          <p className="text-muted-foreground">
             Commençons à configurer votre boutique en ligne
           </p>
         </div>
 
-        <div className="grid gap-6">
-          {options.map((option) => (
-            <Card 
-              key={option.title} 
-              className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => navigate(option.path)}
-            >
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <option.icon className="h-5 w-5" />
-                  <span>{option.title}</span>
-                </CardTitle>
-                <CardDescription>{option.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button 
-                  className="w-full bg-red-600 hover:bg-red-700 text-white"
-                >
-                  Commencer
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <ShoppingBag className="h-5 w-5 text-primary" />
+                <CardTitle>Configurer ma boutique</CardTitle>
+              </div>
+              <CardDescription>
+                Créez votre première boutique en ligne et commencez à vendre
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={handleConfigureStore}
+                className="w-full bg-red-600 hover:bg-red-700 text-white"
+              >
+                Commencer
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <UserCircle className="h-5 w-5 text-primary" />
+                <CardTitle>Configurer mon profil</CardTitle>
+              </div>
+              <CardDescription>
+                Personnalisez votre profil et vos informations
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={handleConfigureProfile}
+                className="w-full bg-red-600 hover:bg-red-700 text-white"
+              >
+                Commencer
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Settings className="h-5 w-5 text-primary" />
+                <CardTitle>Paramètres avancés</CardTitle>
+              </div>
+              <CardDescription>
+                Configurez les paramètres de votre compte
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={handleAdvancedSettings}
+                className="w-full bg-red-600 hover:bg-red-700 text-white"
+              >
+                Commencer
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
