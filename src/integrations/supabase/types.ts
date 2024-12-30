@@ -9,6 +9,53 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ai_generated_products: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          niche: string
+          price: number
+          store_id: string
+          supplier: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          niche: string
+          price: number
+          store_id: string
+          supplier: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          niche?: string
+          price?: number
+          store_id?: string
+          supplier?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_generated_products_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "store_settings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brand_settings: {
         Row: {
           created_at: string
