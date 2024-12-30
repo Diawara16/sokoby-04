@@ -44,6 +44,7 @@ const navigationItems = [
     title: "Paramètres",
     url: "/parametres",
     icon: Settings,
+    className: "mt-8", // Added margin top to create space
   },
 ]
 
@@ -55,7 +56,7 @@ export function AppSidebar() {
       <SidebarContent className="py-6">
         <SidebarMenu className="space-y-2">
           {navigationItems.map((item) => (
-            <SidebarMenuItem key={item.title} className="px-2">
+            <SidebarMenuItem key={item.title} className={`px-2 ${item.className || ''}`}>
               <SidebarMenuButton
                 asChild
                 isActive={location.pathname === item.url}
