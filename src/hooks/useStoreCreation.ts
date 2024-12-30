@@ -21,21 +21,28 @@ export const useStoreCreation = () => {
   const navigate = useNavigate();
 
   const handleNicheSelect = async (nicheName: string) => {
+    console.log("Début de handleNicheSelect avec niche:", nicheName);
+    
     try {
       setIsLoading(true);
       setError(null);
 
       const { data: { user } } = await supabase.auth.getUser();
+      console.log("Utilisateur récupéré:", user);
+      
       if (!user) {
         throw new Error("Vous devez être connecté pour créer une boutique");
       }
 
-      // Passer à l'étape de progression
+      console.log("Génération du nom de domaine unique...");
+      const uniqueDomainName = await generateUniqueDomainName(user.id, nicheName);
+      console.log("Nom de domaine généré:", uniqueDomainName);
+
+      // Passer à l'étape de progression avant les opérations longues
       setStep('progress');
       setProgress(20);
 
-      const uniqueDomainName = await generateUniqueDomainName(user.id, nicheName);
-
+      console.log("Création des paramètres de la boutique...");
       const { data: storeData, error: storeError } = await supabase
         .from('store_settings')
         .upsert({
@@ -46,10 +53,15 @@ export const useStoreCreation = () => {
         .select()
         .single();
 
-      if (storeError) throw storeError;
+      if (storeError) {
+        console.error("Erreur lors de la création des paramètres:", storeError);
+        throw storeError;
+      }
 
+      console.log("Paramètres de la boutique créés:", storeData);
       setProgress(40);
 
+      console.log("Appel de la fonction generate-store...");
       const { data, error } = await supabase.functions.invoke('generate-store', {
         body: {
           niche: nicheName,
@@ -58,8 +70,12 @@ export const useStoreCreation = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erreur lors de la génération de la boutique:", error);
+        throw error;
+      }
 
+      console.log("Boutique générée avec succès:", data);
       setProgress(100);
       setStoreUrl(`https://${uniqueDomainName}.sokoby.com`);
       setStep('complete');
