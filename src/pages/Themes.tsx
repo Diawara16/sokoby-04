@@ -60,34 +60,37 @@ const Themes = () => {
         return;
       }
 
-      if (selectedTheme === 'private') {
-        // Vérifier si l'utilisateur a un abonnement premium
-        const { data: subscription } = await supabase
-          .from('subscriptions')
-          .select('status')
-          .eq('user_id', user.id)
-          .single();
+      // Vérifier d'abord si l'utilisateur a déjà des paramètres de marque
+      const { data: existingSettings } = await supabase
+        .from('brand_settings')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-        if (!subscription || subscription.status !== 'active') {
-          toast({
-            title: "Accès Restreint",
-            description: "Ce thème est réservé aux utilisateurs premium",
-            variant: "destructive",
+      let result;
+      
+      if (existingSettings) {
+        // Mettre à jour les paramètres existants
+        result = await supabase
+          .from('brand_settings')
+          .update({
+            primary_color: currentTheme.colors.primary,
+            secondary_color: currentTheme.colors.secondary,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', user.id);
+      } else {
+        // Créer de nouveaux paramètres
+        result = await supabase
+          .from('brand_settings')
+          .insert({
+            user_id: user.id,
+            primary_color: currentTheme.colors.primary,
+            secondary_color: currentTheme.colors.secondary
           });
-          return;
-        }
       }
 
-      // Mettre à jour les paramètres de la marque avec les couleurs du thème
-      const { error } = await supabase
-        .from('brand_settings')
-        .upsert({
-          user_id: user.id,
-          primary_color: currentTheme.colors.primary,
-          secondary_color: currentTheme.colors.secondary,
-        });
-
-      if (error) throw error;
+      if (result.error) throw result.error;
 
       toast({
         title: "Thème appliqué",
