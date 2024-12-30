@@ -3,11 +3,20 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
 
+interface Profile {
+  id: string;
+  email: string | null;
+  trial_ends_at: string | null;
+  features_usage: Record<string, number>;
+  last_login: string | null;
+}
+
 export const useAuthAndProfile = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -32,9 +41,11 @@ export const useAuthAndProfile = () => {
               variant: "destructive",
             });
             setHasProfile(false);
+            setProfile(null);
           } else {
             console.log('Profile data:', profile);
             setHasProfile(!!profile);
+            setProfile(profile);
           }
         }
       } catch (error) {
@@ -63,6 +74,7 @@ export const useAuthAndProfile = () => {
     isAuthenticated,
     isLoading,
     hasProfile,
-    session
+    session,
+    profile
   };
 };
