@@ -102,6 +102,7 @@ const AcheterDomaine = () => {
             setDomainName(value);
             handleDomainCheck(value);
           }}
+          onPurchase={handlePurchase}
         />
       </Card>
 

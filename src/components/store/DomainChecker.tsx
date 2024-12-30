@@ -5,13 +5,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 interface DomainCheckerProps {
   value: string;
   onChange: (value: string) => void;
+  onPurchase?: (domain: string) => void;
 }
 
-export const DomainChecker = ({ value, onChange }: DomainCheckerProps) => {
+export const DomainChecker = ({ value, onChange, onPurchase }: DomainCheckerProps) => {
   const [isCheckingDomain, setIsCheckingDomain] = useState(false);
   const [domainStatus, setDomainStatus] = useState<'available' | 'taken' | null>(null);
   const { toast } = useToast();
@@ -91,19 +93,30 @@ export const DomainChecker = ({ value, onChange }: DomainCheckerProps) => {
           ) : null}
         </div>
       </div>
-      <p className="text-sm mt-1">
-        {isCheckingDomain ? (
-          <span className="text-gray-500">Vérification de la disponibilité...</span>
-        ) : domainStatus === 'available' ? (
-          <span className="text-green-600">Ce domaine est disponible !</span>
-        ) : domainStatus === 'taken' ? (
-          <span className="text-red-600">Ce domaine est déjà pris</span>
-        ) : (
-          <span className="text-gray-500">
-            Entrez votre nom de domaine personnalisé ou utilisez notre sous-domaine gratuit
-          </span>
+      <div className="flex items-center justify-between mt-1">
+        <p className="text-sm">
+          {isCheckingDomain ? (
+            <span className="text-gray-500">Vérification de la disponibilité...</span>
+          ) : domainStatus === 'available' ? (
+            <span className="text-green-600">Ce domaine est disponible !</span>
+          ) : domainStatus === 'taken' ? (
+            <span className="text-red-600">Ce domaine est déjà pris</span>
+          ) : (
+            <span className="text-gray-500">
+              Entrez votre nom de domaine personnalisé ou utilisez notre sous-domaine gratuit
+            </span>
+          )}
+        </p>
+        {domainStatus === 'available' && onPurchase && (
+          <Button 
+            onClick={() => onPurchase(value)}
+            size="sm"
+            className="ml-4"
+          >
+            Acheter
+          </Button>
         )}
-      </p>
+      </div>
     </div>
   );
 };
