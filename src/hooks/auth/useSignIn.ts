@@ -33,11 +33,7 @@ export const useSignIn = () => {
           description: "Vous êtes maintenant connecté.",
         });
 
-        if (storeSettings) {
-          navigate("/dashboard");
-        } else {
-          navigate("/onboarding");
-        }
+        navigate("/tableau-de-bord");
       }
     } catch (error: any) {
       console.error("Erreur de connexion:", error);

@@ -6,6 +6,7 @@ import Profile from "@/pages/Profile";
 import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
 import AcheterDomaine from "@/pages/AcheterDomaine";
 import ConnecterDomaine from "@/pages/ConnecterDomaine";
+import Onboarding from "@/pages/Onboarding";
 import { AppSidebar } from "@/components/AppSidebar";
 
 interface AppRoutesProps {
@@ -19,6 +20,14 @@ export const AppRoutes = ({ isAuthenticated }: AppRoutesProps) => {
       <main className="flex-1 p-6">
         <Routes>
           <Route path="/" element={<Home isAuthenticated={isAuthenticated} />} />
+          <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute>
+                <Onboarding />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/tableau-de-bord"
             element={
