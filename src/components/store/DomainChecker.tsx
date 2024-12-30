@@ -1,64 +1,74 @@
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Globe } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { DomainStatus } from "./DomainStatus";
 import { useDomainCheck } from "@/hooks/useDomainCheck";
 
 interface DomainCheckerProps {
   value: string;
   onChange: (value: string) => void;
-  onPurchase?: (domain: string) => void;
+  onPurchase: (domain: string) => void;
 }
 
 export const DomainChecker = ({ value, onChange, onPurchase }: DomainCheckerProps) => {
-  const { isCheckingDomain, domainStatus, checkDomainAvailability } = useDomainCheck();
+  const {
+    isCheckingDomain,
+    domainStatus,
+    suggestedDomains,
+    checkDomainAvailability
+  } = useDomainCheck();
 
-  const cleanDomainName = (domain: string) => {
-    // Enlever le protocole et www si présent
-    let cleaned = domain.toLowerCase()
-      .replace(/^https?:\/\//, '')
-      .replace(/^www\./, '');
-    
-    // Enlever les espaces
-    cleaned = cleaned.trim();
-    
-    return cleaned;
-  };
-
-  const handleDomainChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    const cleanedDomain = cleanDomainName(inputValue);
-    onChange(cleanedDomain);
-    
-    const timeoutId = setTimeout(() => {
-      if (cleanedDomain) {
-        checkDomainAvailability(cleanedDomain);
-      }
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
+  const handleCheck = () => {
+    checkDomainAvailability(value);
   };
 
   return (
-    <div>
-      <Label htmlFor="domain_name" className="flex items-center gap-2">
-        <Globe className="h-4 w-4" />
-        Nom de domaine
-      </Label>
-      <div className="relative">
+    <div className="space-y-6">
+      <div className="flex gap-4">
         <Input
-          id="domain_name"
+          placeholder="Entrez votre nom de domaine"
           value={value}
-          onChange={handleDomainChange}
-          placeholder="maboutique.com"
-          className="pr-10"
+          onChange={(e) => onChange(e.target.value)}
+          className="flex-1"
         />
+        <Button 
+          onClick={handleCheck}
+          disabled={isCheckingDomain || !value}
+        >
+          {isCheckingDomain ? "Vérification..." : "Vérifier"}
+        </Button>
       </div>
+
       <DomainStatus 
-        isCheckingDomain={isCheckingDomain}
-        domainStatus={domainStatus}
-        onPurchase={onPurchase ? () => onPurchase(value) : undefined}
+        domain={value} 
+        status={domainStatus} 
+        isChecking={isCheckingDomain}
+        onPurchase={() => onPurchase(value)}
       />
+
+      {suggestedDomains.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-4">Suggestions de domaines disponibles :</h3>
+          <div className="grid gap-4 md:grid-cols-2">
+            {suggestedDomains.map((domain) => (
+              <Card 
+                key={domain}
+                className="p-4 flex justify-between items-center hover:shadow-md transition-shadow"
+              >
+                <span className="font-medium">{domain}</span>
+                <Button
+                  size="sm"
+                  onClick={() => onPurchase(domain)}
+                  variant="outline"
+                >
+                  Sélectionner
+                </Button>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
