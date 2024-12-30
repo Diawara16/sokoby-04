@@ -12,11 +12,14 @@ import AIStore from "./pages/AIStore";
 import BuyDomain from "./pages/BuyDomain";
 import ConnectDomain from "./pages/ConnectDomain";
 import Settings from "./pages/Settings";
+import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 
 export default function AppRoutes() {
+  const { isAuthenticated } = useAuthAndProfile();
+
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Home isAuthenticated={isAuthenticated} />} />
       <Route
         path="/tableau-de-bord"
         element={
