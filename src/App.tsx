@@ -2,7 +2,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { AppRoutes } from "@/AppRoutes";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
-import { SidebarProvider } from "@/components/ui/sidebar/SidebarContext";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
 function App() {
@@ -12,9 +12,9 @@ function App() {
   return (
     <BrowserRouter>
       <LanguageProvider>
-        <SidebarProvider>
+        <SidebarProvider defaultOpen={true}>
           <main className="min-h-screen bg-background">
-            <div className="relative flex min-h-screen">
+            <div className="relative flex min-h-screen w-full">
               <div className="flex-1">
                 <AppRoutes isAuthenticated={isAuthenticated} />
               </div>

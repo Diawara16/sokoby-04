@@ -13,7 +13,7 @@ interface AppRoutesProps {
 
 export const AppRoutes = ({ isAuthenticated }: AppRoutesProps) => {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen w-full">
       <AppSidebar />
       <main className="flex-1 p-6">
         <Routes>
