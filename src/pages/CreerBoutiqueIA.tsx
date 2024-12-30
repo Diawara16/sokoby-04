@@ -6,6 +6,7 @@ import { NicheSelector } from "@/components/store-creator/NicheSelector";
 import { CreationProgress } from "@/components/store-creator/CreationProgress";
 import { CreationComplete } from "@/components/store-creator/CreationComplete";
 import { useStoreCreation } from "@/hooks/useStoreCreation";
+import { LoadingSpinner } from "@/components/pricing/LoadingSpinner";
 
 const CreerBoutiqueIA = () => {
   const {
@@ -19,13 +20,17 @@ const CreerBoutiqueIA = () => {
   } = useStoreCreation();
 
   const renderContent = () => {
+    if (isLoading && step === 'niche') {
+      return <LoadingSpinner message="Initialisation..." />;
+    }
+
     switch (step) {
       case 'progress':
         return <CreationProgress progress={progress} />;
       case 'complete':
         return (
           <CreationComplete
-            storeUrl={storeUrl}
+            storeUrl={storeUrl || ''}
             productsCount={20}
             onComplete={handleComplete}
           />

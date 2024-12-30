@@ -21,18 +21,19 @@ export const useStoreCreation = () => {
   const navigate = useNavigate();
 
   const handleNicheSelect = async (nicheName: string) => {
-    setIsLoading(true);
-    setError(null);
-    setProgress(0);
-    setStep('progress');
-
     try {
+      setIsLoading(true);
+      setError(null);
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         throw new Error("Vous devez être connecté pour créer une boutique");
       }
 
+      // Passer à l'étape de progression
+      setStep('progress');
       setProgress(20);
+
       const uniqueDomainName = await generateUniqueDomainName(user.id, nicheName);
 
       const { data: storeData, error: storeError } = await supabase
