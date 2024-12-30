@@ -7,6 +7,22 @@ import {
   LineChart,
   TrendingUp,
   Activity,
+  Truck,
+  CreditCard,
+  Tags,
+  Box,
+  ArrowLeftRight,
+  Gift,
+  UserSearch,
+  UserPlus,
+  UserCheck,
+  ShoppingBag,
+  AppWindow,
+  Info,
+  Sparkles,
+  PlusCircle,
+  Globe,
+  Settings,
 } from "lucide-react"
 
 export const navigationItems = [
@@ -50,7 +66,7 @@ export const navigationItems = [
       {
         title: "Gestion du stock",
         url: "/produits/stock",
-        icon: BoxIcon,
+        icon: Box,
       },
       {
         title: "Mouvements produits",
