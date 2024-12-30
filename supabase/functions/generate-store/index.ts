@@ -29,6 +29,7 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
     if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing Supabase configuration');
       throw new Error('Missing Supabase configuration');
     }
 
@@ -38,6 +39,7 @@ serve(async (req) => {
     // Get OpenAI API key
     const openAiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAiKey) {
+      console.error('Missing OpenAI API key');
       throw new Error('Missing OpenAI API key');
     }
 
@@ -50,7 +52,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           {
             role: 'system',
@@ -91,6 +93,7 @@ serve(async (req) => {
     const { data: { user } } = await supabase.auth.getUser(req.headers.get('Authorization')?.split('Bearer ')[1] || '');
     
     if (!user) {
+      console.error('User not found');
       throw new Error('Unauthorized - User not found');
     }
 
