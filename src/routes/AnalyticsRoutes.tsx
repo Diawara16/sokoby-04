@@ -4,7 +4,7 @@ import AnalyticsDashboard from "@/pages/analytics/AnalyticsDashboard";
 import AnalyticsTrends from "@/pages/analytics/AnalyticsTrends";
 import AnalyticsReports from "@/pages/analytics/AnalyticsReports";
 
-export const AnalyticsRoutes = () => {
+export function AnalyticsRoutes() {
   return (
     <>
       <Route
@@ -33,4 +33,4 @@ export const AnalyticsRoutes = () => {
       />
     </>
   );
-};
+}

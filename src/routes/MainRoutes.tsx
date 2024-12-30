@@ -4,7 +4,7 @@ import Dashboard from "@/pages/Dashboard";
 import Profile from "@/pages/Profile";
 import QuiSommesNous from "@/pages/QuiSommesNous";
 
-export const MainRoutes = () => {
+export function MainRoutes() {
   return (
     <>
       <Route
@@ -33,4 +33,4 @@ export const MainRoutes = () => {
       />
     </>
   );
-};
+}
