@@ -1,6 +1,6 @@
 import * as React from "react"
-import { cn } from "@/lib/utils"
 import { Slot } from "@radix-ui/react-slot"
+import { cn } from "@/lib/utils"
 import { sidebarMenuButtonVariants } from "./SidebarBase"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useSidebar } from "./SidebarContext"

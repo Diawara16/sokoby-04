@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { Toaster } from "@/components/ui/toaster";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import Home from "@/pages/Home";
@@ -21,6 +21,8 @@ import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import Parametres from "@/pages/Parametres";
 import Themes from "@/pages/Themes";
+import Boutique from "@/pages/Boutique";
+import Applications from "@/pages/Applications";
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -46,7 +48,12 @@ function App() {
           <Header isAuthenticated={!!user} />
           <main className="flex-1 pt-16">
             <Routes>
-              <Route path="/" element={<Home isAuthenticated={!!user} />} />
+              <Route 
+                path="/" 
+                element={
+                  user ? <Navigate to="/tableau-de-bord" /> : <Home isAuthenticated={false} />
+                } 
+              />
               <Route path="/plan-tarifaire" element={<PlanTarifaire />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/conditions" element={<Conditions />} />
@@ -60,6 +67,8 @@ function App() {
               <Route path="/tableau-de-bord" element={<Dashboard />} />
               <Route path="/parametres" element={<Parametres />} />
               <Route path="/themes" element={<Themes />} />
+              <Route path="/boutique" element={<Boutique />} />
+              <Route path="/applications" element={<Applications />} />
             </Routes>
           </main>
           <Footer />
