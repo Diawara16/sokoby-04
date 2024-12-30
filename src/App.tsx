@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Toaster } from "@/components/ui/toaster";
-import { Home } from "@/pages/Home";
-import { Dashboard } from "@/pages/Dashboard";
-import { Profile } from "@/pages/Profile";
-import { CreerBoutiqueIA } from "@/pages/CreerBoutiqueIA";
-import { AcheterDomaine } from "@/pages/AcheterDomaine";
+import Home from "@/pages/Home";
+import Dashboard from "@/pages/Dashboard";
+import Profile from "@/pages/Profile";
+import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
+import AcheterDomaine from "@/pages/AcheterDomaine";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 
