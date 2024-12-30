@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Heart } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useFavorites } from "@/hooks/useFavorites";
 
 interface Product {
   id: string;
@@ -19,6 +20,20 @@ interface ProductGridProps {
 
 export const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
   const { toast } = useToast();
+  const { addToFavorites, removeFromFavorites, checkIsFavorite, loading: favoritesLoading } = useFavorites();
+  const [favoriteStates, setFavoriteStates] = useState<{ [key: string]: boolean }>({});
+
+  useEffect(() => {
+    const loadFavoriteStates = async () => {
+      const states: { [key: string]: boolean } = {};
+      for (const product of products) {
+        states[product.id] = await checkIsFavorite(product.id);
+      }
+      setFavoriteStates(states);
+    };
+
+    loadFavoriteStates();
+  }, [products]);
 
   const handleAddToCart = (productId: string) => {
     if (onAddToCart) {
@@ -28,6 +43,21 @@ export const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
         description: "Le produit a été ajouté à votre panier",
       });
     }
+  };
+
+  const toggleFavorite = async (productId: string) => {
+    if (favoritesLoading) return;
+
+    const isFavorite = favoriteStates[productId];
+    if (isFavorite) {
+      await removeFromFavorites(productId);
+    } else {
+      await addToFavorites(productId);
+    }
+    setFavoriteStates(prev => ({
+      ...prev,
+      [productId]: !isFavorite
+    }));
   };
 
   return (
@@ -40,6 +70,16 @@ export const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
               alt={product.name}
               className="object-cover w-full h-full"
             />
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`absolute top-2 right-2 rounded-full ${
+                favoriteStates[product.id] ? 'text-red-500 hover:text-red-600' : 'text-gray-500 hover:text-gray-600'
+              }`}
+              onClick={() => toggleFavorite(product.id)}
+            >
+              <Heart className={`w-5 h-5 ${favoriteStates[product.id] ? 'fill-current' : ''}`} />
+            </Button>
           </div>
           <div className="p-4">
             <h3 className="font-semibold">{product.name}</h3>
