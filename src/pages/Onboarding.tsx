@@ -2,11 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingBag, UserCircle, Settings, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LoadingSpinner } from "@/components/pricing/LoadingSpinner";
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -33,33 +33,31 @@ const Onboarding = () => {
           return;
         }
 
-        // Récupérer les paramètres de la boutique
+        // Récupérer les paramètres de la boutique avec une requête plus simple
         const { data: settings, error: settingsError } = await supabase
           .from('store_settings')
           .select('*')
           .eq('user_id', session.user.id)
-          .single();
+          .limit(1);
 
-        if (settingsError && settingsError.code !== 'PGRST116') {
+        if (settingsError) {
           console.error("Erreur lors de la récupération des paramètres:", settingsError);
           setError("Impossible de charger les paramètres de votre boutique");
         } else {
-          setStoreSettings(settings);
+          setStoreSettings(settings?.[0] || null);
         }
 
-        console.log("Session utilisateur valide:", session.user.id);
         setIsLoading(false);
       } catch (error) {
         console.error("Erreur inattendue:", error);
         setError("Une erreur inattendue s'est produite");
-        navigate('/');
+        setIsLoading(false);
       }
     };
 
     checkSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Changement d'état d'authentification:", event, session?.user?.id);
       if (event === 'SIGNED_OUT') {
         navigate('/');
       }
@@ -93,30 +91,23 @@ const Onboarding = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen p-4">
-        <Card className="w-full max-w-md">
-          <CardContent className="py-8">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              <p className="text-lg text-gray-600">Chargement de votre espace...</p>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="container mx-auto py-8 px-4">
+        <div className="max-w-3xl mx-auto">
+          <LoadingSpinner message="Chargement de votre espace..." />
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen p-4">
-        <Card className="w-full max-w-md">
-          <CardContent className="py-8">
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          </CardContent>
-        </Card>
+      <div className="container mx-auto py-8 px-4">
+        <div className="max-w-3xl mx-auto">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        </div>
       </div>
     );
   }
