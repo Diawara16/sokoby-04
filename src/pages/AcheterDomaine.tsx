@@ -4,12 +4,16 @@ import { DomainChecker } from "@/components/store/DomainChecker";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { PaymentButtons } from "@/components/pricing/PaymentButtons";
 
 const AcheterDomaine = () => {
   const [domainName, setDomainName] = useState("");
   const { toast } = useToast();
   const [suggestedDomains, setSuggestedDomains] = useState<string[]>([]);
   const [isProcessingPurchase, setIsProcessingPurchase] = useState(false);
+  const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
 
   const generateSuggestedDomains = (baseDomain: string) => {
     const baseName = baseDomain.split('.')[0];
@@ -32,7 +36,16 @@ const AcheterDomaine = () => {
     }
   };
 
-  const handlePurchase = async (domain: string) => {
+  const handlePurchaseClick = (domain: string) => {
+    setSelectedDomain(domain);
+    setShowPaymentDialog(true);
+  };
+
+  const handleSubscribe = async (
+    planType: 'starter' | 'pro' | 'enterprise',
+    paymentMethod: 'card' | 'apple_pay' | 'google_pay',
+    couponCode?: string
+  ) => {
     try {
       setIsProcessingPurchase(true);
       
@@ -51,7 +64,7 @@ const AcheterDomaine = () => {
       const { data: existingDomain } = await supabase
         .from("store_settings")
         .select("domain_name")
-        .eq("domain_name", domain)
+        .eq("domain_name", selectedDomain)
         .maybeSingle();
 
       if (existingDomain) {
@@ -67,7 +80,7 @@ const AcheterDomaine = () => {
       const { error: updateError } = await supabase
         .from("store_settings")
         .update({ 
-          domain_name: domain,
+          domain_name: selectedDomain,
           is_custom_domain: true 
         })
         .eq("user_id", user.id);
@@ -78,6 +91,8 @@ const AcheterDomaine = () => {
         title: "Succès !",
         description: "Le domaine a été réservé pour votre boutique",
       });
+
+      setShowPaymentDialog(false);
 
     } catch (error) {
       console.error("Erreur lors de l'achat du domaine:", error);
@@ -102,7 +117,7 @@ const AcheterDomaine = () => {
             setDomainName(value);
             handleDomainCheck(value);
           }}
-          onPurchase={handlePurchase}
+          onPurchase={handlePurchaseClick}
         />
       </Card>
 
@@ -117,7 +132,7 @@ const AcheterDomaine = () => {
               >
                 <span className="font-medium">{domain}</span>
                 <Button 
-                  onClick={() => handlePurchase(domain)}
+                  onClick={() => handlePurchaseClick(domain)}
                   size="sm"
                   disabled={isProcessingPurchase}
                   variant="destructive"
@@ -129,6 +144,20 @@ const AcheterDomaine = () => {
           </div>
         </Card>
       )}
+
+      <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Acheter le domaine {selectedDomain}</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <PaymentButtons
+              planType="starter"
+              onSubscribe={handleSubscribe}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
