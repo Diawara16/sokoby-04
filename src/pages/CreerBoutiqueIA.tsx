@@ -6,6 +6,9 @@ import { NicheSelector } from "@/components/store-creator/NicheSelector";
 import { CreationProgress } from "@/components/store-creator/CreationProgress";
 import { CreationComplete } from "@/components/store-creator/CreationComplete";
 import { niches } from "@/data/niches";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type Step = 'supplier' | 'niche' | 'creating' | 'done';
 
@@ -14,6 +17,7 @@ const CreerBoutiqueIA = () => {
   const [selectedSupplier, setSelectedSupplier] = useState<string | null>(null);
   const [selectedNiche, setSelectedNiche] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSupplierSelect = (supplier: string) => {
     setSelectedSupplier(supplier);
@@ -31,16 +35,21 @@ const CreerBoutiqueIA = () => {
         throw new Error("Utilisateur non connecté");
       }
 
-      // Get store settings
+      // Créer ou mettre à jour les paramètres de la boutique
       const { data: storeData, error: storeError } = await supabase
         .from('store_settings')
-        .select('id')
-        .eq('user_id', user.id)
+        .upsert({
+          user_id: user.id,
+          store_name: `${nicheName} Store`,
+          domain_name: 'sokoby.com',
+          is_custom_domain: true,
+        })
+        .select()
         .single();
 
       if (storeError) throw storeError;
 
-      // Call the generate-store function
+      // Générer la boutique avec l'IA
       const { data, error } = await supabase.functions.invoke('generate-store', {
         body: {
           niche: nicheName,
@@ -67,6 +76,10 @@ const CreerBoutiqueIA = () => {
     }
   };
 
+  const handleGoToDashboard = () => {
+    navigate('/tableau-de-bord');
+  };
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="max-w-5xl mx-auto">
@@ -76,6 +89,13 @@ const CreerBoutiqueIA = () => {
             Notre IA va créer votre boutique en ligne en quelques minutes
           </p>
         </div>
+
+        <Alert className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Votre boutique sera créée sur le domaine : sokoby.com
+          </AlertDescription>
+        </Alert>
 
         {step === 'supplier' && (
           <SupplierSelector
@@ -99,7 +119,7 @@ const CreerBoutiqueIA = () => {
 
         {step === 'done' && (
           <CreationComplete
-            onGoToDashboard={() => window.location.href = '/dashboard'}
+            onGoToDashboard={handleGoToDashboard}
           />
         )}
       </div>
