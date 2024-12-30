@@ -3,31 +3,55 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 import { UserDashboard } from "@/components/dashboard/UserDashboard";
-import { TrialStatus } from "@/components/dashboard/TrialStatus";
-import { FeatureUsage } from "@/components/dashboard/FeatureUsage";
-import { Recommendations } from "@/components/dashboard/Recommendations";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<any>(null);
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        console.log("Utilisateur non connecté, redirection vers la page d'accueil");
-        navigate("/");
-        return;
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          console.log("Utilisateur non connecté, redirection vers la page d'accueil");
+          navigate("/");
+          return;
+        }
+
+        // Vérifier si l'utilisateur a un profil
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error("Erreur lors de la récupération du profil:", error);
+          toast({
+            title: "Erreur",
+            description: "Impossible de charger votre profil",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (!profile) {
+          console.log("Profil non trouvé, redirection vers l'onboarding");
+          navigate("/onboarding");
+          return;
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Erreur lors de la vérification de l'authentification:", error);
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors du chargement de votre tableau de bord",
+          variant: "destructive",
+        });
       }
-
-      // Charger le profil de l'utilisateur
-      const { data: userProfile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
-
-      setProfile(userProfile);
     };
 
     checkAuth();
@@ -39,15 +63,15 @@ const Dashboard = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, toast]);
 
-  const getDaysRemaining = () => {
-    if (!profile?.trial_ends_at) return 0;
-    const daysRemaining = Math.max(0, Math.floor((new Date(profile.trial_ends_at).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)));
-    return daysRemaining;
-  };
-
-  const hasFeatures = profile?.features_usage ? Object.keys(profile.features_usage).length > 0 : false;
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -59,27 +83,14 @@ const Dashboard = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-8">
-          <TrialStatus trialEndsAt={profile?.trial_ends_at} />
-          
-          <div className="bg-white shadow rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">
-                Navigation rapide
-              </h2>
-              <DashboardNavigation />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <FeatureUsage features={profile?.features_usage || {}} />
-            <Recommendations 
-              daysRemaining={getDaysRemaining()} 
-              hasFeatures={hasFeatures}
-            />
-          </div>
-
+        <div className="space-y-8">
           <UserDashboard />
+          <div className="bg-white shadow rounded-lg p-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-4">
+              Navigation rapide
+            </h2>
+            <DashboardNavigation />
+          </div>
         </div>
       </div>
     </div>
