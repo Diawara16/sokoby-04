@@ -5,6 +5,7 @@ import Dashboard from "@/pages/Dashboard";
 import Profile from "@/pages/Profile";
 import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
 import AcheterDomaine from "@/pages/AcheterDomaine";
+import ConnecterDomaine from "@/pages/ConnecterDomaine";
 import { AppSidebar } from "@/components/AppSidebar";
 
 interface AppRoutesProps {
@@ -47,6 +48,14 @@ export const AppRoutes = ({ isAuthenticated }: AppRoutesProps) => {
             element={
               <ProtectedRoute>
                 <AcheterDomaine />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/connecter-domaine"
+            element={
+              <ProtectedRoute>
+                <ConnecterDomaine />
               </ProtectedRoute>
             }
           />
