@@ -33,18 +33,38 @@ const Onboarding = () => {
           return;
         }
 
-        // Récupérer les paramètres de la boutique avec une requête plus simple
+        // Récupérer les paramètres de la boutique
         const { data: settings, error: settingsError } = await supabase
           .from('store_settings')
           .select('*')
           .eq('user_id', session.user.id)
-          .limit(1);
+          .maybeSingle();
 
         if (settingsError) {
           console.error("Erreur lors de la récupération des paramètres:", settingsError);
           setError("Impossible de charger les paramètres de votre boutique");
+        } else if (!settings) {
+          // Si aucun paramètre n'existe, on les crée
+          console.log("Création des paramètres de boutique par défaut");
+          const { data: newSettings, error: createError } = await supabase
+            .from('store_settings')
+            .insert([
+              {
+                user_id: session.user.id,
+                store_name: 'Ma boutique'
+              }
+            ])
+            .select()
+            .single();
+
+          if (createError) {
+            console.error("Erreur lors de la création des paramètres:", createError);
+            setError("Impossible de créer les paramètres de votre boutique");
+          } else {
+            setStoreSettings(newSettings);
+          }
         } else {
-          setStoreSettings(settings?.[0] || null);
+          setStoreSettings(settings);
         }
 
         setIsLoading(false);
