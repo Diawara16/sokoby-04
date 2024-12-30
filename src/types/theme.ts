@@ -11,4 +11,5 @@ export interface Theme {
   features: string[];
   preview: string;
   colors: ThemeColors;
+  price?: number;
 }

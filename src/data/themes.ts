@@ -16,7 +16,8 @@ export const themes: Record<'free' | 'private', Theme> = {
       secondary: "#D6BCFA",
       accent: "#F2FCE2",
       background: "#FFFFFF"
-    }
+    },
+    price: 0
   },
   private: {
     name: "Thème Premium",
@@ -25,7 +26,9 @@ export const themes: Record<'free' | 'private', Theme> = {
       "Animations personnalisées",
       "Mise en page premium",
       "Effets visuels exclusifs",
-      "Options de personnalisation avancées"
+      "Options de personnalisation avancées",
+      "Support prioritaire",
+      "Mises à jour régulières"
     ],
     preview: "/placeholder.svg",
     colors: {
@@ -33,6 +36,7 @@ export const themes: Record<'free' | 'private', Theme> = {
       secondary: "#7E69AB",
       accent: "#F1F0FB",
       background: "#221F26"
-    }
+    },
+    price: 79
   }
 };

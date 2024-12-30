@@ -11,7 +11,13 @@ interface ThemeCardProps {
 export const ThemeCard = ({ theme, onApply, isSelected }: ThemeCardProps) => {
   return (
     <Card className="p-6">
-      <h2 className="text-2xl font-semibold mb-4">{theme.name}</h2>
+      <div className="flex justify-between items-start mb-4">
+        <h2 className="text-2xl font-semibold">{theme.name}</h2>
+        <div className="text-xl font-bold text-red-700">
+          {theme.price === 0 ? 'Gratuit' : `${theme.price}€`}
+        </div>
+      </div>
+      
       <p className="text-gray-600 mb-6">{theme.description}</p>
       
       <div className="mb-6">
@@ -44,7 +50,9 @@ export const ThemeCard = ({ theme, onApply, isSelected }: ThemeCardProps) => {
         className="w-full bg-red-700 hover:bg-red-800"
         onClick={onApply}
       >
-        {isSelected ? 'Utiliser ce thème' : 'Passer à la version Premium'}
+        {theme.price === 0 
+          ? (isSelected ? 'Thème actif' : 'Utiliser ce thème')
+          : (isSelected ? 'Thème actif' : 'Acheter maintenant')}
       </Button>
     </Card>
   );
