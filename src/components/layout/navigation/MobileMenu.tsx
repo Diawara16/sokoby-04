@@ -20,43 +20,46 @@ export function MobileMenu({ isAuthenticated }: MobileMenuProps) {
     <div className="md:hidden">
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="relative">
             <Menu className="h-6 w-6" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-          <SheetHeader>
+        <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0">
+          <SheetHeader className="p-6 border-b">
             <SheetTitle>Menu</SheetTitle>
           </SheetHeader>
-          <div className="flex flex-col gap-4 mt-6">
+          <div className="flex flex-col p-6">
             {navigationLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
-                className="text-lg text-gray-600 hover:text-gray-900 py-2"
+                className="flex items-center gap-3 py-3 text-gray-600 hover:text-primary transition-colors duration-200"
               >
-                {link.label}
+                {link.icon}
+                <span className="text-base font-medium">{link.label}</span>
               </Link>
             ))}
-            {!isAuthenticated && (
-              <div className="flex flex-col gap-3 mt-4">
-                <Link to="/essai-gratuit">
-                  <Button variant="ghost" className="w-full font-medium">
-                    Se connecter
-                  </Button>
-                </Link>
-                <Link to="/essai-gratuit">
-                  <Button className="w-full bg-[#ea384c] hover:bg-[#ea384c]/90 text-white font-medium">
-                    Démarrer l'essai gratuit
-                  </Button>
-                </Link>
-              </div>
-            )}
-            {isAuthenticated && (
-              <div className="mt-4">
-                <NotificationBell />
-              </div>
-            )}
+            
+            <div className="mt-6 pt-6 border-t">
+              {!isAuthenticated ? (
+                <div className="flex flex-col gap-3">
+                  <Link to="/essai-gratuit">
+                    <Button variant="outline" className="w-full font-medium">
+                      Se connecter
+                    </Button>
+                  </Link>
+                  <Link to="/essai-gratuit">
+                    <Button className="w-full bg-primary hover:bg-primary/90 text-white font-medium">
+                      Démarrer l'essai gratuit
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <NotificationBell />
+                </div>
+              )}
+            </div>
           </div>
         </SheetContent>
       </Sheet>
