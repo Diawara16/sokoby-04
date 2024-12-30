@@ -9,6 +9,10 @@ import DraftOrders from "./pages/DraftOrders";
 import ShippingLabels from "./pages/ShippingLabels";
 import AbandonedCheckouts from "./pages/AbandonedCheckouts";
 import Products from "./pages/Products";
+import ProductCatalog from "./pages/products/ProductCatalog";
+import ProductStock from "./pages/products/ProductStock";
+import ProductMovements from "./pages/products/ProductMovements";
+import GiftCards from "./pages/products/GiftCards";
 import Customers from "./pages/Customers";
 import Applications from "./pages/Applications";
 import AIStore from "./pages/AIStore";
@@ -84,6 +88,38 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute>
             <Products />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/produits/catalogue"
+        element={
+          <ProtectedRoute>
+            <ProductCatalog />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/produits/stock"
+        element={
+          <ProtectedRoute>
+            <ProductStock />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/produits/mouvements"
+        element={
+          <ProtectedRoute>
+            <ProductMovements />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/produits/cartes-cadeaux"
+        element={
+          <ProtectedRoute>
+            <GiftCards />
           </ProtectedRoute>
         }
       />

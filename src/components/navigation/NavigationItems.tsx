@@ -11,7 +11,11 @@ import {
   PlusCircle, 
   Info,
   Truck,
-  CreditCard
+  CreditCard,
+  BoxIcon,
+  Tags,
+  ArrowLeftRight,
+  Gift
 } from "lucide-react"
 
 export const navigationItems = [
@@ -46,6 +50,28 @@ export const navigationItems = [
     title: "Produits",
     url: "/produits",
     icon: Package,
+    subItems: [
+      {
+        title: "Catalogue produits",
+        url: "/produits/catalogue",
+        icon: Tags,
+      },
+      {
+        title: "Gestion du stock",
+        url: "/produits/stock",
+        icon: BoxIcon,
+      },
+      {
+        title: "Mouvements produits",
+        url: "/produits/mouvements",
+        icon: ArrowLeftRight,
+      },
+      {
+        title: "Cartes cadeaux",
+        url: "/produits/cartes-cadeaux",
+        icon: Gift,
+      },
+    ],
   },
   {
     title: "Clientèle",
