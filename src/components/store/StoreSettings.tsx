@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ContactFields } from "./ContactFields";
 
 interface StoreSettings {
   id: string;
@@ -109,6 +110,10 @@ export const StoreSettings = () => {
     }
   };
 
+  const handleFieldChange = (field: string, value: string) => {
+    setSettings(prev => prev ? {...prev, [field]: value} : null);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -136,35 +141,18 @@ export const StoreSettings = () => {
           <Input
             id="store_name"
             value={settings?.store_name || ''}
-            onChange={(e) => setSettings(prev => prev ? {...prev, store_name: e.target.value} : null)}
+            onChange={(e) => handleFieldChange('store_name', e.target.value)}
+            placeholder="Ma boutique"
           />
         </div>
-        <div>
-          <Label htmlFor="store_email">Email</Label>
-          <Input
-            id="store_email"
-            type="email"
-            value={settings?.store_email || ''}
-            onChange={(e) => setSettings(prev => prev ? {...prev, store_email: e.target.value} : null)}
-          />
-        </div>
-        <div>
-          <Label htmlFor="store_phone">Téléphone</Label>
-          <Input
-            id="store_phone"
-            type="tel"
-            value={settings?.store_phone || ''}
-            onChange={(e) => setSettings(prev => prev ? {...prev, store_phone: e.target.value} : null)}
-          />
-        </div>
-        <div>
-          <Label htmlFor="store_address">Adresse</Label>
-          <Input
-            id="store_address"
-            value={settings?.store_address || ''}
-            onChange={(e) => setSettings(prev => prev ? {...prev, store_address: e.target.value} : null)}
-          />
-        </div>
+
+        <ContactFields
+          storeEmail={settings?.store_email || ''}
+          storePhone={settings?.store_phone || ''}
+          storeAddress={settings?.store_address || ''}
+          onChange={handleFieldChange}
+        />
+
         <Button onClick={handleSave} className="w-full">
           Sauvegarder les modifications
         </Button>
