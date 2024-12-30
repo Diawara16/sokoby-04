@@ -11,10 +11,10 @@ import {
 
 const navigationItems = [
   {
-    title: "Commandes",
+    title: "Boutique",
     icon: <ShoppingCart className="w-5 h-5" />,
-    description: "Gérez vos commandes et suivez les livraisons",
-    path: "/commandes",
+    description: "Gérez votre boutique en ligne",
+    path: "/boutique",
     color: "text-blue-500"
   },
   {
@@ -25,7 +25,7 @@ const navigationItems = [
     color: "text-green-500"
   },
   {
-    title: "Clientèle",
+    title: "Clients",
     icon: <Users className="w-5 h-5" />,
     description: "Suivez et gérez vos clients",
     path: "/clients",
@@ -56,7 +56,7 @@ const navigationItems = [
 
 export const DashboardNavigation = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {navigationItems.map((item) => (
         <Link
           key={item.path}
