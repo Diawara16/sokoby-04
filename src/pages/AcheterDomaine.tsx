@@ -6,6 +6,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PaymentButtons } from "@/components/pricing/PaymentButtons";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const AcheterDomaine = () => {
   const [domainName, setDomainName] = useState("");
@@ -18,12 +20,11 @@ const AcheterDomaine = () => {
   const generateSuggestedDomains = (baseDomain: string) => {
     const baseName = baseDomain.split('.')[0];
     return [
-      `${baseName}.com`,
-      `${baseName}.fr`,
-      `${baseName}.net`,
-      `${baseName}.io`,
-      `${baseName}-shop.com`,
-      `${baseName}-store.com`,
+      `${baseName}.sokoby.com`,
+      `${baseName}-shop.sokoby.com`,
+      `${baseName}-store.sokoby.com`,
+      `${baseName}-boutique.sokoby.com`,
+      `${baseName}-market.sokoby.com`,
     ];
   };
 
@@ -107,9 +108,16 @@ const AcheterDomaine = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6">Acheter un nouveau domaine</h1>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">Acheter un sous-domaine</h1>
       
+      <Alert className="mb-6">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
+          Vous pouvez acheter un sous-domaine personnalisé sur sokoby.com (exemple: maboutique.sokoby.com)
+        </AlertDescription>
+      </Alert>
+
       <Card className="p-6 mb-6">
         <DomainChecker 
           value={domainName} 
@@ -123,7 +131,7 @@ const AcheterDomaine = () => {
 
       {suggestedDomains.length > 0 && (
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Autres domaines disponibles</h2>
+          <h2 className="text-xl font-semibold mb-4">Suggestions de sous-domaines</h2>
           <div className="grid gap-4 md:grid-cols-2">
             {suggestedDomains.map((domain) => (
               <div 
