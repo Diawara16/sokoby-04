@@ -8,52 +8,59 @@ import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
 import AcheterDomaine from "@/pages/AcheterDomaine";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 function App() {
-  const { isAuthenticated } = useAuthAndProfile();
+  const { session, profile, isLoading } = useAuthAndProfile();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Router>
-      <div className="flex min-h-screen">
-        <AppSidebar />
-        <main className="flex-1 overflow-y-auto">
-          <Routes>
-            <Route path="/" element={<Home isAuthenticated={isAuthenticated} />} />
-            <Route
-              path="/tableau-de-bord"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profil"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/creer-boutique-ia"
-              element={
-                <ProtectedRoute>
-                  <CreerBoutiqueIA />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/acheter-domaine"
-              element={
-                <ProtectedRoute>
-                  <AcheterDomaine />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </main>
-      </div>
+      <SidebarProvider>
+        <div className="flex min-h-screen">
+          <AppSidebar />
+          <main className="flex-1 p-6">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route
+                path="/tableau-de-bord"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profil"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/creer-boutique-ia"
+                element={
+                  <ProtectedRoute>
+                    <CreerBoutiqueIA />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/acheter-domaine"
+                element={
+                  <ProtectedRoute>
+                    <AcheterDomaine />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </main>
+        </div>
+      </SidebarProvider>
       <Toaster />
     </Router>
   );
