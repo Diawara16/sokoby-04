@@ -25,7 +25,6 @@ export const NicheSelector = ({ selectedNiche, onSelectNiche }: NicheSelectorPro
         return;
       }
 
-      // Créer une session de paiement Stripe via notre fonction Edge
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
@@ -65,27 +64,31 @@ export const NicheSelector = ({ selectedNiche, onSelectNiche }: NicheSelectorPro
         {niches.map((niche) => (
           <Card 
             key={niche.name}
-            className={`p-6 cursor-pointer transition-colors ${
-              selectedNiche === niche.name ? 'border-primary' : 'hover:border-primary'
+            className={`p-6 cursor-pointer transition-all duration-200 transform hover:scale-105 ${
+              selectedNiche === niche.name 
+                ? 'border-2 border-primary shadow-lg' 
+                : 'hover:border-primary/50 hover:shadow-md'
             }`}
             onClick={() => onSelectNiche(niche.name)}
           >
-            <div className="text-4xl mb-4">{niche.icon}</div>
-            <h3 className="text-xl font-semibold mb-2">{niche.name}</h3>
-            <p className="text-muted-foreground mb-4">{niche.description}</p>
-            <div className="flex justify-between items-center mb-4">
-              <span>{niche.products} produits</span>
-              <span className="font-semibold">${niche.price}</span>
+            <div className="flex flex-col h-full">
+              <div className="text-4xl mb-4">{niche.icon}</div>
+              <h3 className="text-xl font-semibold mb-2">{niche.name}</h3>
+              <p className="text-muted-foreground mb-4 flex-grow">{niche.description}</p>
+              <div className="flex justify-between items-center mb-4">
+                <span className="text-sm text-muted-foreground">{niche.products} produits</span>
+                <span className="font-semibold text-primary">${niche.price}</span>
+              </div>
+              <Button 
+                className="w-full bg-primary hover:bg-primary-600 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePurchaseNiche(niche.name, niche.price);
+                }}
+              >
+                Acheter cette niche
+              </Button>
             </div>
-            <Button 
-              className="w-full"
-              onClick={(e) => {
-                e.stopPropagation();
-                handlePurchaseNiche(niche.name, niche.price);
-              }}
-            >
-              Acheter cette niche
-            </Button>
           </Card>
         ))}
       </div>
