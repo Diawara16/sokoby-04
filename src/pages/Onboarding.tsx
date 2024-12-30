@@ -1,44 +1,58 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShoppingBag, UserCircle, Settings } from "lucide-react";
+import { ShoppingBag, UserCircle, Settings, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [storeSettings, setStoreSettings] = useState(null);
 
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error("Erreur lors de la vérification de la session:", error);
-          toast({
-            title: "Erreur",
-            description: "Impossible de vérifier votre session. Veuillez réessayer.",
-            variant: "destructive",
-          });
-          navigate('/essai-gratuit');
+        if (sessionError) {
+          console.error("Erreur lors de la vérification de la session:", sessionError);
+          setError("Impossible de vérifier votre session");
+          navigate('/');
           return;
         }
 
         if (!session) {
-          console.log("Aucune session trouvée, redirection vers la page d'essai gratuit");
-          navigate('/essai-gratuit');
+          console.log("Aucune session trouvée, redirection vers la page d'accueil");
+          navigate('/');
           return;
+        }
+
+        // Récupérer les paramètres de la boutique
+        const { data: settings, error: settingsError } = await supabase
+          .from('store_settings')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .single();
+
+        if (settingsError && settingsError.code !== 'PGRST116') {
+          console.error("Erreur lors de la récupération des paramètres:", settingsError);
+          setError("Impossible de charger les paramètres de votre boutique");
+        } else {
+          setStoreSettings(settings);
         }
 
         console.log("Session utilisateur valide:", session.user.id);
         setIsLoading(false);
       } catch (error) {
         console.error("Erreur inattendue:", error);
-        navigate('/essai-gratuit');
+        setError("Une erreur inattendue s'est produite");
+        navigate('/');
       }
     };
 
@@ -47,7 +61,7 @@ const Onboarding = () => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Changement d'état d'authentification:", event, session?.user?.id);
       if (event === 'SIGNED_OUT') {
-        navigate('/essai-gratuit');
+        navigate('/');
       }
     });
 
@@ -59,7 +73,7 @@ const Onboarding = () => {
   const options = [
     {
       title: "Configurer ma boutique",
-      description: "Créez votre première boutique en ligne et commencez à vendre (2 boutiques avec le plan Pro)",
+      description: "Créez votre première boutique en ligne et commencez à vendre",
       icon: ShoppingBag,
       path: "/boutique",
     },
@@ -79,10 +93,30 @@ const Onboarding = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <p className="text-lg text-gray-600">Chargement...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="py-8">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <p className="text-lg text-gray-600">Chargement de votre espace...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="py-8">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -91,22 +125,10 @@ const Onboarding = () => {
     <div className="container mx-auto py-8 px-4">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Configurez votre compte</h1>
+          <h1 className="text-3xl font-bold mb-2">Bienvenue sur votre espace</h1>
           <p className="text-muted-foreground mb-6">
-            Connectez-vous avec un réseau social ou choisissez une option pour commencer
+            Commençons à configurer votre boutique en ligne
           </p>
-          
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Connexion rapide</CardTitle>
-              <CardDescription>
-                Utilisez vos réseaux sociaux pour vous connecter
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <SocialAuthButtons />
-            </CardContent>
-          </Card>
         </div>
 
         <div className="grid gap-6">
