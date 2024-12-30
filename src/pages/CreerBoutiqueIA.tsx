@@ -5,7 +5,6 @@ import { SupplierSelector } from "@/components/store-creator/SupplierSelector";
 import { NicheSelector } from "@/components/store-creator/NicheSelector";
 import { CreationProgress } from "@/components/store-creator/CreationProgress";
 import { CreationComplete } from "@/components/store-creator/CreationComplete";
-import { niches } from "@/data/niches";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -43,7 +42,6 @@ const CreerBoutiqueIA = () => {
 
       const uniqueDomainName = await generateUniqueDomainName(user.id, nicheName);
 
-      // Créer ou mettre à jour les paramètres de la boutique
       const { data: storeData, error: storeError } = await supabase
         .from('store_settings')
         .upsert({
@@ -57,7 +55,6 @@ const CreerBoutiqueIA = () => {
 
       if (storeError) throw storeError;
 
-      // Générer la boutique avec l'IA
       const { data, error } = await supabase.functions.invoke('generate-store', {
         body: {
           niche: nicheName,
@@ -114,7 +111,6 @@ const CreerBoutiqueIA = () => {
 
         {step === 'niche' && (
           <NicheSelector
-            niches={niches}
             onNicheSelect={handleNicheSelect}
           />
         )}
