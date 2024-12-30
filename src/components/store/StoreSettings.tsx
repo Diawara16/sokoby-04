@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface StoreSettings {
   id: string;
@@ -50,8 +52,8 @@ export const StoreSettings = () => {
         store_email: '',
         store_phone: '',
         store_address: '',
-        domain_name: '',
-        is_custom_domain: false
+        domain_name: 'sokoby.com',
+        is_custom_domain: true
       });
     } catch (error: any) {
       console.error("Erreur lors du chargement des paramètres de la boutique:", error);
@@ -118,6 +120,16 @@ export const StoreSettings = () => {
   return (
     <Card className="p-6">
       <h2 className="text-2xl font-bold mb-6">Paramètres de la boutique</h2>
+      
+      {settings?.is_custom_domain && settings?.domain_name && (
+        <Alert className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Votre boutique utilise le domaine personnalisé : {settings.domain_name}
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="space-y-4">
         <div>
           <Label htmlFor="store_name">Nom de la boutique</Label>
@@ -151,14 +163,6 @@ export const StoreSettings = () => {
             id="store_address"
             value={settings?.store_address || ''}
             onChange={(e) => setSettings(prev => prev ? {...prev, store_address: e.target.value} : null)}
-          />
-        </div>
-        <div>
-          <Label htmlFor="domain_name">Nom de domaine</Label>
-          <Input
-            id="domain_name"
-            value={settings?.domain_name || ''}
-            onChange={(e) => setSettings(prev => prev ? {...prev, domain_name: e.target.value} : null)}
           />
         </div>
         <Button onClick={handleSave} className="w-full">
