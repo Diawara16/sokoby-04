@@ -52,28 +52,29 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarContent className="py-4">
-        <SidebarMenu>
+      <SidebarContent className="py-6">
+        <SidebarMenu className="space-y-2">
           {navigationItems.map((item) => (
-            <SidebarMenuItem key={item.title}>
+            <SidebarMenuItem key={item.title} className="px-2">
               <SidebarMenuButton
                 asChild
                 isActive={location.pathname === item.url}
                 tooltip={item.title}
+                className="py-2.5"
               >
                 {item.openInNewWindow ? (
                   <a 
                     href={item.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-3"
                   >
-                    <item.icon className="h-4 w-4" />
+                    <item.icon className="h-5 w-5" />
                     <span>{item.title}</span>
                   </a>
                 ) : (
-                  <Link to={item.url} className="flex items-center gap-2">
-                    <item.icon className="h-4 w-4" />
+                  <Link to={item.url} className="flex items-center gap-3">
+                    <item.icon className="h-5 w-5" />
                     <span>{item.title}</span>
                   </Link>
                 )}
