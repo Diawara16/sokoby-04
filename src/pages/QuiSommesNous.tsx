@@ -1,69 +1,119 @@
-import React from "react";
-import { Users, Target, History, Heart } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { AppSidebar } from "@/components/AppSidebar"
+import { Card, CardContent } from "@/components/ui/card"
+import { Building2, Users, Target, History, Heart } from "lucide-react"
 
-export default function QuiSommesNous() {
+const QuiSommesNous = () => {
   return (
-    <div className="container mx-auto px-4 py-8 animate-fadeIn">
-      <div className="flex items-center gap-3 mb-8">
-        <Users className="h-8 w-8 text-primary" />
-        <h1 className="text-3xl font-bold">Qui sommes-nous ?</h1>
-      </div>
+    <div className="flex min-h-screen w-full">
+      <AppSidebar />
+      <main className="flex-1 overflow-y-auto bg-background p-8">
+        <div className="container mx-auto">
+          <h1 className="text-4xl font-bold mb-8">Qui sommes-nous ?</h1>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
-          <div className="bg-primary/10 p-4">
-            <Target className="h-8 w-8 text-primary mb-2" />
-            <h2 className="text-xl font-semibold mb-2">Notre Mission</h2>
-            <p className="text-gray-600">
-              Nous révolutionnons le commerce en ligne en rendant la création et la gestion de boutiques 
-              accessibles à tous. Notre plateforme combine simplicité d'utilisation et technologies 
-              avancées pour vous permettre de réussir dans l'e-commerce.
-            </p>
-          </div>
-        </Card>
+          <div className="grid gap-8 md:grid-cols-2">
+            {/* Mission */}
+            <Card className="hover:shadow-lg transition-all">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="rounded-full bg-primary/10 p-3">
+                    <Target className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-semibold mb-2">Notre Mission</h2>
+                    <p className="text-muted-foreground">
+                      Chez Sokoby, notre mission est de démocratiser le commerce en ligne 
+                      en fournissant aux entrepreneurs les outils les plus innovants pour 
+                      créer et gérer leurs boutiques en ligne avec facilité.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
-          <div className="bg-primary/10 p-4">
-            <History className="h-8 w-8 text-primary mb-2" />
-            <h2 className="text-xl font-semibold mb-2">Notre Histoire</h2>
-            <p className="text-gray-600">
-              Fondée par des passionnés du e-commerce, notre entreprise est née de la volonté 
-              de démocratiser la vente en ligne. Depuis nos débuts, nous n'avons cessé d'innover 
-              pour offrir les meilleures solutions à nos clients.
-            </p>
-          </div>
-        </Card>
+            {/* Histoire */}
+            <Card className="hover:shadow-lg transition-all">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="rounded-full bg-primary/10 p-3">
+                    <History className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-semibold mb-2">Notre Histoire</h2>
+                    <p className="text-muted-foreground">
+                      Fondée en 2023, Sokoby est née de la vision d'une équipe passionnée 
+                      qui souhaitait simplifier la création de boutiques en ligne. Depuis, 
+                      nous n'avons cessé d'innover pour nos clients.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
-          <div className="bg-primary/10 p-4">
-            <Heart className="h-8 w-8 text-primary mb-2" />
-            <h2 className="text-xl font-semibold mb-2">Nos Valeurs</h2>
-            <p className="text-gray-600">
-              L'innovation, la simplicité et la satisfaction client sont au cœur de notre approche. 
-              Nous croyons en un commerce en ligne éthique, accessible et performant pour tous 
-              les entrepreneurs.
-            </p>
-          </div>
-        </Card>
-      </div>
+            {/* Valeurs */}
+            <Card className="hover:shadow-lg transition-all">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="rounded-full bg-primary/10 p-3">
+                    <Heart className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-semibold mb-2">Nos Valeurs</h2>
+                    <p className="text-muted-foreground">
+                      L'innovation, la simplicité et la satisfaction client sont au cœur 
+                      de nos valeurs. Nous croyons en la création d'outils puissants mais 
+                      faciles à utiliser, adaptés à tous les niveaux d'expertise.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-      <div className="mt-12">
-        <Card className="overflow-hidden">
-          <div className="bg-primary/5 p-6">
-            <h2 className="text-2xl font-semibold mb-4">Notre Équipe</h2>
-            <p className="text-gray-600 mb-6">
-              Notre équipe diversifiée combine expertise technique et connaissance approfondie 
-              du e-commerce pour vous offrir la meilleure expérience possible. Nous sommes 
-              dédiés à votre succès et travaillons constamment à améliorer nos services.
-            </p>
-            <Button className="bg-primary hover:bg-primary-600">
-              Contactez-nous
-            </Button>
+            {/* Équipe */}
+            <Card className="hover:shadow-lg transition-all">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="rounded-full bg-primary/10 p-3">
+                    <Users className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-semibold mb-2">Notre Équipe</h2>
+                    <p className="text-muted-foreground">
+                      Notre équipe diversifiée rassemble des experts en e-commerce, 
+                      en technologie et en expérience utilisateur, tous unis par la 
+                      passion de créer la meilleure plateforme possible pour nos clients.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </Card>
-      </div>
+
+          {/* Contact Section */}
+          <Card className="mt-8 hover:shadow-lg transition-all">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-4">
+                <div className="rounded-full bg-primary/10 p-3">
+                  <Building2 className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-semibold mb-2">Nous Contacter</h2>
+                  <p className="text-muted-foreground mb-4">
+                    Nous sommes toujours ravis d'échanger avec nos clients et partenaires. 
+                    N'hésitez pas à nous contacter pour toute question ou suggestion.
+                  </p>
+                  <div className="space-y-2">
+                    <p className="text-sm">Email: contact@sokoby.com</p>
+                    <p className="text-sm">Téléphone: +33 (0)1 23 45 67 89</p>
+                    <p className="text-sm">Adresse: 123 Avenue du Commerce, 75001 Paris</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
     </div>
-  );
+  )
 }
+
+export default QuiSommesNous
