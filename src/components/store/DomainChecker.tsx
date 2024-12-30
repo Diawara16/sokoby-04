@@ -13,12 +13,27 @@ interface DomainCheckerProps {
 export const DomainChecker = ({ value, onChange, onPurchase }: DomainCheckerProps) => {
   const { isCheckingDomain, domainStatus, checkDomainAvailability } = useDomainCheck();
 
+  const cleanDomainName = (domain: string) => {
+    // Enlever le protocole et www si présent
+    let cleaned = domain.toLowerCase()
+      .replace(/^https?:\/\//, '')
+      .replace(/^www\./, '');
+    
+    // Enlever les espaces
+    cleaned = cleaned.trim();
+    
+    return cleaned;
+  };
+
   const handleDomainChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newDomain = e.target.value;
-    onChange(newDomain);
+    const inputValue = e.target.value;
+    const cleanedDomain = cleanDomainName(inputValue);
+    onChange(cleanedDomain);
     
     const timeoutId = setTimeout(() => {
-      checkDomainAvailability(newDomain);
+      if (cleanedDomain) {
+        checkDomainAvailability(cleanedDomain);
+      }
     }, 500);
 
     return () => clearTimeout(timeoutId);
