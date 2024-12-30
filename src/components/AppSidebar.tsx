@@ -41,18 +41,18 @@ const navigationItems = [
     icon: AppWindow,
   },
   {
-    title: "Créer votre boutique par IA",
+    title: "Boutique IA",
     url: "/creer-boutique-ia",
     icon: Sparkles,
     className: "mt-4", // Add space above this item
   },
   {
-    title: "Acheter un nouveau domaine",
+    title: "Acheter un domaine",
     url: "/acheter-domaine",
     icon: PlusCircle,
   },
   {
-    title: "Connecter votre domaine existant",
+    title: "Connecter un domaine",
     url: "/connecter-domaine",
     icon: Globe,
   },
