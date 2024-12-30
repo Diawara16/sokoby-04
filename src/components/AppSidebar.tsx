@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom"
-import { Home, ShoppingCart, Package, Users, ShoppingBag, AppWindow, Settings, Sparkles } from "lucide-react"
+import { Home, ShoppingCart, Package, Users, ShoppingBag, AppWindow, Settings, Sparkles, Globe } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -45,6 +45,11 @@ const navigationItems = [
     url: "/creer-boutique-ia",
     icon: Sparkles,
     className: "mt-4", // Add space above this item
+  },
+  {
+    title: "Connecter votre domaine existant",
+    url: "/connecter-domaine",
+    icon: Globe,
   },
   {
     title: "Paramètres",
