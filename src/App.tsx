@@ -23,6 +23,7 @@ import Parametres from "@/pages/Parametres";
 import Themes from "@/pages/Themes";
 import Boutique from "@/pages/Boutique";
 import Applications from "@/pages/Applications";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -62,13 +63,62 @@ function App() {
               <Route path="/support" element={<Support />} />
               <Route path="/legal" element={<Legal />} />
               <Route path="/accessibility" element={<Accessibility />} />
-              <Route path="/profil" element={<Profile />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/tableau-de-bord" element={<Dashboard />} />
-              <Route path="/parametres" element={<Parametres />} />
-              <Route path="/themes" element={<Themes />} />
-              <Route path="/boutique" element={<Boutique />} />
-              <Route path="/applications" element={<Applications />} />
+              <Route 
+                path="/profil" 
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/onboarding" 
+                element={
+                  <ProtectedRoute>
+                    <Onboarding />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/tableau-de-bord" 
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/parametres" 
+                element={
+                  <ProtectedRoute>
+                    <Parametres />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/themes" 
+                element={
+                  <ProtectedRoute>
+                    <Themes />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/boutique" 
+                element={
+                  <ProtectedRoute>
+                    <Boutique />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/applications" 
+                element={
+                  <ProtectedRoute>
+                    <Applications />
+                  </ProtectedRoute>
+                } 
+              />
             </Routes>
           </main>
           <Footer />
