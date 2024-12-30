@@ -44,13 +44,13 @@ const navigationItems = [
     title: "Créer votre boutique par IA",
     url: "/creer-boutique-ia",
     icon: Sparkles,
-    className: "mt-8", // Add space above this item
+    className: "mt-4", // Add space above this item
   },
   {
     title: "Paramètres",
     url: "/parametres",
     icon: Settings,
-    className: "mt-8", // Keep space above settings
+    className: "mt-4", // Keep space above settings
   },
 ]
 
