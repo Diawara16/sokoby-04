@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom"
 import { Home, ShoppingCart, Package, Users, ShoppingBag, AppWindow, Settings } from "lucide-react"
 import {
-  SidebarBase,
+  Sidebar,
   SidebarContent,
   SidebarMenu,
   SidebarMenuButton,
@@ -50,7 +50,7 @@ export function AppSidebar() {
   const location = useLocation()
 
   return (
-    <SidebarBase>
+    <Sidebar>
       <SidebarContent className="py-4">
         <SidebarMenu>
           {navigationItems.map((item) => (
@@ -69,6 +69,6 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-    </SidebarBase>
+    </Sidebar>
   )
 }
