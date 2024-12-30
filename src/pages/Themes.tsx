@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/lib/supabase";
 
 const Themes = () => {
   const [selectedTheme, setSelectedTheme] = useState<'free' | 'private'>('free');
+  const { toast } = useToast();
 
   const themes = {
     free: {
@@ -43,6 +46,63 @@ const Themes = () => {
   };
 
   const currentTheme = themes[selectedTheme];
+
+  const handleApplyTheme = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour appliquer un thème",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (selectedTheme === 'private') {
+        // Vérifier si l'utilisateur a un abonnement premium
+        const { data: subscription } = await supabase
+          .from('subscriptions')
+          .select('status')
+          .eq('user_id', user.id)
+          .single();
+
+        if (!subscription || subscription.status !== 'active') {
+          toast({
+            title: "Accès Restreint",
+            description: "Ce thème est réservé aux utilisateurs premium",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      // Mettre à jour les paramètres de la marque avec les couleurs du thème
+      const { error } = await supabase
+        .from('brand_settings')
+        .upsert({
+          user_id: user.id,
+          primary_color: currentTheme.colors.primary,
+          secondary_color: currentTheme.colors.secondary,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Thème appliqué",
+        description: `Le ${currentTheme.name} a été appliqué avec succès`,
+      });
+
+    } catch (error) {
+      console.error('Erreur lors de l\'application du thème:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'application du thème",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -96,7 +156,10 @@ const Themes = () => {
             </div>
           </div>
 
-          <Button className="w-full bg-red-700 hover:bg-red-800">
+          <Button 
+            className="w-full bg-red-700 hover:bg-red-800"
+            onClick={handleApplyTheme}
+          >
             {selectedTheme === 'free' ? 'Utiliser ce thème' : 'Passer à la version Premium'}
           </Button>
         </Card>
