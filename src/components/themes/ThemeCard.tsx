@@ -14,7 +14,7 @@ export const ThemeCard = ({ theme, onApply, isSelected }: ThemeCardProps) => {
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-2xl font-semibold">{theme.name}</h2>
         <div className="text-xl font-bold text-red-700">
-          {theme.price === 0 ? 'Gratuit' : `${theme.price}€`}
+          {theme.price === 0 ? 'Free' : `$${theme.price}`}
         </div>
       </div>
       

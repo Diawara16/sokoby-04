@@ -37,6 +37,6 @@ export const themes: Record<'free' | 'private', Theme> = {
       accent: "#F1F0FB",
       background: "#221F26"
     },
-    price: 79
+    price: 89
   }
 };
