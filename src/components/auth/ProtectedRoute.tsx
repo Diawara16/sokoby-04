@@ -26,14 +26,27 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       }
 
       // Vérifier l'abonnement
-      const { data: subscription } = await supabase
+      const { data: subscriptions, error: subError } = await supabase
         .from('subscriptions')
         .select('*')
         .eq('user_id', session.user.id)
-        .eq('status', 'active')
-        .single();
+        .eq('status', 'active');
 
-      if (!subscription) {
+      console.log('Subscriptions:', subscriptions);
+
+      if (subError) {
+        console.error('Erreur lors de la vérification de l\'abonnement:', subError);
+        toast({
+          title: "Erreur",
+          description: "Impossible de vérifier votre abonnement",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const hasActiveSubscription = subscriptions && subscriptions.length > 0;
+
+      if (!hasActiveSubscription) {
         // Vérifier si l'utilisateur est en période d'essai
         const { data: profile } = await supabase
           .from('profiles')
