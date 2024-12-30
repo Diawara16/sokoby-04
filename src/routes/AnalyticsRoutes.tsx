@@ -8,7 +8,7 @@ export function AnalyticsRoutes() {
   return (
     <>
       <Route
-        path="/analyses/tableau-de-bord"
+        path="/analytics/dashboard"
         element={
           <ProtectedRoute>
             <AnalyticsDashboard />
@@ -16,7 +16,7 @@ export function AnalyticsRoutes() {
         }
       />
       <Route
-        path="/analyses/tendances"
+        path="/analytics/trends"
         element={
           <ProtectedRoute>
             <AnalyticsTrends />
@@ -24,7 +24,7 @@ export function AnalyticsRoutes() {
         }
       />
       <Route
-        path="/analyses/rapports"
+        path="/analytics/reports"
         element={
           <ProtectedRoute>
             <AnalyticsReports />
