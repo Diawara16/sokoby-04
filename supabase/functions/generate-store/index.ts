@@ -9,8 +9,8 @@ const corsHeaders = {
 
 interface StoreRequest {
   niche: string;
-  supplier: string;
   storeId: string;
+  userId: string;
 }
 
 serve(async (req) => {
@@ -21,8 +21,13 @@ serve(async (req) => {
 
   try {
     console.log('Received request:', req);
-    const { niche, supplier, storeId } = await req.json() as StoreRequest;
-    console.log('Request data:', { niche, supplier, storeId });
+    const { niche, storeId, userId } = await req.json() as StoreRequest;
+    console.log('Request data:', { niche, storeId, userId });
+
+    if (!niche || !storeId || !userId) {
+      console.error('Missing required fields:', { niche, storeId, userId });
+      throw new Error('Missing required fields');
+    }
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -52,11 +57,11 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           {
             role: 'system',
-            content: `You are a dropshipping expert. Generate 30 winning product ideas for a ${niche} store using ${supplier} as the supplier. For each product, provide the following format exactly: "Product Name | Description | Price". Price should be a number without currency symbol.`
+            content: `You are a dropshipping expert. Generate 30 winning product ideas for a ${niche} store. For each product, provide the following format exactly: "Product Name | Description | Price". Price should be a number without currency symbol.`
           }
         ],
         temperature: 0.7,
@@ -81,34 +86,19 @@ serve(async (req) => {
           name,
           description,
           price: parseFloat(price),
-          supplier,
           niche,
           image_url: null,
+          user_id: userId,
+          store_id: storeId,
         };
       });
 
     console.log('Parsed product ideas:', productIdeas);
 
-    // Get user_id from auth context
-    const { data: { user } } = await supabase.auth.getUser(req.headers.get('Authorization')?.split('Bearer ')[1] || '');
-    
-    if (!user) {
-      console.error('User not found');
-      throw new Error('Unauthorized - User not found');
-    }
-
-    console.log('User authenticated:', user.id);
-
     // Insert products into the database
     const { data, error } = await supabase
       .from('ai_generated_products')
-      .insert(
-        productIdeas.map(product => ({
-          ...product,
-          user_id: user.id,
-          store_id: storeId,
-        }))
-      );
+      .insert(productIdeas);
 
     if (error) {
       console.error('Database error:', error);
@@ -124,7 +114,8 @@ serve(async (req) => {
         productsCount: productIdeas.length 
       }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200
       }
     );
 
