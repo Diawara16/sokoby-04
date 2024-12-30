@@ -24,6 +24,12 @@ const CreerBoutiqueIA = () => {
     setStep('niche');
   };
 
+  const generateUniqueDomainName = async (userId: string, nicheName: string) => {
+    const baseDomain = nicheName.toLowerCase().replace(/\s+/g, '-');
+    const timestamp = Date.now().toString().slice(-6);
+    return `${baseDomain}-${timestamp}-${userId.slice(0, 6)}`;
+  };
+
   const handleNicheSelect = async (nicheName: string) => {
     setSelectedNiche(nicheName);
     setStep('creating');
@@ -35,14 +41,16 @@ const CreerBoutiqueIA = () => {
         throw new Error("Utilisateur non connecté");
       }
 
+      const uniqueDomainName = await generateUniqueDomainName(user.id, nicheName);
+
       // Créer ou mettre à jour les paramètres de la boutique
       const { data: storeData, error: storeError } = await supabase
         .from('store_settings')
         .upsert({
           user_id: user.id,
           store_name: `${nicheName} Store`,
-          domain_name: 'sokoby.com',
-          is_custom_domain: true,
+          domain_name: uniqueDomainName,
+          is_custom_domain: false,
         })
         .select()
         .single();
@@ -93,7 +101,7 @@ const CreerBoutiqueIA = () => {
         <Alert className="mb-6">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Votre boutique sera créée sur le domaine : sokoby.com
+            Votre boutique sera créée sur un sous-domaine unique de sokoby.com
           </AlertDescription>
         </Alert>
 
