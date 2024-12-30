@@ -1,19 +1,11 @@
 import { Card } from "@/components/ui/card";
-
-interface NicheOption {
-  name: string;
-  icon: string;
-  description: string;
-  products: number;
-  price: number;
-}
+import { niches } from "@/data/niches";
 
 interface NicheSelectorProps {
-  niches: NicheOption[];
   onNicheSelect: (niche: string) => void;
 }
 
-export const NicheSelector = ({ niches, onNicheSelect }: NicheSelectorProps) => {
+export const NicheSelector = ({ onNicheSelect }: NicheSelectorProps) => {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold mb-4">
