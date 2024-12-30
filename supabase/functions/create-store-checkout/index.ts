@@ -7,6 +7,12 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const PRICE_IDS = {
+  starter: 'price_1QbAUrI7adlqeYfap1MWxujV',
+  pro: 'price_1QbAWeI7adlqeYfaUNskkYXF',
+  enterprise: 'price_1QbAYDI7adlqeYfaRUI9dbH1'
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -36,19 +42,9 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     });
 
-    let priceId;
-    switch (planType) {
-      case 'starter':
-        priceId = 'price_starter'; // Remplacer par votre price_id pour le plan Démarrage
-        break;
-      case 'pro':
-        priceId = 'price_pro'; // Remplacer par votre price_id pour le plan Pro
-        break;
-      case 'enterprise':
-        priceId = 'price_enterprise'; // Remplacer par votre price_id pour le plan Entreprise
-        break;
-      default:
-        throw new Error('Invalid plan type');
+    const priceId = PRICE_IDS[planType as keyof typeof PRICE_IDS];
+    if (!priceId) {
+      throw new Error('Invalid plan type');
     }
 
     console.log('Creating checkout session...');

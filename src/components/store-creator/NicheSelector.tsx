@@ -110,7 +110,7 @@ export const NicheSelector = ({ selectedNiche, onSelectNiche }: NicheSelectorPro
           <div className="grid gap-6 mt-4">
             <Card className="p-6">
               <h3 className="text-xl font-bold mb-2">Plan Démarrage</h3>
-              <p className="text-2xl font-bold mb-4">11,00 $ <span className="text-sm text-gray-500">/mois</span></p>
+              <p className="text-2xl font-bold mb-4">11,00 € <span className="text-sm text-gray-500">/mois</span></p>
               <ul className="space-y-2 mb-4">
                 <li>✓ Jusqu'à 100 produits</li>
                 <li>✓ Support par email</li>
@@ -129,7 +129,7 @@ export const NicheSelector = ({ selectedNiche, onSelectNiche }: NicheSelectorPro
                 Populaire
               </div>
               <h3 className="text-xl font-bold mb-2">Plan Pro</h3>
-              <p className="text-2xl font-bold mb-4">19,00 $ <span className="text-sm text-gray-500">/mois</span></p>
+              <p className="text-2xl font-bold mb-4">19,00 € <span className="text-sm text-gray-500">/mois</span></p>
               <ul className="space-y-2 mb-4">
                 <li>✓ Produits illimités</li>
                 <li>✓ Support prioritaire</li>
@@ -146,7 +146,7 @@ export const NicheSelector = ({ selectedNiche, onSelectNiche }: NicheSelectorPro
 
             <Card className="p-6">
               <h3 className="text-xl font-bold mb-2">Plan Entreprise</h3>
-              <p className="text-2xl font-bold mb-4">49,00 $ <span className="text-sm text-gray-500">/mois</span></p>
+              <p className="text-2xl font-bold mb-4">49,00 € <span className="text-sm text-gray-500">/mois</span></p>
               <ul className="space-y-2 mb-4">
                 <li>✓ Tout dans Pro</li>
                 <li>✓ Support dédié 24/7</li>
