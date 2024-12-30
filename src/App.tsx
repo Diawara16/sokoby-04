@@ -11,7 +11,7 @@ import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
 function App() {
-  const { session, profile, isLoading } = useAuthAndProfile();
+  const { isAuthenticated, isLoading } = useAuthAndProfile();
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -24,7 +24,7 @@ function App() {
           <AppSidebar />
           <main className="flex-1 p-6">
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Home isAuthenticated={isAuthenticated} />} />
               <Route
                 path="/tableau-de-bord"
                 element={
