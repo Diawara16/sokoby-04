@@ -13,25 +13,14 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Starting checkout session creation...');
+    const { niche, price, mode } = await req.json();
     
-    const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
-    if (!stripeKey) {
-      console.error('STRIPE_SECRET_KEY is not set');
-      throw new Error('Stripe secret key is not configured');
-    }
-    console.log('Stripe key retrieved successfully');
-
-    const stripe = new Stripe(stripeKey, {
-      apiVersion: '2023-10-16',
-    });
-    console.log('Stripe instance created');
-
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     );
 
+    // Authentification de l'utilisateur
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       throw new Error('No authorization header');
@@ -41,78 +30,39 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     
     if (userError || !user) {
-      console.error('Error getting user:', userError);
       throw new Error('Unauthorized');
     }
 
-    console.log('User authenticated:', user.email);
-
-    const { planType, couponCode } = await req.json();
-    console.log('Plan type:', planType, 'Coupon code:', couponCode);
-
-    const PRICE_IDS = {
-      starter: 'price_1QbAUrI7adlqeYfap1MWxujV',
-      pro: 'price_1QbAWeI7adlqeYfaUNskkYXF',
-      enterprise: 'price_1QbAYDI7adlqeYfaRUI9dbH1'
-    };
-
-    const priceId = PRICE_IDS[planType as keyof typeof PRICE_IDS];
-    if (!priceId) {
-      throw new Error('Invalid plan type');
-    }
-
-    let discounts = [];
-    if (couponCode) {
-      // Vérifier la validité du coupon
-      const { data: coupon, error: couponError } = await supabaseClient
-        .from('coupons')
-        .select('*')
-        .eq('code', couponCode.toUpperCase())
-        .single();
-
-      if (couponError) {
-        console.error('Error fetching coupon:', couponError);
-        throw new Error('Invalid coupon code');
-      }
-
-      if (coupon) {
-        const now = new Date();
-        if ((!coupon.valid_until || new Date(coupon.valid_until) > now) &&
-            (!coupon.max_uses || coupon.current_uses < coupon.max_uses)) {
-          
-          // Créer un coupon Stripe avec la réduction
-          const stripeCoupon = await stripe.coupons.create({
-            percent_off: coupon.discount_percent,
-            duration: 'once',
-          });
-
-          discounts.push({ coupon: stripeCoupon.id });
-
-          // Mettre à jour le nombre d'utilisations
-          await supabaseClient
-            .from('coupons')
-            .update({ current_uses: coupon.current_uses + 1 })
-            .eq('id', coupon.id);
-        }
-      }
-    }
+    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+      apiVersion: '2023-10-16',
+    });
 
     console.log('Creating checkout session...');
     const session = await stripe.checkout.sessions.create({
-      customer_email: user.email,
+      payment_method_types: ['card'],
       line_items: [
         {
-          price: priceId,
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `${niche} - ${price}$ Store Package`,
+              description: `Complete store package for ${niche} niche`,
+            },
+            unit_amount: price * 100, // Stripe expects amounts in cents
+          },
           quantity: 1,
         },
       ],
-      mode: 'subscription',
-      discounts: discounts,
-      success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get('origin')}/plan-tarifaire`,
+      mode: 'payment',
+      success_url: `${req.headers.get('origin')}/creer-boutique-ia?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get('origin')}/creer-boutique-ia`,
+      client_reference_id: user.id,
+      metadata: {
+        niche: niche,
+      },
     });
 
-    console.log('Checkout session created successfully:', session.id);
+    console.log('Checkout session created:', session.id);
 
     return new Response(
       JSON.stringify({ url: session.url }),
