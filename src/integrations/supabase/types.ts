@@ -151,6 +151,36 @@ export type Database = {
         }
         Relationships: []
       }
+      domain_verifications: {
+        Row: {
+          created_at: string
+          domain_name: string
+          id: string
+          user_id: string
+          verification_token: string
+          verified: boolean | null
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          domain_name: string
+          id?: string
+          user_id: string
+          verification_token: string
+          verified?: boolean | null
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          domain_name?: string
+          id?: string
+          user_id?: string
+          verification_token?: string
+          verified?: boolean | null
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
