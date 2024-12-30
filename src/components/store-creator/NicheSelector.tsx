@@ -3,6 +3,13 @@ import { Button } from "@/components/ui/button";
 import { niches } from "@/data/niches";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useState } from "react";
 
 interface NicheSelectorProps {
   selectedNiche: string;
@@ -11,22 +18,32 @@ interface NicheSelectorProps {
 
 export const NicheSelector = ({ selectedNiche, onSelectNiche }: NicheSelectorProps) => {
   const { toast } = useToast();
+  const [showPricingDialog, setShowPricingDialog] = useState(false);
+  const [selectedNicheForPricing, setSelectedNicheForPricing] = useState("");
 
-  const handlePurchaseNiche = async (niche: string, price: number) => {
+  const handleNicheSelect = (niche: string) => {
+    setSelectedNicheForPricing(niche);
+    setShowPricingDialog(true);
+  };
+
+  const handlePurchaseNiche = async (planType: 'starter' | 'pro' | 'enterprise') => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
         toast({
           title: "Connexion requise",
-          description: "Veuillez vous connecter pour acheter une niche",
+          description: "Veuillez vous connecter pour créer une boutique",
           variant: "destructive",
         });
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { niche, price }
+      const { data, error } = await supabase.functions.invoke('create-store-checkout', {
+        body: { 
+          planType,
+          niche: selectedNicheForPricing
+        }
       });
 
       if (error) {
@@ -55,49 +72,97 @@ export const NicheSelector = ({ selectedNiche, onSelectNiche }: NicheSelectorPro
   };
 
   return (
-    <div className="space-y-8">
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {niches.map((niche) => (
-          <Card 
-            key={niche.name}
-            className={`relative overflow-hidden transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl ${
-              selectedNiche === niche.name 
-                ? 'ring-2 ring-primary shadow-lg' 
-                : 'hover:ring-1 hover:ring-primary/50'
-            }`}
-          >
-            <div className="p-6">
-              <div className="flex flex-col h-full">
-                <div className="text-5xl mb-4">{niche.icon}</div>
-                <h3 className="text-xl font-bold mb-2">{niche.name}</h3>
-                <p className="text-gray-600 mb-4 flex-grow">{niche.description}</p>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-500">{niche.products} produits</span>
-                    <span className="text-lg font-bold text-primary">${niche.price}</span>
+    <>
+      <div className="space-y-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {niches.map((niche) => (
+            <Card 
+              key={niche.name}
+              className={`relative overflow-hidden transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl cursor-pointer ${
+                selectedNiche === niche.name 
+                  ? 'ring-2 ring-primary shadow-lg' 
+                  : 'hover:ring-1 hover:ring-primary/50'
+              }`}
+              onClick={() => handleNicheSelect(niche.name)}
+            >
+              <div className="p-6">
+                <div className="flex flex-col h-full">
+                  <div className="text-5xl mb-4">{niche.icon}</div>
+                  <h3 className="text-xl font-bold mb-2">{niche.name}</h3>
+                  <p className="text-gray-600 mb-4 flex-grow">{niche.description}</p>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-500">{niche.products} produits</span>
+                    </div>
                   </div>
-                  <Button 
-                    className="w-full bg-primary hover:bg-primary-600 text-white"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePurchaseNiche(niche.name, niche.price);
-                    }}
-                  >
-                    Choisir cette niche
-                  </Button>
                 </div>
               </div>
-            </div>
-            <div className="absolute top-2 right-2">
-              {niche.price > 20 && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
-                  Premium
-                </span>
-              )}
-            </div>
-          </Card>
-        ))}
+            </Card>
+          ))}
+        </div>
       </div>
-    </div>
+
+      <Dialog open={showPricingDialog} onOpenChange={setShowPricingDialog}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Choisissez votre plan</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-6 mt-4">
+            <Card className="p-6">
+              <h3 className="text-xl font-bold mb-2">Plan Démarrage</h3>
+              <p className="text-2xl font-bold mb-4">11,00 $ <span className="text-sm text-gray-500">/mois</span></p>
+              <ul className="space-y-2 mb-4">
+                <li>✓ Jusqu'à 100 produits</li>
+                <li>✓ Support par email</li>
+                <li>✓ Analyses de base</li>
+              </ul>
+              <Button 
+                className="w-full"
+                onClick={() => handlePurchaseNiche('starter')}
+              >
+                Choisir le plan Démarrage
+              </Button>
+            </Card>
+
+            <Card className="p-6 border-2 border-primary">
+              <div className="absolute -top-3 right-4 bg-primary text-white px-3 py-1 rounded-full text-sm">
+                Populaire
+              </div>
+              <h3 className="text-xl font-bold mb-2">Plan Pro</h3>
+              <p className="text-2xl font-bold mb-4">19,00 $ <span className="text-sm text-gray-500">/mois</span></p>
+              <ul className="space-y-2 mb-4">
+                <li>✓ Produits illimités</li>
+                <li>✓ Support prioritaire</li>
+                <li>✓ Analyses avancées</li>
+                <li>✓ Personnalisation complète</li>
+              </ul>
+              <Button 
+                className="w-full"
+                onClick={() => handlePurchaseNiche('pro')}
+              >
+                Choisir le plan Pro
+              </Button>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="text-xl font-bold mb-2">Plan Entreprise</h3>
+              <p className="text-2xl font-bold mb-4">49,00 $ <span className="text-sm text-gray-500">/mois</span></p>
+              <ul className="space-y-2 mb-4">
+                <li>✓ Tout dans Pro</li>
+                <li>✓ Support dédié 24/7</li>
+                <li>✓ API personnalisée</li>
+                <li>✓ Formation sur mesure</li>
+              </ul>
+              <Button 
+                className="w-full"
+                onClick={() => handlePurchaseNiche('enterprise')}
+              >
+                Choisir le plan Entreprise
+              </Button>
+            </Card>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
