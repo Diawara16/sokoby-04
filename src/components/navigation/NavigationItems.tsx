@@ -1,4 +1,18 @@
-import { Home, ShoppingCart, Package, Users, ShoppingBag, AppWindow, Settings, Sparkles, Globe, PlusCircle, Info } from "lucide-react"
+import { 
+  Home, 
+  ShoppingCart, 
+  Package, 
+  Users, 
+  ShoppingBag, 
+  AppWindow, 
+  Settings, 
+  Sparkles, 
+  Globe, 
+  PlusCircle, 
+  Info,
+  Truck,
+  CreditCard
+} from "lucide-react"
 
 export const navigationItems = [
   {
@@ -10,6 +24,23 @@ export const navigationItems = [
     title: "Commandes",
     url: "/commandes",
     icon: ShoppingCart,
+    subItems: [
+      {
+        title: "Commandes provisoires",
+        url: "/commandes/provisoires",
+        icon: Package,
+      },
+      {
+        title: "Étiquettes d'expédition",
+        url: "/commandes/expeditions",
+        icon: Truck,
+      },
+      {
+        title: "Paiements abandonnés",
+        url: "/commandes/abandonnes",
+        icon: CreditCard,
+      },
+    ],
   },
   {
     title: "Produits",

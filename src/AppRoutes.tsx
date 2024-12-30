@@ -5,6 +5,9 @@ import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import QuiSommesNous from "./pages/QuiSommesNous";
 import Orders from "./pages/Orders";
+import DraftOrders from "./pages/DraftOrders";
+import ShippingLabels from "./pages/ShippingLabels";
+import AbandonedCheckouts from "./pages/AbandonedCheckouts";
 import Products from "./pages/Products";
 import Customers from "./pages/Customers";
 import Applications from "./pages/Applications";
@@ -49,6 +52,30 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute>
             <Orders />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/commandes/provisoires"
+        element={
+          <ProtectedRoute>
+            <DraftOrders />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/commandes/expeditions"
+        element={
+          <ProtectedRoute>
+            <ShippingLabels />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/commandes/abandonnes"
+        element={
+          <ProtectedRoute>
+            <AbandonedCheckouts />
           </ProtectedRoute>
         }
       />

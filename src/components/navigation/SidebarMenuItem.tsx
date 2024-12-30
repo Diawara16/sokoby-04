@@ -1,6 +1,13 @@
 import { Link } from "react-router-dom"
 import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { LucideIcon } from "lucide-react"
+import { useState } from "react"
+
+interface SubItem {
+  title: string
+  url: string
+  icon: LucideIcon
+}
 
 interface SidebarMenuItemProps {
   title: string
@@ -9,6 +16,7 @@ interface SidebarMenuItemProps {
   isActive: boolean
   openInNewWindow?: boolean
   className?: string
+  subItems?: SubItem[]
 }
 
 export function SidebarMenuItemComponent({
@@ -18,7 +26,16 @@ export function SidebarMenuItemComponent({
   isActive,
   openInNewWindow,
   className,
+  subItems,
 }: SidebarMenuItemProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleClick = () => {
+    if (subItems?.length) {
+      setIsExpanded(!isExpanded);
+    }
+  };
+
   return (
     <SidebarMenuItem className={`px-2 ${className || ''}`}>
       <SidebarMenuButton
@@ -26,6 +43,7 @@ export function SidebarMenuItemComponent({
         isActive={isActive}
         tooltip={title}
         className="py-2.5"
+        onClick={handleClick}
       >
         {openInNewWindow ? (
           <a 
@@ -44,6 +62,21 @@ export function SidebarMenuItemComponent({
           </Link>
         )}
       </SidebarMenuButton>
+
+      {subItems && isExpanded && (
+        <div className="ml-6 mt-2 space-y-2">
+          {subItems.map((subItem) => (
+            <Link
+              key={subItem.url}
+              to={subItem.url}
+              className="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+            >
+              <subItem.icon className="h-4 w-4" />
+              <span>{subItem.title}</span>
+            </Link>
+          ))}
+        </div>
+      )}
     </SidebarMenuItem>
   )
 }
