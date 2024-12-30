@@ -11,6 +11,7 @@ import { LoadingSpinner } from "@/components/pricing/LoadingSpinner";
 const CreerBoutiqueIA = () => {
   const {
     step,
+    processStep,
     isLoading,
     progress,
     error,
@@ -26,7 +27,10 @@ const CreerBoutiqueIA = () => {
 
     switch (step) {
       case 'progress':
-        return <CreationProgress progress={progress} />;
+        return <CreationProgress 
+          progress={progress} 
+          currentStep={processStep}
+        />;
       case 'complete':
         return (
           <CreationComplete

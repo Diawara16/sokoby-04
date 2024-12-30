@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 
 type CreationStep = 'niche' | 'progress' | 'complete';
+type ProcessStep = 'init' | 'products' | 'store' | 'finalizing';
 
 async function generateUniqueDomainName(userId: string, nicheName: string) {
   const cleanNiche = nicheName.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -13,6 +14,7 @@ async function generateUniqueDomainName(userId: string, nicheName: string) {
 
 export const useStoreCreation = () => {
   const [step, setStep] = useState<CreationStep>('niche');
+  const [processStep, setProcessStep] = useState<ProcessStep>('init');
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -20,13 +22,21 @@ export const useStoreCreation = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const updateProgress = (newProgress: number, newStep: ProcessStep) => {
+    setProgress(newProgress);
+    setProcessStep(newStep);
+  };
+
   const handleNicheSelect = async (nicheName: string) => {
     console.log("Début de handleNicheSelect avec niche:", nicheName);
     
     try {
       setIsLoading(true);
       setError(null);
-
+      setStep('progress');
+      
+      // Étape 1: Initialisation
+      updateProgress(10, 'init');
       const { data: { user } } = await supabase.auth.getUser();
       console.log("Utilisateur récupéré:", user);
       
@@ -34,14 +44,14 @@ export const useStoreCreation = () => {
         throw new Error("Vous devez être connecté pour créer une boutique");
       }
 
+      // Étape 2: Génération du nom de domaine
+      updateProgress(25, 'init');
       console.log("Génération du nom de domaine unique...");
       const uniqueDomainName = await generateUniqueDomainName(user.id, nicheName);
       console.log("Nom de domaine généré:", uniqueDomainName);
 
-      // Passer à l'étape de progression avant les opérations longues
-      setStep('progress');
-      setProgress(20);
-
+      // Étape 3: Création des paramètres de la boutique
+      updateProgress(40, 'store');
       console.log("Création des paramètres de la boutique...");
       const { data: storeData, error: storeError } = await supabase
         .from('store_settings')
@@ -58,9 +68,8 @@ export const useStoreCreation = () => {
         throw storeError;
       }
 
-      console.log("Paramètres de la boutique créés:", storeData);
-      setProgress(40);
-
+      // Étape 4: Génération des produits
+      updateProgress(60, 'products');
       console.log("Appel de la fonction generate-store...");
       const { data, error } = await supabase.functions.invoke('generate-store', {
         body: {
@@ -75,8 +84,12 @@ export const useStoreCreation = () => {
         throw error;
       }
 
+      // Étape 5: Finalisation
+      updateProgress(90, 'finalizing');
       console.log("Boutique générée avec succès:", data);
-      setProgress(100);
+      
+      // Étape 6: Complet
+      updateProgress(100, 'finalizing');
       setStoreUrl(`https://${uniqueDomainName}.sokoby.com`);
       setStep('complete');
 
@@ -100,6 +113,7 @@ export const useStoreCreation = () => {
 
   return {
     step,
+    processStep,
     isLoading,
     progress,
     error,
