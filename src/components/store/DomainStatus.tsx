@@ -15,9 +15,9 @@ export const DomainStatus = ({ isCheckingDomain, domainStatus, onPurchase }: Dom
         {isCheckingDomain ? (
           <span className="text-gray-500">Vérification de la disponibilité...</span>
         ) : domainStatus === 'available' ? (
-          <span className="text-green-600">Ce domaine est disponible !</span>
+          <span className="text-success-600">Ce domaine est disponible !</span>
         ) : domainStatus === 'taken' ? (
-          <span className="text-red-600">Ce domaine est déjà pris</span>
+          <span className="text-destructive">Ce domaine est déjà pris</span>
         ) : (
           <span className="text-gray-500">
             Entrez votre nom de domaine personnalisé ou utilisez notre sous-domaine gratuit
@@ -29,6 +29,7 @@ export const DomainStatus = ({ isCheckingDomain, domainStatus, onPurchase }: Dom
           onClick={onPurchase}
           size="sm"
           className="ml-4"
+          variant="destructive"
         >
           Acheter
         </Button>

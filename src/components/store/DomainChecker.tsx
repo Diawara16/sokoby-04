@@ -36,10 +36,7 @@ export const DomainChecker = ({ value, onChange, onPurchase }: DomainCheckerProp
           value={value}
           onChange={handleDomainChange}
           placeholder="maboutique.com"
-          className={`pr-10 ${
-            domainStatus === 'available' ? 'border-green-500' : 
-            domainStatus === 'taken' ? 'border-red-500' : ''
-          }`}
+          className="pr-10"
         />
       </div>
       <DomainStatus 

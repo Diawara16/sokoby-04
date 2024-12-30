@@ -120,6 +120,7 @@ const AcheterDomaine = () => {
                   onClick={() => handlePurchase(domain)}
                   size="sm"
                   disabled={isProcessingPurchase}
+                  variant="destructive"
                 >
                   Acheter
                 </Button>
