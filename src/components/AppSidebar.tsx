@@ -50,13 +50,6 @@ const navigationItems = [
 export function AppSidebar() {
   const location = useLocation()
 
-  const handleClick = (url: string, openInNewWindow?: boolean) => {
-    if (openInNewWindow) {
-      window.open(url, '_blank')
-      return
-    }
-  }
-
   return (
     <Sidebar>
       <SidebarContent className="py-4">
@@ -74,7 +67,6 @@ export function AppSidebar() {
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex items-center gap-2"
-                    onClick={() => handleClick(item.url, true)}
                   >
                     <item.icon className="h-4 w-4" />
                     <span>{item.title}</span>
