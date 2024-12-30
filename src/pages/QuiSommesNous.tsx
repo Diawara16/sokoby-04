@@ -102,9 +102,9 @@ const QuiSommesNous = () => {
                     N'hésitez pas à nous contacter pour toute question ou suggestion.
                   </p>
                   <div className="space-y-2">
-                    <p className="text-sm">Email: contact@sokoby.com</p>
-                    <p className="text-sm">Téléphone: +33 (0)1 23 45 67 89</p>
-                    <p className="text-sm">Adresse: 123 Avenue du Commerce, 75001 Paris</p>
+                    <p className="text-sm">Email: support@sokoby.com ou contact@sokoby.com</p>
+                    <p className="text-sm">Téléphone: +1 514 512 7993</p>
+                    <p className="text-sm">Adresse: 7188 Rue Saint-hubert, H2R2N1, Montréal, Québec</p>
                   </div>
                 </div>
               </div>
