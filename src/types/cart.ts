@@ -24,7 +24,8 @@ export type CartAction =
 export type CartContextType = {
   state: CartState;
   dispatch: React.Dispatch<CartAction>;
-  removeFromCart: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
-  clearCart: () => void;
+  addItemToCart: (productId: string, quantity?: number) => Promise<void>;
+  removeFromCart: (id: string) => Promise<void>;
+  updateQuantity: (id: string, quantity: number) => Promise<void>;
+  clearCart: () => Promise<void>;
 };

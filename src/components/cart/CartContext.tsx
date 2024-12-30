@@ -14,7 +14,7 @@ const initialState: CartState = {
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
-  const { fetchCartItems } = useCartOperations();
+  const { fetchCartItems, addToCart, removeFromCart: removeItem, updateCartItemQuantity } = useCartOperations();
 
   const initializeCart = async () => {
     try {
@@ -46,21 +46,40 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  const removeFromCart = (id: string) => {
-    dispatch({ type: 'REMOVE_ITEM', payload: id });
+  const addItemToCart = async (productId: string, quantity: number = 1) => {
+    const result = await addToCart(productId, quantity);
+    if (result) {
+      await initializeCart(); // Recharger le panier pour avoir les données à jour
+    }
   };
 
-  const updateQuantity = (id: string, quantity: number) => {
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
+  const removeFromCart = async (id: string) => {
+    const success = await removeItem(id);
+    if (success) {
+      dispatch({ type: 'REMOVE_ITEM', payload: id });
+    }
   };
 
-  const clearCart = () => {
+  const updateQuantity = async (id: string, quantity: number) => {
+    const success = await updateCartItemQuantity(id, quantity);
+    if (success) {
+      if (quantity <= 0) {
+        dispatch({ type: 'REMOVE_ITEM', payload: id });
+      } else {
+        dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
+      }
+    }
+  };
+
+  const clearCart = async () => {
+    // Implémenter la logique de suppression dans Supabase si nécessaire
     dispatch({ type: 'CLEAR_CART' });
   };
 
   const value = {
     state,
     dispatch,
+    addItemToCart,
     removeFromCart,
     updateQuantity,
     clearCart
