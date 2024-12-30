@@ -24,6 +24,7 @@ export const useStoreCreation = () => {
     setIsLoading(true);
     setError(null);
     setProgress(0);
+    setStep('progress');
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -65,6 +66,7 @@ export const useStoreCreation = () => {
     } catch (error: any) {
       console.error('Erreur lors de la création de la boutique:', error);
       setError(error.message);
+      setStep('niche');
       toast({
         title: "Erreur",
         description: "Impossible de créer la boutique. Veuillez réessayer.",
