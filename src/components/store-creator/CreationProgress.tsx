@@ -3,10 +3,10 @@ import { Progress } from "@/components/ui/progress";
 
 interface CreationProgressProps {
   progress: number;
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
-export const CreationProgress = ({ progress, isLoading }: CreationProgressProps) => {
+export const CreationProgress = ({ progress, isLoading = true }: CreationProgressProps) => {
   const getMessage = (progress: number) => {
     if (progress < 30) return "Initialisation de votre boutique...";
     if (progress < 60) return "Génération des produits...";

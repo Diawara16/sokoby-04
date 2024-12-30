@@ -2,10 +2,11 @@ import { Card } from "@/components/ui/card";
 import { niches } from "@/data/niches";
 
 interface NicheSelectorProps {
-  onNicheSelect: (niche: string) => void;
+  selectedNiche: string;
+  onSelectNiche: (niche: string) => void;
 }
 
-export const NicheSelector = ({ onNicheSelect }: NicheSelectorProps) => {
+export const NicheSelector = ({ selectedNiche, onSelectNiche }: NicheSelectorProps) => {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold mb-4">
@@ -15,8 +16,10 @@ export const NicheSelector = ({ onNicheSelect }: NicheSelectorProps) => {
         {niches.map((niche) => (
           <Card 
             key={niche.name}
-            className="p-6 cursor-pointer hover:border-primary transition-colors"
-            onClick={() => onNicheSelect(niche.name)}
+            className={`p-6 cursor-pointer transition-colors ${
+              selectedNiche === niche.name ? 'border-primary' : 'hover:border-primary'
+            }`}
+            onClick={() => onSelectNiche(niche.name)}
           >
             <div className="text-4xl mb-4">{niche.icon}</div>
             <h3 className="text-xl font-semibold mb-2">{niche.name}</h3>
