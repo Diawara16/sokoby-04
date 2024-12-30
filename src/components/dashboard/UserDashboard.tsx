@@ -42,14 +42,16 @@ export const UserDashboard = () => {
           return;
         }
 
-        // Utiliser maybeSingle() au lieu de single() pour éviter les erreurs
         const { data, error } = await supabase
           .from("profiles")
           .select("*")
           .eq("id", user.id)
           .maybeSingle();
 
-        if (error) throw error;
+        if (error) {
+          console.error("Erreur lors de la récupération du profil:", error);
+          throw error;
+        }
 
         if (!data) {
           toast({

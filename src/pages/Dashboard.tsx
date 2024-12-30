@@ -5,10 +5,19 @@ import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation"
 import { UserDashboard } from "@/components/dashboard/UserDashboard";
 import { useToast } from "@/hooks/use-toast";
 
+interface Profile {
+  id: string;
+  email: string | null;
+  trial_ends_at: string | null;
+  features_usage: Record<string, number>;
+  last_login: string | null;
+}
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -21,7 +30,7 @@ const Dashboard = () => {
         }
 
         // Vérifier si l'utilisateur a un profil
-        const { data: profile, error } = await supabase
+        const { data: profileData, error } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
@@ -37,12 +46,13 @@ const Dashboard = () => {
           return;
         }
 
-        if (!profile) {
+        if (!profileData) {
           console.log("Profil non trouvé, redirection vers l'onboarding");
           navigate("/onboarding");
           return;
         }
 
+        setProfile(profileData);
         setIsLoading(false);
       } catch (error) {
         console.error("Erreur lors de la vérification de l'authentification:", error);
@@ -65,7 +75,7 @@ const Dashboard = () => {
     return () => subscription.unsubscribe();
   }, [navigate, toast]);
 
-  if (isLoading) {
+  if (isLoading || !profile) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
