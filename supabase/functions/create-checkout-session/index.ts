@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { niche, price, mode } = await req.json();
+    const { niche, price } = await req.json();
     
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -45,7 +45,7 @@ serve(async (req) => {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: `${niche} - ${price}$ Store Package`,
+              name: `${niche} Store Package`,
               description: `Complete store package for ${niche} niche`,
             },
             unit_amount: price * 100, // Stripe expects amounts in cents

@@ -25,23 +25,17 @@ export const NicheSelector = ({ selectedNiche, onSelectNiche }: NicheSelectorPro
         return;
       }
 
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          niche,
-          price,
-          mode: 'payment'
-        }),
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: { niche, price }
       });
 
-      const { url } = await response.json();
+      if (error) {
+        console.error('Erreur lors de la création de la session:', error);
+        throw error;
+      }
 
-      if (url) {
-        window.location.href = url;
+      if (data?.url) {
+        window.location.href = data.url;
       } else {
         throw new Error("Impossible de créer la session de paiement");
       }
