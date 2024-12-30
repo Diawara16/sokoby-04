@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom"
-import { Home, ShoppingCart, Package, Users, ShoppingBag, AppWindow, Settings } from "lucide-react"
+import { Home, ShoppingCart, Package, Users, ShoppingBag, AppWindow, Settings, Sparkles } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -41,10 +41,16 @@ const navigationItems = [
     icon: AppWindow,
   },
   {
+    title: "Créer votre boutique par IA",
+    url: "/creer-boutique-ia",
+    icon: Sparkles,
+    className: "mt-8", // Add space above this item
+  },
+  {
     title: "Paramètres",
     url: "/parametres",
     icon: Settings,
-    className: "mt-8", // Added margin top to create space
+    className: "mt-8", // Keep space above settings
   },
 ]
 
