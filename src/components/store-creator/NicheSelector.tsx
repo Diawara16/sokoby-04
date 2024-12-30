@@ -55,38 +55,45 @@ export const NicheSelector = ({ selectedNiche, onSelectNiche }: NicheSelectorPro
   };
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-semibold mb-4">
-        Choisissez votre niche
-      </h2>
-      <div className="grid md:grid-cols-3 gap-6">
+    <div className="space-y-8">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {niches.map((niche) => (
           <Card 
             key={niche.name}
-            className={`p-6 cursor-pointer transition-all duration-200 transform hover:scale-105 ${
+            className={`relative overflow-hidden transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl ${
               selectedNiche === niche.name 
-                ? 'border-2 border-primary shadow-lg' 
-                : 'hover:border-primary/50 hover:shadow-md'
+                ? 'ring-2 ring-primary shadow-lg' 
+                : 'hover:ring-1 hover:ring-primary/50'
             }`}
-            onClick={() => onSelectNiche(niche.name)}
           >
-            <div className="flex flex-col h-full">
-              <div className="text-4xl mb-4">{niche.icon}</div>
-              <h3 className="text-xl font-semibold mb-2">{niche.name}</h3>
-              <p className="text-muted-foreground mb-4 flex-grow">{niche.description}</p>
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-sm text-muted-foreground">{niche.products} produits</span>
-                <span className="font-semibold text-primary">${niche.price}</span>
+            <div className="p-6">
+              <div className="flex flex-col h-full">
+                <div className="text-5xl mb-4">{niche.icon}</div>
+                <h3 className="text-xl font-bold mb-2">{niche.name}</h3>
+                <p className="text-gray-600 mb-4 flex-grow">{niche.description}</p>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-500">{niche.products} produits</span>
+                    <span className="text-lg font-bold text-primary">${niche.price}</span>
+                  </div>
+                  <Button 
+                    className="w-full bg-primary hover:bg-primary-600 text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePurchaseNiche(niche.name, niche.price);
+                    }}
+                  >
+                    Choisir cette niche
+                  </Button>
+                </div>
               </div>
-              <Button 
-                className="w-full bg-primary hover:bg-primary-600 transition-colors"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePurchaseNiche(niche.name, niche.price);
-                }}
-              >
-                Acheter cette niche
-              </Button>
+            </div>
+            <div className="absolute top-2 right-2">
+              {niche.price > 20 && (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
+                  Premium
+                </span>
+              )}
             </div>
           </Card>
         ))}
