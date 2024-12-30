@@ -3,22 +3,10 @@ import {
   ShoppingCart, 
   Package, 
   Users,
-  UserPlus,
-  UserCheck,
-  UserSearch,
-  ShoppingBag, 
-  AppWindow, 
-  Settings, 
-  Sparkles, 
-  Globe, 
-  PlusCircle,
-  Info,
-  Truck,
-  CreditCard,
-  BoxIcon,
-  Tags,
-  ArrowLeftRight,
-  Gift
+  BarChart,
+  LineChart,
+  TrendingUp,
+  Activity,
 } from "lucide-react"
 
 export const navigationItems = [
@@ -116,6 +104,31 @@ export const navigationItems = [
     title: "Qui sommes-nous?",
     url: "/qui-sommes-nous",
     icon: Info,
+  },
+  {
+    title: "Analyses",
+    url: "/analyses",
+    icon: BarChart,
+    subItems: [
+      {
+        title: "Tableau de bord",
+        url: "/analyses/tableau-de-bord",
+        icon: Activity,
+        description: "Vue d'ensemble des performances"
+      },
+      {
+        title: "Tendances",
+        url: "/analyses/tendances",
+        icon: TrendingUp,
+        description: "Analyse des tendances de vente"
+      },
+      {
+        title: "Rapports avancés",
+        url: "/analyses/rapports",
+        icon: LineChart,
+        description: "Rapports détaillés et exports"
+      }
+    ]
   },
   {
     title: "Boutique IA",

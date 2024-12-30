@@ -23,6 +23,9 @@ import BuyDomain from "./pages/BuyDomain";
 import ConnectDomain from "./pages/ConnectDomain";
 import Settings from "./pages/Settings";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
+import AnalyticsDashboard from "./pages/analytics/AnalyticsDashboard";
+import AnalyticsTrends from "./pages/analytics/AnalyticsTrends";
+import AnalyticsReports from "./pages/analytics/AnalyticsReports";
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuthAndProfile();
@@ -195,6 +198,30 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute>
             <Settings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/analyses/tableau-de-bord"
+        element={
+          <ProtectedRoute>
+            <AnalyticsDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/analyses/tendances"
+        element={
+          <ProtectedRoute>
+            <AnalyticsTrends />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/analyses/rapports"
+        element={
+          <ProtectedRoute>
+            <AnalyticsReports />
           </ProtectedRoute>
         }
       />
