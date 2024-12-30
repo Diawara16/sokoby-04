@@ -2,13 +2,16 @@ import {
   Home, 
   ShoppingCart, 
   Package, 
-  Users, 
+  Users,
+  UserPlus,
+  UserCheck,
+  UserSearch,
   ShoppingBag, 
   AppWindow, 
   Settings, 
   Sparkles, 
   Globe, 
-  PlusCircle, 
+  PlusCircle,
   Info,
   Truck,
   CreditCard,
@@ -77,6 +80,26 @@ export const navigationItems = [
     title: "Clientèle",
     url: "/clientele",
     icon: Users,
+    subItems: [
+      {
+        title: "Vue d'ensemble",
+        url: "/clientele/apercu",
+        icon: UserSearch,
+        description: "Analysez votre base clients"
+      },
+      {
+        title: "Groupes d'acheteurs",
+        url: "/clientele/groupes",
+        icon: UserPlus,
+        description: "Créez des groupes personnalisés"
+      },
+      {
+        title: "Fidélisation",
+        url: "/clientele/fidelisation",
+        icon: UserCheck,
+        description: "Gérez vos programmes de fidélité"
+      }
+    ]
   },
   {
     title: "Boutique en ligne",
