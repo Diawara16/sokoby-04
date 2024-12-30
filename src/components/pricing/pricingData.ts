@@ -1,19 +1,3 @@
-interface PricingFeature {
-  name: string;
-  description: string;
-}
-
-export interface PricingPlanData {
-  name: string;
-  price: string;
-  period: string;
-  description: string;
-  planType: 'starter' | 'pro' | 'enterprise';
-  features: string[];
-  popular?: boolean;
-  trial?: boolean;
-}
-
 export const getMonthlyPlans = (): PricingPlanData[] => [
   {
     name: "Démarrage",
