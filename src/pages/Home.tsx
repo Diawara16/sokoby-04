@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturesSection } from "@/components/home/FeaturesSection";
 import { CTASection } from "@/components/home/CTASection";
-import { ShoppingInspirationSection } from "@/components/home/ShoppingInspirationSection";
+import ShoppingInspirationSection from "@/components/home/ShoppingInspirationSection";
+import { useLanguageContext } from "@/contexts/LanguageContext";
 
 interface HomeProps {
   isAuthenticated: boolean;
@@ -11,6 +12,11 @@ interface HomeProps {
 
 const Home = ({ isAuthenticated }: HomeProps) => {
   const navigate = useNavigate();
+  const { currentLanguage } = useLanguageContext();
+
+  const handleCreateStore = () => {
+    navigate("/creer-boutique-ia");
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -24,10 +30,16 @@ const Home = ({ isAuthenticated }: HomeProps) => {
 
   return (
     <div className="space-y-20 pb-8">
-      <HeroSection />
-      <FeaturesSection />
+      <HeroSection 
+        isAuthenticated={isAuthenticated} 
+        currentLanguage={currentLanguage} 
+      />
+      <FeaturesSection currentLanguage={currentLanguage} />
       <ShoppingInspirationSection />
-      <CTASection />
+      <CTASection 
+        currentLanguage={currentLanguage}
+        onCreateStore={handleCreateStore}
+      />
     </div>
   );
 };
