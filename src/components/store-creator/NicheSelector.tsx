@@ -31,7 +31,12 @@ export const NicheSelector = ({ selectedNiche, onSelectNiche }: NicheSelectorPro
 
       if (error) {
         console.error('Erreur lors de la création de la session:', error);
-        throw error;
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de la création de la session de paiement",
+          variant: "destructive",
+        });
+        return;
       }
 
       if (data?.url) {
