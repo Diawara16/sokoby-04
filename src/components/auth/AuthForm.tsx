@@ -30,7 +30,7 @@ export function AuthForm({ defaultIsSignUp = true, onCancel }: AuthFormProps) {
   const t = translations[currentLanguage as keyof typeof translations];
 
   return (
-    <Card className="w-full max-w-md bg-white shadow-xl">
+    <Card className="w-full max-w-none bg-white shadow-xl">
       <CardHeader className="text-center space-y-2">
         <CardTitle className="text-2xl font-bold">
           {isSignUp ? "Commencez votre essai gratuit" : "Se connecter"}
