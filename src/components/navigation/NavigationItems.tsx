@@ -1,4 +1,4 @@
-import { Home, ShoppingCart, Package, Users, ShoppingBag, AppWindow, Settings, Sparkles, Globe, PlusCircle } from "lucide-react"
+import { Home, ShoppingCart, Package, Users, ShoppingBag, AppWindow, Settings, Sparkles, Globe, PlusCircle, Info } from "lucide-react"
 
 export const navigationItems = [
   {
@@ -31,6 +31,11 @@ export const navigationItems = [
     title: "Applications",
     url: "/applications",
     icon: AppWindow,
+  },
+  {
+    title: "Qui sommes-nous?",
+    url: "/qui-sommes-nous",
+    icon: Info,
   },
   {
     title: "Boutique IA",
