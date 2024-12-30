@@ -3,17 +3,16 @@ import { Card } from "@/components/ui/card";
 import { DomainChecker } from "@/components/store/DomainChecker";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 
-export const AcheterDomaine = () => {
+const AcheterDomaine = () => {
   const [domainName, setDomainName] = useState("");
   const { toast } = useToast();
   const [suggestedDomains, setSuggestedDomains] = useState<string[]>([]);
+  const [isProcessingPurchase, setIsProcessingPurchase] = useState(false);
 
   const generateSuggestedDomains = (baseDomain: string) => {
-    // Enlever l'extension du domaine s'il y en a une
     const baseName = baseDomain.split('.')[0];
-    
-    // Générer des suggestions avec différentes extensions
     return [
       `${baseName}.com`,
       `${baseName}.fr`,
@@ -33,12 +32,63 @@ export const AcheterDomaine = () => {
     }
   };
 
-  const handlePurchase = (domain: string) => {
-    toast({
-      title: "Redirection vers le paiement",
-      description: `Vous allez être redirigé vers le processus d'achat pour ${domain}`,
-    });
-    // Ici, on pourrait rediriger vers un processus de paiement
+  const handlePurchase = async (domain: string) => {
+    try {
+      setIsProcessingPurchase(true);
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour acheter un domaine",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Vérifier si le domaine n'est pas déjà pris
+      const { data: existingDomain } = await supabase
+        .from("store_settings")
+        .select("domain_name")
+        .eq("domain_name", domain)
+        .maybeSingle();
+
+      if (existingDomain) {
+        toast({
+          title: "Domaine non disponible",
+          description: "Ce domaine a déjà été réservé",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Mettre à jour les paramètres de la boutique avec le nouveau domaine
+      const { error: updateError } = await supabase
+        .from("store_settings")
+        .update({ 
+          domain_name: domain,
+          is_custom_domain: true 
+        })
+        .eq("user_id", user.id);
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "Succès !",
+        description: "Le domaine a été réservé pour votre boutique",
+      });
+
+    } catch (error) {
+      console.error("Erreur lors de l'achat du domaine:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'achat du domaine",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessingPurchase(false);
+    }
   };
 
   return (
@@ -68,6 +118,7 @@ export const AcheterDomaine = () => {
                 <Button 
                   onClick={() => handlePurchase(domain)}
                   size="sm"
+                  disabled={isProcessingPurchase}
                 >
                   Acheter
                 </Button>
