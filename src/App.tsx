@@ -1,68 +1,29 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AppSidebar } from "@/components/AppSidebar";
+import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
-import Home from "@/pages/Home";
-import Dashboard from "@/pages/Dashboard";
-import Profile from "@/pages/Profile";
-import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
-import AcheterDomaine from "@/pages/AcheterDomaine";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { AppRoutes } from "@/AppRoutes";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar/SidebarContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 function App() {
-  const { isAuthenticated, isLoading } = useAuthAndProfile();
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const { session, profile } = useAuthAndProfile();
+  const isAuthenticated = !!session;
 
   return (
-    <Router>
-      <SidebarProvider>
-        <div className="flex min-h-screen">
-          <AppSidebar />
-          <main className="flex-1 p-6">
-            <Routes>
-              <Route path="/" element={<Home isAuthenticated={isAuthenticated} />} />
-              <Route
-                path="/tableau-de-bord"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/profil"
-                element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/creer-boutique-ia"
-                element={
-                  <ProtectedRoute>
-                    <CreerBoutiqueIA />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/acheter-domaine"
-                element={
-                  <ProtectedRoute>
-                    <AcheterDomaine />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
+    <BrowserRouter>
+      <LanguageProvider>
+        <SidebarProvider>
+          <main className="min-h-screen bg-background">
+            <div className="relative flex min-h-screen">
+              <div className="flex-1">
+                <AppRoutes isAuthenticated={isAuthenticated} />
+              </div>
+            </div>
           </main>
-        </div>
-      </SidebarProvider>
-      <Toaster />
-    </Router>
+          <Toaster />
+        </SidebarProvider>
+      </LanguageProvider>
+    </BrowserRouter>
   );
 }
 
