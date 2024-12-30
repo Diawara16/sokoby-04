@@ -34,7 +34,7 @@ const Onboarding = () => {
         }
 
         // Récupérer les paramètres de la boutique
-        const { data: settings, error: settingsError } = await supabase
+        const { data: existingSettings, error: settingsError } = await supabase
           .from('store_settings')
           .select('*')
           .eq('user_id', session.user.id)
@@ -43,34 +43,36 @@ const Onboarding = () => {
         if (settingsError) {
           console.error("Erreur lors de la récupération des paramètres:", settingsError);
           setError("Impossible de charger les paramètres de votre boutique");
-        } else if (!settings) {
-          // Si aucun paramètre n'existe, on les crée
-          console.log("Création des paramètres de boutique par défaut");
+          setIsLoading(false);
+          return;
+        }
+
+        if (!existingSettings) {
+          console.log("Aucun paramètre trouvé, création des paramètres par défaut");
           const { data: newSettings, error: createError } = await supabase
             .from('store_settings')
-            .insert([
-              {
-                user_id: session.user.id,
-                store_name: 'Ma boutique'
-              }
-            ])
+            .insert([{
+              user_id: session.user.id,
+              store_name: 'Ma boutique'
+            }])
             .select()
-            .single();
+            .maybeSingle();
 
           if (createError) {
             console.error("Erreur lors de la création des paramètres:", createError);
             setError("Impossible de créer les paramètres de votre boutique");
           } else {
+            console.log("Paramètres créés avec succès:", newSettings);
             setStoreSettings(newSettings);
           }
         } else {
-          setStoreSettings(settings);
+          console.log("Paramètres existants trouvés:", existingSettings);
+          setStoreSettings(existingSettings);
         }
-
-        setIsLoading(false);
       } catch (error) {
         console.error("Erreur inattendue:", error);
         setError("Une erreur inattendue s'est produite");
+      } finally {
         setIsLoading(false);
       }
     };
