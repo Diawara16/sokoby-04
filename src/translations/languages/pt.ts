@@ -38,7 +38,8 @@ export const pt = {
     changeLanguage: "Mudar idioma",
     acceptedPayments: "Pagamentos aceitos",
     legalNotice: "Aviso legal",
-    accessibility: "Acessibilidade"
+    accessibility: "Acessibilidade",
+    allRightsReserved: "Todos os direitos reservados"
   },
   auth: {
     createAccount: "Criar conta",

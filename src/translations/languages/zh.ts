@@ -38,7 +38,8 @@ export const zh = {
     changeLanguage: "更改语言",
     acceptedPayments: "接受的支付方式",
     legalNotice: "法律声明",
-    accessibility: "无障碍"
+    accessibility: "无障碍",
+    allRightsReserved: "版权所有"
   },
   auth: {
     createAccount: "创建账户",

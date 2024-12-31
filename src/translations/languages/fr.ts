@@ -49,7 +49,8 @@ export const fr = {
     changeLanguage: "Changer de langue",
     acceptedPayments: "Paiements acceptés",
     legalNotice: "Mentions légales",
-    accessibility: "Accessibilité"
+    accessibility: "Accessibilité",
+    allRightsReserved: "Tous droits réservés"
   },
   auth: {
     createAccount: "Créer un compte",

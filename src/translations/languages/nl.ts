@@ -38,7 +38,8 @@ export const nl = {
     changeLanguage: "Taal wijzigen",
     acceptedPayments: "Geaccepteerde betalingen",
     legalNotice: "Juridische kennisgeving",
-    accessibility: "Toegankelijkheid"
+    accessibility: "Toegankelijkheid",
+    allRightsReserved: "Alle rechten voorbehouden"
   },
   auth: {
     createAccount: "Account aanmaken",

@@ -38,7 +38,8 @@ export const ru = {
     changeLanguage: "Изменить язык",
     acceptedPayments: "Принимаемые платежи",
     legalNotice: "Правовая информация",
-    accessibility: "Доступность"
+    accessibility: "Доступность",
+    allRightsReserved: "Все права защищены"
   },
   auth: {
     createAccount: "Создать аккаунт",

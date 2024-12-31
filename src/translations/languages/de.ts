@@ -38,7 +38,8 @@ export const de = {
     changeLanguage: "Sprache ändern",
     acceptedPayments: "Akzeptierte Zahlungen",
     legalNotice: "Rechtliche Hinweise",
-    accessibility: "Barrierefreiheit"
+    accessibility: "Barrierefreiheit",
+    allRightsReserved: "Alle Rechte vorbehalten"
   },
   auth: {
     createAccount: "Konto erstellen",

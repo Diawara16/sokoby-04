@@ -38,7 +38,8 @@ export const ar = {
     changeLanguage: "تغيير اللغة",
     acceptedPayments: "طرق الدفع المقبولة",
     legalNotice: "إشعار قانوني",
-    accessibility: "إمكانية الوصول"
+    accessibility: "إمكانية الوصول",
+    allRightsReserved: "جميع الحقوق محفوظة"
   },
   auth: {
     createAccount: "إنشاء حساب",

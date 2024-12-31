@@ -44,7 +44,8 @@ export const en = {
     termsOfUse: "Terms of use",
     guidesAndTutorials: "Guides and tutorials",
     faq: "FAQ",
-    support: "Support"
+    support: "Support",
+    allRightsReserved: "All rights reserved"
   },
   auth: {
     createAccount: "Create account",
