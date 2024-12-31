@@ -13,7 +13,6 @@ export const Newsletter = ({ t }: NewsletterProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  // Vérification que les traductions nécessaires existent et sont des chaînes
   if (!t?.footer?.newsletter || !t?.footer?.emailPlaceholder || !t?.footer?.subscribe ||
       typeof t.footer.newsletter !== 'string' ||
       typeof t.footer.emailPlaceholder !== 'string' ||

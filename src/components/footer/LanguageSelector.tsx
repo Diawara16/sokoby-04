@@ -1,4 +1,4 @@
-import { Globe, CreditCard } from "lucide-react";
+import { Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
@@ -15,11 +15,8 @@ interface LanguageSelectorProps {
 }
 
 export const LanguageSelector = ({ t, currentLanguage, onLanguageChange, languages }: LanguageSelectorProps) => {
-  // Vérification que les traductions nécessaires existent et sont des chaînes
-  if (!t?.footer?.changeLanguage || !t?.footer?.acceptedPayments || 
-      !t?.footer?.legalNotice || !t?.footer?.accessibility ||
+  if (!t?.footer?.changeLanguage || !t?.footer?.legalNotice || !t?.footer?.accessibility ||
       typeof t.footer.changeLanguage !== 'string' ||
-      typeof t.footer.acceptedPayments !== 'string' ||
       typeof t.footer.legalNotice !== 'string' ||
       typeof t.footer.accessibility !== 'string') {
     return null;
@@ -47,20 +44,18 @@ export const LanguageSelector = ({ t, currentLanguage, onLanguageChange, languag
         </DropdownMenu>
       </div>
 
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold">{t.footer.acceptedPayments}</h3>
-        <div className="flex space-x-2">
-          <CreditCard className="h-6 w-6" />
-        </div>
-      </div>
-
-      <div className="text-sm text-gray-400">
-        <Link to="/legal" className="hover:text-red-400 transition-colors">
+      <div className="text-sm text-gray-400 space-y-2">
+        <Link to="/legal" className="hover:text-red-400 transition-colors block">
           {t.footer.legalNotice}
         </Link>
-        {" | "}
-        <Link to="/accessibility" className="hover:text-red-400 transition-colors">
+        <Link to="/accessibility" className="hover:text-red-400 transition-colors block">
           {t.footer.accessibility}
+        </Link>
+        <Link to="/conditions" className="hover:text-red-400 transition-colors block">
+          {t.footer.termsOfUse}
+        </Link>
+        <Link to="/support" className="hover:text-red-400 transition-colors block">
+          {t.footer.support}
         </Link>
       </div>
     </div>

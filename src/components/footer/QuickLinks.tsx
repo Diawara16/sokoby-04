@@ -26,9 +26,19 @@ export const QuickLinks = ({ t }: QuickLinksProps) => {
           </Link>
         </li>
         <li>
+          <Link to="/guides" className="hover:text-gray-300 transition-colors">
+            {t.footer.guidesAndTutorials}
+          </Link>
+        </li>
+        <li>
+          <Link to="/faq" className="hover:text-gray-300 transition-colors">
+            {t.footer.faq}
+          </Link>
+        </li>
+        <li>
           <Link to="/qui-sommes-nous" className="hover:text-gray-300 transition-colors flex items-center gap-2">
             <Info className="h-4 w-4" />
-            Qui sommes-nous?
+            {t.footer.about}
           </Link>
         </li>
       </ul>

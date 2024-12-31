@@ -75,6 +75,11 @@ export const Footer = () => {
             languages={languages}
           />
         </div>
+        <div className="mt-8 pt-8 border-t border-red-600">
+          <div className="text-center text-sm">
+            <p>&copy; {new Date().getFullYear()} Sokoby. {t.footer.allRightsReserved}</p>
+          </div>
+        </div>
       </div>
     </footer>
   );
