@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Robot, Sparkles, Lock } from "lucide-react";
 
 const CreerBoutiqueIA = () => {
   const {
@@ -49,9 +50,21 @@ const CreerBoutiqueIA = () => {
   };
 
   const renderStoreSettings = () => (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle>Paramètres de la boutique</CardTitle>
+    <Card className="mb-6 border-2 border-primary/20 bg-gradient-to-br from-white to-primary/5">
+      <CardHeader className="space-y-4">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Robot className="h-6 w-6 text-primary" />
+            Configuration IA
+          </CardTitle>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Lock className="h-4 w-4" />
+            Option Premium
+          </div>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Notre IA va configurer automatiquement votre boutique en fonction de vos préférences
+        </p>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
@@ -61,6 +74,7 @@ const CreerBoutiqueIA = () => {
             value={storeName}
             onChange={(e) => setStoreName(e.target.value)}
             placeholder="Ma boutique Sokoby"
+            className="border-primary/20"
           />
         </div>
         <div>
@@ -71,6 +85,7 @@ const CreerBoutiqueIA = () => {
             value={storeEmail}
             onChange={(e) => setStoreEmail(e.target.value)}
             placeholder="contact@maboutique.com"
+            className="border-primary/20"
           />
         </div>
         <div>
@@ -80,6 +95,7 @@ const CreerBoutiqueIA = () => {
             value={storePhone}
             onChange={(e) => setStorePhone(e.target.value)}
             placeholder="+33 1 23 45 67 89"
+            className="border-primary/20"
           />
         </div>
         <div>
@@ -89,6 +105,7 @@ const CreerBoutiqueIA = () => {
             value={storeAddress}
             onChange={(e) => setStoreAddress(e.target.value)}
             placeholder="123 rue du Commerce, 75001 Paris"
+            className="border-primary/20"
           />
         </div>
       </CardContent>
@@ -119,11 +136,18 @@ const CreerBoutiqueIA = () => {
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="space-y-8">
               <div className="text-center space-y-4">
+                <div className="flex justify-center mb-4">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary">
+                    <Robot className="h-5 w-5" />
+                    <span className="font-medium">Boutique IA</span>
+                    <Sparkles className="h-4 w-4" />
+                  </div>
+                </div>
                 <h1 className="text-4xl font-bold text-gray-900 font-heading">
-                  Créez votre boutique en ligne
+                  Créez votre boutique automatisée
                 </h1>
                 <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                  Personnalisez les paramètres de votre boutique et choisissez une niche pour commencer.
+                  Notre IA va générer une boutique complète et optimisée pour votre niche, avec des produits pertinents et des descriptions détaillées.
                 </p>
               </div>
               {renderStoreSettings()}
