@@ -5,14 +5,12 @@ import { FeaturesSection } from "@/components/home/FeaturesSection";
 import { CTASection } from "@/components/home/CTASection";
 import ShoppingInspirationSection from "@/components/home/ShoppingInspirationSection";
 import { useLanguageContext } from "@/contexts/LanguageContext";
+import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 
-interface HomeProps {
-  isAuthenticated: boolean;
-}
-
-const Home = ({ isAuthenticated }: HomeProps) => {
+const Home = () => {
   const navigate = useNavigate();
   const { currentLanguage } = useLanguageContext();
+  const { isAuthenticated } = useAuthAndProfile();
 
   const handleCreateStore = () => {
     navigate("/creer-boutique-ia");
