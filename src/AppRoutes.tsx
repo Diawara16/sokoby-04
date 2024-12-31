@@ -1,72 +1,43 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
-import Dashboard from "@/pages/Dashboard";
-import Profile from "@/pages/Profile";
-import QuiSommesNous from "@/pages/QuiSommesNous";
-import AnalyticsDashboard from "@/pages/analytics/AnalyticsDashboard";
-import AnalyticsTrends from "@/pages/analytics/AnalyticsTrends";
-import AnalyticsReports from "@/pages/analytics/AnalyticsReports";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import CreerBoutiqueIA from "./pages/CreerBoutiqueIA";
+import Pricing from "./pages/Pricing";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import Settings from "./pages/Settings";
+import PrivateRoute from "./components/PrivateRoute";
+import ResetPassword from "./pages/ResetPassword";
+import UpdatePassword from "./pages/UpdatePassword";
 
-export default function AppRoutes() {
-  const { isAuthenticated } = useAuthAndProfile();
-
+const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Home isAuthenticated={isAuthenticated} />} />
-      
-      {/* Main Routes */}
+      <Route path="/" element={<Home />} />
+      <Route path="/creer-boutique-ia" element={<CreerBoutiqueIA />} />
+      <Route path="/tarifs" element={<Pricing />} />
+      <Route path="/connexion" element={<Login />} />
+      <Route path="/inscription" element={<Register />} />
+      <Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
+      <Route path="/modifier-mot-de-passe" element={<UpdatePassword />} />
       <Route
-        path="/tableau-de-bord"
+        path="/tableau-de-bord/*"
         element={
-          <ProtectedRoute>
+          <PrivateRoute>
             <Dashboard />
-          </ProtectedRoute>
+          </PrivateRoute>
         }
       />
       <Route
-        path="/qui-sommes-nous"
+        path="/parametres"
         element={
-          <ProtectedRoute>
-            <QuiSommesNous />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Analytics Routes */}
-      <Route
-        path="/analytics/dashboard"
-        element={
-          <ProtectedRoute>
-            <AnalyticsDashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/analytics/trends"
-        element={
-          <ProtectedRoute>
-            <AnalyticsTrends />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/analytics/reports"
-        element={
-          <ProtectedRoute>
-            <AnalyticsReports />
-          </ProtectedRoute>
+          <PrivateRoute>
+            <Settings />
+          </PrivateRoute>
         }
       />
     </Routes>
   );
-}
+};
+
+export default AppRoutes;
