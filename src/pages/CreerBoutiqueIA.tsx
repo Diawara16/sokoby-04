@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Robot, Sparkles, Lock } from "lucide-react";
+import { Bot, Sparkles, Lock } from "lucide-react";
 
 const CreerBoutiqueIA = () => {
   const {
@@ -31,7 +31,6 @@ const CreerBoutiqueIA = () => {
   const [storeAddress, setStoreAddress] = useState("");
 
   const handleStoreCreation = async (niche: string) => {
-    // Mise à jour des paramètres de la boutique avec les valeurs personnalisées
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       await supabase
@@ -45,7 +44,6 @@ const CreerBoutiqueIA = () => {
         .eq('user_id', user.id);
     }
     
-    // Continuer avec la création de la boutique
     handleNicheSelect(niche);
   };
 
@@ -54,7 +52,7 @@ const CreerBoutiqueIA = () => {
       <CardHeader className="space-y-4">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Robot className="h-6 w-6 text-primary" />
+            <Bot className="h-6 w-6 text-primary" />
             Configuration IA
           </CardTitle>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -138,7 +136,7 @@ const CreerBoutiqueIA = () => {
               <div className="text-center space-y-4">
                 <div className="flex justify-center mb-4">
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary">
-                    <Robot className="h-5 w-5" />
+                    <Bot className="h-5 w-5" />
                     <span className="font-medium">Boutique IA</span>
                     <Sparkles className="h-4 w-4" />
                   </div>
