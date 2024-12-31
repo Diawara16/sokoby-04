@@ -9,6 +9,10 @@ import Settings from "./pages/Settings";
 import PrivateRoute from "./components/PrivateRoute";
 import ResetPassword from "./pages/ResetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
+import StoreSettings from "./pages/settings/StoreSettings";
+import UserSettings from "./pages/settings/UserSettings";
+import SecuritySettings from "./pages/settings/SecuritySettings";
+import BillingSettings from "./pages/settings/BillingSettings";
 
 const AppRoutes = () => {
   return (
@@ -29,13 +33,18 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/parametres"
+        path="/parametres/*"
         element={
           <PrivateRoute>
             <Settings />
           </PrivateRoute>
         }
-      />
+      >
+        <Route index element={<StoreSettings />} />
+        <Route path="utilisateur" element={<UserSettings />} />
+        <Route path="securite" element={<SecuritySettings />} />
+        <Route path="facturation" element={<BillingSettings />} />
+      </Route>
     </Routes>
   );
 };
