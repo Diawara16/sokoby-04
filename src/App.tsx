@@ -4,6 +4,7 @@ import AppRoutes from "@/AppRoutes";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { Footer } from "@/components/layout/Footer";
 
 function App() {
   const { session, profile } = useAuthAndProfile();
@@ -20,6 +21,7 @@ function App() {
               </div>
             </div>
           </main>
+          <Footer />
           <Toaster />
         </SidebarProvider>
       </LanguageProvider>
