@@ -11,6 +11,7 @@ import Fidelite from "./pages/Fidelite"
 import BlogManager from "./pages/BlogManager"
 import Blog from "./pages/Blog"
 import BlogPost from "./pages/BlogPost"
+import CustomReports from "./pages/analytics/CustomReports"
 
 export const AppRoutes = () => {
   return (
@@ -27,6 +28,7 @@ export const AppRoutes = () => {
       <Route path="/blog-manager" element={<BlogManager />} />
       <Route path="/blog" element={<Blog />} />
       <Route path="/blog/:slug" element={<BlogPost />} />
+      <Route path="/rapports-personnalises" element={<CustomReports />} />
     </Routes>
   )
 }
