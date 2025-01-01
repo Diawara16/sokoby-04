@@ -1,5 +1,5 @@
 import { Route } from "react-router-dom";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import PrivateRoute from "@/components/PrivateRoute";
 import Orders from "@/pages/Orders";
 import DraftOrders from "@/pages/DraftOrders";
 import ShippingLabels from "@/pages/ShippingLabels";
@@ -11,33 +11,33 @@ export const OrderRoutes = () => {
       <Route
         path="/commandes"
         element={
-          <ProtectedRoute>
+          <PrivateRoute>
             <Orders />
-          </ProtectedRoute>
+          </PrivateRoute>
         }
       />
       <Route
         path="/commandes/provisoires"
         element={
-          <ProtectedRoute>
+          <PrivateRoute>
             <DraftOrders />
-          </ProtectedRoute>
+          </PrivateRoute>
         }
       />
       <Route
         path="/commandes/expeditions"
         element={
-          <ProtectedRoute>
+          <PrivateRoute>
             <ShippingLabels />
-          </ProtectedRoute>
+          </PrivateRoute>
         }
       />
       <Route
         path="/commandes/abandonnes"
         element={
-          <ProtectedRoute>
+          <PrivateRoute>
             <AbandonedCheckouts />
-          </ProtectedRoute>
+          </PrivateRoute>
         }
       />
     </>

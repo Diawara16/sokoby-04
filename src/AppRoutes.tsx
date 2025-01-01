@@ -1,52 +1,56 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import CreerBoutiqueIA from "./pages/CreerBoutiqueIA";
-import Pricing from "./pages/Pricing";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Settings from "./pages/Settings";
-import PrivateRoute from "./components/PrivateRoute";
-import ResetPassword from "./pages/ResetPassword";
-import UpdatePassword from "./pages/UpdatePassword";
-import StoreSettings from "./pages/settings/StoreSettings";
-import UserSettings from "./pages/settings/UserSettings";
-import SecuritySettings from "./pages/settings/SecuritySettings";
-import BillingSettings from "./pages/settings/BillingSettings";
+import { OrderRoutes } from "@/routes/OrderRoutes";
+import PrivateRoute from "@/components/PrivateRoute";
+import Checkout from "@/pages/Checkout";
+import AbandonedCheckouts from "@/pages/AbandonedCheckouts";
+import DraftOrders from "@/pages/DraftOrders";
+import Orders from "@/pages/Orders";
+import ShippingLabels from "@/pages/ShippingLabels";
 
-const AppRoutes = () => {
+export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/creer-boutique-ia" element={<CreerBoutiqueIA />} />
-      <Route path="/tarifs" element={<Pricing />} />
-      <Route path="/connexion" element={<Login />} />
-      <Route path="/inscription" element={<Register />} />
-      <Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
-      <Route path="/modifier-mot-de-passe" element={<UpdatePassword />} />
+      <OrderRoutes />
       <Route
-        path="/tableau-de-bord/*"
+        path="/checkout"
         element={
           <PrivateRoute>
-            <Dashboard />
+            <Checkout />
           </PrivateRoute>
         }
       />
       <Route
-        path="/parametres/*"
+        path="/commandes/abandonnes"
         element={
           <PrivateRoute>
-            <Settings />
+            <AbandonedCheckouts />
           </PrivateRoute>
         }
-      >
-        <Route index element={<StoreSettings />} />
-        <Route path="utilisateur" element={<UserSettings />} />
-        <Route path="securite" element={<SecuritySettings />} />
-        <Route path="facturation" element={<BillingSettings />} />
-      </Route>
+      />
+      <Route
+        path="/commandes/provisoires"
+        element={
+          <PrivateRoute>
+            <DraftOrders />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/commandes"
+        element={
+          <PrivateRoute>
+            <Orders />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/commandes/expeditions"
+        element={
+          <PrivateRoute>
+            <ShippingLabels />
+          </PrivateRoute>
+        }
+      />
     </Routes>
   );
-};
-
-export default AppRoutes;
+}
