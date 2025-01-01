@@ -14,7 +14,6 @@ interface StoreRequest {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -29,7 +28,6 @@ serve(async (req) => {
       throw new Error('Missing required fields');
     }
 
-    // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
@@ -40,6 +38,23 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
     console.log('Supabase client initialized');
+
+    // Appliquer le thème premium
+    const { error: themeError } = await supabase
+      .from('brand_settings')
+      .upsert({
+        user_id: userId,
+        primary_color: '#8B5CF6',
+        secondary_color: '#D6BCFA',
+        updated_at: new Date().toISOString()
+      });
+
+    if (themeError) {
+      console.error('Error applying premium theme:', themeError);
+      throw themeError;
+    }
+
+    console.log('Premium theme applied successfully');
 
     // Get OpenAI API key
     const openAiKey = Deno.env.get('OPENAI_API_KEY');
@@ -57,7 +72,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
@@ -90,22 +105,37 @@ serve(async (req) => {
           image_url: null,
           user_id: userId,
           store_id: storeId,
+          supplier: 'AI Generated'
         };
       });
 
     console.log('Parsed product ideas:', productIdeas);
 
     // Insert products into the database
-    const { data, error } = await supabase
+    const { error: productsError } = await supabase
       .from('ai_generated_products')
       .insert(productIdeas);
 
-    if (error) {
-      console.error('Database error:', error);
-      throw error;
+    if (productsError) {
+      console.error('Database error:', productsError);
+      throw productsError;
     }
 
     console.log('Products inserted successfully');
+
+    // Créer une notification pour informer l'utilisateur
+    const { error: notificationError } = await supabase
+      .from('notifications')
+      .insert({
+        user_id: userId,
+        title: 'Boutique créée avec succès',
+        content: `Votre boutique ${niche} a été créée avec ${productIdeas.length} produits et le thème premium a été appliqué.`,
+        read: false
+      });
+
+    if (notificationError) {
+      console.error('Error creating notification:', notificationError);
+    }
 
     return new Response(
       JSON.stringify({ 
