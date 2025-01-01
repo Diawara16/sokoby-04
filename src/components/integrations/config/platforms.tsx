@@ -1,4 +1,4 @@
-import { Instagram, ShoppingBag } from 'lucide-react';
+import { Instagram, ShoppingBag, Facebook } from 'lucide-react';
 import { PlatformConfig } from '../types/platform';
 
 export const platforms: PlatformConfig[] = [
@@ -8,6 +8,13 @@ export const platforms: PlatformConfig[] = [
     description: "Connectez votre catalogue produits à Instagram Shopping",
     status: 'pending',
     message: "Configuration requise du compte Instagram Business"
+  },
+  {
+    name: "Facebook Shop",
+    icon: <Facebook className="h-5 w-5" />,
+    description: "Vendez vos produits directement sur Facebook",
+    status: 'pending',
+    message: "Configuration requise du compte Facebook Business"
   },
   {
     name: "TikTok Shop",
