@@ -1,4 +1,4 @@
-import { Facebook, Instagram, ShoppingBag, Video } from "lucide-react";
+import { Facebook, Instagram, ShoppingBag, Video, Store, PinIcon } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface Application {
@@ -53,6 +53,38 @@ export const applications: Application[] = [
     price: {
       monthly: 29.99,
       annual: 299.99
+    }
+  },
+  {
+    id: "ebay",
+    name: "eBay",
+    description: "Atteignez des millions d'acheteurs sur eBay",
+    icon: ShoppingBag,
+    authUrl: "/auth/ebay",
+    price: {
+      monthly: 19.99,
+      annual: 199.99
+    }
+  },
+  {
+    id: "walmart",
+    name: "Walmart Marketplace",
+    description: "Vendez vos produits sur Walmart.com",
+    icon: Store,
+    authUrl: "/auth/walmart",
+    price: {
+      monthly: 29.99,
+      annual: 299.99
+    }
+  },
+  {
+    id: "pinterest",
+    name: "Pinterest Shopping",
+    description: "Transformez vos épingles en opportunités de vente",
+    icon: PinIcon,
+    authUrl: "/auth/pinterest",
+    price: {
+      monthly: 9.99
     }
   }
 ];
