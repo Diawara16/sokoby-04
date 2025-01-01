@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ProductFilters } from "@/components/products/ProductFilters";
 import { ProductGrid } from "@/components/products/ProductGrid";
+import { SupplierSelector } from "@/components/store-creator/SupplierSelector";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -17,14 +18,17 @@ interface Product {
 export default function Boutique() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSupplier, setSelectedSupplier] = useState<string | null>(null);
   const { toast } = useToast();
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("");
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (selectedSupplier) {
+      fetchProducts();
+    }
+  }, [selectedSupplier]);
 
   const fetchProducts = async () => {
     try {
@@ -84,6 +88,18 @@ export default function Boutique() {
       });
     }
   };
+
+  if (!selectedSupplier) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8">Choisissez votre fournisseur</h1>
+        <SupplierSelector
+          selectedSupplier={selectedSupplier}
+          onSupplierSelect={setSelectedSupplier}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
