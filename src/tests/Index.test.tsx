@@ -127,7 +127,20 @@ describe('Index Page', () => {
 
   it('renders main content sections', () => {
     renderIndex();
+    
+    // Vérifie la présence du titre principal
     expect(screen.getByText(/Construisez votre empire e-commerce/i)).toBeInTheDocument();
+    
+    // Vérifie la présence des boutons d'authentification
     expect(screen.getByText(/Créer mon compte/i)).toBeInTheDocument();
+    expect(screen.getByText(/Se connecter/i)).toBeInTheDocument();
+    
+    // Vérifie la présence de la section d'inspiration shopping
+    expect(screen.getByText(/Inspirations Shopping/i)).toBeInTheDocument();
+    
+    // Vérifie la présence des cartes de produits
+    expect(screen.getByText(/Découvrez notre collection/i)).toBeInTheDocument();
+    expect(screen.getByText(/Nouveautés de la saison/i)).toBeInTheDocument();
+    expect(screen.getByText(/Meilleures ventes/i)).toBeInTheDocument();
   });
 });
