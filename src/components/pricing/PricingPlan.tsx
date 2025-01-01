@@ -96,8 +96,9 @@ export const PricingPlan = ({
             setCouponCode={setCouponCode}
           />
           <PaymentButtons
-            isAuthenticated={isAuthenticated}
-            onSubscribe={(paymentMethod) => onSubscribe(planType, paymentMethod, couponCode)}
+            planType={planType}
+            couponCode={couponCode}
+            onSubscribe={onSubscribe}
           />
         </>
       ) : (

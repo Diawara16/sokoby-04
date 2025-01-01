@@ -29,6 +29,7 @@ export const PricingPlans = ({ currentLanguage, onSubscribe }: PricingPlansProps
             onSubscribe={onSubscribe}
             isAuthenticated={false}
             planType={plan.planType}
+            onSelect={() => {}}
           />
         ))}
       </div>
