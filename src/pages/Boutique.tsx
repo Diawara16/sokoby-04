@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ProductFilters } from "@/components/products/ProductFilters";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { supabase } from "@/lib/supabase";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { ShoppingBag, Sparkles } from "lucide-react";
 
@@ -33,9 +33,7 @@ export default function Boutique() {
         .from("products")
         .select("*");
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       if (data) {
         setProducts(data);
