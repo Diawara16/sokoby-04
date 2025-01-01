@@ -26,7 +26,7 @@ const fetchTrendsData = async () => {
   if (ordersError) throw ordersError
 
   // Grouper les données par mois
-  const monthlyData = orders.reduce((acc: Record<string, TrendData>, order) => {
+  const monthlyData = orders.reduce((acc: Record<string, Omit<TrendData, 'customers'> & { uniqueCustomers: Set<string> }>, order) => {
     const monthKey = format(new Date(order.created_at), 'yyyy-MM')
     
     if (!acc[monthKey]) {
@@ -34,22 +34,24 @@ const fetchTrendsData = async () => {
         date: format(new Date(order.created_at), 'MMM yyyy', { locale: fr }),
         sales: 0,
         orders: 0,
-        customers: new Set(),
+        uniqueCustomers: new Set(),
         averageOrderValue: 0
       }
     }
     
     acc[monthKey].sales += order.total_amount
     acc[monthKey].orders += 1
-    acc[monthKey].customers.add(order.user_id)
+    acc[monthKey].uniqueCustomers.add(order.user_id)
     
     return acc
   }, {})
 
   // Convertir en tableau et calculer les moyennes
-  return Object.values(monthlyData).map(month => ({
-    ...month,
-    customers: month.customers.size,
+  return Object.entries(monthlyData).map(([_, month]) => ({
+    date: month.date,
+    sales: month.sales,
+    orders: month.orders,
+    customers: month.uniqueCustomers.size,
     averageOrderValue: month.sales / month.orders
   }))
 }
