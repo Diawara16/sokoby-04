@@ -15,6 +15,7 @@ import CustomReports from "./pages/analytics/CustomReports"
 import { DynamicLanding } from "./components/landing/DynamicLanding"
 import EmailMarketing from "./pages/EmailMarketing"
 import CustomerRecommendations from "./pages/CustomerRecommendations"
+import SmartLogistics from "./pages/logistics/SmartLogistics"
 
 export const AppRoutes = () => {
   return (
@@ -34,6 +35,7 @@ export const AppRoutes = () => {
       <Route path="/rapports-personnalises" element={<CustomReports />} />
       <Route path="/email-marketing" element={<EmailMarketing />} />
       <Route path="/recommandations" element={<CustomerRecommendations />} />
+      <Route path="/logistique" element={<SmartLogistics />} />
       <Route path="/:slug" element={<DynamicLanding />} />
     </Routes>
   )

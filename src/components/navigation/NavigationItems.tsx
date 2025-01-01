@@ -8,20 +8,22 @@ import {
   BookOpen,
   Mail,
   Sparkles,
-  Truck
+  Truck,
+  LucideIcon
 } from "lucide-react"
-import { LucideIcon } from "lucide-react"
 
-interface NavigationItem {
+export interface NavigationItem {
   title: string
   url: string
   icon: LucideIcon
+  openInNewWindow?: boolean
+  className?: string
 }
 
 export const navigationItems: NavigationItem[] = [
   {
     title: "Dashboard",
-    url: "/dashboard",
+    url: "/tableau-de-bord",
     icon: LayoutDashboard
   },
   {
