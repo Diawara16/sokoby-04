@@ -25,10 +25,10 @@ interface Order {
 
 const statusColors = {
   pending: "secondary",
-  processing: "warning",
-  completed: "success",
+  processing: "secondary",
+  completed: "default",
   cancelled: "destructive",
-  refunded: "default",
+  refunded: "outline",
 } as const;
 
 const statusLabels = {
