@@ -1,15 +1,13 @@
-import { Award, Home, Package, Settings, ShoppingCart, Users } from "lucide-react";
-import { LucideIcon } from "lucide-react";
+import { 
+  Home,
+  ShoppingBag,
+  User,
+  Package,
+  Award,
+  FileText
+} from "lucide-react"
 
-export interface NavigationItem {
-  title: string;
-  url: string;
-  icon: LucideIcon;
-  openInNewWindow?: boolean;
-  className?: string;
-}
-
-export const navigationItems: NavigationItem[] = [
+export const navigationItems = [
   {
     title: "Tableau de bord",
     url: "/tableau-de-bord",
@@ -17,27 +15,27 @@ export const navigationItems: NavigationItem[] = [
   },
   {
     title: "Commandes",
-    url: "/commandes",
-    icon: Package,
+    url: "/suivi-commande",
+    icon: ShoppingBag,
   },
   {
-    title: "Clients",
-    url: "/clients",
-    icon: Users,
+    title: "Profil",
+    url: "/profil",
+    icon: User,
   },
   {
     title: "Produits",
     url: "/produits",
-    icon: ShoppingCart,
+    icon: Package,
   },
   {
-    title: "Programme de fidélité",
+    title: "Programme Fidélité",
     url: "/fidelite",
     icon: Award,
   },
   {
-    title: "Paramètres",
-    url: "/parametres",
-    icon: Settings,
+    title: "Blog Manager",
+    url: "/blog-manager",
+    icon: FileText,
   },
-];
+]
