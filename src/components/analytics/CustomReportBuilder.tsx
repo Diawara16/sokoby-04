@@ -1,11 +1,10 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DatePickerWithRange } from "@/components/ui/date-range-picker"
 import { addDays } from "date-fns"
-import { Calendar } from "@/components/ui/calendar"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { DateRange } from "react-day-picker"
 
 const metrics = [
   { id: "sales", label: "Ventes" },
@@ -23,7 +22,7 @@ const periods = [
 export const CustomReportBuilder = () => {
   const [selectedMetric, setSelectedMetric] = useState("sales")
   const [selectedPeriod, setSelectedPeriod] = useState("daily")
-  const [date, setDate] = useState({
+  const [date, setDate] = useState<DateRange>({
     from: new Date(),
     to: addDays(new Date(), 7),
   })
