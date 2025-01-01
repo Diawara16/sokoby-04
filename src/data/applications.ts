@@ -1,70 +1,58 @@
-import { ShoppingBag, Star, TrendingUp, Truck, Image, Package } from "lucide-react";
+import { Facebook, Instagram, ShoppingBag, BrandTiktok } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-export const applications = [
+export interface Application {
+  id: string;
+  name: string;
+  description: string;
+  icon: LucideIcon;
+  authUrl: string;
+  price?: {
+    monthly: number;
+    annual?: number;
+  };
+}
+
+export const applications: Application[] = [
   {
-    id: 1,
-    name: "DSERS-Aliexpress",
-    description: "Importez et gérez facilement des produits Aliexpress",
-    icon: ShoppingBag,
-    authUrl: "https://login.dsers.com/oauth/authorize",
+    id: "facebook",
+    name: "Facebook Shop",
+    description: "Vendez vos produits directement sur Facebook",
+    icon: Facebook,
+    authUrl: "/auth/facebook",
     price: {
-      monthly: 14.99,
-      annual: 149.99,
+      monthly: 9.99
     }
   },
   {
-    id: 2,
-    name: "Zendrop",
-    description: "Solution complète de dropshipping et fulfillment",
-    icon: Truck,
-    authUrl: "https://app.zendrop.com/oauth/authorize",
+    id: "instagram",
+    name: "Instagram Shopping",
+    description: "Transformez votre compte Instagram en boutique",
+    icon: Instagram,
+    authUrl: "/auth/instagram",
     price: {
-      monthly: 19.99,
-      annual: 199.99,
+      monthly: 9.99
     }
   },
   {
-    id: 3,
-    name: "Loox",
-    description: "Avis photos et vidéos de clients",
-    icon: Image,
-    authUrl: "https://admin.loox.io/oauth/authorize",
-    price: {
-      monthly: 9.99,
-      annual: 99.99,
-    }
-  },
-  {
-    id: 4,
+    id: "tiktok",
     name: "TikTok Shop",
-    description: "Vendez vos produits directement sur TikTok",
-    icon: TrendingUp,
-    authUrl: "https://auth.tiktok-shops.com/oauth/authorize",
+    description: "Vendez sur TikTok et touchez une audience plus jeune",
+    icon: BrandTiktok,
+    authUrl: "/auth/tiktok",
     price: {
-      monthly: 24.99,
-      annual: 249.99,
+      monthly: 14.99
     }
   },
   {
-    id: 5,
-    name: "AliReviews",
-    description: "Importez des avis Aliexpress sur votre boutique",
-    icon: Star,
-    authUrl: "https://app.alireviews.io/oauth/authorize",
+    id: "amazon",
+    name: "Amazon",
+    description: "Vendez sur la plus grande marketplace au monde",
+    icon: ShoppingBag,
+    authUrl: "/auth/amazon",
     price: {
-      monthly: 9.99,
-      annual: 99.99,
+      monthly: 29.99,
+      annual: 299.99
     }
-  },
-  {
-    id: 6,
-    name: "CJDropshipping",
-    description: "Plateforme complète de dropshipping et fulfillment",
-    icon: Package,
-    authUrl: "https://developers.cjdropshipping.com/oauth2/authorize",
-    price: {
-      monthly: 19.99,
-      annual: 199.99,
-    }
-  },
+  }
 ];
