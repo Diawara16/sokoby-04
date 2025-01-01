@@ -84,7 +84,7 @@ const Index = () => {
                     width="56"
                     height="56"
                     loading="eager"
-                    fetchpriority="high"
+                    fetchPriority="high"
                   />
                 </Link>
               </div>
