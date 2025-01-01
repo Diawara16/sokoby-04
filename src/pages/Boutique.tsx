@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { ShoppingBag } from "lucide-react";
+import { Button } from "@/components/ui/card";
+import { ShoppingBag, Sparkles } from "lucide-react";
 import { ProductFilters } from "@/components/products/ProductFilters";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
-const Boutique = () => {
-  const [products, setProducts] = useState<any[]>([]);
+export default function Boutique() {
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState("price-asc");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -43,49 +41,33 @@ const Boutique = () => {
     }
   };
 
-  const filteredProducts = products
-    .filter((product) => {
-      const matchesPrice =
-        product.price >= priceRange[0] && product.price <= priceRange[1];
-      const matchesCategory =
-        selectedCategories.length === 0 ||
-        (product.category && selectedCategories.includes(product.category));
-      return matchesPrice && matchesCategory;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "price-asc":
-          return a.price - b.price;
-        case "price-desc":
-          return b.price - a.price;
-        case "name-asc":
-          return a.name.localeCompare(b.name);
-        case "name-desc":
-          return b.name.localeCompare(a.name);
-        default:
-          return 0;
-      }
-    });
-
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">Notre Boutique</h1>
-        <Button variant="outline">
-          <ShoppingBag className="mr-2 h-4 w-4" />
-          Panier
-        </Button>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <h1 className="text-3xl font-bold">Ma Boutique</h1>
+        <div className="flex gap-4">
+          <Link to="/creer-boutique-ia">
+            <Button variant="outline" className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600">
+              <Sparkles className="mr-2 h-4 w-4" />
+              Créer ma boutique IA
+            </Button>
+          </Link>
+          <Button variant="outline">
+            <ShoppingBag className="mr-2 h-4 w-4" />
+            Panier
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-col md:flex-row gap-8">
         <aside className="w-full md:w-64">
           <ProductFilters
-            priceRange={priceRange}
-            setPriceRange={setPriceRange}
-            selectedCategories={selectedCategories}
-            setSelectedCategories={setSelectedCategories}
-            sortBy={sortBy}
-            setSortBy={setSortBy}
+            priceRange={[0, 1000]}
+            setPriceRange={() => {}}
+            selectedCategories={[]}
+            setSelectedCategories={() => {}}
+            sortBy=""
+            setSortBy={() => {}}
           />
         </aside>
 
@@ -96,13 +78,11 @@ const Boutique = () => {
             </div>
           ) : (
             <ProductGrid
-              products={filteredProducts}
+              products={products}
             />
           )}
         </main>
       </div>
     </div>
   );
-};
-
-export default Boutique;
+}

@@ -63,6 +63,13 @@ export const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
     }));
   };
 
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(price);
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {products.map((product) => (
@@ -86,7 +93,7 @@ export const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
           </div>
           <div className="p-4">
             <h3 className="font-semibold">{product.name}</h3>
-            <p className="text-lg font-bold mt-2">{product.price}€</p>
+            <p className="text-lg font-bold mt-2">{formatPrice(product.price)}</p>
             
             <div className="space-y-2 mt-4">
               <Button
