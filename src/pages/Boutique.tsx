@@ -24,9 +24,13 @@ const Boutique = () => {
         .from("products")
         .select("*");
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
-      setProducts(data || []);
+      if (data) {
+        setProducts(data);
+      }
     } catch (error) {
       console.error("Error fetching products:", error);
       toast({
