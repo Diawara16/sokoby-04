@@ -1,8 +1,9 @@
-import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter } from "react-router-dom";
 import { AppRoutes } from "./AppRoutes";
 import { Toaster } from "@/components/ui/toaster";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -12,10 +13,12 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <BrowserRouter>
-          <div className="min-h-screen">
-            <AppRoutes />
-            <Toaster />
-          </div>
+          <SidebarProvider>
+            <div className="min-h-screen w-full">
+              <AppRoutes />
+              <Toaster />
+            </div>
+          </SidebarProvider>
         </BrowserRouter>
       </LanguageProvider>
     </QueryClientProvider>
