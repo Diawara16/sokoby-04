@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { FlashSaleCard } from "./FlashSaleCard";
+import { CreateFlashSale } from "./CreateFlashSale";
 
 export function FlashSalesList() {
   const { data: flashSales, isLoading } = useQuery({
@@ -30,28 +31,30 @@ export function FlashSalesList() {
     );
   }
 
-  if (!flashSales?.length) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        Aucune vente flash programmée
-      </div>
-    );
-  }
-
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {flashSales.map((sale) => (
-        <FlashSaleCard
-          key={sale.id}
-          productName={sale.products.name}
-          discountPercent={sale.discount_percent}
-          originalPrice={sale.original_price}
-          salePrice={sale.sale_price}
-          startTime={sale.start_time}
-          endTime={sale.end_time}
-          status={sale.status}
-        />
-      ))}
+    <div className="space-y-8">
+      <CreateFlashSale />
+      
+      {!flashSales?.length ? (
+        <div className="text-center py-8 text-muted-foreground">
+          Aucune vente flash programmée
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {flashSales.map((sale) => (
+            <FlashSaleCard
+              key={sale.id}
+              productName={sale.products.name}
+              discountPercent={sale.discount_percent}
+              originalPrice={sale.original_price}
+              salePrice={sale.sale_price}
+              startTime={sale.start_time}
+              endTime={sale.end_time}
+              status={sale.status}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
