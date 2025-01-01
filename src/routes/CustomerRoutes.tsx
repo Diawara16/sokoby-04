@@ -1,6 +1,7 @@
 import { Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Customers from "@/pages/Customers";
+import CustomerDetailsPage from "@/pages/customers/CustomerDetails";
 import CustomerOverview from "@/pages/customers/CustomerOverview";
 import CustomerGroups from "@/pages/customers/CustomerGroups";
 import CustomerLoyalty from "@/pages/customers/CustomerLoyalty";
@@ -13,6 +14,14 @@ export const CustomerRoutes = () => {
         element={
           <ProtectedRoute>
             <Customers />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/clientele/:id"
+        element={
+          <ProtectedRoute>
+            <CustomerDetailsPage />
           </ProtectedRoute>
         }
       />

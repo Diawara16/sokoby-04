@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -169,7 +170,14 @@ export const CustomerDashboard = () => {
             <TableBody>
               {customers.map((customer) => (
                 <TableRow key={customer.id}>
-                  <TableCell className="font-medium">{customer.full_name}</TableCell>
+                  <TableCell className="font-medium">
+                    <Link 
+                      to={`/clientele/${customer.id}`}
+                      className="text-primary hover:underline"
+                    >
+                      {customer.full_name}
+                    </Link>
+                  </TableCell>
                   <TableCell>{customer.phone_number}</TableCell>
                   <TableCell>
                     {customer.customer_type === 'business' ? 'Entreprise' : 'Particulier'}
