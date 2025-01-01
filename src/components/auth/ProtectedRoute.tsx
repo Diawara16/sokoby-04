@@ -17,6 +17,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        console.log("Vérification de la session...");
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -25,6 +26,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         }
 
         if (!session) {
+          console.log("Pas de session active");
           toast({
             title: "Accès refusé",
             description: "Veuillez vous connecter pour accéder à cette page",
@@ -33,6 +35,8 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           navigate("/");
           return;
         }
+
+        console.log("Session trouvée:", session.user.id);
 
         // Vérifier l'abonnement
         const { data: subscriptions, error: subError } = await supabase
@@ -48,6 +52,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         }
 
         const hasActiveSubscription = subscriptions !== null;
+        console.log("Abonnement actif:", hasActiveSubscription);
 
         if (!hasActiveSubscription) {
           // Vérifier si l'utilisateur est en période d'essai
@@ -63,6 +68,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           }
 
           if (!profile?.trial_ends_at || new Date(profile.trial_ends_at) < new Date()) {
+            console.log("Période d'essai expirée ou non existante");
             toast({
               title: "Abonnement requis",
               description: "Veuillez souscrire à un abonnement pour accéder à cette fonctionnalité",
