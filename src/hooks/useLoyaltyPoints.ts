@@ -5,9 +5,15 @@ export const useLoyaltyPoints = () => {
   return useQuery({
     queryKey: ["loyalty-points"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
       const { data: loyaltyPoints, error } = await supabase
         .from("loyalty_points")
         .select("*")
+        .eq("user_id", user.id)
         .limit(1)
         .maybeSingle();
 
