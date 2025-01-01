@@ -1,6 +1,7 @@
 import { ShoppingBag, Instagram, Facebook } from "lucide-react"
+import { PlatformConfig } from '../types/platform'
 
-export const socialPlatforms = [
+export const socialPlatforms: PlatformConfig[] = [
   {
     name: "Instagram Shopping",
     icon: <Instagram className="h-5 w-5" />,
@@ -21,9 +22,7 @@ export const socialPlatforms = [
     description: "Intégrez votre boutique avec TikTok Shop pour synchroniser vos stocks et optimiser vos prix",
     features: [
       "Synchronisation en temps réel des stocks",
-      "Prix dynamiques basés sur la concurrence",
-      "Analytics avancés",
-      "Gestion des commandes centralisée"
+      "Prix dynamiques basés sur la concurrence"
     ],
     status: 'coming_soon',
     message: "Configuration de l'intégration TikTok Shop en cours"
