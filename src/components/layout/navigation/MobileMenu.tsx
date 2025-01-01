@@ -49,12 +49,12 @@ export function MobileMenu({ isAuthenticated }: MobileMenuProps) {
                       Suivi de commande
                     </Button>
                   </Link>
-                  <Link to="/essai-gratuit">
+                  <Link to="/login">
                     <Button variant="outline" className="w-full font-medium">
                       Se connecter
                     </Button>
                   </Link>
-                  <Link to="/essai-gratuit">
+                  <Link to="/register">
                     <Button className="w-full bg-primary hover:bg-primary/90 text-white font-medium">
                       Démarrer l'essai gratuit
                     </Button>

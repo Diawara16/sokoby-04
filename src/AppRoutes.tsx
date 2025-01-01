@@ -5,6 +5,8 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import QuiSommesNous from "./pages/QuiSommesNous";
+import Orders from "./pages/Orders";
+import OrderDetails from "./pages/OrderDetails";
 
 const AppRoutes = () => {
   return (
@@ -15,6 +17,8 @@ const AppRoutes = () => {
       <Route path="/tableau-de-bord" element={<Dashboard />} />
       <Route path="/profil" element={<Profile />} />
       <Route path="/qui-sommes-nous" element={<QuiSommesNous />} />
+      <Route path="/suivi-commande" element={<Orders />} />
+      <Route path="/commande/:id" element={<OrderDetails />} />
     </Routes>
   );
 };
