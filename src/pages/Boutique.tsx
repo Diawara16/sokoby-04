@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Sparkles } from "lucide-react";
 import { ProductFilters } from "@/components/products/ProductFilters";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { supabase } from "@/lib/supabase";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Link } from "react-router-dom";
+import { ShoppingBag, Sparkles } from "lucide-react";
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image: string | null;
+}
 
 export default function Boutique() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
@@ -21,6 +28,7 @@ export default function Boutique() {
 
   const fetchProducts = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from("products")
         .select("*");
