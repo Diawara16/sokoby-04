@@ -9,6 +9,8 @@ import Orders from "./pages/Orders"
 import OrderDetails from "./pages/OrderDetails"
 import Fidelite from "./pages/Fidelite"
 import BlogManager from "./pages/BlogManager"
+import Blog from "./pages/Blog"
+import BlogPost from "./pages/BlogPost"
 
 export const AppRoutes = () => {
   return (
@@ -23,6 +25,8 @@ export const AppRoutes = () => {
       <Route path="/commande/:id" element={<OrderDetails />} />
       <Route path="/fidelite" element={<Fidelite />} />
       <Route path="/blog-manager" element={<BlogManager />} />
+      <Route path="/blog" element={<Blog />} />
+      <Route path="/blog/:slug" element={<BlogPost />} />
     </Routes>
   )
 }
