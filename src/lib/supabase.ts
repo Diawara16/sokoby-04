@@ -10,6 +10,12 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     detectSessionInUrl: true,
     storage: localStorage,
-    flowType: 'pkce'
+    flowType: 'pkce',
+    debug: true // Activer le mode debug pour voir plus de détails
   }
+});
+
+// Ajouter un listener global pour les erreurs d'authentification
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Auth state changed:', event, session?.user?.id);
 });
