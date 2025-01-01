@@ -16,7 +16,11 @@ export const PhotoUpload = ({
 }: PhotoUploadProps) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    setSelectedFiles((prev) => [...prev, ...files].slice(0, maxFiles));
+    setSelectedFiles([...selectedFiles, ...files].slice(0, maxFiles));
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles(selectedFiles.filter((_, i) => i !== index));
   };
 
   return (
@@ -59,11 +63,7 @@ export const PhotoUpload = ({
                 variant="destructive"
                 size="icon"
                 className="absolute top-1 right-1"
-                onClick={() =>
-                  setSelectedFiles((prev) =>
-                    prev.filter((_, i) => i !== index)
-                  )
-                }
+                onClick={() => handleRemoveFile(index)}
               >
                 <Trash className="h-4 w-4" />
               </Button>
