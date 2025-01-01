@@ -92,7 +92,7 @@ export default function Boutique() {
   if (!selectedSupplier) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Choisissez votre fournisseur</h1>
+        <h1 className="text-3xl font-bold mb-8">Choisissez votre fournisseur de dropshipping</h1>
         <SupplierSelector
           selectedSupplier={selectedSupplier}
           onSupplierSelect={setSelectedSupplier}
