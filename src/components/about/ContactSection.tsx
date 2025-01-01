@@ -1,8 +1,19 @@
 import React from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Building2, Mail, Phone, MapPin } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 const ContactSection = () => {
+  const { toast } = useToast()
+
+  const handleCopyToClipboard = (text: string, type: string) => {
+    navigator.clipboard.writeText(text)
+    toast({
+      title: "Copié !",
+      description: `${type} copié dans le presse-papier`,
+    })
+  }
+
   return (
     <Card className="hover:shadow-lg transition-all">
       <CardContent className="pt-6">
@@ -17,30 +28,44 @@ const ContactSection = () => {
                 <Mail className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Email:</p>
-                  <a href="mailto:support@sokoby.com" className="hover:text-primary transition-colors">
+                  <button 
+                    onClick={() => handleCopyToClipboard('support@sokoby.com', 'Email support')}
+                    className="hover:text-primary transition-colors"
+                  >
                     support@sokoby.com
-                  </a>
+                  </button>
                   <br />
-                  <a href="mailto:contact@sokoby.com" className="hover:text-primary transition-colors">
+                  <button
+                    onClick={() => handleCopyToClipboard('contact@sokoby.com', 'Email contact')}
+                    className="hover:text-primary transition-colors"
+                  >
                     contact@sokoby.com
-                  </a>
+                  </button>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Téléphone:</p>
-                  <a href="tel:+15145127993" className="hover:text-primary transition-colors">
+                  <button
+                    onClick={() => handleCopyToClipboard('+1 514 512 7993', 'Numéro de téléphone')}
+                    className="hover:text-primary transition-colors"
+                  >
                     +1 514 512 7993
-                  </a>
+                  </button>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:col-span-2">
                 <MapPin className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Adresse:</p>
-                  <p>7188 Rue Saint-hubert</p>
-                  <p>H2R2N1, Montréal, Québec</p>
+                  <button
+                    onClick={() => handleCopyToClipboard('7188 Rue Saint-hubert\nH2R2N1, Montréal, Québec', 'Adresse')}
+                    className="hover:text-primary transition-colors"
+                  >
+                    <p>7188 Rue Saint-hubert</p>
+                    <p>H2R2N1, Montréal, Québec</p>
+                  </button>
                 </div>
               </div>
             </div>
