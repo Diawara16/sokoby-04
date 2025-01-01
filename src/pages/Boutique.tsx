@@ -4,7 +4,7 @@ import { ShoppingBag } from "lucide-react";
 import { ProductFilters } from "@/components/products/ProductFilters";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { supabase } from "@/lib/supabase";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const Boutique = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -63,28 +63,6 @@ const Boutique = () => {
       }
     });
 
-  const handleAddToCart = async (productId: string) => {
-    try {
-      const { error } = await supabase
-        .from("cart_items")
-        .insert([{ product_id: productId, quantity: 1 }]);
-
-      if (error) throw error;
-
-      toast({
-        title: "Produit ajouté",
-        description: "Le produit a été ajouté à votre panier",
-      });
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible d'ajouter le produit au panier",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex items-center justify-between mb-8">
@@ -109,11 +87,12 @@ const Boutique = () => {
 
         <main className="flex-1">
           {loading ? (
-            <div className="text-center py-8">Chargement des produits...</div>
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            </div>
           ) : (
             <ProductGrid
               products={filteredProducts}
-              onAddToCart={handleAddToCart}
             />
           )}
         </main>
