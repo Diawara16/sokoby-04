@@ -483,6 +483,92 @@ export type Database = {
         }
         Relationships: []
       }
+      email_campaign_stats: {
+        Row: {
+          campaign_id: string
+          clicks: number | null
+          created_at: string
+          emails_sent: number | null
+          id: string
+          opens: number | null
+          unsubscribes: number | null
+          updated_at: string
+        }
+        Insert: {
+          campaign_id: string
+          clicks?: number | null
+          created_at?: string
+          emails_sent?: number | null
+          id?: string
+          opens?: number | null
+          unsubscribes?: number | null
+          updated_at?: string
+        }
+        Update: {
+          campaign_id?: string
+          clicks?: number | null
+          created_at?: string
+          emails_sent?: number | null
+          id?: string
+          opens?: number | null
+          unsubscribes?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_campaign_stats_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "email_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_campaigns: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          name: string
+          scheduled_for: string | null
+          segment_filters: Json | null
+          sent_at: string | null
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          name: string
+          scheduled_for?: string | null
+          segment_filters?: Json | null
+          sent_at?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          name?: string
+          scheduled_for?: string | null
+          segment_filters?: Json | null
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
@@ -851,6 +937,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      product_recommendations: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          products: Json
+          reason: string | null
+          score: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          products: Json
+          reason?: string | null
+          score?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          products?: Json
+          reason?: string | null
+          score?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_recommendations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_details"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_reviews: {
         Row: {

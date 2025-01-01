@@ -1,0 +1,7 @@
+project_id = "zlwvggnzyfldswpgebij"
+
+[functions.generate-recommendations]
+verify_jwt = true
+
+[functions.send-marketing-email]
+verify_jwt = true
