@@ -72,6 +72,22 @@ describe('Index Page', () => {
     expect(twitterImage?.getAttribute('content')).toBe('/og-image.png');
   });
 
+  it('has correct Schema.org structured data', () => {
+    renderIndex();
+    const scriptTags = document.querySelectorAll('script[type="application/ld+json"]');
+    const structuredData = JSON.parse(scriptTags[0].textContent || '{}');
+    
+    expect(structuredData['@context']).toBe('https://schema.org');
+    expect(structuredData['@type']).toBe('WebSite');
+    expect(structuredData.name).toBe('Sokoby');
+    expect(structuredData.description).toContain('Plateforme de création');
+    expect(structuredData.url).toBe('https://sokoby.com');
+    expect(structuredData.publisher).toBeDefined();
+    expect(structuredData.publisher.name).toBe('Sokoby');
+    expect(structuredData.offers).toBeDefined();
+    expect(structuredData.offers.priceCurrency).toBe('EUR');
+  });
+
   it('renders main content sections', () => {
     renderIndex();
     expect(screen.getByText(/Construisez votre empire e-commerce/i)).toBeInTheDocument();
