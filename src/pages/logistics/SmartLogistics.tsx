@@ -1,7 +1,8 @@
 import { AppSidebar } from "@/components/AppSidebar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ShippingPriceOptimizer } from "@/components/logistics/ShippingPriceOptimizer"
 import { StockPredictions } from "@/components/logistics/StockPredictions"
+import { AutomatedReturns } from "@/components/logistics/AutomatedReturns"
+import { RealTimeTracking } from "@/components/logistics/RealTimeTracking"
 
 const SmartLogistics = () => {
   return (
@@ -14,6 +15,8 @@ const SmartLogistics = () => {
           <div className="grid gap-6 md:grid-cols-2">
             <ShippingPriceOptimizer />
             <StockPredictions />
+            <AutomatedReturns />
+            <RealTimeTracking />
           </div>
         </div>
       </main>

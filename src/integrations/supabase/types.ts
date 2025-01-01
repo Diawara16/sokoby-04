@@ -1106,32 +1106,47 @@ export type Database = {
       }
       returns: {
         Row: {
+          automated_status: string | null
           created_at: string | null
           description: string | null
           id: string
           order_id: string | null
+          processing_notes: string[] | null
           reason: string
+          return_type: string | null
+          shipping_label_url: string | null
           status: string | null
+          tracking_number: string | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          automated_status?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           order_id?: string | null
+          processing_notes?: string[] | null
           reason: string
+          return_type?: string | null
+          shipping_label_url?: string | null
           status?: string | null
+          tracking_number?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          automated_status?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           order_id?: string | null
+          processing_notes?: string[] | null
           reason?: string
+          return_type?: string | null
+          shipping_label_url?: string | null
           status?: string | null
+          tracking_number?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
