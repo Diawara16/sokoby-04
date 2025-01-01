@@ -15,7 +15,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { Star, Loader2, ImagePlus } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { PhotoUpload } from "./PhotoUpload";
+import { RatingInput } from "./RatingInput";
 
 const reviewSchema = z.object({
   title: z.string().min(3, "Le titre doit faire au moins 3 caractères"),
@@ -110,32 +112,18 @@ export const ReviewForm = ({ productId, onSuccess }: ReviewFormProps) => {
     }
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    setSelectedFiles((prev) => [...prev, ...files].slice(0, 4));
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="flex items-center space-x-1 mb-4">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star
-              key={i}
-              className={`h-6 w-6 cursor-pointer transition-colors ${
-                (hoveredRating || rating) > i
-                  ? "text-yellow-400 fill-current"
-                  : "text-gray-300"
-              }`}
-              onMouseEnter={() => setHoveredRating(i + 1)}
-              onMouseLeave={() => setHoveredRating(0)}
-              onClick={() => {
-                setRating(i + 1);
-                form.setValue("rating", i + 1);
-              }}
-            />
-          ))}
-        </div>
+        <RatingInput
+          rating={rating}
+          setRating={(value) => {
+            setRating(value);
+            form.setValue("rating", value);
+          }}
+          hoveredRating={hoveredRating}
+          setHoveredRating={setHoveredRating}
+        />
 
         <FormField
           control={form.control}
@@ -168,58 +156,10 @@ export const ReviewForm = ({ productId, onSuccess }: ReviewFormProps) => {
           )}
         />
 
-        <div className="space-y-2">
-          <FormLabel>Photos (optionnel)</FormLabel>
-          <div className="flex items-center space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => document.getElementById("photo-upload")?.click()}
-              disabled={selectedFiles.length >= 4}
-            >
-              <ImagePlus className="h-4 w-4 mr-2" />
-              Ajouter des photos
-            </Button>
-            <input
-              id="photo-upload"
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={handleFileChange}
-              disabled={selectedFiles.length >= 4}
-            />
-            <span className="text-sm text-gray-500">
-              {selectedFiles.length}/4 photos
-            </span>
-          </div>
-          {selectedFiles.length > 0 && (
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {selectedFiles.map((file, index) => (
-                <div key={index} className="relative aspect-square">
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={`Preview ${index + 1}`}
-                    className="rounded-lg object-cover w-full h-full"
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    className="absolute top-1 right-1"
-                    onClick={() =>
-                      setSelectedFiles((prev) =>
-                        prev.filter((_, i) => i !== index)
-                      )
-                    }
-                  >
-                    <Trash className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <PhotoUpload
+          selectedFiles={selectedFiles}
+          setSelectedFiles={setSelectedFiles}
+        />
 
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
