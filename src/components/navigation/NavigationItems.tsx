@@ -1,39 +1,48 @@
-import { 
-  Home, 
-  LayoutDashboard, 
-  ShoppingBag, 
-  UserCircle, 
+import {
+  LayoutDashboard,
+  ShoppingCart,
+  Settings,
+  UserCircle,
   Award,
   FileText,
   BookOpen,
   Mail,
-  Sparkles
+  Sparkles,
+  Truck
 } from "lucide-react"
 import { LucideIcon } from "lucide-react"
 
-export interface NavigationItem {
+interface NavigationItem {
   title: string
   url: string
   icon: LucideIcon
-  openInNewWindow?: boolean
-  className?: string
 }
 
 export const navigationItems: NavigationItem[] = [
   {
-    title: "Tableau de bord",
-    url: "/tableau-de-bord",
+    title: "Dashboard",
+    url: "/dashboard",
     icon: LayoutDashboard
+  },
+  {
+    title: "Boutique",
+    url: "/boutique",
+    icon: ShoppingCart
+  },
+  {
+    title: "Logistique",
+    url: "/logistique",
+    icon: Truck
+  },
+  {
+    title: "Paramètres",
+    url: "/parametres",
+    icon: Settings
   },
   {
     title: "Profil",
     url: "/profil",
     icon: UserCircle
-  },
-  {
-    title: "Commandes",
-    url: "/suivi-commande",
-    icon: ShoppingBag
   },
   {
     title: "Fidélité",
@@ -56,8 +65,8 @@ export const navigationItems: NavigationItem[] = [
     icon: FileText
   },
   {
-    title: "Blog",
-    url: "/blog",
+    title: "Guides",
+    url: "/guides",
     icon: BookOpen
   }
 ]
