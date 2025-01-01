@@ -9,6 +9,7 @@ import {
   Mail,
   Sparkles,
   Truck,
+  Store,
   LucideIcon
 } from "lucide-react"
 
@@ -27,8 +28,13 @@ export const navigationItems: NavigationItem[] = [
     icon: LayoutDashboard
   },
   {
-    title: "Boutique",
+    title: "Ma Boutique",
     url: "/boutique",
+    icon: Store
+  },
+  {
+    title: "Produits",
+    url: "/produits",
     icon: ShoppingCart
   },
   {
