@@ -9,11 +9,11 @@ const ShoppingInspirationSection = () => {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <Card className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-            <div className="aspect-w-16 aspect-h-9">
+            <div className="relative h-64">
               <img
-                src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=2070&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1483985988355-763728e1935b"
                 alt="Collection"
-                className="object-cover w-full h-64"
+                className="object-cover w-full h-full"
               />
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
@@ -29,11 +29,11 @@ const ShoppingInspirationSection = () => {
           </Card>
 
           <Card className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-            <div className="aspect-w-16 aspect-h-9">
+            <div className="relative h-64">
               <img
-                src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=2070&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1472851294608-062f824d29cc"
                 alt="Nouveautés"
-                className="object-cover w-full h-64"
+                className="object-cover w-full h-full"
               />
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
@@ -49,11 +49,11 @@ const ShoppingInspirationSection = () => {
           </Card>
 
           <Card className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-            <div className="aspect-w-16 aspect-h-9">
+            <div className="relative h-64">
               <img
-                src="https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=2071&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1441986300917-64674bd600d8"
                 alt="Meilleures ventes"
-                className="object-cover w-full h-64"
+                className="object-cover w-full h-full"
               />
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
