@@ -6,7 +6,7 @@ import Checkout from "@/pages/Checkout";
 export default function AppRoutes() {
   return (
     <Routes>
-      <OrderRoutes />
+      <Route path="/*" element={<OrderRoutes />} />
       <Route
         path="/checkout"
         element={
