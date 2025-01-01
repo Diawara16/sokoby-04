@@ -42,8 +42,8 @@ export const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
     if (onAddToCart) {
       onAddToCart(productId);
       toast({
-        title: "Product added",
-        description: "The product has been added to your cart",
+        title: "Produit ajouté",
+        description: "Le produit a été ajouté à votre panier",
       });
     }
   };
@@ -102,7 +102,7 @@ export const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
                 variant="outline"
               >
                 <ShoppingCart className="w-4 h-4 mr-2" />
-                Add to Cart
+                Ajouter au panier
               </Button>
               
               <PreOrderButton productId={product.id} />
