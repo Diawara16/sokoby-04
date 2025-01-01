@@ -1,10 +1,10 @@
-import { AppSidebar } from "@/components/AppSidebar"
-import AboutHeader from "@/components/about/AboutHeader"
-import AboutCard from "@/components/about/AboutCard"
-import ContactSection from "@/components/about/ContactSection"
-import TrackingFeatures from "@/components/about/TrackingFeatures"
-import ShippingInfo from "@/components/about/ShippingInfo"
-import { Target, History, Heart, Users } from "lucide-react"
+import { AppSidebar } from "@/components/AppSidebar";
+import AboutHeader from "@/components/about/AboutHeader";
+import AboutCard from "@/components/about/AboutCard";
+import ContactSection from "@/components/about/ContactSection";
+import TrackingFeatures from "@/components/about/TrackingFeatures";
+import ShippingInfo from "@/components/about/ShippingInfo";
+import { Target, History, Heart, Users } from "lucide-react";
 
 const QuiSommesNous = () => {
   const aboutCards = [
@@ -28,7 +28,7 @@ const QuiSommesNous = () => {
       title: "Notre Équipe",
       description: "Notre équipe diversifiée rassemble des experts passionnés par l'e-commerce et l'expérience utilisateur, unis par la volonté de créer la meilleure plateforme possible."
     }
-  ]
+  ];
 
   return (
     <div className="flex min-h-screen w-full">
@@ -56,7 +56,7 @@ const QuiSommesNous = () => {
         </div>
       </main>
     </div>
-  )
-}
+  );
+};
 
-export default QuiSommesNous
+export default QuiSommesNous;
