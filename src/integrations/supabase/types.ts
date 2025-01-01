@@ -471,33 +471,42 @@ export type Database = {
         Row: {
           billing_address: Json | null
           created_at: string
+          estimated_delivery_date: string | null
           id: string
           payment_intent_id: string | null
           shipping_address: Json | null
+          shipping_carrier: string | null
           status: string
           total_amount: number
+          tracking_number: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           billing_address?: Json | null
           created_at?: string
+          estimated_delivery_date?: string | null
           id?: string
           payment_intent_id?: string | null
           shipping_address?: Json | null
+          shipping_carrier?: string | null
           status?: string
           total_amount: number
+          tracking_number?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           billing_address?: Json | null
           created_at?: string
+          estimated_delivery_date?: string | null
           id?: string
           payment_intent_id?: string | null
           shipping_address?: Json | null
+          shipping_carrier?: string | null
           status?: string
           total_amount?: number
+          tracking_number?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -586,6 +595,47 @@ export type Database = {
           trial_ends_at?: string | null
         }
         Relationships: []
+      }
+      returns: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          order_id: string | null
+          reason: string
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          order_id?: string | null
+          reason: string
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          order_id?: string | null
+          reason?: string
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "returns_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       store_settings: {
         Row: {
