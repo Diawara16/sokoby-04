@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
@@ -52,13 +52,13 @@ export default function Orders() {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      completed: { label: "Complétée", variant: "default" },
-      pending: { label: "En attente", variant: "warning" },
-      failed: { label: "Échouée", variant: "destructive" },
-      refunded: { label: "Remboursée", variant: "secondary" },
-    } as const;
+      completed: { label: "Complétée", variant: "default" as const },
+      pending: { label: "En attente", variant: "secondary" as const },
+      failed: { label: "Échouée", variant: "destructive" as const },
+      refunded: { label: "Remboursée", variant: "outline" as const },
+    };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || { label: status, variant: "default" };
+    const config = statusConfig[status as keyof typeof statusConfig] || { label: status, variant: "default" as const };
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
