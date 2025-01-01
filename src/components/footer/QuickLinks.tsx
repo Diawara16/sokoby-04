@@ -1,70 +1,40 @@
 import { Link } from "react-router-dom";
-import { Info, HelpCircle, Book, Phone, Palette, CreditCard } from "lucide-react";
 
-interface QuickLinksProps {
-  t: any;
-}
-
-export const QuickLinks = ({ t }: QuickLinksProps) => {
+export const QuickLinks = ({ t }: { t: any }) => {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">{t.footer.quickLinks}</h3>
       <ul className="space-y-2">
         <li>
           <Link 
-            to="/plan-tarifaire" 
-            className="hover:text-gray-300 transition-colors flex items-center gap-2 group"
+            to="/mentions-legales" 
+            className="text-gray-300 hover:text-white transition-colors"
           >
-            <CreditCard className="h-4 w-4 group-hover:scale-110 transition-transform" />
-            {t.footer.pricing}
+            {t.footer.legalNotice}
           </Link>
         </li>
         <li>
           <Link 
-            to="/contact" 
-            className="hover:text-gray-300 transition-colors flex items-center gap-2 group"
+            to="/accessibilite" 
+            className="text-gray-300 hover:text-white transition-colors"
           >
-            <Phone className="h-4 w-4 group-hover:scale-110 transition-transform" />
-            {t.footer.contact}
+            {t.footer.accessibility}
           </Link>
         </li>
         <li>
           <Link 
-            to="/themes" 
-            className="hover:text-gray-300 transition-colors flex items-center gap-2 group"
+            to="/conditions" 
+            className="text-gray-300 hover:text-white transition-colors"
           >
-            <Palette className="h-4 w-4 group-hover:scale-110 transition-transform" />
-            {t.footer.themes}
+            {t.footer.termsOfUse}
           </Link>
         </li>
         <li>
           <Link 
-            to="/guides" 
-            className="hover:text-gray-300 transition-colors flex items-center gap-2 group"
+            to="/support" 
+            className="text-gray-300 hover:text-white transition-colors"
           >
-            <Book className="h-4 w-4 group-hover:scale-110 transition-transform" />
-            {t.footer.guidesAndTutorials}
-          </Link>
-        </li>
-        <li>
-          <Link 
-            to="/faq" 
-            className="hover:text-gray-300 transition-colors flex items-center gap-2 group"
-          >
-            <HelpCircle className="h-4 w-4 group-hover:animate-bounce" />
-            {t.footer.faq}
-            <span className="text-xs text-red-300 group-hover:text-red-200">
-              (Nouveau !)
-            </span>
-          </Link>
-        </li>
-        <li>
-          <Link 
-            to="/qui-sommes-nous" 
-            className="hover:text-gray-300 transition-colors flex items-center gap-2 group"
-          >
-            <Info className="h-4 w-4 group-hover:rotate-12 transition-transform" />
-            {t.footer.about}
+            {t.footer.support}
           </Link>
         </li>
       </ul>
