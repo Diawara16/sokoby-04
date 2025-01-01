@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { NicheSelector } from "@/components/store-creator/NicheSelector";
 import { CreationProgress } from "@/components/store-creator/CreationProgress";
 import { CreationComplete } from "@/components/store-creator/CreationComplete";
+import { StoreExamples } from "@/components/store-creator/StoreExamples";
 import { useStoreCreation } from "@/hooks/useStoreCreation";
 import { LoadingSpinner } from "@/components/pricing/LoadingSpinner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -153,6 +154,7 @@ const CreerBoutiqueIA = () => {
                 selectedNiche=""
                 onSelectNiche={handleStoreCreation}
               />
+              <StoreExamples />
             </div>
           </div>
         );
