@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Package } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -43,6 +43,12 @@ export function MobileMenu({ isAuthenticated }: MobileMenuProps) {
             <div className="mt-6 pt-6 border-t">
               {!isAuthenticated ? (
                 <div className="flex flex-col gap-3">
+                  <Link to="/suivi-commande">
+                    <Button variant="outline" className="w-full font-medium flex items-center gap-2">
+                      <Package className="h-4 w-4" />
+                      Suivi de commande
+                    </Button>
+                  </Link>
                   <Link to="/essai-gratuit">
                     <Button variant="outline" className="w-full font-medium">
                       Se connecter

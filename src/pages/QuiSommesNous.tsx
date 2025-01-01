@@ -2,7 +2,6 @@ import { AppSidebar } from "@/components/AppSidebar";
 import AboutHeader from "@/components/about/AboutHeader";
 import AboutCard from "@/components/about/AboutCard";
 import ContactSection from "@/components/about/ContactSection";
-import TrackingFeatures from "@/components/about/TrackingFeatures";
 import ShippingInfo from "@/components/about/ShippingInfo";
 import { Target, History, Heart, Users } from "lucide-react";
 
@@ -49,7 +48,6 @@ const QuiSommesNous = () => {
               ))}
             </div>
 
-            <TrackingFeatures />
             <ShippingInfo />
             <ContactSection />
           </div>
