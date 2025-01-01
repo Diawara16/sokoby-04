@@ -59,6 +59,19 @@ describe('Index Page', () => {
     expect(ogType?.getAttribute('content')).toBe('website');
   });
 
+  it('has correct Twitter Card meta tags', () => {
+    renderIndex();
+    const twitterCard = document.querySelector('meta[name="twitter:card"]');
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
+    const twitterImage = document.querySelector('meta[name="twitter:image"]');
+    
+    expect(twitterCard?.getAttribute('content')).toBe('summary_large_image');
+    expect(twitterTitle?.getAttribute('content')).toContain('Sokoby');
+    expect(twitterDescription?.getAttribute('content')).toBeTruthy();
+    expect(twitterImage?.getAttribute('content')).toBe('/og-image.png');
+  });
+
   it('renders main content sections', () => {
     renderIndex();
     expect(screen.getByText(/Construisez votre empire e-commerce/i)).toBeInTheDocument();
