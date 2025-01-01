@@ -5,7 +5,9 @@ import {
   UserCircle, 
   Award,
   FileText,
-  BookOpen
+  BookOpen,
+  Mail,
+  Sparkles
 } from "lucide-react"
 import { LucideIcon } from "lucide-react"
 
@@ -37,6 +39,16 @@ export const navigationItems: NavigationItem[] = [
     title: "Fidélité",
     url: "/fidelite",
     icon: Award
+  },
+  {
+    title: "Email Marketing",
+    url: "/email-marketing",
+    icon: Mail
+  },
+  {
+    title: "Recommandations",
+    url: "/recommandations",
+    icon: Sparkles
   },
   {
     title: "Blog Manager",
