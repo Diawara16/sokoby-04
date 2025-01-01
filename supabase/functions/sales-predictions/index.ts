@@ -14,11 +14,18 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Starting sales predictions function')
+    
     // Création du client Supabase
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Missing Supabase environment variables')
+    }
+    
+    const supabaseClient = createClient(supabaseUrl, supabaseKey)
+    console.log('Supabase client created')
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
     if (!openAIApiKey) {
@@ -29,10 +36,22 @@ serve(async (req) => {
     const authHeader = req.headers.get('Authorization')?.split('Bearer ')[1]
     if (!authHeader) throw new Error('No authorization header')
     
+    console.log('Getting user from auth header')
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser(authHeader)
-    if (userError || !user) throw new Error('User not authenticated')
+    
+    if (userError) {
+      console.error('Error getting user:', userError)
+      throw userError
+    }
+    
+    if (!user) {
+      throw new Error('User not authenticated')
+    }
+    
+    console.log('User authenticated:', user.id)
 
     // Récupérer l'historique des ventes des 6 derniers mois
+    console.log('Fetching orders for user:', user.id)
     const { data: orders, error: ordersError } = await supabaseClient
       .from('orders')
       .select('total_amount, created_at')
@@ -45,6 +64,19 @@ serve(async (req) => {
       throw ordersError
     }
 
+    if (!orders) {
+      console.log('No orders found, returning empty predictions')
+      return new Response(JSON.stringify({
+        predictions: [],
+        insights: "Pas assez de données pour générer des prédictions",
+        recommendations: ["Commencez à enregistrer vos ventes pour obtenir des prédictions"]
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    console.log(`Found ${orders.length} orders`)
+
     // Formater les données pour l'IA
     const salesData = orders.reduce((acc, order) => {
       const date = new Date(order.created_at)
@@ -52,6 +84,8 @@ serve(async (req) => {
       acc[month] = (acc[month] || 0) + order.total_amount
       return acc
     }, {})
+
+    console.log('Sales data formatted:', salesData)
 
     const prompt = `En tant qu'expert en analyse de données e-commerce, analyse ces données de ventes mensuelles et prédis les ventes pour les 3 prochains mois. Données des ventes : ${JSON.stringify(salesData)}. 
     Fournis une réponse au format JSON avec : 
@@ -61,6 +95,7 @@ serve(async (req) => {
       "recommendations": string[]
     }`
 
+    console.log('Calling OpenAI API')
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -82,8 +117,20 @@ serve(async (req) => {
       }),
     })
 
+    if (!response.ok) {
+      console.error('OpenAI API error:', await response.text())
+      throw new Error('Failed to get predictions from OpenAI')
+    }
+
     const aiResponse = await response.json()
+    console.log('Got response from OpenAI')
+
+    if (!aiResponse.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response from OpenAI')
+    }
+
     const predictions = JSON.parse(aiResponse.choices[0].message.content)
+    console.log('Parsed predictions:', predictions)
 
     return new Response(JSON.stringify(predictions), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
