@@ -9,6 +9,7 @@ import { ReferralCard } from "../referral/ReferralCard";
 import { FlashSalesList } from "../flash-sales/FlashSalesList";
 import { SalesPredictions } from "./SalesPredictions";
 import { BehaviorAnalytics } from "../analytics/BehaviorAnalytics";
+import { SocialPlatformIntegration } from "../integrations/SocialPlatformIntegration";
 import { useLoyaltyPoints } from "@/hooks/useLoyaltyPoints";
 import { useTrackBehavior } from "@/hooks/useTrackBehavior";
 import { useEffect } from "react";
@@ -62,6 +63,10 @@ export const UserDashboard = () => {
             />
           )}
         </div>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <SocialPlatformIntegration />
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">

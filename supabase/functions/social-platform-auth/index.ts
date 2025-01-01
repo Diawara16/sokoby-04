@@ -17,21 +17,32 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     )
 
-    const { platform, code } = await req.json()
+    const { platform } = await req.json()
     
-    // Log the integration attempt
-    console.log(`Attempting to integrate with ${platform}`)
+    console.log(`Initialisation de l'intégration avec ${platform}`)
 
-    // Here we would handle the OAuth flow for each platform
-    // This is a placeholder for the actual implementation
-    const integration = {
-      platform,
-      status: 'pending',
-      settings: {},
-      credentials: { code }
+    // Vérifier si l'utilisateur est authentifié
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      throw new Error('Utilisateur non authentifié')
     }
 
-    console.log('Integration data:', integration)
+    // Créer ou mettre à jour l'intégration
+    const { data: integration, error: integrationError } = await supabase
+      .from('social_integrations')
+      .upsert({
+        user_id: user.id,
+        platform,
+        status: 'pending',
+        settings: {},
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .single()
+
+    if (integrationError) throw integrationError
+
+    console.log(`Intégration créée/mise à jour pour ${platform}:`, integration)
 
     return new Response(
       JSON.stringify({ success: true, data: integration }),
@@ -41,7 +52,7 @@ serve(async (req) => {
       }
     )
   } catch (error) {
-    console.error('Error:', error.message)
+    console.error('Erreur:', error.message)
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
