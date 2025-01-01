@@ -1,62 +1,67 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { FormLabel } from "@/components/ui/form";
-import { ImagePlus, Trash } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Image, Trash } from "lucide-react";
 
 interface PhotoUploadProps {
-  selectedFiles: File[];
-  setSelectedFiles: (files: File[]) => void;
   maxFiles?: number;
+  onPhotosChange: (files: File[]) => void;
 }
 
-export const PhotoUpload = ({ 
-  selectedFiles, 
-  setSelectedFiles, 
-  maxFiles = 4 
+export const PhotoUpload = ({
+  maxFiles = 4,
+  onPhotosChange,
 }: PhotoUploadProps) => {
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    setSelectedFiles([...selectedFiles, ...files].slice(0, maxFiles));
+    setSelectedFiles((prev) => {
+      const newFiles = [...prev, ...files].slice(0, maxFiles);
+      onPhotosChange(newFiles);
+      return newFiles;
+    });
   };
 
   const handleRemoveFile = (index: number) => {
-    setSelectedFiles(selectedFiles.filter((_, i) => i !== index));
+    setSelectedFiles((prev) => {
+      const newFiles = prev.filter((_, i) => i !== index);
+      onPhotosChange(newFiles);
+      return newFiles;
+    });
   };
 
   return (
-    <div className="space-y-2">
-      <FormLabel>Photos (optionnel)</FormLabel>
-      <div className="flex items-center space-x-2">
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
         <Button
           type="button"
           variant="outline"
+          className="w-full"
           onClick={() => document.getElementById("photo-upload")?.click()}
-          disabled={selectedFiles.length >= maxFiles}
         >
-          <ImagePlus className="h-4 w-4 mr-2" />
+          <Image className="h-4 w-4 mr-2" />
           Ajouter des photos
         </Button>
-        <input
-          id="photo-upload"
+        <Input
           type="file"
+          id="photo-upload"
           accept="image/*"
           multiple
           className="hidden"
           onChange={handleFileChange}
           disabled={selectedFiles.length >= maxFiles}
         />
-        <span className="text-sm text-gray-500">
-          {selectedFiles.length}/{maxFiles} photos
-        </span>
       </div>
+
       {selectedFiles.length > 0 && (
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           {selectedFiles.map((file, index) => (
             <div key={index} className="relative aspect-square">
               <img
                 src={URL.createObjectURL(file)}
                 alt={`Preview ${index + 1}`}
-                className="rounded-lg object-cover w-full h-full"
+                className="h-full w-full rounded-lg object-cover"
               />
               <Button
                 type="button"
