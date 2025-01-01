@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { supabase } from "@/lib/supabase"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import { useToast } from "@/hooks/use-toast"
-import { ArrowTrendingUp, Lightbulb } from "lucide-react"
+import { TrendingUp, Lightbulb } from "lucide-react"
 
 interface Prediction {
   month: string
@@ -66,7 +66,7 @@ export const SalesPredictions = () => {
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <ArrowTrendingUp className="h-5 w-5" />
+          <TrendingUp className="h-5 w-5" />
           Prévisions de ventes
         </CardTitle>
       </CardHeader>
