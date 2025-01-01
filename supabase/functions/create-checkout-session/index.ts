@@ -7,20 +7,25 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const PRICE_IDS = {
+  starter: 'price_1QbAUrI7adlqeYfap1MWxujV',
+  pro: 'price_1QbAWeI7adlqeYfaUNskkYXF',
+  enterprise: 'price_1QbAYDI7adlqeYfaRUI9dbH1'
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { niche, price } = await req.json();
+    const { planType, niche } = await req.json();
     
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     );
 
-    // Authentification de l'utilisateur
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       throw new Error('No authorization header');
@@ -37,28 +42,26 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     });
 
+    const priceId = PRICE_IDS[planType as keyof typeof PRICE_IDS];
+    if (!priceId) {
+      throw new Error('Invalid plan type');
+    }
+
     console.log('Creating checkout session...');
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
+      customer_email: user.email,
       line_items: [
         {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `${niche} Store Package`,
-              description: `Complete store package for ${niche} niche`,
-            },
-            unit_amount: price * 100, // Stripe expects amounts in cents
-          },
+          price: priceId,
           quantity: 1,
         },
       ],
-      mode: 'payment',
-      success_url: `${req.headers.get('origin')}/creer-boutique-ia?session_id={CHECKOUT_SESSION_ID}`,
+      mode: 'subscription',
+      success_url: `${req.headers.get('origin')}/creer-boutique-ia?session_id={CHECKOUT_SESSION_ID}&niche=${niche}`,
       cancel_url: `${req.headers.get('origin')}/creer-boutique-ia`,
-      client_reference_id: user.id,
       metadata: {
         niche: niche,
+        user_id: user.id,
       },
     });
 
