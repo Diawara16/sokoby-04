@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "@/components/PrivateRoute";
 import Orders from "@/pages/Orders";
+import OrderDetails from "@/pages/OrderDetails";
 import DraftOrders from "@/pages/DraftOrders";
 import ShippingLabels from "@/pages/ShippingLabels";
 import AbandonedCheckouts from "@/pages/AbandonedCheckouts";
@@ -13,6 +14,14 @@ export const OrderRoutes = () => {
         element={
           <PrivateRoute>
             <Orders />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/commandes/:id"
+        element={
+          <PrivateRoute>
+            <OrderDetails />
           </PrivateRoute>
         }
       />
