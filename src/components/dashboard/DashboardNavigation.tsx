@@ -6,7 +6,8 @@ import {
   Users, 
   FileText, 
   BarChart, 
-  Settings 
+  Settings,
+  Share2
 } from "lucide-react";
 
 const navigationItems = [
@@ -44,6 +45,13 @@ const navigationItems = [
     description: "Consultez vos statistiques",
     path: "/analyses",
     color: "text-red-500"
+  },
+  {
+    title: "Vente multicanale",
+    icon: <Share2 className="w-5 h-5" />,
+    description: "Gérez vos canaux de vente",
+    path: "/vente-multicanale",
+    color: "text-indigo-500"
   },
   {
     title: "Paramètres",
