@@ -1,6 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
-import AppRoutes from "@/AppRoutes";
+import { AppRoutes } from "@/AppRoutes";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { LanguageProvider } from "@/contexts/LanguageContext";

@@ -1,4 +1,4 @@
-import { Facebook, Instagram, ShoppingBag, BrandTiktok } from "lucide-react";
+import { Facebook, Instagram, ShoppingBag, Video } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface Application {
@@ -38,7 +38,7 @@ export const applications: Application[] = [
     id: "tiktok",
     name: "TikTok Shop",
     description: "Vendez sur TikTok et touchez une audience plus jeune",
-    icon: BrandTiktok,
+    icon: Video,
     authUrl: "/auth/tiktok",
     price: {
       monthly: 14.99

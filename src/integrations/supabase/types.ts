@@ -56,6 +56,33 @@ export type Database = {
           },
         ]
       }
+      app_connections: {
+        Row: {
+          app_name: string
+          connected_at: string | null
+          id: string
+          settings: Json | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          app_name: string
+          connected_at?: string | null
+          id?: string
+          settings?: Json | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          app_name?: string
+          connected_at?: string | null
+          id?: string
+          settings?: Json | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       brand_settings: {
         Row: {
           created_at: string
