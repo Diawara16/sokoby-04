@@ -14,7 +14,7 @@ export const CartFooter = ({ total, onCheckout }: CartFooterProps) => {
       <div className="space-y-4">
         <div className="flex justify-between">
           <span className="font-medium">Sous-total</span>
-          <span className="font-medium">{total.toFixed(2)} €</span>
+          <span className="font-medium">${total.toFixed(2)}</span>
         </div>
         <Button className="w-full" onClick={onCheckout}>
           Passer à la caisse

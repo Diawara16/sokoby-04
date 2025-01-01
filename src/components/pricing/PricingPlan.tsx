@@ -33,6 +33,9 @@ export function PricingPlan({
   const [couponCode, setCouponCode] = useState("");
   const t = translations[currentLanguage as keyof typeof translations];
 
+  // Formatage du prix pour toujours afficher le symbole $ avant le montant
+  const formattedPrice = price.startsWith('$') ? price : `$${price}`;
+
   return (
     <Card
       className={`relative p-8 rounded-lg ${
@@ -52,7 +55,7 @@ export function PricingPlan({
       <div className="text-center">
         <h3 className="text-2xl font-bold text-black mb-2">{name}</h3>
         <div className="flex justify-center items-baseline mb-2">
-          <span className="text-5xl font-extrabold text-black">{price}</span>
+          <span className="text-5xl font-extrabold text-black">{formattedPrice}</span>
           {period && <span className="text-black ml-1">{period}</span>}
         </div>
         {trial && (
