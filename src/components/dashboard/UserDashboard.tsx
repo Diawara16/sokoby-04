@@ -5,6 +5,7 @@ import { Recommendations } from "./Recommendations";
 import { DashboardMetrics } from "./metrics/DashboardMetrics";
 import { useProfileData } from "./hooks/useProfileData";
 import { LoyaltyCard } from "../loyalty/LoyaltyCard";
+import { ReferralCard } from "../referral/ReferralCard";
 import { useLoyaltyPoints } from "@/hooks/useLoyaltyPoints";
 
 export const UserDashboard = () => {
@@ -51,12 +52,19 @@ export const UserDashboard = () => {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <FeatureUsage features={profile?.features_usage || {}} />
-        <Recommendations 
-          daysRemaining={getDaysRemaining()} 
-          hasFeatures={hasFeatures}
-        />
+      <div className="grid gap-6 md:grid-cols-3">
+        <div className="md:col-span-1">
+          <ReferralCard />
+        </div>
+        <div className="md:col-span-2">
+          <div className="grid gap-6 md:grid-cols-2">
+            <FeatureUsage features={profile?.features_usage || {}} />
+            <Recommendations 
+              daysRemaining={getDaysRemaining()} 
+              hasFeatures={hasFeatures}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
