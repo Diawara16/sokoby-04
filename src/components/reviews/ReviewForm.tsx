@@ -157,8 +157,8 @@ export const ReviewForm = ({ productId, onSuccess }: ReviewFormProps) => {
         />
 
         <PhotoUpload
-          selectedFiles={selectedFiles}
-          setSelectedFiles={setSelectedFiles}
+          maxFiles={4}
+          onPhotosChange={setSelectedFiles}
         />
 
         <Button type="submit" disabled={isSubmitting}>
