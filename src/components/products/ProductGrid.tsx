@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Heart } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -64,16 +64,16 @@ export const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EUR'
     }).format(price);
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {products.map((product) => (
-        <Card key={product.id} className="overflow-hidden">
+        <Card key={product.id}>
           <div className="aspect-square relative">
             <img
               src={product.image || "/placeholder.svg"}
@@ -91,7 +91,7 @@ export const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
               <Heart className={`w-5 h-5 ${favoriteStates[product.id] ? 'fill-current' : ''}`} />
             </Button>
           </div>
-          <div className="p-4">
+          <CardContent className="p-4">
             <h3 className="font-semibold">{product.name}</h3>
             <p className="text-lg font-bold mt-2">{formatPrice(product.price)}</p>
             
@@ -111,11 +111,11 @@ export const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
             <div className="mt-4">
               <VirtualTryOn productId={product.id} />
             </div>
-          </div>
-          
-          <div className="border-t p-4">
-            <ProductReviews productId={product.id} />
-          </div>
+
+            <div className="border-t pt-4 mt-4">
+              <ProductReviews productId={product.id} />
+            </div>
+          </CardContent>
         </Card>
       ))}
     </div>
