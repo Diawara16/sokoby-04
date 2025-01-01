@@ -9,6 +9,7 @@ import { FeaturesSection } from "@/components/home/FeaturesSection";
 import { CTASection } from "@/components/home/CTASection";
 import ShoppingInspirationSection from "@/components/home/ShoppingInspirationSection";
 import { useToast } from "@/components/ui/use-toast";
+import { Helmet } from "react-helmet";
 
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -44,42 +45,52 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <nav className="border-b bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex-shrink-0">
-              <Link to="/" className="flex items-center">
-                <img 
-                  src="/lovable-uploads/e423a6d8-87e5-4ef9-af43-7e96b44fd685.png" 
-                  alt="Sokoby" 
-                  className="h-14 w-auto"
-                />
-              </Link>
+    <>
+      <Helmet>
+        <title>Sokoby - Créez votre boutique en ligne en quelques clics</title>
+        <meta name="description" content="Sokoby vous permet de créer et gérer facilement votre boutique en ligne. Commencez gratuitement et développez votre business e-commerce dès aujourd'hui." />
+        <link rel="canonical" href="https://sokoby.com" />
+      </Helmet>
+      
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <header className="border-b bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex-shrink-0">
+                <Link to="/" className="flex items-center" aria-label="Accueil Sokoby">
+                  <img 
+                    src="/lovable-uploads/e423a6d8-87e5-4ef9-af43-7e96b44fd685.png" 
+                    alt="Logo Sokoby" 
+                    className="h-14 w-auto"
+                    width="56"
+                    height="56"
+                  />
+                </Link>
+              </div>
+              <Navigation currentLanguage={currentLanguage} />
             </div>
-            <Navigation currentLanguage={currentLanguage} />
           </div>
-        </div>
-      </nav>
+        </header>
 
-      <main className="flex-1">
-        <HeroSection 
-          isAuthenticated={isAuthenticated}
-          currentLanguage={currentLanguage}
-        />
-        
-        <FeaturesSection currentLanguage={currentLanguage} />
-        
-        <CTASection 
-          currentLanguage={currentLanguage}
-          onCreateStore={() => navigate('/onboarding')}
-        />
+        <main id="main-content" role="main" className="flex-1">
+          <HeroSection 
+            isAuthenticated={isAuthenticated}
+            currentLanguage={currentLanguage}
+          />
+          
+          <FeaturesSection currentLanguage={currentLanguage} />
+          
+          <CTASection 
+            currentLanguage={currentLanguage}
+            onCreateStore={() => navigate('/onboarding')}
+          />
 
-        <ShoppingInspirationSection />
-      </main>
+          <ShoppingInspirationSection />
+        </main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   );
 };
 
