@@ -13,6 +13,8 @@ import Blog from "./pages/Blog"
 import BlogPost from "./pages/BlogPost"
 import CustomReports from "./pages/analytics/CustomReports"
 import { DynamicLanding } from "./components/landing/DynamicLanding"
+import EmailMarketing from "./pages/EmailMarketing"
+import CustomerRecommendations from "./pages/CustomerRecommendations"
 
 export const AppRoutes = () => {
   return (
@@ -30,6 +32,8 @@ export const AppRoutes = () => {
       <Route path="/blog" element={<Blog />} />
       <Route path="/blog/:slug" element={<BlogPost />} />
       <Route path="/rapports-personnalises" element={<CustomReports />} />
+      <Route path="/email-marketing" element={<EmailMarketing />} />
+      <Route path="/recommandations" element={<CustomerRecommendations />} />
       <Route path="/:slug" element={<DynamicLanding />} />
     </Routes>
   )
