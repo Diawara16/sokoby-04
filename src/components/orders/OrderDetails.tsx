@@ -3,6 +3,7 @@ import { OrderHeader } from "./OrderHeader";
 import { OrderAddresses } from "./OrderAddresses";
 import { OrderItemsList } from "./OrderItemsList";
 import { OrderStatistics } from "./OrderStatistics";
+import { OrderTracking } from "./OrderTracking";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
@@ -57,6 +58,7 @@ export const OrderDetails = ({ orderId }: OrderDetailsProps) => {
   return (
     <div className="space-y-8">
       <OrderStatistics />
+      <OrderTracking order={order} />
       <Card>
         <OrderHeader 
           order={order} 
