@@ -1,12 +1,13 @@
-import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
-import QuiSommesNous from "./pages/QuiSommesNous";
-import Orders from "./pages/Orders";
-import OrderDetails from "./pages/OrderDetails";
+import { Routes, Route } from "react-router-dom"
+import Home from "./pages/Home"
+import Login from "./pages/Login"
+import Register from "./pages/Register"
+import Dashboard from "./pages/Dashboard"
+import Profile from "./pages/Profile"
+import QuiSommesNous from "./pages/QuiSommesNous"
+import Orders from "./pages/Orders"
+import OrderDetails from "./pages/OrderDetails"
+import Fidelite from "./pages/Fidelite"
 
 export const AppRoutes = () => {
   return (
@@ -19,6 +20,7 @@ export const AppRoutes = () => {
       <Route path="/qui-sommes-nous" element={<QuiSommesNous />} />
       <Route path="/suivi-commande" element={<Orders />} />
       <Route path="/commande/:id" element={<OrderDetails />} />
+      <Route path="/fidelite" element={<Fidelite />} />
     </Routes>
-  );
-};
+  )
+}
