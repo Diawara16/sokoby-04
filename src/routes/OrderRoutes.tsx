@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "@/components/PrivateRoute";
 import Orders from "@/pages/Orders";
 import DraftOrders from "@/pages/DraftOrders";
