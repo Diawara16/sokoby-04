@@ -114,7 +114,7 @@ export const CustomerDetails = () => {
             </TabsContent>
 
             <TabsContent value="notes">
-              <CustomerNotesTab notes={customer.notes} />
+              <CustomerNotesTab customerId={customer.id} />
             </TabsContent>
           </Tabs>
         </CardContent>

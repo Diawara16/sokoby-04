@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from '@/lib/supabase';
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,10 @@ interface CustomerNote {
   updated_at: string;
 }
 
+interface CustomerNotesTabProps {
+  customerId: string;
+}
+
 const noteCategories = [
   { value: 'general', label: 'Général' },
   { value: 'support', label: 'Support' },
@@ -24,8 +27,7 @@ const noteCategories = [
   { value: 'complaint', label: 'Réclamation' },
 ];
 
-export const CustomerNotesTab = () => {
-  const { id: customerId } = useParams();
+export const CustomerNotesTab = ({ customerId }: CustomerNotesTabProps) => {
   const [notes, setNotes] = useState<CustomerNote[]>([]);
   const [newNote, setNewNote] = useState('');
   const [category, setCategory] = useState('general');
@@ -113,7 +115,7 @@ export const CustomerNotesTab = () => {
     }
   };
 
-  useState(() => {
+  useEffect(() => {
     if (customerId) {
       fetchNotes();
     }
