@@ -88,6 +88,43 @@ describe('Index Page', () => {
     expect(structuredData.offers.priceCurrency).toBe('EUR');
   });
 
+  it('optimizes images with correct attributes', () => {
+    renderIndex();
+    const images = document.querySelectorAll('img');
+    
+    images.forEach(img => {
+      expect(img).toHaveAttribute('alt');
+      expect(img).toHaveAttribute('loading');
+      expect(img).toHaveAttribute('width');
+      expect(img).toHaveAttribute('height');
+      expect(img).toHaveAttribute('decoding');
+    });
+  });
+
+  it('meets basic accessibility requirements', () => {
+    renderIndex();
+    
+    // Vérifie la présence d'un titre principal
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    
+    // Vérifie que tous les boutons ont un texte accessible
+    const buttons = screen.getAllByRole('button');
+    buttons.forEach(button => {
+      expect(button).toHaveAccessibleName();
+    });
+    
+    // Vérifie que les liens ont un texte accessible
+    const links = screen.getAllByRole('link');
+    links.forEach(link => {
+      expect(link).toHaveAccessibleName();
+    });
+    
+    // Vérifie la présence des landmarks
+    expect(screen.getByRole('banner')).toBeInTheDocument();
+    expect(screen.getByRole('main')).toBeInTheDocument();
+    expect(screen.getByRole('contentinfo')).toBeInTheDocument();
+  });
+
   it('renders main content sections', () => {
     renderIndex();
     expect(screen.getByText(/Construisez votre empire e-commerce/i)).toBeInTheDocument();
