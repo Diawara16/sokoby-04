@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import Footer from "@/components/Footer";
 import { supabase } from "@/lib/supabase";
 import { translations } from "@/translations";
@@ -9,12 +10,7 @@ import { FeaturesSection } from "@/components/home/FeaturesSection";
 import { CTASection } from "@/components/home/CTASection";
 import ShoppingInspirationSection from "@/components/home/ShoppingInspirationSection";
 import { useToast } from "@/components/ui/use-toast";
-import { Helmet } from "react-helmet";
 
-/**
- * Page d'accueil principale de l'application
- * Gère l'affichage des différentes sections et l'état d'authentification
- */
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState(() => {
@@ -25,31 +21,40 @@ const Index = () => {
 
   // Gestion de l'état d'authentification et de la langue
   useEffect(() => {
-    // Surveiller les changements d'authentification
-    supabase.auth.onAuthStateChange((event, session) => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+    checkAuth();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(!!session);
     });
 
-    // Surveiller les changements de langue
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'currentLanguage') {
-        setCurrentLanguage(event.newValue || 'fr');
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
   const t = translations[currentLanguage as keyof typeof translations];
 
-  if (!t?.navigation?.home || !t?.cta?.button || 
-      typeof t.navigation.home !== 'string' || 
-      typeof t.cta.button !== 'string') {
+  if (!t?.navigation?.home || !t?.cta?.button) {
+    console.error("Translation missing for required keys");
     return null;
   }
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Sokoby",
+    "description": "Plateforme de création de boutique en ligne",
+    "url": "https://sokoby.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://sokoby.com/search?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  };
 
   return (
     <>
@@ -57,16 +62,17 @@ const Index = () => {
         <title>Sokoby - Créez votre boutique en ligne en quelques clics</title>
         <meta name="description" content="Sokoby vous permet de créer et gérer facilement votre boutique en ligne. Commencez gratuitement et développez votre business e-commerce dès aujourd'hui." />
         <meta name="keywords" content="e-commerce, boutique en ligne, création site web, vente en ligne" />
-        <meta property="og:title" content="Sokoby - Votre boutique en ligne" />
-        <meta property="og:description" content="Créez et gérez facilement votre boutique en ligne avec Sokoby" />
-        <meta property="og:type" content="website" />
-        <meta property="og:image" content="/og-image.png" />
-        <meta name="twitter:card" content="summary_large_image" />
         <link rel="canonical" href="https://sokoby.com" />
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+        <meta name="google" content="nositelinkssearchbox" />
+        <meta name="google" content="notranslate" />
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
       </Helmet>
       
       <div className="min-h-screen flex flex-col bg-gray-50">
-        <header className="border-b bg-white shadow-sm">
+        <header className="border-b bg-white shadow-sm sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex-shrink-0">
@@ -78,6 +84,7 @@ const Index = () => {
                     width="56"
                     height="56"
                     loading="eager"
+                    fetchpriority="high"
                   />
                 </Link>
               </div>
