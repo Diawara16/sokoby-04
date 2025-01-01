@@ -8,7 +8,7 @@ import QuiSommesNous from "./pages/QuiSommesNous";
 import Orders from "./pages/Orders";
 import OrderDetails from "./pages/OrderDetails";
 
-const AppRoutes = () => {
+export const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -22,5 +22,3 @@ const AppRoutes = () => {
     </Routes>
   );
 };
-
-export default AppRoutes;
