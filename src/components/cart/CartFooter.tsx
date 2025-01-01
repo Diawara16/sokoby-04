@@ -1,6 +1,4 @@
-import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 
 interface CartFooterProps {
   total: number;
@@ -9,8 +7,7 @@ interface CartFooterProps {
 
 export const CartFooter = ({ total, onCheckout }: CartFooterProps) => {
   return (
-    <div className="mt-auto pt-4">
-      <Separator className="my-4" />
+    <div className="border-t border-gray-200 p-4 bg-white">
       <div className="space-y-4">
         <div className="flex justify-between">
           <span className="font-medium">Sous-total</span>

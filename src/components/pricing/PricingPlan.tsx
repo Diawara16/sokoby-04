@@ -1,35 +1,37 @@
-import { Card } from "@/components/ui/card";
-import { Check } from "lucide-react";
-import { translations } from "@/translations";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { translations } from "@/translations";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { CouponSection } from "./CouponSection";
 import { PaymentButtons } from "./PaymentButtons";
 
 interface PricingPlanProps {
   name: string;
   price: string;
-  period: string;
-  description: string;
-  planType: 'starter' | 'pro' | 'enterprise';
+  period?: string;
   features: string[];
-  popular?: boolean;
-  trial?: boolean;
-  onSubscribe: (planType: 'starter' | 'pro' | 'enterprise', paymentMethod: 'card' | 'apple_pay' | 'google_pay', couponCode?: string) => void;
-  currentLanguage: string;
+  isPopular?: boolean;
+  trial?: string;
+  onSelect: (plan: string) => void;
+  isAuthenticated: boolean;
+  isCurrentPlan?: boolean;
 }
 
-export function PricingPlan({
+export const PricingPlan = ({
   name,
   price,
   period,
-  description,
-  planType,
   features,
-  popular,
+  isPopular,
   trial,
-  onSubscribe,
-  currentLanguage,
-}: PricingPlanProps) {
+  onSelect,
+  isAuthenticated,
+  isCurrentPlan
+}: PricingPlanProps) => {
+  const { currentLanguage } = useLanguage();
+  const [showPayment, setShowPayment] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const t = translations[currentLanguage as keyof typeof translations];
 
@@ -39,17 +41,16 @@ export function PricingPlan({
   return (
     <Card
       className={`relative p-8 rounded-lg ${
-        popular
-          ? "border-2 border-red-600 shadow-lg"
-          : "border border-gray-200"
+        isPopular ? 'border-2 border-primary shadow-lg' : 'border border-gray-200'
       }`}
     >
-      {popular && (
-        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-          <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm">
-            {t.pricing.mostPopular}
-          </span>
-        </div>
+      {isPopular && (
+        <Badge
+          className="absolute -top-3 left-1/2 transform -translate-x-1/2"
+          variant="secondary"
+        >
+          Le plus populaire
+        </Badge>
       )}
 
       <div className="text-center">
@@ -59,33 +60,52 @@ export function PricingPlan({
           {period && <span className="text-black ml-1">{period}</span>}
         </div>
         {trial && (
-          <div className="text-sm text-red-600 font-medium mb-2">
-            {t.pricing.freeTrial}
-          </div>
+          <p className="text-sm text-gray-500 mb-4">{trial}</p>
         )}
-        <p className="text-black mb-6">{description}</p>
       </div>
 
-      <ul className="space-y-4 mb-8">
-        {features.map((feature) => (
-          <li key={feature} className="flex items-center">
-            <Check className="h-5 w-5 text-red-600 mr-2" />
-            <span className="text-black">{feature}</span>
+      <ul className="mt-8 space-y-4">
+        {features.map((feature, index) => (
+          <li key={index} className="flex items-start">
+            <svg
+              className="h-6 w-6 text-green-500 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            <span className="text-gray-600">{feature}</span>
           </li>
         ))}
       </ul>
 
-      <div className="space-y-3">
-        <CouponSection 
-          couponCode={couponCode} 
-          setCouponCode={setCouponCode} 
-        />
-        <PaymentButtons 
-          planType={planType} 
-          couponCode={couponCode} 
-          onSubscribe={onSubscribe} 
-        />
-      </div>
+      {showPayment ? (
+        <>
+          <CouponSection
+            couponCode={couponCode}
+            setCouponCode={setCouponCode}
+          />
+          <PaymentButtons
+            planName={name}
+            isAuthenticated={isAuthenticated}
+            onSelect={onSelect}
+          />
+        </>
+      ) : (
+        <Button
+          className={`w-full mt-8 ${isCurrentPlan ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+          onClick={() => setShowPayment(true)}
+          disabled={isCurrentPlan}
+        >
+          {isCurrentPlan ? t.currentPlan : t.selectPlan}
+        </Button>
+      )}
     </Card>
   );
-}
+};

@@ -27,7 +27,7 @@ export const DynamicLanding = () => {
           .from("store_settings")
           .select("*")
           .eq("domain_name", slug)
-          .single();
+          .maybeSingle();
 
         if (storeSettings) {
           setPageData({
