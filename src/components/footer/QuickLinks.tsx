@@ -13,36 +13,36 @@ export const QuickLinks = ({ t }: QuickLinksProps) => {
         <li>
           <Link 
             to="/plan-tarifaire" 
-            className="hover:text-gray-300 transition-colors flex items-center gap-2"
+            className="hover:text-gray-300 transition-colors flex items-center gap-2 group"
           >
-            <CreditCard className="h-4 w-4" />
+            <CreditCard className="h-4 w-4 group-hover:scale-110 transition-transform" />
             {t.footer.pricing}
           </Link>
         </li>
         <li>
           <Link 
             to="/contact" 
-            className="hover:text-gray-300 transition-colors flex items-center gap-2"
+            className="hover:text-gray-300 transition-colors flex items-center gap-2 group"
           >
-            <Phone className="h-4 w-4" />
+            <Phone className="h-4 w-4 group-hover:scale-110 transition-transform" />
             {t.footer.contact}
           </Link>
         </li>
         <li>
           <Link 
             to="/themes" 
-            className="hover:text-gray-300 transition-colors flex items-center gap-2"
+            className="hover:text-gray-300 transition-colors flex items-center gap-2 group"
           >
-            <Palette className="h-4 w-4" />
+            <Palette className="h-4 w-4 group-hover:scale-110 transition-transform" />
             {t.footer.themes}
           </Link>
         </li>
         <li>
           <Link 
             to="/guides" 
-            className="hover:text-gray-300 transition-colors flex items-center gap-2"
+            className="hover:text-gray-300 transition-colors flex items-center gap-2 group"
           >
-            <Book className="h-4 w-4" />
+            <Book className="h-4 w-4 group-hover:scale-110 transition-transform" />
             {t.footer.guidesAndTutorials}
           </Link>
         </li>
