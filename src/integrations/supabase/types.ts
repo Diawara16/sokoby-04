@@ -410,6 +410,107 @@ export type Database = {
           },
         ]
       }
+      loyalty_points: {
+        Row: {
+          created_at: string
+          current_tier: string
+          id: string
+          lifetime_points: number
+          points: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_tier?: string
+          id?: string
+          lifetime_points?: number
+          points?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_tier?: string
+          id?: string
+          lifetime_points?: number
+          points?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      loyalty_points_history: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string | null
+          points_change: number
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          points_change: number
+          reason: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          points_change?: number
+          reason?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_points_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_rewards: {
+        Row: {
+          created_at: string
+          description: string
+          discount_value: number | null
+          id: string
+          is_active: boolean | null
+          minimum_tier: string
+          name: string
+          points_cost: number
+          reward_type: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          discount_value?: number | null
+          id?: string
+          is_active?: boolean | null
+          minimum_tier?: string
+          name: string
+          points_cost: number
+          reward_type: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          discount_value?: number | null
+          id?: string
+          is_active?: boolean | null
+          minimum_tier?: string
+          name?: string
+          points_cost?: number
+          reward_type?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           content: string
