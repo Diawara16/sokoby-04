@@ -13,37 +13,49 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          estimated_delivery_date: string | null
           id: string
           image_url: string | null
           name: string
           niche: string
           price: number
+          shipping_carrier: string | null
+          status: string | null
           store_id: string
           supplier: string
+          tracking_number: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
           description?: string | null
+          estimated_delivery_date?: string | null
           id?: string
           image_url?: string | null
           name: string
           niche: string
           price: number
+          shipping_carrier?: string | null
+          status?: string | null
           store_id: string
           supplier: string
+          tracking_number?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
           description?: string | null
+          estimated_delivery_date?: string | null
           id?: string
           image_url?: string | null
           name?: string
           niche?: string
           price?: number
+          shipping_carrier?: string | null
+          status?: string | null
           store_id?: string
           supplier?: string
+          tracking_number?: string | null
           user_id?: string
         }
         Relationships: [
