@@ -11,10 +11,8 @@ export const SupplierSelector = ({
   selectedSupplier,
   onSupplierSelect,
 }: SupplierSelectorProps) => {
-  // Ne garder que les fournisseurs de dropshipping (exclure les canaux de vente)
-  const suppliers = applications.filter(
-    app => !['facebook', 'instagram', 'tiktok', 'amazon', 'ebay', 'walmart', 'pinterest'].includes(app.id)
-  );
+  // Ne garder que les fournisseurs de dropshipping
+  const suppliers = applications.filter(app => app.type === "dropshipping");
 
   return (
     <div className="space-y-6">
