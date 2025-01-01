@@ -663,6 +663,48 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_integrations: {
+        Row: {
+          created_at: string
+          credentials: Json | null
+          id: string
+          last_sync_at: string | null
+          marketplace_name: string
+          settings: Json | null
+          status: string
+          store_id: string | null
+          sync_status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credentials?: Json | null
+          id?: string
+          last_sync_at?: string | null
+          marketplace_name: string
+          settings?: Json | null
+          status?: string
+          store_id?: string | null
+          sync_status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credentials?: Json | null
+          id?: string
+          last_sync_at?: string | null
+          marketplace_name?: string
+          settings?: Json | null
+          status?: string
+          store_id?: string | null
+          sync_status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           content: string

@@ -10,6 +10,7 @@ import { FlashSalesList } from "../flash-sales/FlashSalesList";
 import { SalesPredictions } from "./SalesPredictions";
 import { BehaviorAnalytics } from "../analytics/BehaviorAnalytics";
 import { SocialPlatformIntegration } from "../integrations/SocialPlatformIntegration";
+import { MarketplaceList } from "../marketplace/MarketplaceList";
 import { useLoyaltyPoints } from "@/hooks/useLoyaltyPoints";
 import { useTrackBehavior } from "@/hooks/useTrackBehavior";
 import { useEffect } from "react";
@@ -63,6 +64,11 @@ export const UserDashboard = () => {
             />
           )}
         </div>
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold">Marketplaces Locales</h2>
+        <MarketplaceList />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
