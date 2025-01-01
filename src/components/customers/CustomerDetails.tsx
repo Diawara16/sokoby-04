@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, Pencil } from "lucide-react";
 import { CustomerEditForm } from './CustomerEditForm';
+import { CustomerInfoTab } from './tabs/CustomerInfoTab';
+import { CustomerOrdersTab } from './tabs/CustomerOrdersTab';
+import { CustomerNotesTab } from './tabs/CustomerNotesTab';
 
 interface CustomerDetails {
   id: string;
@@ -58,7 +61,7 @@ export const CustomerDetails = () => {
     if (id) {
       fetchCustomerDetails();
     }
-  }, [id, toast]);
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -102,60 +105,16 @@ export const CustomerDetails = () => {
               <TabsTrigger value="notes">Notes</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="info" className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="font-semibold mb-2">Contact</h3>
-                  <p>Téléphone: {customer.phone_number || 'Non renseigné'}</p>
-                  {customer.customer_type === 'business' && (
-                    <p>Entreprise: {customer.company_name || 'Non renseigné'}</p>
-                  )}
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Adresse</h3>
-                  <p>{customer.address || 'Non renseignée'}</p>
-                  <p>
-                    {customer.city && `${customer.city}, `}
-                    {customer.postal_code && `${customer.postal_code}`}
-                  </p>
-                  <p>{customer.country || ''}</p>
-                </div>
-              </div>
+            <TabsContent value="info">
+              <CustomerInfoTab customer={customer} />
             </TabsContent>
 
-            <TabsContent value="orders" className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="text-2xl font-bold">{customer.total_orders}</div>
-                    <p className="text-sm text-muted-foreground">Commandes totales</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="text-2xl font-bold">{customer.total_spent}€</div>
-                    <p className="text-sm text-muted-foreground">Montant total</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="text-2xl font-bold">
-                      {customer.last_purchase_date 
-                        ? new Date(customer.last_purchase_date).toLocaleDateString('fr-FR')
-                        : 'Jamais'}
-                    </div>
-                    <p className="text-sm text-muted-foreground">Dernier achat</p>
-                  </CardContent>
-                </Card>
-              </div>
+            <TabsContent value="orders">
+              <CustomerOrdersTab customer={customer} />
             </TabsContent>
 
             <TabsContent value="notes">
-              <div className="space-y-4">
-                <p className="text-muted-foreground">
-                  {customer.notes || 'Aucune note pour ce client'}
-                </p>
-              </div>
+              <CustomerNotesTab notes={customer.notes} />
             </TabsContent>
           </Tabs>
         </CardContent>
