@@ -19,7 +19,7 @@ serve(async (req) => {
   }
 
   try {
-    const { planType, niche } = await req.json();
+    const { planType, paymentMethod, couponCode } = await req.json();
     
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -42,27 +42,23 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     });
 
-    const priceId = PRICE_IDS[planType as keyof typeof PRICE_IDS];
-    if (!priceId) {
-      throw new Error('Invalid plan type');
-    }
-
     console.log('Creating checkout session...');
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
       line_items: [
         {
-          price: priceId,
+          price: PRICE_IDS[planType as keyof typeof PRICE_IDS],
           quantity: 1,
         },
       ],
       mode: 'subscription',
-      success_url: `${req.headers.get('origin')}/creer-boutique-ia?session_id={CHECKOUT_SESSION_ID}&niche=${niche}`,
-      cancel_url: `${req.headers.get('origin')}/creer-boutique-ia`,
+      success_url: `${req.headers.get('origin')}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get('origin')}/pricing`,
       metadata: {
-        niche: niche,
         user_id: user.id,
       },
+      ...(couponCode ? { discounts: [{ coupon: couponCode }] } : {}),
+      payment_method_types: [paymentMethod === 'card' ? 'card' : paymentMethod],
     });
 
     console.log('Checkout session created:', session.id);

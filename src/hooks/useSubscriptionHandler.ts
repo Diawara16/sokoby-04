@@ -6,6 +6,12 @@ export const useSubscriptionHandler = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const PRICE_IDS = {
+    starter: 'price_1QbAUrI7adlqeYfap1MWxujV',
+    pro: 'price_1QbAWeI7adlqeYfaUNskkYXF',
+    enterprise: 'price_1QbAYDI7adlqeYfaRUI9dbH1'
+  };
+
   const handleSubscribe = async (
     planType: 'starter' | 'pro' | 'enterprise',
     paymentMethod: 'card' | 'apple_pay' | 'google_pay',
@@ -26,7 +32,12 @@ export const useSubscriptionHandler = () => {
 
       console.log("Creating checkout session for plan:", planType);
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { planType, paymentMethod, couponCode }
+        body: { 
+          planType,
+          priceId: PRICE_IDS[planType],
+          paymentMethod, 
+          couponCode 
+        }
       });
 
       if (error) {
