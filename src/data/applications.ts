@@ -132,5 +132,17 @@ export const applications: Application[] = [
       monthly: 24.99,
       annual: 249.99
     }
+  },
+  {
+    id: "zendrop",
+    name: "Zendrop",
+    description: "Plateforme de dropshipping premium avec des produits de qualité",
+    icon: Package,
+    authUrl: "/auth/zendrop",
+    type: "dropshipping",
+    price: {
+      monthly: 27.99,
+      annual: 279.99
+    }
   }
 ];
