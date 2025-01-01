@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { ShoppingBag, Sparkles } from "lucide-react";
 import { ProductFilters } from "@/components/products/ProductFilters";
 import { ProductGrid } from "@/components/products/ProductGrid";
