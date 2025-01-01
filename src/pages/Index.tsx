@@ -11,6 +11,10 @@ import ShoppingInspirationSection from "@/components/home/ShoppingInspirationSec
 import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from "react-helmet";
 
+/**
+ * Page d'accueil principale de l'application
+ * Gère l'affichage des différentes sections et l'état d'authentification
+ */
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState(() => {
@@ -19,11 +23,14 @@ const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Gestion de l'état d'authentification et de la langue
   useEffect(() => {
+    // Surveiller les changements d'authentification
     supabase.auth.onAuthStateChange((event, session) => {
       setIsAuthenticated(!!session);
     });
 
+    // Surveiller les changements de langue
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === 'currentLanguage') {
         setCurrentLanguage(event.newValue || 'fr');
@@ -49,6 +56,12 @@ const Index = () => {
       <Helmet>
         <title>Sokoby - Créez votre boutique en ligne en quelques clics</title>
         <meta name="description" content="Sokoby vous permet de créer et gérer facilement votre boutique en ligne. Commencez gratuitement et développez votre business e-commerce dès aujourd'hui." />
+        <meta name="keywords" content="e-commerce, boutique en ligne, création site web, vente en ligne" />
+        <meta property="og:title" content="Sokoby - Votre boutique en ligne" />
+        <meta property="og:description" content="Créez et gérez facilement votre boutique en ligne avec Sokoby" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
         <link rel="canonical" href="https://sokoby.com" />
       </Helmet>
       
@@ -64,6 +77,7 @@ const Index = () => {
                     className="h-14 w-auto"
                     width="56"
                     height="56"
+                    loading="eager"
                   />
                 </Link>
               </div>

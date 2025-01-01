@@ -1,69 +1,62 @@
-# Welcome to your Lovable project
+# Sokoby - Plateforme E-commerce
 
-## Project info
+## Description
+Sokoby est une plateforme e-commerce complète permettant aux entrepreneurs de créer et gérer facilement leur boutique en ligne.
 
-**URL**: https://lovable.dev/projects/3a72d801-7d2f-415c-9cb5-352b042c8f68
+## Fonctionnalités principales
+- Gestion des produits et du catalogue
+- Système de panier et de commandes
+- Tableau de bord analytique
+- Gestion des clients
+- Système de paiement sécurisé
+- Personnalisation de la boutique
 
-## How can I edit this code?
+## Technologies utilisées
+- React avec TypeScript
+- Vite pour le bundling
+- Tailwind CSS pour le styling
+- Shadcn/ui pour les composants
+- Supabase pour la base de données et l'authentification
+- React Router pour la navigation
+- React Query pour la gestion des données
+- React Hook Form pour les formulaires
 
-There are several ways of editing your application.
+## Installation
 
-**Use Lovable**
+```bash
+# Cloner le projet
+git clone [URL_DU_PROJET]
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/3a72d801-7d2f-415c-9cb5-352b042c8f68) and start prompting.
+# Installer les dépendances
+npm install
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Lancer le serveur de développement
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Structure du projet
+```
+src/
+  ├── components/     # Composants réutilisables
+  ├── pages/         # Pages de l'application
+  ├── hooks/         # Hooks personnalisés
+  ├── contexts/      # Contextes React
+  ├── lib/           # Utilitaires et configurations
+  ├── types/         # Types TypeScript
+  └── translations/  # Fichiers de traduction
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Tests
+Pour lancer les tests :
+```bash
+npm run test
+```
 
-**Use GitHub Codespaces**
+## Déploiement
+Le projet peut être déployé via la plateforme Lovable ou manuellement sur d'autres plateformes comme Netlify.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Contribution
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou une pull request.
 
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/3a72d801-7d2f-415c-9cb5-352b042c8f68) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+## Licence
+MIT
