@@ -19,7 +19,6 @@ const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Gestion de l'état d'authentification et de la langue
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -43,6 +42,7 @@ const Index = () => {
     return null;
   }
 
+  // Données structurées enrichies pour Schema.org
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -53,26 +53,63 @@ const Index = () => {
       "@type": "SearchAction",
       "target": "https://sokoby.com/search?q={search_term_string}",
       "query-input": "required name=search_term_string"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sokoby",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "/lovable-uploads/e423a6d8-87e5-4ef9-af43-7e96b44fd685.png"
+      }
+    },
+    "offers": {
+      "@type": "AggregateOffer",
+      "priceCurrency": "EUR",
+      "lowPrice": "0",
+      "highPrice": "49.99",
+      "offerCount": "3"
     }
   };
 
   return (
     <>
       <Helmet>
+        <html lang={currentLanguage} />
         <title>Sokoby - Créez votre boutique en ligne en quelques clics</title>
         <meta name="description" content="Sokoby vous permet de créer et gérer facilement votre boutique en ligne. Commencez gratuitement et développez votre business e-commerce dès aujourd'hui." />
-        <meta name="keywords" content="e-commerce, boutique en ligne, création site web, vente en ligne" />
-        <link rel="canonical" href="https://sokoby.com" />
-        <meta name="robots" content="index, follow, max-image-preview:large" />
+        <meta name="keywords" content="e-commerce, boutique en ligne, création site web, vente en ligne, solution e-commerce, marketplace" />
+        <meta name="author" content="Sokoby" />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="google" content="nositelinkssearchbox" />
         <meta name="google" content="notranslate" />
+        <link rel="canonical" href="https://sokoby.com" />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Sokoby" />
+        <meta property="og:locale" content={currentLanguage} />
+        <meta property="og:url" content="https://sokoby.com" />
+        <meta property="og:title" content="Sokoby - Plateforme de création de boutique en ligne" />
+        <meta property="og:description" content="Créez votre boutique en ligne professionnelle en quelques minutes avec Sokoby. Solution complète d'e-commerce." />
+        <meta property="og:image" content="/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@sokoby" />
+        <meta name="twitter:creator" content="@sokoby" />
+        <meta name="twitter:title" content="Sokoby - Créez votre boutique en ligne" />
+        <meta name="twitter:description" content="Solution complète pour créer et gérer votre boutique en ligne. Commencez gratuitement." />
+        <meta name="twitter:image" content="/og-image.png" />
+        
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
       </Helmet>
       
       <div className="min-h-screen flex flex-col bg-gray-50">
-        <header className="border-b bg-white shadow-sm sticky top-0 z-50">
+        <header className="border-b bg-white shadow-sm sticky top-0 z-50" role="banner">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex-shrink-0">
@@ -85,6 +122,7 @@ const Index = () => {
                     height="56"
                     loading="eager"
                     fetchPriority="high"
+                    decoding="async"
                   />
                 </Link>
               </div>
