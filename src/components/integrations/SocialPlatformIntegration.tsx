@@ -3,23 +3,30 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
+import { AlertCircle, ShoppingBag, Instagram } from 'lucide-react';
 
 interface PlatformConfig {
   name: string;
-  apiKeyName: string;
+  icon: React.ReactNode;
   description: string;
+  status: 'pending' | 'unavailable' | 'coming_soon';
+  message: string;
 }
 
 const platforms: PlatformConfig[] = [
   {
     name: "TikTok Shop",
-    apiKeyName: "TIKTOK_API_KEY",
-    description: "Intégrez votre boutique avec TikTok Shop pour vendre directement sur TikTok"
+    icon: <ShoppingBag className="h-5 w-5" />,
+    description: "Intégrez votre boutique avec TikTok Shop pour vendre directement sur TikTok",
+    status: 'coming_soon',
+    message: "TikTok Shop sera bientôt disponible dans votre région"
   },
   {
     name: "Instagram Shopping",
-    apiKeyName: "INSTAGRAM_API_KEY",
-    description: "Connectez votre catalogue produits à Instagram Shopping"
+    icon: <Instagram className="h-5 w-5" />,
+    description: "Connectez votre catalogue produits à Instagram Shopping",
+    status: 'pending',
+    message: "Configuration requise du compte Instagram Business"
   }
 ];
 
@@ -31,23 +38,27 @@ export const SocialPlatformIntegration = () => {
     setIsLoading(prev => ({ ...prev, [platform.name]: true }));
     
     try {
-      const { data, error } = await supabase.functions.invoke('social-platform-auth', {
-        body: { platform: platform.name.toLowerCase() }
-      });
+      // Enregistrer l'intention d'intégration
+      const { error } = await supabase
+        .from('social_integrations')
+        .insert({
+          user_id: (await supabase.auth.getUser()).data.user?.id,
+          platform: platform.name.toLowerCase(),
+          status: 'pending',
+          settings: {}
+        });
 
       if (error) throw error;
 
-      console.log(`Intégration ${platform.name} initiée:`, data);
-      
       toast({
-        title: "Intégration initiée",
-        description: `L'intégration avec ${platform.name} a été initiée avec succès.`,
+        title: "Demande enregistrée",
+        description: `Votre demande d'intégration avec ${platform.name} a été enregistrée. Nous vous notifierons dès que ce sera disponible.`,
       });
     } catch (error) {
       console.error(`Erreur lors de l'intégration ${platform.name}:`, error);
       toast({
-        title: "Erreur d'intégration",
-        description: `Une erreur est survenue lors de l'intégration avec ${platform.name}.`,
+        title: "Erreur",
+        description: "Une erreur est survenue. Veuillez réessayer plus tard.",
         variant: "destructive",
       });
     } finally {
@@ -58,22 +69,40 @@ export const SocialPlatformIntegration = () => {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {platforms.map((platform) => (
-        <Card key={platform.name}>
+        <Card key={platform.name} className="relative overflow-hidden">
+          {platform.status === 'coming_soon' && (
+            <div className="absolute top-2 right-2 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">
+              Bientôt disponible
+            </div>
+          )}
           <CardHeader>
-            <CardTitle>{platform.name}</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              {platform.icon}
+              {platform.name}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">{platform.description}</p>
-            <Button 
-              onClick={() => handleIntegration(platform)}
-              disabled={isLoading[platform.name]}
-              className="w-full"
-            >
-              {isLoading[platform.name] ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-              ) : null}
-              Connecter {platform.name}
-            </Button>
+            {platform.status === 'unavailable' ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <AlertCircle className="h-4 w-4" />
+                <span>{platform.message}</span>
+              </div>
+            ) : (
+              <Button 
+                onClick={() => handleIntegration(platform)}
+                disabled={isLoading[platform.name] || platform.status === 'coming_soon'}
+                className="w-full"
+                variant={platform.status === 'coming_soon' ? "outline" : "default"}
+              >
+                {isLoading[platform.name] ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                ) : null}
+                {platform.status === 'coming_soon' 
+                  ? "Bientôt disponible" 
+                  : `Connecter ${platform.name}`}
+              </Button>
+            )}
           </CardContent>
         </Card>
       ))}
