@@ -512,6 +512,56 @@ export type Database = {
           },
         ]
       }
+      flash_sales: {
+        Row: {
+          created_at: string
+          discount_percent: number
+          end_time: string
+          id: string
+          original_price: number
+          product_id: string
+          sale_price: number
+          start_time: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          discount_percent: number
+          end_time: string
+          id?: string
+          original_price: number
+          product_id: string
+          sale_price: number
+          start_time: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          discount_percent?: number
+          end_time?: string
+          id?: string
+          original_price?: number
+          product_id?: string
+          sale_price?: number
+          start_time?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flash_sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       loyalty_points: {
         Row: {
           created_at: string
@@ -957,6 +1007,10 @@ export type Database = {
     }
     Functions: {
       check_subscriptions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      update_flash_sales_status: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }

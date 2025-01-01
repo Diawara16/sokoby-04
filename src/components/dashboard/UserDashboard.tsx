@@ -6,6 +6,7 @@ import { DashboardMetrics } from "./metrics/DashboardMetrics";
 import { useProfileData } from "./hooks/useProfileData";
 import { LoyaltyCard } from "../loyalty/LoyaltyCard";
 import { ReferralCard } from "../referral/ReferralCard";
+import { FlashSalesList } from "../flash-sales/FlashSalesList";
 import { useLoyaltyPoints } from "@/hooks/useLoyaltyPoints";
 
 export const UserDashboard = () => {
@@ -65,6 +66,11 @@ export const UserDashboard = () => {
             />
           </div>
         </div>
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold">Ventes Flash</h2>
+        <FlashSalesList />
       </div>
     </div>
   );
