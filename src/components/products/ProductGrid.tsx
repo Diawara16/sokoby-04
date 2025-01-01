@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Heart } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useFavorites } from "@/hooks/useFavorites";
+import { ProductReviews } from "@/components/reviews/ProductReviews";
 
 interface Product {
   id: string;
@@ -92,6 +93,9 @@ export const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
               <ShoppingCart className="w-4 h-4 mr-2" />
               Ajouter au panier
             </Button>
+          </div>
+          <div className="border-t p-4">
+            <ProductReviews productId={product.id} />
           </div>
         </Card>
       ))}
