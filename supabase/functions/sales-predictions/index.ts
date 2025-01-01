@@ -64,7 +64,7 @@ serve(async (req) => {
       throw ordersError
     }
 
-    if (!orders) {
+    if (!orders || orders.length === 0) {
       console.log('No orders found, returning empty predictions')
       return new Response(JSON.stringify({
         predictions: [],
@@ -103,7 +103,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -123,18 +123,28 @@ serve(async (req) => {
     }
 
     const aiResponse = await response.json()
-    console.log('Got response from OpenAI')
+    console.log('Got response from OpenAI:', aiResponse)
 
     if (!aiResponse.choices?.[0]?.message?.content) {
       throw new Error('Invalid response from OpenAI')
     }
 
-    const predictions = JSON.parse(aiResponse.choices[0].message.content)
-    console.log('Parsed predictions:', predictions)
+    try {
+      const predictions = JSON.parse(aiResponse.choices[0].message.content)
+      console.log('Parsed predictions:', predictions)
 
-    return new Response(JSON.stringify(predictions), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+      // Validation du format des prédictions
+      if (!predictions.predictions || !Array.isArray(predictions.predictions)) {
+        throw new Error('Invalid predictions format')
+      }
+
+      return new Response(JSON.stringify(predictions), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    } catch (parseError) {
+      console.error('Error parsing OpenAI response:', parseError)
+      throw new Error('Failed to parse OpenAI response')
+    }
   } catch (error) {
     console.error('Error in sales-predictions function:', error)
     return new Response(JSON.stringify({ error: error.message }), {
