@@ -5,6 +5,8 @@ import { ShoppingCart, Heart } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useFavorites } from "@/hooks/useFavorites";
 import { ProductReviews } from "@/components/reviews/ProductReviews";
+import { VirtualTryOn } from "@/components/virtual-try-on/VirtualTryOn";
+import { PreOrderButton } from "@/components/pre-orders/PreOrderButton";
 
 interface Product {
   id: string;
@@ -85,15 +87,25 @@ export const ProductGrid = ({ products, onAddToCart }: ProductGridProps) => {
           <div className="p-4">
             <h3 className="font-semibold">{product.name}</h3>
             <p className="text-lg font-bold mt-2">{product.price}€</p>
-            <Button
-              onClick={() => handleAddToCart(product.id)}
-              className="w-full mt-4"
-              variant="outline"
-            >
-              <ShoppingCart className="w-4 h-4 mr-2" />
-              Ajouter au panier
-            </Button>
+            
+            <div className="space-y-2 mt-4">
+              <Button
+                onClick={() => handleAddToCart(product.id)}
+                className="w-full"
+                variant="outline"
+              >
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                Ajouter au panier
+              </Button>
+              
+              <PreOrderButton productId={product.id} />
+            </div>
+
+            <div className="mt-4">
+              <VirtualTryOn productId={product.id} />
+            </div>
           </div>
+          
           <div className="border-t p-4">
             <ProductReviews productId={product.id} />
           </div>

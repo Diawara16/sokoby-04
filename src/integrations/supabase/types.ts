@@ -938,6 +938,44 @@ export type Database = {
         }
         Relationships: []
       }
+      pre_orders: {
+        Row: {
+          created_at: string
+          estimated_arrival: string | null
+          id: string
+          product_id: string
+          quantity: number
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          estimated_arrival?: string | null
+          id?: string
+          product_id: string
+          quantity?: number
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          estimated_arrival?: string | null
+          id?: string
+          product_id?: string
+          quantity?: number
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pre_orders_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_recommendations: {
         Row: {
           created_at: string
@@ -1317,6 +1355,41 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      virtual_try_ons: {
+        Row: {
+          created_at: string
+          generated_image: string | null
+          id: string
+          product_id: string
+          user_id: string
+          user_image: string | null
+        }
+        Insert: {
+          created_at?: string
+          generated_image?: string | null
+          id?: string
+          product_id: string
+          user_id: string
+          user_image?: string | null
+        }
+        Update: {
+          created_at?: string
+          generated_image?: string | null
+          id?: string
+          product_id?: string
+          user_id?: string
+          user_image?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "virtual_try_ons_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
