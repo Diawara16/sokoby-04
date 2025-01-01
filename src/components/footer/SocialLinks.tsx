@@ -89,6 +89,7 @@ export const SocialLinks = ({ t }: SocialLinksProps) => {
           aria-label="Pinterest"
         >
           <svg 
+            xmlns="http://www.w3.org/2000/svg" 
             viewBox="0 0 24 24" 
             fill="none" 
             stroke="currentColor" 
@@ -97,9 +98,8 @@ export const SocialLinks = ({ t }: SocialLinksProps) => {
             strokeLinejoin="round" 
             className="h-6 w-6"
           >
-            <path d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0-8 0" />
-            <path d="M12 4v16" />
-            <path d="M4 12h16" />
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 4v16M8 8c0 4 1.333 6 4 6s4-2 4-6" />
           </svg>
         </a>
       </div>
