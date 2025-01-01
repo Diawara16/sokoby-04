@@ -12,6 +12,7 @@ import BlogManager from "./pages/BlogManager"
 import Blog from "./pages/Blog"
 import BlogPost from "./pages/BlogPost"
 import CustomReports from "./pages/analytics/CustomReports"
+import { DynamicLanding } from "./components/landing/DynamicLanding"
 
 export const AppRoutes = () => {
   return (
@@ -29,6 +30,7 @@ export const AppRoutes = () => {
       <Route path="/blog" element={<Blog />} />
       <Route path="/blog/:slug" element={<BlogPost />} />
       <Route path="/rapports-personnalises" element={<CustomReports />} />
+      <Route path="/:slug" element={<DynamicLanding />} />
     </Routes>
   )
 }
