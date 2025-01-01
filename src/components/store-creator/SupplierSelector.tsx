@@ -11,7 +11,7 @@ export const SupplierSelector = ({
   selectedSupplier,
   onSupplierSelect,
 }: SupplierSelectorProps) => {
-  // Filter out sales channels from the applications list
+  // Ne garder que les fournisseurs de dropshipping (exclure les canaux de vente)
   const suppliers = applications.filter(
     app => !['facebook', 'instagram', 'tiktok', 'amazon', 'ebay', 'walmart', 'pinterest'].includes(app.id)
   );
