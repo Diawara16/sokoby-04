@@ -47,10 +47,11 @@ describe('Auth State Synchronization', () => {
 
   it('nettoie les souscriptions lors du démontage', () => {
     const unsubscribeMock = vi.fn();
-    const mockSupabase = vi.mocked(supabase);
-    mockSupabase.auth.onAuthStateChange.mockReturnValue({
+    
+    // Créer un mock spécifique pour ce test
+    vi.mocked(supabase.auth.onAuthStateChange).mockImplementation(() => ({
       data: { subscription: { unsubscribe: unsubscribeMock } },
-    });
+    }));
 
     const { unmount } = render(
       <BrowserRouter>
