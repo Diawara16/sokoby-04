@@ -15,7 +15,13 @@ vi.mock('@/lib/supabase', () => ({
           callback('SIGNED_IN', { user: { id: '1' } });
         }, 0);
         return {
-          data: { subscription: { unsubscribe: vi.fn() } },
+          data: { 
+            subscription: { 
+              id: 'mock-subscription-id',
+              unsubscribe: vi.fn(),
+              callback: callback 
+            }
+          },
         };
       }),
     },
@@ -50,7 +56,13 @@ describe('Auth State Synchronization', () => {
     
     // Créer un mock spécifique pour ce test
     vi.mocked(supabase.auth.onAuthStateChange).mockImplementation(() => ({
-      data: { subscription: { unsubscribe: unsubscribeMock } },
+      data: { 
+        subscription: {
+          id: 'mock-subscription-id',
+          unsubscribe: unsubscribeMock,
+          callback: vi.fn()
+        }
+      },
     }));
 
     const { unmount } = render(
