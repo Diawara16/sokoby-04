@@ -60,26 +60,35 @@ export type Database = {
         Row: {
           app_name: string
           connected_at: string | null
+          ebay_settings: Json | null
           id: string
+          pinterest_settings: Json | null
           settings: Json | null
           status: string
           user_id: string
+          walmart_settings: Json | null
         }
         Insert: {
           app_name: string
           connected_at?: string | null
+          ebay_settings?: Json | null
           id?: string
+          pinterest_settings?: Json | null
           settings?: Json | null
           status?: string
           user_id: string
+          walmart_settings?: Json | null
         }
         Update: {
           app_name?: string
           connected_at?: string | null
+          ebay_settings?: Json | null
           id?: string
+          pinterest_settings?: Json | null
           settings?: Json | null
           status?: string
           user_id?: string
+          walmart_settings?: Json | null
         }
         Relationships: []
       }
@@ -655,7 +664,14 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      marketplace_platform:
+        | "facebook"
+        | "instagram"
+        | "tiktok"
+        | "amazon"
+        | "ebay"
+        | "walmart"
+        | "pinterest"
     }
     CompositeTypes: {
       [_ in never]: never
