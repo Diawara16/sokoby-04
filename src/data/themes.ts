@@ -2,40 +2,43 @@ import { Theme } from "@/types/theme";
 
 export const themes: Record<'free' | 'private', Theme> = {
   free: {
-    name: "Thème Gratuit",
-    description: "Un design élégant et professionnel pour votre boutique",
+    name: "Thème Basique",
+    description: "Un design simple et fonctionnel pour démarrer votre boutique",
     features: [
       "Design responsive",
-      "Palette de couleurs harmonieuse",
-      "Navigation intuitive",
-      "Optimisé pour mobile"
+      "Navigation simple",
+      "Compatible mobile",
+      "Performances optimisées"
     ],
     preview: "/placeholder.svg",
     colors: {
       primary: "#8E9196",
-      secondary: "#D6BCFA",
-      accent: "#F2FCE2",
+      secondary: "#E2E8F0",
+      accent: "#F7FAFC",
       background: "#FFFFFF"
     },
     price: 0
   },
   private: {
-    name: "Thème Premium",
-    description: "Un thème exclusif avec des fonctionnalités avancées",
+    name: "Thème Premium Pro",
+    description: "Un thème exclusif avec des fonctionnalités avancées pour une boutique professionnelle",
     features: [
-      "Animations personnalisées",
-      "Mise en page premium",
+      "Animations personnalisées premium",
+      "Mise en page professionnelle",
       "Effets visuels exclusifs",
       "Options de personnalisation avancées",
-      "Support prioritaire",
-      "Mises à jour régulières"
+      "Support prioritaire 24/7",
+      "Mises à jour régulières",
+      "SEO optimisé",
+      "Intégration réseaux sociaux",
+      "Analyses avancées"
     ],
     preview: "/placeholder.svg",
     colors: {
-      primary: "#1A1F2C",
-      secondary: "#7E69AB",
-      accent: "#F1F0FB",
-      background: "#221F26"
+      primary: "#8B5CF6",
+      secondary: "#D6BCFA",
+      accent: "#F3E8FF",
+      background: "#FFFFFF"
     },
     price: 49
   }
