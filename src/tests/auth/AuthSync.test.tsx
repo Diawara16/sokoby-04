@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, act } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthForm } from '@/components/auth/AuthForm';
+import { supabase } from '@/lib/supabase';
 
 // Mock Supabase
 vi.mock('@/lib/supabase', () => ({
@@ -46,7 +47,8 @@ describe('Auth State Synchronization', () => {
 
   it('nettoie les souscriptions lors du démontage', () => {
     const unsubscribeMock = vi.fn();
-    vi.mocked(supabase.auth.onAuthStateChange).mockReturnValue({
+    const mockSupabase = vi.mocked(supabase);
+    mockSupabase.auth.onAuthStateChange.mockReturnValue({
       data: { subscription: { unsubscribe: unsubscribeMock } },
     });
 
