@@ -9,27 +9,44 @@ export function PreOrderButton({ productId }: { productId: string }) {
   const { toast } = useToast();
 
   const handlePreOrder = async () => {
-    setIsLoading(true);
     try {
+      setIsLoading(true);
+      
+      // Vérifier si l'utilisateur est connecté
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Connexion requise",
+          description: "Veuillez vous connecter pour précommander",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from("pre_orders")
         .insert({
           product_id: productId,
+          user_id: user.id,
           status: "pending",
-          estimated_arrival: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // +14 days
+          estimated_arrival: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // +14 jours
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erreur Supabase:", error);
+        throw error;
+      }
 
       toast({
         title: "Précommande effectuée",
         description: "Vous serez notifié lorsque le produit sera disponible",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erreur lors de la précommande:", error);
       toast({
         title: "Erreur",
-        description: "Impossible d'effectuer la précommande",
+        description: error.message || "Impossible d'effectuer la précommande",
         variant: "destructive",
       });
     } finally {
