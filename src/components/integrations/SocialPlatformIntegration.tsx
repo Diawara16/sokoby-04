@@ -15,18 +15,18 @@ interface PlatformConfig {
 
 const platforms: PlatformConfig[] = [
   {
-    name: "TikTok Shop",
-    icon: <ShoppingBag className="h-5 w-5" />,
-    description: "Intégrez votre boutique avec TikTok Shop pour vendre directement sur TikTok",
-    status: 'coming_soon',
-    message: "TikTok Shop sera bientôt disponible dans votre région"
-  },
-  {
     name: "Instagram Shopping",
     icon: <Instagram className="h-5 w-5" />,
     description: "Connectez votre catalogue produits à Instagram Shopping",
     status: 'pending',
     message: "Configuration requise du compte Instagram Business"
+  },
+  {
+    name: "TikTok Shop",
+    icon: <ShoppingBag className="h-5 w-5" />,
+    description: "Intégrez votre boutique avec TikTok Shop pour vendre directement sur TikTok",
+    status: 'coming_soon',
+    message: "TikTok Shop sera bientôt disponible dans votre région"
   }
 ];
 
@@ -52,7 +52,7 @@ export const SocialPlatformIntegration = () => {
 
       toast({
         title: "Demande enregistrée",
-        description: `Votre demande d'intégration avec ${platform.name} a été enregistrée. Nous vous notifierons dès que ce sera disponible.`,
+        description: `Votre demande d'intégration avec ${platform.name} a été enregistrée. Nous vous guiderons dans la configuration.`,
       });
     } catch (error) {
       console.error(`Erreur lors de l'intégration ${platform.name}:`, error);
