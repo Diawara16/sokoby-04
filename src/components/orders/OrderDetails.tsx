@@ -6,6 +6,15 @@ import { fr } from 'date-fns/locale';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { useOrderStatus } from '@/hooks/useOrderStatus';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface OrderItem {
   id: string;
@@ -59,7 +68,8 @@ interface OrderDetailsProps {
 }
 
 export const OrderDetails = ({ orderId }: OrderDetailsProps) => {
-  const { data: order, isLoading } = useQuery({
+  const { updateOrderStatus, isUpdating } = useOrderStatus();
+  const { data: order, isLoading, refetch } = useQuery({
     queryKey: ['orders', orderId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -82,6 +92,13 @@ export const OrderDetails = ({ orderId }: OrderDetailsProps) => {
     },
   });
 
+  const handleStatusChange = async (newStatus: string) => {
+    const success = await updateOrderStatus(orderId, newStatus);
+    if (success) {
+      refetch();
+    }
+  };
+
   if (isLoading) {
     return <div className="text-center py-8">Chargement de la commande...</div>;
   }
@@ -99,9 +116,27 @@ export const OrderDetails = ({ orderId }: OrderDetailsProps) => {
             {format(new Date(order.created_at), 'PPP', { locale: fr })}
           </p>
         </div>
-        <Badge variant={statusColors[order.status as keyof typeof statusColors]}>
-          {statusLabels[order.status as keyof typeof statusLabels]}
-        </Badge>
+        <div className="flex items-center gap-4">
+          <Badge variant={statusColors[order.status as keyof typeof statusColors]}>
+            {statusLabels[order.status as keyof typeof statusLabels]}
+          </Badge>
+          <Select
+            disabled={isUpdating}
+            value={order.status}
+            onValueChange={handleStatusChange}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Changer le statut" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending">En attente</SelectItem>
+              <SelectItem value="processing">En cours</SelectItem>
+              <SelectItem value="completed">Complétée</SelectItem>
+              <SelectItem value="cancelled">Annulée</SelectItem>
+              <SelectItem value="refunded">Remboursée</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <Card>
