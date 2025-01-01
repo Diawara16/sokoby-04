@@ -208,6 +208,63 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_tag_relations: {
+        Row: {
+          created_at: string
+          customer_id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_tag_relations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_tag_relations_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "customer_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_tags: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       domain_verifications: {
         Row: {
           created_at: string
