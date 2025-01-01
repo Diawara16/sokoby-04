@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { translations } from "@/translations";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { CouponSection } from "./CouponSection";
 import { PaymentButtons } from "./PaymentButtons";
 
@@ -17,6 +16,12 @@ interface PricingPlanProps {
   onSelect: (plan: string) => void;
   isAuthenticated: boolean;
   isCurrentPlan?: boolean;
+  planType: 'starter' | 'pro' | 'enterprise';
+  onSubscribe: (
+    planType: 'starter' | 'pro' | 'enterprise',
+    paymentMethod: 'card' | 'apple_pay' | 'google_pay',
+    couponCode?: string
+  ) => void;
 }
 
 export const PricingPlan = ({
@@ -26,14 +31,13 @@ export const PricingPlan = ({
   features,
   isPopular,
   trial,
-  onSelect,
   isAuthenticated,
-  isCurrentPlan
+  isCurrentPlan,
+  planType,
+  onSubscribe
 }: PricingPlanProps) => {
-  const { currentLanguage } = useLanguage();
   const [showPayment, setShowPayment] = useState(false);
   const [couponCode, setCouponCode] = useState("");
-  const t = translations[currentLanguage as keyof typeof translations];
 
   // Formatage du prix pour toujours afficher le symbole $ avant le montant
   const formattedPrice = price.startsWith('$') ? price : `$${price}`;
@@ -92,9 +96,8 @@ export const PricingPlan = ({
             setCouponCode={setCouponCode}
           />
           <PaymentButtons
-            planName={name}
             isAuthenticated={isAuthenticated}
-            onSelect={onSelect}
+            onSubscribe={(paymentMethod) => onSubscribe(planType, paymentMethod, couponCode)}
           />
         </>
       ) : (
@@ -103,7 +106,7 @@ export const PricingPlan = ({
           onClick={() => setShowPayment(true)}
           disabled={isCurrentPlan}
         >
-          {isCurrentPlan ? t.currentPlan : t.selectPlan}
+          {isCurrentPlan ? "Plan actuel" : "Sélectionner"}
         </Button>
       )}
     </Card>

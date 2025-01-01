@@ -24,10 +24,11 @@ export const PricingPlans = ({ currentLanguage, onSubscribe }: PricingPlansProps
       <div className="grid md:grid-cols-3 gap-8">
         {plans.map((plan) => (
           <PricingPlan
-            key={plan.name + plan.period}
+            key={plan.name}
             {...plan}
             onSubscribe={onSubscribe}
-            currentLanguage={currentLanguage}
+            isAuthenticated={false}
+            planType={plan.planType}
           />
         ))}
       </div>
