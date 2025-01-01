@@ -1008,6 +1008,39 @@ export type Database = {
           },
         ]
       }
+      social_integrations: {
+        Row: {
+          created_at: string
+          credentials: Json | null
+          id: string
+          platform: string
+          settings: Json | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credentials?: Json | null
+          id?: string
+          platform: string
+          settings?: Json | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credentials?: Json | null
+          id?: string
+          platform?: string
+          settings?: Json | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       store_settings: {
         Row: {
           created_at: string
@@ -1070,6 +1103,36 @@ export type Database = {
           id?: string
           status?: string
           stripe_subscription_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_behaviors: {
+        Row: {
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          page_url: string | null
+          session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          page_url?: string | null
+          session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          page_url?: string | null
+          session_id?: string | null
           user_id?: string
         }
         Relationships: []

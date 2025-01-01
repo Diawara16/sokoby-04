@@ -8,11 +8,21 @@ import { LoyaltyCard } from "../loyalty/LoyaltyCard";
 import { ReferralCard } from "../referral/ReferralCard";
 import { FlashSalesList } from "../flash-sales/FlashSalesList";
 import { SalesPredictions } from "./SalesPredictions";
+import { BehaviorAnalytics } from "../analytics/BehaviorAnalytics";
 import { useLoyaltyPoints } from "@/hooks/useLoyaltyPoints";
+import { useTrackBehavior } from "@/hooks/useTrackBehavior";
+import { useEffect } from "react";
 
 export const UserDashboard = () => {
   const { profile, loading, cartItemsCount } = useProfileData();
   const { data: loyaltyData, isLoading: isLoadingLoyalty } = useLoyaltyPoints();
+  const { trackEvent } = useTrackBehavior();
+
+  useEffect(() => {
+    trackEvent('dashboard_view', {
+      timestamp: new Date().toISOString(),
+    });
+  }, [trackEvent]);
 
   if (loading || isLoadingLoyalty) {
     return (
@@ -71,10 +81,12 @@ export const UserDashboard = () => {
 
       <div className="grid gap-6 md:grid-cols-2">
         <SalesPredictions />
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold">Ventes Flash</h2>
-          <FlashSalesList />
-        </div>
+        <BehaviorAnalytics />
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold">Ventes Flash</h2>
+        <FlashSalesList />
       </div>
     </div>
   );
