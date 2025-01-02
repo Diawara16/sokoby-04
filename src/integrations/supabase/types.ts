@@ -1260,6 +1260,50 @@ export type Database = {
         }
         Relationships: []
       }
+      staff_members: {
+        Row: {
+          email: string
+          id: string
+          invited_at: string | null
+          joined_at: string | null
+          permissions: Json
+          role: string
+          status: string
+          store_id: string
+          user_id: string
+        }
+        Insert: {
+          email: string
+          id?: string
+          invited_at?: string | null
+          joined_at?: string | null
+          permissions?: Json
+          role: string
+          status?: string
+          store_id: string
+          user_id: string
+        }
+        Update: {
+          email?: string
+          id?: string
+          invited_at?: string | null
+          joined_at?: string | null
+          permissions?: Json
+          role?: string
+          status?: string
+          store_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_members_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "store_settings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_settings: {
         Row: {
           created_at: string
