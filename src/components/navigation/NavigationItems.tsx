@@ -48,7 +48,29 @@ export const navigationItems: NavigationItem[] = [
   {
     title: "Clients",
     url: "/clients",
-    icon: Users
+    icon: Users,
+    subItems: [
+      {
+        title: "Vue d'ensemble",
+        url: "/clients/vue-ensemble",
+        icon: Users
+      },
+      {
+        title: "Détails",
+        url: "/clients/details",
+        icon: Users
+      },
+      {
+        title: "Groupes",
+        url: "/clients/groupes",
+        icon: Users
+      },
+      {
+        title: "Fidélité",
+        url: "/clients/fidelite",
+        icon: Users
+      }
+    ]
   },
   {
     title: "Marketing",

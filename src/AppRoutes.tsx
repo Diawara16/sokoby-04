@@ -26,7 +26,10 @@ import BillingSettings from "./pages/settings/BillingSettings"
 import UserSettings from "./pages/settings/UserSettings"
 import PaymentSettings from "./pages/settings/PaymentSettings"
 import LocationSettings from "./pages/settings/LocationSettings"
-import CustomerSettings from "./pages/settings/CustomerSettings"
+import CustomerOverview from "./pages/customers/CustomerOverview"
+import CustomerDetails from "./pages/customers/CustomerDetails"
+import CustomerGroups from "./pages/customers/CustomerGroups"
+import CustomerLoyalty from "./pages/customers/CustomerLoyalty"
 
 export const AppRoutes = () => {
   return (
@@ -52,11 +55,14 @@ export const AppRoutes = () => {
       <Route path="/produits/ajouter" element={<AddProduct />} />
       <Route path="/produits/importes" element={<ImportedProducts />} />
       <Route path="/produits/importes/ajouter" element={<AddImportedProduct />} />
+      <Route path="/clients/vue-ensemble" element={<CustomerOverview />} />
+      <Route path="/clients/details" element={<CustomerDetails />} />
+      <Route path="/clients/groupes" element={<CustomerGroups />} />
+      <Route path="/clients/fidelite" element={<CustomerLoyalty />} />
       <Route path="/parametres" element={<Settings />}>
         <Route path="facturation" element={<BillingSettings />} />
         <Route path="utilisateurs" element={<UserSettings />} />
         <Route path="paiements" element={<PaymentSettings />} />
-        <Route path="clients" element={<CustomerSettings />} />
         <Route path="geolocalisation" element={<LocationSettings />} />
       </Route>
       <Route path="/:slug" element={<DynamicLanding />} />
