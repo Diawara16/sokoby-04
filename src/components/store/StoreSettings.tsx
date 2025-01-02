@@ -45,7 +45,7 @@ export const StoreSettings = () => {
         .from('store_settings')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error("Erreur lors du chargement des paramètres:", error);
@@ -64,7 +64,7 @@ export const StoreSettings = () => {
         store_email: user.email || '',
         store_phone: '',
         store_address: '',
-        domain_name: 'sokoby.com',
+        domain_name: null,
         is_custom_domain: false
       });
     } catch (error: any) {
