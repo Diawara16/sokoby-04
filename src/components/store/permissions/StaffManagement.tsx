@@ -1,85 +1,68 @@
 import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
-import { Users } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { StaffInviteForm } from "./StaffInviteForm";
+import { StaffMemberList } from "./StaffMemberList";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 interface StaffMember {
   id: string;
   email: string;
   role: string;
   status: string;
-  invited_at: string;
-  joined_at?: string;
-  invited_email: string;
 }
 
 export const StaffManagement = () => {
-  const { toast } = useToast();
   const [staffMembers, setStaffMembers] = useState<StaffMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    loadStaffMembers();
-  }, []);
+  const [storeId, setStoreId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const loadStaffMembers = async () => {
     try {
+      setIsLoading(true);
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         throw new Error("Utilisateur non connecté");
       }
 
-      // D'abord, récupérer le store_id depuis store_settings
-      const { data: storeSettings, error: storeError } = await supabase
+      // Récupérer d'abord les paramètres du magasin
+      const { data: store, error: storeError } = await supabase
         .from('store_settings')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (storeError) {
-        console.error('Erreur lors de la récupération des paramètres du magasin:', storeError);
-        toast({
-          title: "Erreur",
-          description: "Impossible de récupérer les paramètres du magasin",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
+        console.error('Erreur store_settings:', storeError);
+        throw new Error("Impossible de récupérer les paramètres du magasin");
       }
 
-      if (!storeSettings) {
-        toast({
-          title: "Erreur",
-          description: "Paramètres du magasin non trouvés",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
+      if (!store) {
+        throw new Error("Paramètres du magasin non trouvés");
       }
 
-      // Ensuite, récupérer les membres du staff avec le store_id
+      setStoreId(store.id);
+
+      // Récupérer les membres du staff
       const { data: members, error: membersError } = await supabase
         .from('staff_members')
         .select('*')
-        .eq('store_id', storeSettings.id);
+        .eq('store_id', store.id);
 
       if (membersError) {
-        console.error('Erreur lors du chargement des membres:', membersError);
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les membres de l'équipe",
-          variant: "destructive",
-        });
-      } else {
-        setStaffMembers(members || []);
+        console.error('Erreur staff_members:', membersError);
+        throw new Error("Impossible de charger les membres de l'équipe");
       }
+
+      setStaffMembers(members || []);
     } catch (error: any) {
-      console.error('Erreur lors du chargement des membres:', error);
+      console.error('Erreur globale:', error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de charger les membres de l'équipe",
+        description: error.message || "Une erreur est survenue",
         variant: "destructive",
       });
     } finally {
@@ -87,19 +70,46 @@ export const StaffManagement = () => {
     }
   };
 
-  return (
-    <Card className="p-6 mb-8">
-      <div className="flex items-center gap-2 mb-6">
-        <Users className="h-5 w-5 text-gray-600" />
-        <h3 className="text-xl font-semibold">Gestion de l'équipe</h3>
-      </div>
+  useEffect(() => {
+    loadStaffMembers();
+  }, []);
 
-      <div className="space-y-8">
-        <StaffInviteForm 
-          onInviteSent={loadStaffMembers} 
-          staffCount={staffMembers.length}
-        />
+  const handleMemberRemoved = () => {
+    loadStaffMembers();
+  };
+
+  const handleInviteSent = () => {
+    loadStaffMembers();
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
-    </Card>
+    );
+  }
+
+  if (!storeId) {
+    return (
+      <Alert>
+        <AlertDescription>
+          Impossible de charger les paramètres du magasin. Veuillez réessayer plus tard.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <StaffInviteForm 
+        onInviteSent={handleInviteSent} 
+        staffCount={staffMembers.length} 
+      />
+      <StaffMemberList 
+        staffMembers={staffMembers} 
+        onMemberRemoved={handleMemberRemoved} 
+      />
+    </div>
   );
 };
