@@ -4,7 +4,13 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { CreditCard, Wallet } from "lucide-react";
+import { CreditCard, Wallet, Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const PaymentSettings = () => {
   const [stripeEnabled, setStripeEnabled] = useState(true);
@@ -27,7 +33,19 @@ const PaymentSettings = () => {
             <div className="flex items-center space-x-4">
               <CreditCard className="h-8 w-8 text-gray-500" />
               <div className="space-y-0.5">
-                <Label>Stripe</Label>
+                <div className="flex items-center gap-2">
+                  <Label>Stripe</Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-4 w-4 text-gray-500" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Accepter les paiements par carte bancaire</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <p className="text-sm text-muted-foreground">
                   Accepter les paiements par carte bancaire
                 </p>
@@ -43,9 +61,21 @@ const PaymentSettings = () => {
             <div className="flex items-center space-x-4">
               <Wallet className="h-8 w-8 text-gray-500" />
               <div className="space-y-0.5">
-                <Label>PayPal</Label>
+                <div className="flex items-center gap-2">
+                  <Label>PayPal</Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-4 w-4 text-gray-500" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>2% de frais de transaction</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <p className="text-sm text-muted-foreground">
-                  Accepter les paiements via PayPal
+                  Accepter les paiements via PayPal (2% de frais)
                 </p>
               </div>
             </div>
