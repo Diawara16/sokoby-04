@@ -1,15 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Users } from "lucide-react";
-import { StaffAccess } from "./permissions/StaffAccess";
+import { StaffManagement } from "./permissions/StaffManagement";
 import { CollaborationPolicy } from "./permissions/CollaborationPolicy";
 import { CollaboratorCode } from "./permissions/CollaboratorCode";
 import { ConnectedServices } from "./permissions/ConnectedServices";
+import { supabase } from "@/lib/supabase";
+import { useToast } from "@/hooks/use-toast";
 
 export const UserPermissions = () => {
   const [collaboratorCode, setCollaboratorCode] = useState("");
   const [invitePolicy, setInvitePolicy] = useState("restricted");
-  const [posAccess, setPosAccess] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour accéder à cette page",
+          variant: "destructive",
+        });
+        return;
+      }
+    };
+
+    checkAuth();
+  }, [toast]);
 
   return (
     <Card className="p-6 mb-8">
@@ -19,19 +37,7 @@ export const UserPermissions = () => {
       </div>
 
       <div className="space-y-8">
-        {/* Propriétaire de la boutique */}
-        <div>
-          <h4 className="text-lg font-medium mb-4">Propriétaire de la boutique</h4>
-          <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-            <Users className="h-8 w-8 text-gray-500" />
-            <div>
-              <p className="font-medium">Boutique principale</p>
-              <p className="text-sm text-gray-600">Accès complet aux paramètres et configurations</p>
-            </div>
-          </div>
-        </div>
-
-        <StaffAccess posAccess={posAccess} setPosAccess={setPosAccess} />
+        <StaffManagement />
         <CollaborationPolicy invitePolicy={invitePolicy} setInvitePolicy={setInvitePolicy} />
         <CollaboratorCode collaboratorCode={collaboratorCode} setCollaboratorCode={setCollaboratorCode} />
         <ConnectedServices />
