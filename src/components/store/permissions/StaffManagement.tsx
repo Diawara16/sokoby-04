@@ -31,24 +31,50 @@ export const StaffManagement = () => {
         throw new Error("Utilisateur non connecté");
       }
 
-      const { data: storeSettings } = await supabase
+      // D'abord, récupérer le store_id depuis store_settings
+      const { data: storeSettings, error: storeError } = await supabase
         .from('store_settings')
         .select('id')
         .eq('user_id', user.id)
         .single();
 
-      if (!storeSettings) {
-        throw new Error("Paramètres du magasin non trouvés");
+      if (storeError) {
+        console.error('Erreur lors de la récupération des paramètres du magasin:', storeError);
+        toast({
+          title: "Erreur",
+          description: "Impossible de récupérer les paramètres du magasin",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
       }
 
-      const { data: members, error } = await supabase
+      if (!storeSettings) {
+        toast({
+          title: "Erreur",
+          description: "Paramètres du magasin non trouvés",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Ensuite, récupérer les membres du staff avec le store_id
+      const { data: members, error: membersError } = await supabase
         .from('staff_members')
         .select('*')
         .eq('store_id', storeSettings.id);
 
-      if (error) throw error;
-
-      setStaffMembers(members || []);
+      if (membersError) {
+        console.error('Erreur lors du chargement des membres:', membersError);
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les membres de l'équipe",
+          variant: "destructive",
+        });
+      } else {
+        setStaffMembers(members || []);
+      }
     } catch (error: any) {
       console.error('Erreur lors du chargement des membres:', error);
       toast({
