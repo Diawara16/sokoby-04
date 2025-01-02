@@ -69,7 +69,10 @@ export const StaffManagement = () => {
       </div>
 
       <div className="space-y-8">
-        <StaffInviteForm onInviteSent={loadStaffMembers} />
+        <StaffInviteForm 
+          onInviteSent={loadStaffMembers} 
+          staffCount={staffMembers.length}
+        />
       </div>
     </Card>
   );
