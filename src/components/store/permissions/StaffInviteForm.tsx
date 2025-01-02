@@ -1,88 +1,59 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserPlus } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 
 interface StaffInviteFormProps {
   onInviteSent: () => void;
   staffCount: number;
+  storeId: string;
 }
 
-export const StaffInviteForm = ({ onInviteSent, staffCount }: StaffInviteFormProps) => {
+export const StaffInviteForm = ({ onInviteSent, staffCount, storeId }: StaffInviteFormProps) => {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("employee");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const sendInvitation = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!email || !role) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez remplir tous les champs",
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    if (staffCount >= 5) {
-      toast({
-        title: "Erreur",
-        description: "Vous avez atteint le nombre maximum d'employés (5)",
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
-
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Non authentifié");
-
-      // Récupérer d'abord les paramètres du magasin
-      const { data: storeData } = await supabase
-        .from('store_settings')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (!storeData) {
-        throw new Error("Paramètres du magasin non trouvés");
+      if (!user) {
+        throw new Error("Vous devez être connecté pour inviter des membres");
       }
 
       const { error } = await supabase
         .from('staff_members')
         .insert([
           {
-            user_id: user.id,
-            store_id: storeData.id,
             email,
-            role,
-            status: 'pending',
-            permissions: {}
+            store_id: storeId,
+            user_id: user.id,
+            role: 'staff',
+            permissions: {},
+            status: 'pending'
           }
         ]);
 
       if (error) throw error;
 
       toast({
-        title: "Succès",
-        description: "Invitation envoyée avec succès",
+        title: "Invitation envoyée",
+        description: `Une invitation a été envoyée à ${email}`,
       });
 
       setEmail("");
       onInviteSent();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur lors de l\'invitation:', error);
       toast({
         title: "Erreur",
-        description: "Impossible d'envoyer l'invitation",
+        description: error.message || "Impossible d'envoyer l'invitation",
         variant: "destructive",
       });
     } finally {
@@ -91,31 +62,23 @@ export const StaffInviteForm = ({ onInviteSent, staffCount }: StaffInviteFormPro
   };
 
   return (
-    <form onSubmit={sendInvitation} className="space-y-4">
-      <div className="flex gap-4">
-        <div className="flex-1">
+    <Card className="p-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email du membre à inviter</Label>
           <Input
+            id="email"
             type="email"
-            placeholder="Email de l'employé"
+            placeholder="email@exemple.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
         </div>
-        <Select value={role} onValueChange={setRole}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Rôle" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="developer">Développeur</SelectItem>
-            <SelectItem value="employee">Employé</SelectItem>
-            <SelectItem value="admin">Administrateur</SelectItem>
-          </SelectContent>
-        </Select>
         <Button type="submit" disabled={isLoading}>
-          <UserPlus className="mr-2 h-4 w-4" />
-          Inviter
+          {isLoading ? "Envoi en cours..." : "Envoyer l'invitation"}
         </Button>
-      </div>
-    </form>
+      </form>
+    </Card>
   );
 };
