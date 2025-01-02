@@ -61,11 +61,6 @@ export const navigationItems: NavigationItem[] = [
     icon: Store
   },
   {
-    title: "Produits",
-    url: "/produits",
-    icon: ShoppingCart
-  },
-  {
     title: "Logistique",
     url: "/logistique",
     icon: Truck
