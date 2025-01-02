@@ -34,7 +34,7 @@ export const StaffManagement = () => {
         .maybeSingle();
 
       if (storeError) {
-        console.error('Erreur store_settings:', storeError);
+        console.error("Erreur lors de la vérification du magasin:", storeError);
         throw new Error("Impossible de récupérer les paramètres du magasin");
       }
 
@@ -107,7 +107,7 @@ export const StaffManagement = () => {
 
   if (error) {
     return (
-      <Alert variant="destructive">
+      <Alert variant="destructive" className="mb-6">
         <AlertDescription className="flex flex-col gap-4">
           <p>{error}</p>
           <Button onClick={loadStaffMembers} variant="outline" size="sm">
