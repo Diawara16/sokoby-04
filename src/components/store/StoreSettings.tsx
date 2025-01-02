@@ -58,15 +58,29 @@ export const StoreSettings = () => {
       }
 
       console.log("Paramètres chargés:", data);
-      setSettings(data || {
-        id: '',
-        store_name: 'Ma boutique',
-        store_email: user.email || '',
-        store_phone: '',
-        store_address: '',
-        domain_name: null,
-        is_custom_domain: false
-      });
+      if (!data) {
+        // Créer des paramètres par défaut si aucun n'existe
+        const { data: newSettings, error: createError } = await supabase
+          .from('store_settings')
+          .insert({
+            user_id: user.id,
+            store_name: 'Ma boutique',
+            store_email: user.email,
+            domain_name: null,
+            is_custom_domain: false
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error("Erreur lors de la création des paramètres:", createError);
+          throw createError;
+        }
+
+        setSettings(newSettings);
+      } else {
+        setSettings(data);
+      }
     } catch (error: any) {
       console.error("Erreur lors du chargement des paramètres de la boutique:", error);
       toast({
