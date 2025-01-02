@@ -1,103 +1,81 @@
-import {
-  LayoutDashboard,
-  ShoppingCart,
+import { 
+  Home, 
+  CreditCard, 
+  Palette, 
+  BookOpen, 
+  MessageSquare,
+  Users,
   Settings,
-  UserCircle,
-  Award,
-  FileText,
-  BookOpen,
-  Mail,
-  Sparkles,
-  Truck,
+  DollarSign,
+  MapPin,
   Store,
-  Package,
-  Import,
-  Plus,
-  LucideIcon
-} from "lucide-react"
+  ShoppingBag,
+  BarChart,
+  Mail,
+  Bell
+} from "lucide-react";
 
-export interface NavigationItem {
-  title: string
-  url: string
-  icon: LucideIcon
-  openInNewWindow?: boolean
-  className?: string
-  subItems?: NavigationItem[]
-}
-
-export const navigationItems: NavigationItem[] = [
+export const navigationItems = [
   {
-    title: "Dashboard",
-    url: "/tableau-de-bord",
-    icon: LayoutDashboard
+    title: "Tableau de bord",
+    url: "/",
+    icon: Home
   },
   {
-    title: "Mes Produits",
-    url: "/produits",
-    icon: Package,
-    subItems: [
-      {
-        title: "Produits importés",
-        url: "/produits/importes",
-        icon: Import,
-        subItems: [
-          {
-            title: "+ Ajouter produit",
-            url: "/produits/importes/ajouter",
-            icon: Plus
-          }
-        ]
-      }
-    ]
-  },
-  {
-    title: "Boutique IA",
-    url: "/boutique-ia",
-    icon: Sparkles
-  },
-  {
-    title: "Boutique en ligne",
+    title: "Boutique",
     url: "/boutique",
     icon: Store
   },
   {
-    title: "Logistique",
-    url: "/logistique",
-    icon: Truck
+    title: "Produits",
+    url: "/produits",
+    icon: ShoppingBag
+  },
+  {
+    title: "Commandes",
+    url: "/commandes",
+    icon: CreditCard
+  },
+  {
+    title: "Clients",
+    url: "/clients",
+    icon: Users
+  },
+  {
+    title: "Marketing",
+    url: "/marketing",
+    icon: Mail
+  },
+  {
+    title: "Analytiques",
+    url: "/analytiques",
+    icon: BarChart
   },
   {
     title: "Paramètres",
     url: "/parametres",
-    icon: Settings
+    icon: Settings,
+    subItems: [
+      {
+        title: "Utilisateurs",
+        url: "/parametres/utilisateurs",
+        icon: Users
+      },
+      {
+        title: "Paiements",
+        url: "/parametres/paiements",
+        icon: DollarSign
+      },
+      {
+        title: "Géolocalisation",
+        url: "/parametres/geolocalisation",
+        icon: MapPin
+      }
+    ]
   },
   {
-    title: "Profil",
-    url: "/profil",
-    icon: UserCircle
-  },
-  {
-    title: "Fidélité",
-    url: "/fidelite",
-    icon: Award
-  },
-  {
-    title: "Email Marketing",
-    url: "/email-marketing",
-    icon: Mail
-  },
-  {
-    title: "Recommandations",
-    url: "/recommandations",
-    icon: Sparkles
-  },
-  {
-    title: "Blog Manager",
-    url: "/blog-manager",
-    icon: FileText
-  },
-  {
-    title: "Guides",
-    url: "/guides",
-    icon: BookOpen
+    title: "Notifications",
+    url: "/notifications",
+    icon: Bell
   }
-]
+];
