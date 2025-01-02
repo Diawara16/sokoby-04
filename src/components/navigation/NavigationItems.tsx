@@ -10,6 +10,9 @@ import {
   Sparkles,
   Truck,
   Store,
+  Package,
+  Import,
+  Plus,
   LucideIcon
 } from "lucide-react"
 
@@ -19,6 +22,7 @@ export interface NavigationItem {
   icon: LucideIcon
   openInNewWindow?: boolean
   className?: string
+  subItems?: NavigationItem[]
 }
 
 export const navigationItems: NavigationItem[] = [
@@ -28,7 +32,31 @@ export const navigationItems: NavigationItem[] = [
     icon: LayoutDashboard
   },
   {
-    title: "Ma Boutique",
+    title: "Mes Produits",
+    url: "/produits",
+    icon: Package,
+    subItems: [
+      {
+        title: "Produits importés",
+        url: "/produits/importes",
+        icon: Import,
+        subItems: [
+          {
+            title: "+ Ajouter produit",
+            url: "/produits/importes/ajouter",
+            icon: Plus
+          }
+        ]
+      }
+    ]
+  },
+  {
+    title: "Boutique IA",
+    url: "/boutique-ia",
+    icon: Sparkles
+  },
+  {
+    title: "Boutique en ligne",
     url: "/boutique",
     icon: Store
   },
