@@ -22,7 +22,6 @@ import ImportedProducts from "./pages/products/ImportedProducts"
 import AddImportedProduct from "./pages/products/AddImportedProduct"
 import AddProduct from "./pages/products/AddProduct"
 import Settings from "./pages/Settings"
-import StoreSettings from "./pages/settings/StoreSettings"
 import BillingSettings from "./pages/settings/BillingSettings"
 import UserSettings from "./pages/settings/UserSettings"
 import PaymentSettings from "./pages/settings/PaymentSettings"
@@ -54,7 +53,6 @@ export const AppRoutes = () => {
       <Route path="/produits/importes" element={<ImportedProducts />} />
       <Route path="/produits/importes/ajouter" element={<AddImportedProduct />} />
       <Route path="/parametres" element={<Settings />}>
-        <Route index element={<StoreSettings />} />
         <Route path="facturation" element={<BillingSettings />} />
         <Route path="utilisateurs" element={<UserSettings />} />
         <Route path="paiements" element={<PaymentSettings />} />

@@ -1,13 +1,8 @@
 import { NavLink } from "react-router-dom";
-import { Store, CreditCard, Users, Globe, DollarSign, UserPlus, MapPin } from "lucide-react";
+import { CreditCard, Users, Globe, DollarSign, UserPlus, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
-  {
-    title: "Boutique",
-    icon: Store,
-    path: "/parametres",
-  },
   {
     title: "Facturation",
     icon: CreditCard,
@@ -53,7 +48,6 @@ export const SettingsSidebar = () => {
                   : "text-muted-foreground"
               )
             }
-            end={item.path === "/parametres"}
           >
             <item.icon className="h-4 w-4" />
             {item.title}
