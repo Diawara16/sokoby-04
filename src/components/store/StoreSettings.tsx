@@ -31,30 +31,41 @@ export const StoreSettings = () => {
       
       if (!user) {
         console.log("Aucun utilisateur connecté");
+        toast({
+          title: "Erreur d'authentification",
+          description: "Vous devez être connecté pour accéder aux paramètres de la boutique",
+          variant: "destructive",
+        });
         setIsLoading(false);
         return;
       }
 
+      console.log("Utilisateur connecté:", user.id);
       const { data, error } = await supabase
         .from('store_settings')
         .select('*')
         .eq('user_id', user.id)
-        .maybeSingle();
+        .single();
 
       if (error) {
         console.error("Erreur lors du chargement des paramètres:", error);
-        throw error;
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les paramètres de la boutique",
+          variant: "destructive",
+        });
+        return;
       }
 
       console.log("Paramètres chargés:", data);
       setSettings(data || {
         id: '',
         store_name: 'Ma boutique',
-        store_email: '',
+        store_email: user.email || '',
         store_phone: '',
         store_address: '',
         domain_name: 'sokoby.com',
-        is_custom_domain: true
+        is_custom_domain: false
       });
     } catch (error: any) {
       console.error("Erreur lors du chargement des paramètres de la boutique:", error);
@@ -92,8 +103,7 @@ export const StoreSettings = () => {
         .upsert({
           ...settings,
           user_id: user.id,
-          domain_name: 'sokoby.com', // Force le domaine à sokoby.com
-          is_custom_domain: true
+          updated_at: new Date().toISOString()
         });
 
       if (error) throw error;
@@ -131,7 +141,10 @@ export const StoreSettings = () => {
       <Alert className="mb-6">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          Votre boutique utilise le domaine : sokoby.com
+          {settings?.domain_name ? 
+            `Votre boutique utilise le domaine : ${settings.domain_name}` :
+            "Aucun domaine configuré pour votre boutique"
+          }
         </AlertDescription>
       </Alert>
 
