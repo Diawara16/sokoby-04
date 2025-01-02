@@ -33,6 +33,19 @@ export default function Boutique() {
     }
   })
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <main className="flex-1 overflow-y-auto bg-background p-8">
+          <div className="flex justify-center items-center h-32">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
   if (error) {
     return (
       <div className="flex min-h-screen w-full">
@@ -63,11 +76,7 @@ export default function Boutique() {
             </Link>
           </div>
 
-          {isLoading ? (
-            <div className="flex justify-center items-center h-32">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          ) : !storeSettings ? (
+          {!storeSettings ? (
             <Card>
               <CardHeader>
                 <CardTitle>Configuration requise</CardTitle>
