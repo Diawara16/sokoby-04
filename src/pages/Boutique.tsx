@@ -46,21 +46,6 @@ export default function Boutique() {
     )
   }
 
-  if (error) {
-    return (
-      <div className="flex min-h-screen w-full">
-        <AppSidebar />
-        <main className="flex-1 overflow-y-auto bg-background p-8">
-          <Alert variant="destructive">
-            <AlertDescription>
-              Une erreur est survenue lors de la récupération des paramètres de la boutique
-            </AlertDescription>
-          </Alert>
-        </main>
-      </div>
-    )
-  }
-
   return (
     <div className="flex min-h-screen w-full">
       <AppSidebar />
@@ -76,7 +61,13 @@ export default function Boutique() {
             </Link>
           </div>
 
-          {!storeSettings ? (
+          {error ? (
+            <Alert variant="destructive">
+              <AlertDescription>
+                Une erreur est survenue lors de la récupération des paramètres de la boutique
+              </AlertDescription>
+            </Alert>
+          ) : !storeSettings ? (
             <Card>
               <CardHeader>
                 <CardTitle>Configuration requise</CardTitle>
@@ -100,7 +91,9 @@ export default function Boutique() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <p><strong>Email :</strong> {storeSettings.store_email}</p>
+                    {storeSettings.store_email && (
+                      <p><strong>Email :</strong> {storeSettings.store_email}</p>
+                    )}
                     {storeSettings.store_phone && (
                       <p><strong>Téléphone :</strong> {storeSettings.store_phone}</p>
                     )}
