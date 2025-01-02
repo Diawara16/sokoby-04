@@ -6,14 +6,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import { Plus } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function Boutique() {
-  const { data: storeSettings, isLoading } = useQuery({
+  const { data: storeSettings, isLoading, error } = useQuery({
     queryKey: ['store-settings'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error("Non authentifié")
 
+      console.log("Récupération des paramètres de la boutique pour l'utilisateur:", user.id)
+      
       const { data, error } = await supabase
         .from('store_settings')
         .select('*')
@@ -25,9 +28,25 @@ export default function Boutique() {
         throw error
       }
 
+      console.log("Paramètres récupérés:", data)
       return data
     }
   })
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <main className="flex-1 overflow-y-auto bg-background p-8">
+          <Alert variant="destructive">
+            <AlertDescription>
+              Une erreur est survenue lors de la récupération des paramètres de la boutique
+            </AlertDescription>
+          </Alert>
+        </main>
+      </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen w-full">
