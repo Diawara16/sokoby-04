@@ -11,7 +11,7 @@ export interface PricingPlanData {
   planType: 'starter' | 'pro' | 'enterprise';
   features: string[];
   popular?: boolean;
-  trial?: boolean;
+  trial?: string;
 }
 
 export const getMonthlyPlans = (): PricingPlanData[] => [
@@ -32,7 +32,7 @@ export const getMonthlyPlans = (): PricingPlanData[] => [
       "Paiements sécurisés",
       "Domaine personnalisé",
     ],
-    trial: true,
+    trial: "Essai gratuit de 14 jours",
   },
   {
     name: "Pro",
@@ -55,7 +55,7 @@ export const getMonthlyPlans = (): PricingPlanData[] => [
       "Tableau de bord avancé",
     ],
     popular: true,
-    trial: true,
+    trial: "Essai gratuit de 14 jours",
   },
   {
     name: "Entreprise",
@@ -82,7 +82,7 @@ export const getMonthlyPlans = (): PricingPlanData[] => [
       "Accès prioritaire aux nouvelles fonctionnalités",
       "Console d'administration avancée",
     ],
-    trial: true,
+    trial: "Essai gratuit de 14 jours",
   },
 ];
 
