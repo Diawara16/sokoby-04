@@ -3,13 +3,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Trash2, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-
-interface StaffMember {
-  id: string;
-  invited_email: string;
-  role: string;
-  status: string;
-}
+import { StaffMember } from "../types";
 
 interface StaffMemberListProps {
   staffMembers: StaffMember[];

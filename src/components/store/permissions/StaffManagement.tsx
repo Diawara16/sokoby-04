@@ -27,7 +27,7 @@ export const StaffManagement = () => {
         .from('store_settings')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (storeError) {
         console.error('Erreur store_settings:', storeError);
