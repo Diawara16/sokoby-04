@@ -15,7 +15,16 @@ import {
   Bell
 } from "lucide-react";
 
-export const navigationItems = [
+export interface NavigationItem {
+  title: string;
+  url: string;
+  icon: any;
+  openInNewWindow?: boolean;
+  className?: string;
+  subItems?: NavigationItem[];
+}
+
+export const navigationItems: NavigationItem[] = [
   {
     title: "Tableau de bord",
     url: "/",

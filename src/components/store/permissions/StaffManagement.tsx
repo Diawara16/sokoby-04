@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/lib/supabase";
+import { Card } from "@/components/ui/card";
+import { Users } from "lucide-react";
 import { StaffInviteForm } from "./StaffInviteForm";
-import { StaffMemberList } from "./StaffMemberList";
+import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 
 interface StaffMember {
@@ -10,71 +10,67 @@ interface StaffMember {
   email: string;
   role: string;
   status: string;
-  created_at: string;
+  invited_at: string;
+  joined_at?: string;
+  invited_email: string;
 }
 
 export const StaffManagement = () => {
-  const [staffMembers, setStaffMembers] = useState<StaffMember[]>([]);
   const { toast } = useToast();
-
-  const loadStaffMembers = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: storeData } = await supabase
-        .from('store_settings')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (!storeData) {
-        throw new Error("Paramètres du magasin non trouvés");
-      }
-
-      const { data, error } = await supabase
-        .from('staff_members')
-        .select('*')
-        .eq('store_id', storeData.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      setStaffMembers(data || []);
-    } catch (error) {
-      console.error('Erreur lors du chargement des membres:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les membres du personnel",
-        variant: "destructive",
-      });
-    }
-  };
+  const [staffMembers, setStaffMembers] = useState<StaffMember[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     loadStaffMembers();
   }, []);
 
+  const loadStaffMembers = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("Utilisateur non connecté");
+      }
+
+      const { data: storeSettings } = await supabase
+        .from('store_settings')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!storeSettings) {
+        throw new Error("Paramètres du magasin non trouvés");
+      }
+
+      const { data: members, error } = await supabase
+        .from('staff_members')
+        .select('*')
+        .eq('store_id', storeSettings.id);
+
+      if (error) throw error;
+
+      setStaffMembers(members || []);
+    } catch (error: any) {
+      console.error('Erreur lors du chargement des membres:', error);
+      toast({
+        title: "Erreur",
+        description: error.message || "Impossible de charger les membres de l'équipe",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Gestion des employés</CardTitle>
-        <CardDescription>
-          Invitez jusqu'à 5 employés ou développeurs pour vous aider à gérer votre boutique
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <StaffInviteForm 
-          onInviteSent={loadStaffMembers}
-          staffCount={staffMembers.length}
-        />
-        <div className="mt-8">
-          <StaffMemberList 
-            staffMembers={staffMembers}
-            onMemberRemoved={loadStaffMembers}
-          />
-        </div>
-      </CardContent>
+    <Card className="p-6 mb-8">
+      <div className="flex items-center gap-2 mb-6">
+        <Users className="h-5 w-5 text-gray-600" />
+        <h3 className="text-xl font-semibold">Gestion de l'équipe</h3>
+      </div>
+
+      <div className="space-y-8">
+        <StaffInviteForm onInviteSent={loadStaffMembers} />
+      </div>
     </Card>
   );
 };
