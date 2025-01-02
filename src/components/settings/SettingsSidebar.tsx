@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Store, User, Shield, CreditCard } from "lucide-react";
+import { Store, CreditCard, Users, Globe, DollarSign, UserPlus, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
@@ -9,19 +9,29 @@ const menuItems = [
     path: "/parametres",
   },
   {
-    title: "Profil",
-    icon: User,
-    path: "/parametres/utilisateur",
-  },
-  {
-    title: "Sécurité",
-    icon: Shield,
-    path: "/parametres/securite",
-  },
-  {
     title: "Facturation",
     icon: CreditCard,
     path: "/parametres/facturation",
+  },
+  {
+    title: "Utilisateurs",
+    icon: Users,
+    path: "/parametres/utilisateurs",
+  },
+  {
+    title: "Paiements",
+    icon: DollarSign,
+    path: "/parametres/paiements",
+  },
+  {
+    title: "Clients",
+    icon: UserPlus,
+    path: "/parametres/clients",
+  },
+  {
+    title: "Géolocalisation",
+    icon: MapPin,
+    path: "/parametres/geolocalisation",
   },
 ];
 
