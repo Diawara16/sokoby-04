@@ -20,6 +20,7 @@ import Boutique from "./pages/Boutique"
 import Products from "./pages/Products"
 import ImportedProducts from "./pages/products/ImportedProducts"
 import AddImportedProduct from "./pages/products/AddImportedProduct"
+import AddProduct from "./pages/products/AddProduct"
 
 export const AppRoutes = () => {
   return (
@@ -42,6 +43,7 @@ export const AppRoutes = () => {
       <Route path="/logistique" element={<SmartLogistics />} />
       <Route path="/boutique" element={<Boutique />} />
       <Route path="/produits" element={<Products />} />
+      <Route path="/produits/ajouter" element={<AddProduct />} />
       <Route path="/produits/importes" element={<ImportedProducts />} />
       <Route path="/produits/importes/ajouter" element={<AddImportedProduct />} />
       <Route path="/:slug" element={<DynamicLanding />} />
