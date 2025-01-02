@@ -45,14 +45,27 @@ export const StaffInviteForm = ({ onInviteSent, staffCount }: StaffInviteFormPro
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
 
+      // Récupérer d'abord les paramètres du magasin
+      const { data: storeData } = await supabase
+        .from('store_settings')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!storeData) {
+        throw new Error("Paramètres du magasin non trouvés");
+      }
+
       const { error } = await supabase
         .from('staff_members')
         .insert([
           {
             user_id: user.id,
-            invited_email: email,
+            store_id: storeData.id,
+            email,
             role,
-            status: 'pending'
+            status: 'pending',
+            permissions: {}
           }
         ]);
 
@@ -66,6 +79,7 @@ export const StaffInviteForm = ({ onInviteSent, staffCount }: StaffInviteFormPro
       setEmail("");
       onInviteSent();
     } catch (error) {
+      console.error('Erreur lors de l\'invitation:', error);
       toast({
         title: "Erreur",
         description: "Impossible d'envoyer l'invitation",
