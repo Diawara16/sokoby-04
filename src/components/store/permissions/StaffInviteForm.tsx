@@ -31,10 +31,10 @@ export const StaffInviteForm = ({ onInviteSent, staffCount }: StaffInviteFormPro
       return;
     }
 
-    if (staffCount >= 4) {
+    if (staffCount >= 5) {
       toast({
         title: "Erreur",
-        description: "Vous avez atteint le nombre maximum d'employés (4)",
+        description: "Vous avez atteint le nombre maximum d'employés (5)",
         variant: "destructive",
       });
       setIsLoading(false);
