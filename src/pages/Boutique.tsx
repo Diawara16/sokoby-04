@@ -12,26 +12,32 @@ export default function Boutique() {
   const { data: storeSettings, isLoading, error } = useQuery({
     queryKey: ['store-settings'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error("Non authentifié")
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Non authentifié");
 
-      console.log("Récupération des paramètres de la boutique pour l'utilisateur:", user.id)
-      
-      const { data, error } = await supabase
-        .from('store_settings')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle()
+        console.log("Récupération des paramètres de la boutique pour l'utilisateur:", user.id);
+        
+        const { data, error: supabaseError } = await supabase
+          .from('store_settings')
+          .select('*')
+          .eq('user_id', user.id)
+          .limit(1)
+          .maybeSingle();
 
-      if (error) {
-        console.error("Erreur lors de la récupération des paramètres:", error)
-        throw error
+        if (supabaseError) {
+          console.error("Erreur Supabase:", supabaseError);
+          throw supabaseError;
+        }
+
+        console.log("Paramètres récupérés:", data);
+        return data;
+      } catch (err) {
+        console.error("Erreur lors de la récupération des paramètres:", err);
+        throw err;
       }
-
-      console.log("Paramètres récupérés:", data)
-      return data
     }
-  })
+  });
 
   if (isLoading) {
     return (
@@ -43,7 +49,7 @@ export default function Boutique() {
           </div>
         </main>
       </div>
-    )
+    );
   }
 
   return (
@@ -64,7 +70,8 @@ export default function Boutique() {
           {error ? (
             <Alert variant="destructive">
               <AlertDescription>
-                Une erreur est survenue lors de la récupération des paramètres de la boutique
+                Une erreur est survenue lors de la récupération des paramètres de la boutique. 
+                Veuillez réessayer plus tard.
               </AlertDescription>
             </Alert>
           ) : !storeSettings ? (
@@ -108,5 +115,5 @@ export default function Boutique() {
         </div>
       </main>
     </div>
-  )
+  );
 }
