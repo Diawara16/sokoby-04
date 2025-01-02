@@ -5,13 +5,7 @@ import { StaffMemberList } from "./StaffMemberList";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-
-interface StaffMember {
-  id: string;
-  email: string;
-  role: string;
-  status: string;
-}
+import { StaffMember } from "../types";
 
 export const StaffManagement = () => {
   const [staffMembers, setStaffMembers] = useState<StaffMember[]>([]);
@@ -29,28 +23,28 @@ export const StaffManagement = () => {
       }
 
       // Récupérer d'abord les paramètres du magasin
-      const { data: store, error: storeError } = await supabase
+      const { data: storeSettings, error: storeError } = await supabase
         .from('store_settings')
         .select('id')
         .eq('user_id', user.id)
-        .maybeSingle();
+        .single();
 
       if (storeError) {
         console.error('Erreur store_settings:', storeError);
         throw new Error("Impossible de récupérer les paramètres du magasin");
       }
 
-      if (!store) {
+      if (!storeSettings) {
         throw new Error("Paramètres du magasin non trouvés");
       }
 
-      setStoreId(store.id);
+      setStoreId(storeSettings.id);
 
       // Récupérer les membres du staff
       const { data: members, error: membersError } = await supabase
         .from('staff_members')
         .select('*')
-        .eq('store_id', store.id);
+        .eq('store_id', storeSettings.id);
 
       if (membersError) {
         console.error('Erreur staff_members:', membersError);
