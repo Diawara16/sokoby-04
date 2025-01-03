@@ -63,12 +63,14 @@ export const useTrendsData = () => {
   return useQuery({
     queryKey: ['trends-data'],
     queryFn: fetchTrendsData,
-    onError: (error: Error) => {
-      toast({
-        title: "Erreur",
-        description: error.message || "Impossible de charger les données des tendances",
-        variant: "destructive",
-      })
+    meta: {
+      errorHandler: (error: Error) => {
+        toast({
+          title: "Erreur",
+          description: error.message || "Impossible de charger les données des tendances",
+          variant: "destructive",
+        })
+      }
     }
   })
 }
