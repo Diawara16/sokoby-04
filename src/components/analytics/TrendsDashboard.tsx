@@ -4,14 +4,34 @@ import { SalesChart } from "./charts/SalesChart"
 import { OrdersCustomersChart } from "./charts/OrdersCustomersChart"
 import { useTrendsData } from "./hooks/useTrendsData"
 import { calculateTrend } from "./utils/calculations"
+import { Button } from "@/components/ui/button"
 
 export const TrendsDashboard = () => {
-  const { data: trendsData, isLoading } = useTrendsData()
+  const { data: trendsData, isLoading, error, refetch } = useTrendsData()
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <p className="text-destructive">Une erreur est survenue lors du chargement des données</p>
+        <Button onClick={() => refetch()} variant="outline">
+          Réessayer
+        </Button>
+      </div>
+    )
+  }
+
+  if (!trendsData || trendsData.length === 0) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <p className="text-muted-foreground">Aucune donnée disponible pour la période sélectionnée</p>
       </div>
     )
   }
@@ -48,8 +68,8 @@ export const TrendsDashboard = () => {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <SalesChart data={trendsData || []} />
-        <OrdersCustomersChart data={trendsData || []} />
+        <SalesChart data={trendsData} />
+        <OrdersCustomersChart data={trendsData} />
       </div>
     </div>
   )
