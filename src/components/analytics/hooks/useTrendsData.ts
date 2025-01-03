@@ -65,6 +65,7 @@ export const useTrendsData = () => {
     queryFn: fetchTrendsData,
     meta: {
       errorHandler: (error: Error) => {
+        console.error('Query error:', error)
         toast({
           title: "Erreur",
           description: error.message || "Impossible de charger les données des tendances",
