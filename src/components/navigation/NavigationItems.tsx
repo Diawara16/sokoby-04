@@ -46,12 +46,12 @@ export const navigationItems: NavigationItem[] = [
   },
   {
     title: "Produits",
-    url: "/produits",
+    url: "/products",
     icon: ShoppingBag
   },
   {
     title: "Commandes",
-    url: "/commandes",
+    url: "/orders",
     icon: CreditCard
   },
   {
