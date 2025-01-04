@@ -1,105 +1,81 @@
-import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Package, ArrowLeft } from "lucide-react"
+import { RefreshCw } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
-import { useToast } from "@/hooks/use-toast"
 
-export function AutomatedReturns() {
-  const [returns, setReturns] = useState<any[]>([])
-  const { toast } = useToast()
-
-  const handleAutomatedReturn = async (returnId: string, action: 'approve' | 'reject') => {
-    try {
-      const { data, error } = await supabase
+export const AutomatedReturns = () => {
+  const { data: returns, isLoading } = useQuery({
+    queryKey: ['returns'],
+    queryFn: async () => {
+      const { data } = await supabase
         .from('returns')
-        .update({ 
-          automated_status: action === 'approve' ? 'approved' : 'rejected',
-          processing_notes: [`${action === 'approve' ? 'Approuvé' : 'Rejeté'} automatiquement le ${new Date().toLocaleString()}`]
-        })
-        .eq('id', returnId)
-        .select()
-
-      if (error) throw error
-
-      toast({
-        title: "Succès",
-        description: `Retour ${action === 'approve' ? 'approuvé' : 'rejeté'} avec succès`,
-      })
-
-      // Rafraîchir la liste des retours
-      fetchReturns()
-    } catch (error) {
-      console.error('Erreur:', error)
-      toast({
-        title: "Erreur",
-        description: "Impossible de traiter le retour",
-        variant: "destructive",
-      })
+        .select(`
+          *,
+          order:orders(
+            id
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(5)
+      return data || []
     }
-  }
+  })
 
-  const fetchReturns = async () => {
-    const { data, error } = await supabase
-      .from('returns')
-      .select(`
-        *,
-        order:orders(*)
-      `)
-      .eq('automated_status', 'pending')
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Erreur:', error)
-      return
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return 'text-green-500 bg-green-50'
+      case 'pending':
+        return 'text-yellow-500 bg-yellow-50'
+      case 'rejected':
+        return 'text-red-500 bg-red-50'
+      default:
+        return 'text-gray-500 bg-gray-50'
     }
-
-    setReturns(data || [])
   }
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Package className="h-5 w-5" />
-          Gestion automatisée des retours
+          <RefreshCw className="h-5 w-5" />
+          Retours automatisés
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {returns.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">
-              Aucun retour en attente de traitement
-            </p>
-          ) : (
-            returns.map((returnItem) => (
-              <div 
-                key={returnItem.id}
-                className="flex items-center justify-between p-4 border rounded-lg"
-              >
-                <div>
-                  <h4 className="font-medium">Retour #{returnItem.id.slice(0, 8)}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Raison: {returnItem.reason}
-                  </p>
+        {isLoading ? (
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {returns?.length === 0 ? (
+              <p className="text-muted-foreground">
+                Aucun retour en cours.
+              </p>
+            ) : (
+              returns?.map((returnItem) => (
+                <div key={returnItem.id} className="p-4 rounded-lg bg-muted">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-medium">
+                      Retour #{returnItem.id.slice(0, 8)}
+                    </h3>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(returnItem.status)}`}>
+                      {returnItem.status}
+                    </span>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    <p>Commande: #{returnItem.order.id.slice(0, 8)}</p>
+                    <p>Raison: {returnItem.reason}</p>
+                    {returnItem.tracking_number && (
+                      <p>Numéro de suivi: {returnItem.tracking_number}</p>
+                    )}
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleAutomatedReturn(returnItem.id, 'approve')}
-                    className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600"
-                  >
-                    Approuver
-                  </button>
-                  <button
-                    onClick={() => handleAutomatedReturn(returnItem.id, 'reject')}
-                    className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
-                  >
-                    Rejeter
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+              ))
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   )

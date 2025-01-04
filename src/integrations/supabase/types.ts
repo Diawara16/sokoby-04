@@ -453,6 +453,39 @@ export type Database = {
         }
         Relationships: []
       }
+      delivery_routes: {
+        Row: {
+          created_at: string
+          estimated_delivery_time: unknown | null
+          id: string
+          optimization_score: number | null
+          route_data: Json
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          estimated_delivery_time?: unknown | null
+          id?: string
+          optimization_score?: number | null
+          route_data: Json
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          estimated_delivery_time?: unknown | null
+          id?: string
+          optimization_score?: number | null
+          route_data?: Json
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       domain_verifications: {
         Row: {
           created_at: string
@@ -1301,6 +1334,48 @@ export type Database = {
           },
         ]
       }
+      shipping_partners: {
+        Row: {
+          api_key: string | null
+          coverage_areas: string[] | null
+          created_at: string
+          id: string
+          integration_type: string
+          name: string
+          pricing_rules: Json | null
+          settings: Json | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          api_key?: string | null
+          coverage_areas?: string[] | null
+          created_at?: string
+          id?: string
+          integration_type: string
+          name: string
+          pricing_rules?: Json | null
+          settings?: Json | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          api_key?: string | null
+          coverage_areas?: string[] | null
+          created_at?: string
+          id?: string
+          integration_type?: string
+          name?: string
+          pricing_rules?: Json | null
+          settings?: Json | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       social_catalog_items: {
         Row: {
           created_at: string
@@ -1431,6 +1506,50 @@ export type Database = {
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "store_settings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_predictions: {
+        Row: {
+          confidence_score: number
+          created_at: string
+          factors: Json | null
+          id: string
+          predicted_demand: number
+          prediction_period: unknown
+          product_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          confidence_score: number
+          created_at?: string
+          factors?: Json | null
+          id?: string
+          predicted_demand: number
+          prediction_period: unknown
+          product_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          confidence_score?: number
+          created_at?: string
+          factors?: Json | null
+          id?: string
+          predicted_demand?: number
+          prediction_period?: unknown
+          product_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_predictions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]

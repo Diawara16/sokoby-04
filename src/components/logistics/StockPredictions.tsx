@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { AlertTriangle, Package } from "lucide-react"
+import { AlertTriangle } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
 
@@ -7,17 +7,24 @@ export const StockPredictions = () => {
   const { data: predictions, isLoading } = useQuery({
     queryKey: ['stock-predictions'],
     queryFn: async () => {
-      const { data: products } = await supabase
-        .from('products')
-        .select('*')
+      const { data: stockPredictions } = await supabase
+        .from('stock_predictions')
+        .select(`
+          *,
+          product:products(
+            name
+          )
+        `)
         .limit(5)
+        .order('confidence_score', { ascending: false })
 
-      // Simuler des prédictions de stock
-      return [
-        { name: "T-shirt Basic", risk: "high", daysUntilStockout: 5, reorderQuantity: 100 },
-        { name: "Jean Slim", risk: "medium", daysUntilStockout: 12, reorderQuantity: 50 },
-        { name: "Sneakers Classic", risk: "low", daysUntilStockout: 30, reorderQuantity: 25 }
-      ]
+      return stockPredictions?.map(prediction => ({
+        name: prediction.product.name,
+        risk: prediction.confidence_score < 0.5 ? 'high' : 
+              prediction.confidence_score < 0.8 ? 'medium' : 'low',
+        daysUntilStockout: Math.round(prediction.predicted_demand),
+        reorderQuantity: Math.ceil(prediction.predicted_demand * 1.2) // Marge de sécurité de 20%
+      })) || []
     }
   })
 
@@ -49,7 +56,7 @@ export const StockPredictions = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {predictions && predictions.map((item, index) => (
+            {predictions?.map((item, index) => (
               <div key={index} className="p-4 rounded-lg bg-muted">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-medium">{item.name}</h3>

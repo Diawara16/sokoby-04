@@ -1,24 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, Package } from "lucide-react"
+import { DollarSign } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
 
 export const ShippingPriceOptimizer = () => {
-  const { data: optimizedPrices, isLoading } = useQuery({
-    queryKey: ['shipping-prices'],
+  const { data: partners, isLoading } = useQuery({
+    queryKey: ['shipping-partners'],
     queryFn: async () => {
-      const { data: orders } = await supabase
-        .from('orders')
-        .select('shipping_address, total_amount')
-        .order('created_at', { ascending: false })
-        .limit(100)
-
-      // Simuler des prix optimisés basés sur les données historiques
-      return {
-        local: { base: "4.99€", optimized: "3.99€", savings: "20%" },
-        national: { base: "8.99€", optimized: "7.49€", savings: "16%" },
-        international: { base: "24.99€", optimized: "19.99€", savings: "20%" }
-      }
+      const { data } = await supabase
+        .from('shipping_partners')
+        .select('*')
+        .eq('status', 'active')
+      return data || []
     }
   })
 
@@ -26,7 +19,7 @@ export const ShippingPriceOptimizer = () => {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5" />
+          <DollarSign className="h-5 w-5" />
           Optimisation des prix de livraison
         </CardTitle>
       </CardHeader>
@@ -37,18 +30,26 @@ export const ShippingPriceOptimizer = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {optimizedPrices && Object.entries(optimizedPrices).map(([zone, prices]) => (
-              <div key={zone} className="flex items-center justify-between p-4 rounded-lg bg-muted">
-                <div>
-                  <h3 className="font-medium capitalize">{zone}</h3>
-                  <p className="text-sm text-muted-foreground">Prix de base: {prices.base}</p>
+            {partners?.length === 0 ? (
+              <p className="text-muted-foreground">
+                Aucun partenaire de livraison configuré.
+              </p>
+            ) : (
+              partners?.map((partner) => (
+                <div key={partner.id} className="p-4 rounded-lg bg-muted">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-medium">{partner.name}</h3>
+                    <span className="px-2 py-1 rounded-full text-xs bg-green-50 text-green-600">
+                      Actif
+                    </span>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    <p>Type d'intégration: {partner.integration_type}</p>
+                    <p>Zones de couverture: {partner.coverage_areas?.join(', ') || 'Non spécifié'}</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-medium text-primary">{prices.optimized}</p>
-                  <p className="text-sm text-green-600">-{prices.savings}</p>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         )}
       </CardContent>
