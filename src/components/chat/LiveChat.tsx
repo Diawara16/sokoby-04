@@ -42,7 +42,6 @@ export function LiveChat() {
 
     loadMessages()
 
-    // Souscrire aux nouveaux messages
     const channel = supabase
       .channel('chat_messages')
       .on(
