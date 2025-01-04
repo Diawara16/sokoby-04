@@ -4,6 +4,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { lazy, Suspense } from "react";
 
 interface ApplicationCardProps {
   name: string;
@@ -21,6 +23,10 @@ interface ApplicationCardProps {
   status?: 'active' | 'pending' | 'error';
 }
 
+const LazyIcon = lazy(({ icon: Icon }: { icon: React.ComponentType<{ className?: string }> }) => 
+  Promise.resolve({ default: Icon })
+);
+
 export function ApplicationCard({
   name,
   description,
@@ -33,9 +39,11 @@ export function ApplicationCard({
   features,
   status = 'active'
 }: ApplicationCardProps) {
+  const isMobile = useIsMobile();
+
   if (isLoading) {
     return (
-      <Card>
+      <Card className="animate-pulse">
         <CardHeader>
           <Skeleton className="h-6 w-24" />
           <Skeleton className="h-4 w-full mt-2" />
@@ -61,31 +69,35 @@ export function ApplicationCard({
   };
 
   return (
-    <Card className="relative">
+    <Card className="relative transition-all duration-300 hover:shadow-lg">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Icon className="h-5 w-5" />
-            <span>{name}</span>
+            <Suspense fallback={<Skeleton className="h-5 w-5 rounded" />}>
+              <LazyIcon icon={Icon} />
+            </Suspense>
+            <span className="truncate">{name}</span>
           </CardTitle>
           {isConnected && (
-            <Badge variant="secondary" className={getStatusColor()}>
+            <Badge variant="secondary" className={`${getStatusColor()} whitespace-nowrap`}>
               {status === 'active' ? 'Connecté' : status === 'pending' ? 'En attente' : 'Erreur'}
             </Badge>
           )}
         </div>
-        <CardDescription>{description}</CardDescription>
+        <CardDescription className={isMobile ? "line-clamp-2" : "line-clamp-3"}>
+          {description}
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
           {features && features.length > 0 && (
             <div className="space-y-1">
               <p className="text-sm font-medium">Fonctionnalités :</p>
-              <ul className="text-sm text-muted-foreground space-y-1">
+              <ul className="text-sm text-muted-foreground space-y-1 max-h-32 overflow-y-auto">
                 {features.map((feature, index) => (
                   <li key={index} className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    {feature}
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                    <span className="line-clamp-1">{feature}</span>
                   </li>
                 ))}
               </ul>
