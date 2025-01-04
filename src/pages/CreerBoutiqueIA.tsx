@@ -12,9 +12,10 @@ import { ErrorDisplay } from "@/components/store-creator/ErrorDisplay";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 
 const CreerBoutiqueIA = () => {
-  const [step, setStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState<string>('init');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [productsCount, setProductsCount] = useState(0);
   const { isAuthenticated, isLoading: authLoading } = useAuthAndProfile();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -35,7 +36,15 @@ const CreerBoutiqueIA = () => {
   }, [navigate, toast]);
 
   if (authLoading) {
-    return <CreationProgress step={0} totalSteps={4} />;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <CreationProgress 
+          currentStep="init"
+          progress={0}
+          niche=""
+        />
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
@@ -43,52 +52,69 @@ const CreerBoutiqueIA = () => {
   }
 
   if (error) {
-    return <ErrorDisplay error={error} onRetry={() => setError(null)} />;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <ErrorDisplay error={error} />
+      </div>
+    );
   }
 
+  const handleNext = () => {
+    const steps = ['init', 'niche', 'marketplace', 'supplier', 'complete'];
+    const currentIndex = steps.indexOf(currentStep);
+    if (currentIndex < steps.length - 1) {
+      setCurrentStep(steps[currentIndex + 1]);
+    }
+  };
+
+  const handleBack = () => {
+    const steps = ['init', 'niche', 'marketplace', 'supplier', 'complete'];
+    const currentIndex = steps.indexOf(currentStep);
+    if (currentIndex > 0) {
+      setCurrentStep(steps[currentIndex - 1]);
+    }
+  };
+
+  const getProgress = () => {
+    const steps = ['init', 'niche', 'marketplace', 'supplier', 'complete'];
+    return ((steps.indexOf(currentStep) + 1) / steps.length) * 100;
+  };
+
   const renderStep = () => {
-    switch (step) {
-      case 1:
+    switch (currentStep) {
+      case 'init':
         return (
-          <StoreSettingsForm
-            onNext={() => setStep(2)}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-            setError={setError}
-          />
+          <StoreSettingsForm />
         );
-      case 2:
+      case 'niche':
         return (
           <NicheSelector
-            onNext={() => setStep(3)}
-            onBack={() => setStep(1)}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-            setError={setError}
+            selectedNiche=""
+            onSelectNiche={(niche) => {
+              console.log("Selected niche:", niche);
+              handleNext();
+            }}
           />
         );
-      case 3:
+      case 'marketplace':
         return (
-          <MarketplaceSelector
-            onNext={() => setStep(4)}
-            onBack={() => setStep(2)}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-            setError={setError}
-          />
+          <MarketplaceSelector />
         );
-      case 4:
+      case 'supplier':
         return (
           <SupplierSelector
-            onComplete={() => setStep(5)}
-            onBack={() => setStep(3)}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-            setError={setError}
+            selectedSupplier={null}
+            onSupplierSelect={() => handleNext()}
           />
         );
-      case 5:
-        return <CreationComplete />;
+      case 'complete':
+        return (
+          <CreationComplete
+            storeUrl="https://votre-boutique.sokoby.com"
+            productsCount={productsCount}
+            onComplete={() => navigate('/tableau-de-bord')}
+          />
+        );
       default:
         return null;
     }
@@ -96,7 +122,11 @@ const CreerBoutiqueIA = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <CreationProgress step={step} totalSteps={4} />
+      <CreationProgress
+        currentStep={currentStep}
+        progress={getProgress()}
+        niche=""
+      />
       <div className="mt-8">{renderStep()}</div>
     </div>
   );
