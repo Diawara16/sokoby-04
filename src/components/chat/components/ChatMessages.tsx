@@ -1,11 +1,29 @@
 import { Message } from '../types'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Loader2 } from 'lucide-react'
 
 interface ChatMessagesProps {
   messages: Message[]
+  isLoading?: boolean
 }
 
-export const ChatMessages = ({ messages }: ChatMessagesProps) => {
+export const ChatMessages = ({ messages, isLoading = false }: ChatMessagesProps) => {
+  if (isLoading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  if (messages.length === 0) {
+    return (
+      <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+        Aucun message. Commencez la conversation !
+      </div>
+    )
+  }
+
   return (
     <ScrollArea className="h-full pr-4">
       {messages.map((message) => (

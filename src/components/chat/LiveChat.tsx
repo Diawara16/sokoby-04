@@ -12,7 +12,7 @@ const queryClient = new QueryClient()
 
 const ChatComponent = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const { messages } = useChatMessages(isOpen)
+  const { messages, isLoading } = useChatMessages(isOpen)
   const { newMessage, setNewMessage, sendMessage } = useSendMessage()
 
   if (!isOpen) {
@@ -40,7 +40,7 @@ const ChatComponent = () => {
         </Button>
       </CardHeader>
       <CardContent className="flex-1 overflow-hidden p-4">
-        <ChatMessages messages={messages} />
+        <ChatMessages messages={messages} isLoading={isLoading} />
       </CardContent>
       <CardFooter className="p-4 pt-2">
         <ChatInput

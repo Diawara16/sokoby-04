@@ -5,26 +5,25 @@ import { Message } from '../types'
 
 export const useChatMessages = (isOpen: boolean) => {
   const [messages, setMessages] = useState<Message[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
     const loadMessages = async () => {
+      if (!isOpen) return
+
+      setIsLoading(true)
       try {
-        console.log('Tentative de récupération de l\'utilisateur...')
-        const { data: { user }, error: userError } = await supabase.auth.getUser()
+        const { data: { user } } = await supabase.auth.getUser()
         
-        if (userError) {
-          console.error('Erreur lors de la récupération de l\'utilisateur:', userError)
-          return
-        }
-
         if (!user) {
-          console.log('Aucun utilisateur connecté')
+          toast({
+            title: "Non connecté",
+            description: "Vous devez être connecté pour utiliser le chat",
+            variant: "destructive",
+          })
           return
         }
-
-        console.log('Utilisateur récupéré:', user.id)
-        console.log('Tentative de récupération des messages...')
 
         const { data, error } = await supabase
           .from('chat_messages')
@@ -36,21 +35,22 @@ export const useChatMessages = (isOpen: boolean) => {
           console.error('Erreur lors du chargement des messages:', error)
           toast({
             title: "Erreur",
-            description: "Impossible de charger les messages",
+            description: "Impossible de charger les messages. Veuillez réessayer.",
             variant: "destructive",
           })
           return
         }
 
-        console.log('Messages récupérés:', data)
         setMessages(data || [])
       } catch (error) {
-        console.error('Erreur lors du chargement des messages:', error)
+        console.error('Erreur inattendue:', error)
         toast({
           title: "Erreur",
-          description: "Une erreur est survenue lors du chargement des messages",
+          description: "Une erreur inattendue est survenue",
           variant: "destructive",
         })
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -68,18 +68,23 @@ export const useChatMessages = (isOpen: boolean) => {
           table: 'chat_messages',
         },
         (payload) => {
-          console.log('Nouveau message reçu:', payload)
           const newMessage = payload.new as Message
           setMessages((current) => [...current, newMessage])
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('Abonné aux changements en temps réel')
+        }
+        if (status === 'CHANNEL_ERROR') {
+          console.error('Erreur de connexion au canal temps réel')
+        }
+      })
 
     return () => {
-      console.log('Nettoyage du channel de chat')
       supabase.removeChannel(channel)
     }
   }, [isOpen, toast])
 
-  return { messages }
+  return { messages, isLoading }
 }
