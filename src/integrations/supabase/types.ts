@@ -271,6 +271,36 @@ export type Database = {
           },
         ]
       }
+      chat_messages: {
+        Row: {
+          admin_id: string | null
+          content: string
+          created_at: string
+          id: string
+          is_admin: boolean | null
+          read: boolean | null
+          user_id: string
+        }
+        Insert: {
+          admin_id?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          is_admin?: boolean | null
+          read?: boolean | null
+          user_id: string
+        }
+        Update: {
+          admin_id?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          is_admin?: boolean | null
+          read?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       coupons: {
         Row: {
           code: string
