@@ -2,8 +2,12 @@ import { useState, useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 
+interface AppConnection {
+  status: 'active' | 'pending' | 'error';
+}
+
 export const useAppConnections = () => {
-  const [connectedApps, setConnectedApps] = useState<Record<string, boolean>>({});
+  const [connectedApps, setConnectedApps] = useState<Record<string, AppConnection>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   const loadConnectedApps = async () => {
@@ -20,7 +24,7 @@ export const useAppConnections = () => {
 
       const connectedStatus = connections.reduce((acc, conn) => ({
         ...acc,
-        [conn.app_name]: conn.status === 'active'
+        [conn.app_name]: { status: conn.status }
       }), {});
 
       setConnectedApps(connectedStatus);
@@ -61,7 +65,7 @@ export const useAppConnections = () => {
 
       setConnectedApps(prev => ({
         ...prev,
-        [appName]: true
+        [appName]: { status: 'active' }
       }));
 
       toast({
@@ -91,10 +95,11 @@ export const useAppConnections = () => {
 
       if (error) throw error;
 
-      setConnectedApps(prev => ({
-        ...prev,
-        [appName]: false
-      }));
+      setConnectedApps(prev => {
+        const newState = { ...prev };
+        delete newState[appName];
+        return newState;
+      });
 
       toast({
         title: "Déconnexion réussie",
