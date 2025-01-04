@@ -16,6 +16,7 @@ import { StoreHeader } from "@/components/store-creator/StoreHeader";
 import { ErrorDisplay } from "@/components/store-creator/ErrorDisplay";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 import { StoreSettingsForm } from "@/components/store-creator/StoreSettingsForm";
+import { MarketplaceSelector } from "@/components/store-creator/MarketplaceSelector";
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
 
@@ -147,6 +148,7 @@ const CreerBoutiqueIA = () => {
                 <MarketingTools />
               </div>
               <StoreSettingsForm />
+              <MarketplaceSelector />
               <NicheSelector
                 selectedNiche=""
                 onSelectNiche={handleStoreCreation}
