@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Bot, Sparkles, LockKeyhole } from "lucide-react";
+import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 
 const CreerBoutiqueIA = () => {
   const {
@@ -30,27 +31,53 @@ const CreerBoutiqueIA = () => {
     handleComplete
   } = useStoreCreation();
 
+  const { isAuthenticated, isLoading: authLoading } = useAuthAndProfile();
   const [storeName, setStoreName] = useState("Ma boutique Sokoby");
   const [storeEmail, setStoreEmail] = useState("");
   const [storePhone, setStorePhone] = useState("");
   const [storeAddress, setStoreAddress] = useState("");
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleStoreCreation = async (niche: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase
-        .from('store_settings')
-        .update({
-          store_name: storeName,
-          store_email: storeEmail || user.email,
-          store_phone: storePhone,
-          store_address: storeAddress
-        })
-        .eq('user_id', user.id);
+    if (!isAuthenticated) {
+      toast({
+        title: "Connexion requise",
+        description: "Veuillez vous connecter pour créer une boutique",
+        variant: "destructive",
+      });
+      navigate("/login");
+      return;
     }
-    
-    handleNicheSelect(niche);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from('store_settings')
+          .update({
+            store_name: storeName,
+            store_email: storeEmail || user.email,
+            store_phone: storePhone,
+            store_address: storeAddress
+          })
+          .eq('user_id', user.id);
+      }
+      
+      handleNicheSelect(niche);
+    } catch (error) {
+      console.error('Erreur lors de la création de la boutique:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la création de la boutique",
+        variant: "destructive",
+      });
+    }
   };
+
+  if (authLoading) {
+    return <LoadingSpinner message="Chargement..." />;
+  }
 
   const renderStoreSettings = () => (
     <Card className="mb-6 border-2 border-primary/20 bg-gradient-to-br from-white to-primary/5">
