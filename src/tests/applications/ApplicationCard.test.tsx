@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ApplicationCard } from '@/components/applications/ApplicationCard';
 import { Settings } from 'lucide-react';
-import { vi } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 
 describe('ApplicationCard', () => {
   const defaultProps = {

@@ -12,6 +12,8 @@ export interface Application {
     monthly: number;
     annual?: number;
   };
+  features?: string[];
+  status?: 'active' | 'pending' | 'error';
 }
 
 export const applications: Application[] = [
