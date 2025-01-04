@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
@@ -33,6 +33,22 @@ const CreerBoutiqueIA = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Connexion requise",
+          description: "Veuillez vous connecter pour créer une boutique",
+          variant: "destructive",
+        });
+        navigate("/connexion");
+      }
+    };
+
+    checkAuth();
+  }, [navigate, toast]);
+
   const handleStoreCreation = async (niche: string) => {
     if (!isAuthenticated) {
       toast({
@@ -57,20 +73,34 @@ const CreerBoutiqueIA = () => {
   };
 
   if (authLoading) {
-    return <LoadingSpinner message="Chargement..." />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner message="Chargement..." />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
   }
 
   const renderContent = () => {
     if (isLoading && step === 'niche') {
-      return <LoadingSpinner message="Initialisation..." />;
+      return (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <LoadingSpinner message="Initialisation..." />
+        </div>
+      );
     }
 
     switch (step) {
       case 'progress':
-        return <CreationProgress 
-          progress={progress} 
-          currentStep={processStep}
-        />;
+        return (
+          <CreationProgress 
+            progress={progress} 
+            currentStep={processStep}
+          />
+        );
       case 'complete':
         return (
           <CreationComplete
