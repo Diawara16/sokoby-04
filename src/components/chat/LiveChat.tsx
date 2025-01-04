@@ -8,7 +8,15 @@ import { useSendMessage } from './hooks/useSendMessage'
 import { ChatMessages } from './components/ChatMessages'
 import { ChatInput } from './components/ChatInput'
 
-const queryClient = new QueryClient()
+// Créer une nouvelle instance de QueryClient en dehors du composant
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 const ChatComponent = () => {
   const [isOpen, setIsOpen] = useState(false)
