@@ -1,10 +1,10 @@
-export type PlatformStatus = 'pending' | 'unavailable' | 'coming_soon' | 'active';
+import { ReactNode } from 'react';
 
 export interface PlatformConfig {
   name: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   description: string;
+  status: 'pending' | 'active' | 'error' | 'coming_soon' | 'unavailable';
   features?: string[];
-  status: PlatformStatus;
-  message: string;
+  message?: string;
 }
