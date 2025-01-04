@@ -11,23 +11,23 @@ import CustomReports from "@/pages/analytics/CustomReports";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Applications from "@/pages/Applications";
 import AIStore from "@/pages/AIStore";
+import SmartLogistics from "@/pages/logistics/SmartLogistics";
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route element={<ProtectedRoute><Dashboard /></ProtectedRoute>}>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/applications" element={<Applications />} />
-        <Route path="/creer-boutique-ia" element={<AIStore />} />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route path="/analytics/trends" element={<AnalyticsTrends />} />
-        <Route path="/analytics/reports" element={<AnalyticsReports />} />
-        <Route path="/analytics/custom-reports" element={<CustomReports />} />
-      </Route>
+      <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+      <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+      <Route path="/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
+      <Route path="/applications" element={<ProtectedRoute><Applications /></ProtectedRoute>} />
+      <Route path="/creer-boutique-ia" element={<ProtectedRoute><AIStore /></ProtectedRoute>} />
+      <Route path="/logistics" element={<ProtectedRoute><SmartLogistics /></ProtectedRoute>} />
+      <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+      <Route path="/analytics/trends" element={<ProtectedRoute><AnalyticsTrends /></ProtectedRoute>} />
+      <Route path="/analytics/reports" element={<ProtectedRoute><AnalyticsReports /></ProtectedRoute>} />
+      <Route path="/analytics/custom-reports" element={<ProtectedRoute><CustomReports /></ProtectedRoute>} />
     </Routes>
   );
 };
