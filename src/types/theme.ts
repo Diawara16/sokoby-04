@@ -5,7 +5,29 @@ export interface ThemeColors {
   background: string;
 }
 
-export interface Theme {
+export interface ThemeTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  niche: string;
+  preview_url?: string;
+  colors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+  };
+  typography: {
+    heading: string;
+    body: string;
+  };
+  layout: {
+    style: string;
+    spacing: string;
+  };
+  components?: Record<string, unknown>;
+}
+
+export type Theme = {
   name: string;
   description: string;
   features: string[];
@@ -13,3 +35,5 @@ export interface Theme {
   colors: ThemeColors;
   price?: number;
 }
+
+export type BackgroundColor = string;
