@@ -16,9 +16,9 @@ export const PriceOptimizer = () => {
       // Simuler des optimisations basées sur les données
       return {
         suggestions: [
-          { category: "Produits tendance", current: "29.99€", suggested: "34.99€", growth: "+16%" },
-          { category: "Produits classiques", current: "49.99€", suggested: "44.99€", growth: "-10%" },
-          { category: "Nouveautés", current: "19.99€", suggested: "24.99€", growth: "+25%" }
+          { category: "Produits tendance", current: "$29.99", suggested: "$34.99", growth: "+16%" },
+          { category: "Produits classiques", current: "$49.99", suggested: "$44.99", growth: "-10%" },
+          { category: "Nouveautés", current: "$19.99", suggested: "$24.99", growth: "+25%" }
         ]
       };
     }
