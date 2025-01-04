@@ -12,6 +12,7 @@ import Applications from "@/pages/Applications";
 import AIStore from "@/pages/AIStore";
 import SmartLogistics from "@/pages/logistics/SmartLogistics";
 import VenteMulticanale from "@/pages/VenteMulticanale";
+import Integrations from "@/pages/Integrations";
 import { ProtectedRoutes } from "@/routes/ProtectedRoutes";
 
 const AppRoutes = () => {
@@ -25,6 +26,7 @@ const AppRoutes = () => {
     { path: "/creer-boutique-ia", element: <AIStore /> },
     { path: "/logistics", element: <SmartLogistics /> },
     { path: "/vente-multicanale", element: <VenteMulticanale /> },
+    { path: "/integrations", element: <Integrations /> },
     { path: "/analytics", element: <Analytics /> },
     { path: "/analytics/trends", element: <AnalyticsTrends /> },
     { path: "/analytics/reports", element: <AnalyticsReports /> },

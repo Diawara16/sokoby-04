@@ -10,7 +10,8 @@ import {
   Share2,
   BarChart,
   Settings,
-  Bell
+  Bell,
+  Plug
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,11 @@ const menuItems = [
     icon: Grid, 
     label: "Applications", 
     href: "/applications" 
+  },
+  { 
+    icon: Plug, 
+    label: "Intégrations", 
+    href: "/integrations" 
   },
   { 
     icon: Share2, 
