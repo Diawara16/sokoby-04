@@ -62,34 +62,35 @@ export const DomainAlert = ({ domainName }: DomainAlertProps) => {
         <>
           <CheckCircle className="h-4 w-4 text-green-500" />
           <AlertDescription>
-            Le domaine {domainName} est correctement déployé et vérifié. 
-            Pour configurer les DNS, ajoutez ces enregistrements chez votre registrar :
-            <div className="mt-2 bg-gray-50 p-3 rounded-md">
-              <p><strong>Type :</strong> A</p>
-              <p><strong>Nom :</strong> @</p>
-              <p><strong>Valeur :</strong> 76.76.21.21</p>
-            </div>
-            <div className="mt-2 bg-gray-50 p-3 rounded-md">
-              <p><strong>Type :</strong> CNAME</p>
-              <p><strong>Nom :</strong> www</p>
-              <p><strong>Valeur :</strong> cname.vercel-dns.com</p>
-            </div>
+            Le domaine {domainName} est correctement déployé et vérifié.
           </AlertDescription>
         </>
       ) : (
         <>
           <XCircle className="h-4 w-4 text-red-500" />
           <AlertDescription>
-            Le domaine {domainName} n'est pas encore vérifié. Veuillez configurer les enregistrements DNS :
-            <div className="mt-2 bg-gray-50 p-3 rounded-md">
-              <p><strong>Type :</strong> A</p>
-              <p><strong>Nom :</strong> @</p>
-              <p><strong>Valeur :</strong> 76.76.21.21</p>
-            </div>
-            <div className="mt-2 bg-gray-50 p-3 rounded-md">
-              <p><strong>Type :</strong> CNAME</p>
-              <p><strong>Nom :</strong> www</p>
-              <p><strong>Valeur :</strong> cname.vercel-dns.com</p>
+            <p className="mb-4">Pour configurer {domainName}, ajoutez ces enregistrements DNS chez votre registrar :</p>
+            
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h4 className="font-semibold mb-2">Configuration du domaine principal</h4>
+                <p><strong>Type :</strong> A</p>
+                <p><strong>Nom :</strong> @</p>
+                <p><strong>Valeur :</strong> 76.76.21.21</p>
+                <p><strong>TTL :</strong> Automatique</p>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h4 className="font-semibold mb-2">Configuration du sous-domaine www</h4>
+                <p><strong>Type :</strong> CNAME</p>
+                <p><strong>Nom :</strong> www</p>
+                <p><strong>Valeur :</strong> cname.vercel-dns.com</p>
+                <p><strong>TTL :</strong> Automatique</p>
+              </div>
+
+              <div className="mt-4 text-sm text-gray-600">
+                <p>Note : La propagation DNS peut prendre jusqu'à 48 heures. Nous vérifions automatiquement l'état de la configuration toutes les 30 secondes.</p>
+              </div>
             </div>
           </AlertDescription>
         </>
