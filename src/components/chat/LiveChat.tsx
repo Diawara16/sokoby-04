@@ -23,21 +23,25 @@ export function LiveChat() {
 
   useEffect(() => {
     const loadMessages = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
 
-      const { data, error } = await supabase
-        .from('chat_messages')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: true })
+        const { data, error } = await supabase
+          .from('chat_messages')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: true })
 
-      if (error) {
+        if (error) {
+          console.error('Erreur lors du chargement des messages:', error)
+          return
+        }
+
+        setMessages(data || [])
+      } catch (error) {
         console.error('Erreur lors du chargement des messages:', error)
-        return
       }
-
-      setMessages(data || [])
     }
 
     loadMessages()
@@ -67,37 +71,46 @@ export function LiveChat() {
     e.preventDefault()
     if (!newMessage.trim()) return
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      toast({
-        title: "Erreur",
-        description: "Vous devez être connecté pour envoyer un message",
-        variant: "destructive",
-      })
-      return
-    }
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour envoyer un message",
+          variant: "destructive",
+        })
+        return
+      }
 
-    const { error } = await supabase
-      .from('chat_messages')
-      .insert([
-        {
-          content: newMessage,
-          user_id: user.id,
-          is_admin: false
-        }
-      ])
+      const { error } = await supabase
+        .from('chat_messages')
+        .insert([
+          {
+            content: newMessage,
+            user_id: user.id,
+            is_admin: false
+          }
+        ])
 
-    if (error) {
+      if (error) {
+        console.error('Erreur lors de l\'envoi du message:', error)
+        toast({
+          title: "Erreur",
+          description: "Impossible d'envoyer le message",
+          variant: "destructive",
+        })
+        return
+      }
+
+      setNewMessage('')
+    } catch (error) {
       console.error('Erreur lors de l\'envoi du message:', error)
       toast({
         title: "Erreur",
-        description: "Impossible d'envoyer le message",
+        description: "Une erreur est survenue",
         variant: "destructive",
       })
-      return
     }
-
-    setNewMessage('')
   }
 
   if (!isOpen) {
