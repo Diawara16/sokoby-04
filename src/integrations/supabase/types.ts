@@ -1227,6 +1227,63 @@ export type Database = {
           },
         ]
       }
+      social_catalog_items: {
+        Row: {
+          created_at: string
+          id: string
+          integration_id: string
+          last_sync_at: string | null
+          platform_data: Json | null
+          platform_product_id: string | null
+          product_id: string
+          sync_error: string | null
+          sync_status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          integration_id: string
+          last_sync_at?: string | null
+          platform_data?: Json | null
+          platform_product_id?: string | null
+          product_id: string
+          sync_error?: string | null
+          sync_status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          integration_id?: string
+          last_sync_at?: string | null
+          platform_data?: Json | null
+          platform_product_id?: string | null
+          product_id?: string
+          sync_error?: string | null
+          sync_status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_catalog_items_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "social_integrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_catalog_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       social_integrations: {
         Row: {
           created_at: string
@@ -1369,6 +1426,56 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      sync_history: {
+        Row: {
+          completed_at: string | null
+          error_details: Json | null
+          id: string
+          integration_id: string
+          items_failed: number | null
+          items_processed: number | null
+          items_succeeded: number | null
+          started_at: string
+          status: string
+          sync_type: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          error_details?: Json | null
+          id?: string
+          integration_id: string
+          items_failed?: number | null
+          items_processed?: number | null
+          items_succeeded?: number | null
+          started_at?: string
+          status: string
+          sync_type: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          error_details?: Json | null
+          id?: string
+          integration_id?: string
+          items_failed?: number | null
+          items_processed?: number | null
+          items_succeeded?: number | null
+          started_at?: string
+          status?: string
+          sync_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sync_history_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "social_integrations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_behaviors: {
         Row: {
