@@ -12,7 +12,10 @@ import {
   ShoppingBag,
   BarChart,
   Mail,
-  Bell
+  Bell,
+  Bot,
+  Share2,
+  Apps
 } from "lucide-react";
 
 export interface NavigationItem {
@@ -34,6 +37,12 @@ export const navigationItems: NavigationItem[] = [
     title: "Boutique",
     url: "/boutique",
     icon: Store
+  },
+  {
+    title: "Créer ma boutique IA",
+    url: "/creer-boutique-ia",
+    icon: Bot,
+    className: "text-primary hover:text-primary/90"
   },
   {
     title: "Produits",
@@ -73,9 +82,19 @@ export const navigationItems: NavigationItem[] = [
     ]
   },
   {
-    title: "Marketing",
-    url: "/marketing",
+    title: "Email Marketing",
+    url: "/email-marketing",
     icon: Mail
+  },
+  {
+    title: "Applications",
+    url: "/applications",
+    icon: Apps
+  },
+  {
+    title: "Canaux de vente",
+    url: "/vente-multicanale",
+    icon: Share2
   },
   {
     title: "Analytiques",
