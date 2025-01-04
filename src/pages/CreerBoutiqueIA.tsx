@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Bot, Sparkles } from "lucide-react";
+import { Bot, Sparkles, LockKeyhole } from "lucide-react";
 
 const CreerBoutiqueIA = () => {
   const {
@@ -61,7 +61,7 @@ const CreerBoutiqueIA = () => {
             Configuration IA
           </CardTitle>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Lock className="h-4 w-4" />
+            <LockKeyhole className="h-4 w-4" />
             Option Premium
           </div>
         </div>
