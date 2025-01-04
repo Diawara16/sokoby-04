@@ -1,164 +1,19 @@
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
-import { useToast } from '@/hooks/use-toast'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { MessageCircle, Send } from 'lucide-react'
+import { MessageCircle } from 'lucide-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useChatMessages } from './hooks/useChatMessages'
+import { useSendMessage } from './hooks/useSendMessage'
+import { ChatMessages } from './components/ChatMessages'
+import { ChatInput } from './components/ChatInput'
 
-interface Message {
-  id: string
-  content: string
-  is_admin: boolean
-  created_at: string
-  user_id: string
-}
-
-// Créer une instance de QueryClient
 const queryClient = new QueryClient()
 
 const ChatComponent = () => {
-  const [messages, setMessages] = useState<Message[]>([])
-  const [newMessage, setNewMessage] = useState('')
   const [isOpen, setIsOpen] = useState(false)
-  const { toast } = useToast()
-
-  useEffect(() => {
-    const loadMessages = async () => {
-      try {
-        console.log('Tentative de récupération de l\'utilisateur...')
-        const { data: { user }, error: userError } = await supabase.auth.getUser()
-        
-        if (userError) {
-          console.error('Erreur lors de la récupération de l\'utilisateur:', userError)
-          return
-        }
-
-        if (!user) {
-          console.log('Aucun utilisateur connecté')
-          return
-        }
-
-        console.log('Utilisateur récupéré:', user.id)
-        console.log('Tentative de récupération des messages...')
-
-        const { data, error } = await supabase
-          .from('chat_messages')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: true })
-
-        if (error) {
-          console.error('Erreur lors du chargement des messages:', error)
-          toast({
-            title: "Erreur",
-            description: "Impossible de charger les messages",
-            variant: "destructive",
-          })
-          return
-        }
-
-        console.log('Messages récupérés:', data)
-        setMessages(data || [])
-      } catch (error) {
-        console.error('Erreur lors du chargement des messages:', error)
-        toast({
-          title: "Erreur",
-          description: "Une erreur est survenue lors du chargement des messages",
-          variant: "destructive",
-        })
-      }
-    }
-
-    if (isOpen) {
-      loadMessages()
-    }
-
-    const channel = supabase
-      .channel('chat_messages')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'chat_messages',
-        },
-        (payload) => {
-          console.log('Nouveau message reçu:', payload)
-          const newMessage = payload.new as Message
-          setMessages((current) => [...current, newMessage])
-        }
-      )
-      .subscribe()
-
-    return () => {
-      console.log('Nettoyage du channel de chat')
-      supabase.removeChannel(channel)
-    }
-  }, [isOpen, toast])
-
-  const sendMessage = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newMessage.trim()) return
-
-    try {
-      console.log('Tentative d\'envoi du message...')
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
-      
-      if (userError) {
-        console.error('Erreur lors de la récupération de l\'utilisateur:', userError)
-        toast({
-          title: "Erreur",
-          description: "Impossible de vérifier l'authentification",
-          variant: "destructive",
-        })
-        return
-      }
-
-      if (!user) {
-        console.log('Utilisateur non connecté')
-        toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour envoyer un message",
-          variant: "destructive",
-        })
-        return
-      }
-
-      console.log('Envoi du message pour l\'utilisateur:', user.id)
-      const { error } = await supabase
-        .from('chat_messages')
-        .insert([
-          {
-            content: newMessage,
-            user_id: user.id,
-            is_admin: false
-          }
-        ])
-
-      if (error) {
-        console.error('Erreur lors de l\'envoi du message:', error)
-        toast({
-          title: "Erreur",
-          description: "Impossible d'envoyer le message",
-          variant: "destructive",
-        })
-        return
-      }
-
-      console.log('Message envoyé avec succès')
-      setNewMessage('')
-    } catch (error) {
-      console.error('Erreur lors de l\'envoi du message:', error)
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue",
-        variant: "destructive",
-      })
-    }
-  }
+  const { messages } = useChatMessages(isOpen)
+  const { newMessage, setNewMessage, sendMessage } = useSendMessage()
 
   if (!isOpen) {
     return (
@@ -185,50 +40,19 @@ const ChatComponent = () => {
         </Button>
       </CardHeader>
       <CardContent className="flex-1 overflow-hidden p-4">
-        <ScrollArea className="h-full pr-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`mb-4 ${
-                message.is_admin
-                  ? 'ml-auto text-right'
-                  : 'mr-auto'
-              }`}
-            >
-              <div
-                className={`inline-block rounded-lg px-4 py-2 max-w-[90%] ${
-                  message.is_admin
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted'
-                }`}
-              >
-                {message.content}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                {new Date(message.created_at).toLocaleTimeString()}
-              </div>
-            </div>
-          ))}
-        </ScrollArea>
+        <ChatMessages messages={messages} />
       </CardContent>
       <CardFooter className="p-4 pt-2">
-        <form onSubmit={sendMessage} className="flex w-full gap-2">
-          <Input
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Votre message..."
-            className="flex-1"
-          />
-          <Button type="submit" size="icon" disabled={!newMessage.trim()}>
-            <Send className="h-4 w-4" />
-          </Button>
-        </form>
+        <ChatInput
+          newMessage={newMessage}
+          setNewMessage={setNewMessage}
+          onSubmit={sendMessage}
+        />
       </CardFooter>
     </Card>
   )
 }
 
-// Wrapper component avec QueryClientProvider
 export function LiveChat() {
   return (
     <QueryClientProvider client={queryClient}>
