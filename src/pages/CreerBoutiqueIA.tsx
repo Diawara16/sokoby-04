@@ -16,6 +16,8 @@ import { StoreHeader } from "@/components/store-creator/StoreHeader";
 import { ErrorDisplay } from "@/components/store-creator/ErrorDisplay";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 import { StoreSettingsForm } from "@/components/store-creator/StoreSettingsForm";
+import { Button } from "@/components/ui/button";
+import { LogIn } from "lucide-react";
 
 const CreerBoutiqueIA = () => {
   const {
@@ -37,17 +39,12 @@ const CreerBoutiqueIA = () => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast({
-          title: "Connexion requise",
-          description: "Veuillez vous connecter pour créer une boutique",
-          variant: "destructive",
-        });
-        navigate("/connexion");
+        console.log("Pas de session active, redirection vers la connexion");
       }
     };
 
     checkAuth();
-  }, [navigate, toast]);
+  }, []);
 
   const handleStoreCreation = async (niche: string) => {
     if (!isAuthenticated) {
@@ -81,7 +78,26 @@ const CreerBoutiqueIA = () => {
   }
 
   if (!isAuthenticated) {
-    return null;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-gradient-to-b from-white to-gray-50 p-4">
+        <div className="text-center space-y-4 max-w-lg">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Créez votre boutique automatisée
+          </h1>
+          <p className="text-gray-600">
+            Connectez-vous pour commencer à créer votre boutique en ligne avec notre assistant IA.
+          </p>
+        </div>
+        <Button 
+          onClick={() => navigate("/connexion")}
+          size="lg"
+          className="gap-2"
+        >
+          <LogIn className="w-4 h-4" />
+          Se connecter pour continuer
+        </Button>
+      </div>
+    );
   }
 
   const renderContent = () => {
