@@ -1,45 +1,45 @@
 export const pricingPlans = {
   starter: {
-    name: "Démarrage",
+    name: "Starter",
     price: 11,
     features: [
-      "Jusqu'à 100 produits",
-      "Support par email",
-      "Analyses de base",
-      "Personnalisation limitée"
+      "Up to 100 products",
+      "Email support",
+      "Basic analytics",
+      "Limited customization"
     ],
-    cta: "Commencer gratuitement",
+    cta: "Start for free",
     popular: false
   },
   pro: {
     name: "Pro",
     price: 19,
     features: [
-      "Produits illimités",
-      "Support prioritaire",
-      "Analyses avancées", 
-      "Personnalisation complète",
-      "Domaine personnalisé"
+      "Unlimited products",
+      "Priority support",
+      "Advanced analytics", 
+      "Full customization",
+      "Custom domain"
     ],
-    cta: "Essayer Pro",
+    cta: "Try Pro",
     popular: true
   },
   enterprise: {
-    name: "Entreprise",
+    name: "Enterprise",
     price: 49,
     features: [
-      "Tout dans Pro",
-      "Support dédié 24/7",
-      "API personnalisée",
-      "Formation sur mesure",
-      "SLA garanti"
+      "Everything in Pro",
+      "24/7 dedicated support",
+      "Custom API",
+      "Custom training",
+      "SLA guarantee"
     ],
-    cta: "Contacter les ventes",
+    cta: "Contact sales",
     popular: false
   }
 }
 
-// Calcul des prix annuels avec 2 mois gratuits
+// Calculate annual prices with 2 months free
 export const getAnnualPrice = (monthlyPrice: number) => {
-  return monthlyPrice * 10; // 12 mois - 2 mois gratuits = 10 mois facturés
+  return monthlyPrice * 10; // 12 months - 2 months free = 10 months charged
 }

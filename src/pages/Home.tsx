@@ -6,6 +6,7 @@ import { CTASection } from "@/components/home/CTASection";
 import ShoppingInspirationSection from "@/components/home/ShoppingInspirationSection";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
+import { Footer } from "@/components/Footer";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -23,21 +24,26 @@ const Home = () => {
   }, [isAuthenticated, navigate]);
 
   if (isAuthenticated) {
-    return null; // Prevent flash of content during redirect
+    return null;
   }
 
   return (
-    <div className="space-y-20 pb-8">
-      <HeroSection 
-        isAuthenticated={isAuthenticated} 
-        currentLanguage={currentLanguage} 
-      />
-      <FeaturesSection currentLanguage={currentLanguage} />
-      <ShoppingInspirationSection />
-      <CTASection 
-        currentLanguage={currentLanguage}
-        onCreateStore={handleCreateStore}
-      />
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-grow">
+        <HeroSection 
+          isAuthenticated={isAuthenticated} 
+          currentLanguage={currentLanguage} 
+        />
+        <div className="bg-gradient-to-b from-white to-gray-50">
+          <FeaturesSection currentLanguage={currentLanguage} />
+          <ShoppingInspirationSection />
+          <CTASection 
+            currentLanguage={currentLanguage}
+            onCreateStore={handleCreateStore}
+          />
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };
