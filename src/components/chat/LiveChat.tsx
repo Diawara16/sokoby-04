@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { MessageCircle, Send } from 'lucide-react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 interface Message {
   id: string
@@ -15,7 +16,10 @@ interface Message {
   user_id: string
 }
 
-export function LiveChat() {
+// Créer une instance de QueryClient
+const queryClient = new QueryClient()
+
+const ChatComponent = () => {
   const [messages, setMessages] = useState<Message[]>([])
   const [newMessage, setNewMessage] = useState('')
   const [isOpen, setIsOpen] = useState(false)
@@ -178,5 +182,14 @@ export function LiveChat() {
         </form>
       </CardFooter>
     </Card>
+  )
+}
+
+// Wrapper component avec QueryClientProvider
+export function LiveChat() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ChatComponent />
+    </QueryClientProvider>
   )
 }
