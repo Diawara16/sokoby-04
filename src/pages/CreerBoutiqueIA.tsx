@@ -8,11 +8,15 @@ import { CreationComplete } from "@/components/store-creator/CreationComplete";
 import { StoreExamples } from "@/components/store-creator/StoreExamples";
 import { useStoreCreation } from "@/hooks/useStoreCreation";
 import { LoadingSpinner } from "@/components/pricing/LoadingSpinner";
+import { VendorAssistant } from "@/components/ai/VendorAssistant";
+import { PriceOptimizer } from "@/components/ai/PriceOptimizer";
+import { ProductImageGenerator } from "@/components/ai/ProductImageGenerator";
+import { MarketingTools } from "@/components/ai/MarketingTools";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Bot, Sparkles, Lock } from "lucide-react";
+import { Bot, Sparkles } from "lucide-react";
 
 const CreerBoutiqueIA = () => {
   const {
@@ -132,7 +136,7 @@ const CreerBoutiqueIA = () => {
         );
       default:
         return (
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="space-y-8">
               <div className="text-center space-y-4">
                 <div className="flex justify-center mb-4">
@@ -149,6 +153,17 @@ const CreerBoutiqueIA = () => {
                   Notre IA va générer une boutique complète et optimisée pour votre niche, avec des produits pertinents et des descriptions détaillées.
                 </p>
               </div>
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <VendorAssistant />
+                <PriceOptimizer />
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <ProductImageGenerator />
+                <MarketingTools />
+              </div>
+
               {renderStoreSettings()}
               <NicheSelector
                 selectedNiche=""
