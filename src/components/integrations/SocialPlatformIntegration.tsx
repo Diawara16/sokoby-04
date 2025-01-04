@@ -18,9 +18,10 @@ export const SocialPlatformIntegration = () => {
         description: `L'intégration avec ${platform.name} a été initiée avec succès.`,
       });
     } catch (error) {
+      console.error("Erreur d'intégration:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de l'intégration.",
+        description: "Une erreur est survenue lors de l'intégration. Veuillez réessayer.",
         variant: "destructive",
       });
     }

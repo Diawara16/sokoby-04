@@ -46,27 +46,24 @@ export const usePlatformIntegration = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Vous devez être connecté");
 
-      // Appeler la fonction Edge pour initialiser l'intégration
+      console.log(`Initialisation de l'intégration avec ${platform.name}`);
+
       const { data, error } = await supabase.functions.invoke('social-platform-auth', {
-        body: { platform: platform.name.toLowerCase() }
+        body: { 
+          platform: platform.name.toLowerCase(),
+          userId: user.id
+        }
       });
 
       if (error) throw error;
 
-      toast({
-        title: "Intégration initiée",
-        description: `L'intégration avec ${platform.name} a été initiée. Nous vous guiderons dans la configuration.`,
-      });
+      console.log("Réponse de l'intégration:", data);
 
       await fetchIntegrations();
     } catch (error: any) {
       console.error(`Erreur lors de l'intégration ${platform.name}:`, error);
       setError(error.message);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue. Veuillez réessayer plus tard.",
-        variant: "destructive",
-      });
+      throw error;
     } finally {
       setIsLoading(prev => ({ ...prev, [platform.name]: false }));
     }
