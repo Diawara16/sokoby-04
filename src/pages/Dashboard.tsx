@@ -4,7 +4,7 @@ import { AppSidebar } from "@/components/AppSidebar"
 
 const Dashboard = () => {
   return (
-    <div className="flex min-h-screen w-full">
+    <>
       <AppSidebar />
       <main className="flex-1 overflow-y-auto bg-background p-8">
         <div className="container mx-auto">
@@ -18,7 +18,7 @@ const Dashboard = () => {
           <UserDashboard />
         </div>
       </main>
-    </div>
+    </>
   )
 }
 
