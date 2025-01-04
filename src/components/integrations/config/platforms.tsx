@@ -1,4 +1,4 @@
-import { ShoppingBag, Share2 } from "lucide-react";
+import { ShoppingBag, Share2, Twitter } from "lucide-react";
 import { PlatformConfig } from "../types/platform";
 
 export const socialPlatforms: PlatformConfig[] = [
@@ -11,6 +11,17 @@ export const socialPlatforms: PlatformConfig[] = [
       "Synchronisation du catalogue",
       "Gestion des commandes",
       "Statistiques de vente"
+    ]
+  },
+  {
+    name: "Twitter",
+    icon: <Twitter className="h-5 w-5" />,
+    description: "Partagez vos produits sur Twitter",
+    status: "pending",
+    features: [
+      "Publication automatique",
+      "Partage de produits",
+      "Analyses d'engagement"
     ]
   },
   {
