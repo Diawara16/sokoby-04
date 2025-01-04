@@ -6,7 +6,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 
-export function EmailCampaignForm() {
+interface EmailCampaignFormProps {
+  onSuccess?: () => void;
+}
+
+export function EmailCampaignForm({ onSuccess }: EmailCampaignFormProps) {
   const [name, setName] = useState("");
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
@@ -48,6 +52,11 @@ export function EmailCampaignForm() {
       setName("");
       setSubject("");
       setContent("");
+      
+      // Appeler le callback de succès si fourni
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       console.error("Erreur lors de l'envoi de la campagne:", error);
       toast({
@@ -61,7 +70,7 @@ export function EmailCampaignForm() {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card>
       <CardHeader>
         <CardTitle>Nouvelle Campagne Email</CardTitle>
       </CardHeader>
