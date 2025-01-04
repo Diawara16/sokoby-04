@@ -7,9 +7,12 @@ interface PlatformCardProps {
   platform: PlatformConfig;
   isLoading: boolean;
   onIntegrate: (platform: PlatformConfig) => void;
+  currentStatus?: string;
 }
 
-export const PlatformCard = ({ platform, isLoading, onIntegrate }: PlatformCardProps) => {
+export const PlatformCard = ({ platform, isLoading, onIntegrate, currentStatus }: PlatformCardProps) => {
+  const status = currentStatus || platform.status;
+  
   return (
     <Card className="relative overflow-hidden">
       {platform.status === 'coming_soon' && (
@@ -25,7 +28,7 @@ export const PlatformCard = ({ platform, isLoading, onIntegrate }: PlatformCardP
       </CardHeader>
       <CardContent>
         <p className="text-muted-foreground mb-4">{platform.description}</p>
-        {platform.status === 'unavailable' ? (
+        {status === 'unavailable' ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <AlertCircle className="h-4 w-4" />
             <span>{platform.message}</span>
@@ -33,14 +36,14 @@ export const PlatformCard = ({ platform, isLoading, onIntegrate }: PlatformCardP
         ) : (
           <Button 
             onClick={() => onIntegrate(platform)}
-            disabled={isLoading || platform.status === 'coming_soon'}
+            disabled={isLoading || status === 'coming_soon'}
             className="w-full"
-            variant={platform.status === 'coming_soon' ? "outline" : "default"}
+            variant={status === 'coming_soon' ? "outline" : "default"}
           >
             {isLoading && (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
             )}
-            {platform.status === 'coming_soon' 
+            {status === 'coming_soon' 
               ? "Bientôt disponible" 
               : `Connecter ${platform.name}`}
           </Button>
