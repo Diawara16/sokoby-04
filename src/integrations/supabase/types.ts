@@ -749,6 +749,56 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_details: {
+        Row: {
+          api_endpoint: string | null
+          code: string
+          created_at: string
+          description: string | null
+          documentation_url: string | null
+          id: string
+          name: string
+          region_id: string | null
+          requirements: string[] | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          api_endpoint?: string | null
+          code: string
+          created_at?: string
+          description?: string | null
+          documentation_url?: string | null
+          id?: string
+          name: string
+          region_id?: string | null
+          requirements?: string[] | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          api_endpoint?: string | null
+          code?: string
+          created_at?: string
+          description?: string | null
+          documentation_url?: string | null
+          id?: string
+          name?: string
+          region_id?: string | null
+          requirements?: string[] | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_details_region_id_fkey"
+            columns: ["region_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_regions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketplace_integrations: {
         Row: {
           created_at: string
@@ -788,6 +838,30 @@ export type Database = {
           sync_status?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      marketplace_regions: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
         }
         Relationships: []
       }
