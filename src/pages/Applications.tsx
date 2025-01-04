@@ -24,13 +24,13 @@ const Applications = () => {
               name={app.name}
               description={app.description}
               icon={app.icon}
-              isConnected={!!connectedApps[app.name]}
-              onConnect={() => handleConnect(app.name, app.authUrl)}
-              onDisconnect={() => handleDisconnect(app.name)}
+              isConnected={!!connectedApps[app.id]}
+              onConnect={() => handleConnect(app.id, app.authUrl)}
+              onDisconnect={() => handleDisconnect(app.id)}
               isLoading={isLoading}
               features={isMobile ? app.features?.slice(0, 3) : app.features}
               price={app.price}
-              status={connectedApps[app.name]?.status}
+              status={connectedApps[app.id]?.status}
             />
           ))}
         </div>
