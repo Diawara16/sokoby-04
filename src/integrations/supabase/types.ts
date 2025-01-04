@@ -1477,6 +1477,45 @@ export type Database = {
           },
         ]
       }
+      theme_templates: {
+        Row: {
+          colors: Json
+          components: Json
+          created_at: string
+          description: string | null
+          id: string
+          layout: Json
+          name: string
+          niche: string
+          preview_url: string | null
+          typography: Json
+        }
+        Insert: {
+          colors?: Json
+          components?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          layout?: Json
+          name: string
+          niche: string
+          preview_url?: string | null
+          typography?: Json
+        }
+        Update: {
+          colors?: Json
+          components?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          layout?: Json
+          name?: string
+          niche?: string
+          preview_url?: string | null
+          typography?: Json
+        }
+        Relationships: []
+      }
       user_behaviors: {
         Row: {
           created_at: string
