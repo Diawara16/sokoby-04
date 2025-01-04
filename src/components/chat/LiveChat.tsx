@@ -22,7 +22,6 @@ export function LiveChat() {
   const { toast } = useToast()
 
   useEffect(() => {
-    // Charger les messages existants
     const loadMessages = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
@@ -38,7 +37,7 @@ export function LiveChat() {
         return
       }
 
-      setMessages(data)
+      setMessages(data || [])
     }
 
     loadMessages()
@@ -54,7 +53,8 @@ export function LiveChat() {
           table: 'chat_messages',
         },
         (payload) => {
-          setMessages((current) => [...current, payload.new as Message])
+          const newMessage = payload.new as Message
+          setMessages((current) => [...current, newMessage])
         }
       )
       .subscribe()
@@ -84,10 +84,12 @@ export function LiveChat() {
         {
           content: newMessage,
           user_id: user.id,
+          is_admin: false
         }
       ])
 
     if (error) {
+      console.error('Erreur lors de l\'envoi du message:', error)
       toast({
         title: "Erreur",
         description: "Impossible d'envoyer le message",
@@ -111,18 +113,19 @@ export function LiveChat() {
   }
 
   return (
-    <Card className="fixed bottom-4 right-4 w-80 h-96 flex flex-col">
+    <Card className="fixed bottom-4 right-4 w-80 h-96 flex flex-col shadow-lg">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle>Support Client</CardTitle>
+        <CardTitle className="text-lg">Support Client</CardTitle>
         <Button
           variant="ghost"
           size="sm"
+          className="h-8 w-8 p-0"
           onClick={() => setIsOpen(false)}
         >
           ✕
         </Button>
       </CardHeader>
-      <CardContent className="flex-1 overflow-hidden">
+      <CardContent className="flex-1 overflow-hidden p-4">
         <ScrollArea className="h-full pr-4">
           {messages.map((message) => (
             <div
@@ -134,7 +137,7 @@ export function LiveChat() {
               }`}
             >
               <div
-                className={`inline-block rounded-lg px-4 py-2 ${
+                className={`inline-block rounded-lg px-4 py-2 max-w-[90%] ${
                   message.is_admin
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted'
@@ -149,7 +152,7 @@ export function LiveChat() {
           ))}
         </ScrollArea>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="p-4 pt-2">
         <form onSubmit={sendMessage} className="flex w-full gap-2">
           <Input
             value={newMessage}
@@ -157,7 +160,7 @@ export function LiveChat() {
             placeholder="Votre message..."
             className="flex-1"
           />
-          <Button type="submit" size="icon">
+          <Button type="submit" size="icon" disabled={!newMessage.trim()}>
             <Send className="h-4 w-4" />
           </Button>
         </form>
