@@ -39,11 +39,19 @@ const CreerBoutiqueIA = () => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        console.log("Pas de session active, redirection vers la connexion");
+        console.log("Pas de session active");
       }
     };
 
     checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        console.log("Session terminée");
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleStoreCreation = async (niche: string) => {
