@@ -30,6 +30,9 @@ import CustomerOverview from "./pages/customers/CustomerOverview"
 import CustomerDetails from "./pages/customers/CustomerDetails"
 import CustomerGroups from "./pages/customers/CustomerGroups"
 import CustomerLoyalty from "./pages/customers/CustomerLoyalty"
+import Applications from "./pages/Applications"
+import AIStore from "./pages/AIStore"
+import VenteMulticanale from "./pages/VenteMulticanale"
 
 export const AppRoutes = () => {
   return (
@@ -59,6 +62,9 @@ export const AppRoutes = () => {
       <Route path="/clients/details" element={<CustomerDetails />} />
       <Route path="/clients/groupes" element={<CustomerGroups />} />
       <Route path="/clients/fidelite" element={<CustomerLoyalty />} />
+      <Route path="/applications" element={<Applications />} />
+      <Route path="/creer-boutique-ia" element={<AIStore />} />
+      <Route path="/vente-multicanale" element={<VenteMulticanale />} />
       <Route path="/parametres" element={<Settings />}>
         <Route path="facturation" element={<BillingSettings />} />
         <Route path="utilisateurs" element={<UserSettings />} />

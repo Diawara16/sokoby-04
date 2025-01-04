@@ -15,7 +15,7 @@ import {
   Bell,
   Bot,
   Share2,
-  Apps
+  LayoutGrid
 } from "lucide-react";
 
 export interface NavigationItem {
@@ -89,7 +89,7 @@ export const navigationItems: NavigationItem[] = [
   {
     title: "Applications",
     url: "/applications",
-    icon: Apps
+    icon: LayoutGrid
   },
   {
     title: "Canaux de vente",
