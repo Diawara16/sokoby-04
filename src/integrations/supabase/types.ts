@@ -1471,6 +1471,7 @@ export type Database = {
           platform: string
           settings: Json | null
           status: string | null
+          tiktok_settings: Json | null
           updated_at: string
           user_id: string
         }
@@ -1481,6 +1482,7 @@ export type Database = {
           platform: string
           settings?: Json | null
           status?: string | null
+          tiktok_settings?: Json | null
           updated_at?: string
           user_id: string
         }
@@ -1491,6 +1493,7 @@ export type Database = {
           platform?: string
           settings?: Json | null
           status?: string | null
+          tiktok_settings?: Json | null
           updated_at?: string
           user_id?: string
         }
