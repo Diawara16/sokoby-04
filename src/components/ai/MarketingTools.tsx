@@ -1,20 +1,27 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Megaphone, Target, Users, TrendingUp, Mail, Wand2, SplitSquareVertical } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 
 export const MarketingTools = () => {
   const { toast } = useToast();
-  const { data: marketingData, isLoading } = useQuery({
+
+  // Récupérer les campagnes et suggestions
+  const { data: marketingData, isLoading, refetch } = useQuery({
     queryKey: ['marketing-suggestions'],
     queryFn: async () => {
-      const { data: campaigns } = await supabase
+      const { data: campaigns, error } = await supabase
         .from('email_campaigns')
-        .select('name, status')
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(3);
+
+      if (error) {
+        console.error("Erreur lors de la récupération des campagnes:", error);
+        throw error;
+      }
 
       return {
         campaigns: campaigns || [],
@@ -36,23 +43,86 @@ export const MarketingTools = () => {
             description: "Optimisation des campagnes par A/B testing",
             icon: SplitSquareVertical,
             features: ["Test de contenu", "Test d'objets", "Analyse des résultats"]
-          },
-          {
-            title: "Analyse Audience",
-            description: "Comprenez votre audience en profondeur",
-            icon: Users,
-            features: ["Segmentation avancée", "Profils détaillés", "Comportements"]
           }
         ]
       };
     }
   });
 
-  const handleFeatureClick = (feature: string) => {
-    toast({
-      title: "Fonctionnalité disponible",
-      description: `La fonctionnalité "${feature}" sera bientôt disponible dans votre tableau de bord.`,
-    });
+  // Mutation pour créer une nouvelle campagne
+  const createCampaignMutation = useMutation({
+    mutationFn: async (feature: string) => {
+      const campaignData = {
+        name: `Campagne - ${feature}`,
+        subject: `Nouvelle campagne - ${feature}`,
+        content: `Contenu de test pour ${feature}`,
+        status: 'draft',
+        user_id: (await supabase.auth.getUser()).data.user?.id
+      };
+
+      const { data, error } = await supabase
+        .from('email_campaigns')
+        .insert(campaignData)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      refetch();
+      toast({
+        title: "Campagne créée",
+        description: "Une nouvelle campagne a été créée avec succès.",
+      });
+    },
+    onError: (error) => {
+      console.error("Erreur lors de la création de la campagne:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de créer la campagne. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Mutation pour démarrer un test A/B
+  const startAbTestMutation = useMutation({
+    mutationFn: async (feature: string) => {
+      const testData = {
+        name: `Test A/B - ${feature}`,
+        variant_a: `Version A - ${feature}`,
+        variant_b: `Version B - ${feature}`,
+        status: 'running',
+        user_id: (await supabase.auth.getUser()).data.user?.id
+      };
+
+      await supabase.functions.invoke('start-ab-test', {
+        body: { testData }
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Test A/B démarré",
+        description: "Le test A/B a été configuré et démarré avec succès.",
+      });
+    },
+    onError: (error) => {
+      console.error("Erreur lors du démarrage du test A/B:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de démarrer le test A/B. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleFeatureClick = async (feature: string) => {
+    if (feature.includes("Test")) {
+      startAbTestMutation.mutate(feature);
+    } else {
+      createCampaignMutation.mutate(feature);
+    }
   };
 
   return (
@@ -107,4 +177,4 @@ export const MarketingTools = () => {
       </CardContent>
     </Card>
   );
-}
+};
