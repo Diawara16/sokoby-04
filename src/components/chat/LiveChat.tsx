@@ -28,8 +28,21 @@ const ChatComponent = () => {
   useEffect(() => {
     const loadMessages = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) return
+        console.log('Tentative de récupération de l\'utilisateur...')
+        const { data: { user }, error: userError } = await supabase.auth.getUser()
+        
+        if (userError) {
+          console.error('Erreur lors de la récupération de l\'utilisateur:', userError)
+          return
+        }
+
+        if (!user) {
+          console.log('Aucun utilisateur connecté')
+          return
+        }
+
+        console.log('Utilisateur récupéré:', user.id)
+        console.log('Tentative de récupération des messages...')
 
         const { data, error } = await supabase
           .from('chat_messages')
@@ -39,16 +52,29 @@ const ChatComponent = () => {
 
         if (error) {
           console.error('Erreur lors du chargement des messages:', error)
+          toast({
+            title: "Erreur",
+            description: "Impossible de charger les messages",
+            variant: "destructive",
+          })
           return
         }
 
+        console.log('Messages récupérés:', data)
         setMessages(data || [])
       } catch (error) {
         console.error('Erreur lors du chargement des messages:', error)
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors du chargement des messages",
+          variant: "destructive",
+        })
       }
     }
 
-    loadMessages()
+    if (isOpen) {
+      loadMessages()
+    }
 
     const channel = supabase
       .channel('chat_messages')
@@ -60,6 +86,7 @@ const ChatComponent = () => {
           table: 'chat_messages',
         },
         (payload) => {
+          console.log('Nouveau message reçu:', payload)
           const newMessage = payload.new as Message
           setMessages((current) => [...current, newMessage])
         }
@@ -67,17 +94,31 @@ const ChatComponent = () => {
       .subscribe()
 
     return () => {
+      console.log('Nettoyage du channel de chat')
       supabase.removeChannel(channel)
     }
-  }, [])
+  }, [isOpen, toast])
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newMessage.trim()) return
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      console.log('Tentative d\'envoi du message...')
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      
+      if (userError) {
+        console.error('Erreur lors de la récupération de l\'utilisateur:', userError)
+        toast({
+          title: "Erreur",
+          description: "Impossible de vérifier l'authentification",
+          variant: "destructive",
+        })
+        return
+      }
+
       if (!user) {
+        console.log('Utilisateur non connecté')
         toast({
           title: "Erreur",
           description: "Vous devez être connecté pour envoyer un message",
@@ -86,6 +127,7 @@ const ChatComponent = () => {
         return
       }
 
+      console.log('Envoi du message pour l\'utilisateur:', user.id)
       const { error } = await supabase
         .from('chat_messages')
         .insert([
@@ -106,6 +148,7 @@ const ChatComponent = () => {
         return
       }
 
+      console.log('Message envoyé avec succès')
       setNewMessage('')
     } catch (error) {
       console.error('Erreur lors de l\'envoi du message:', error)
