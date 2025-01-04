@@ -1,25 +1,19 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card";
 
 interface MetricCardProps {
-  title: string
-  value: string | number
-  trend: number
-  icon: React.ReactNode
+  title: string;
+  value: string;
+  description: string;
 }
 
-export const MetricCard = ({ title, value, trend, icon }: MetricCardProps) => {
+export const MetricCard = ({ title, value, description }: MetricCardProps) => {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {icon}
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        <p className={`text-xs ${trend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-          {trend >= 0 ? '+' : ''}{trend.toFixed(1)}% vs mois précédent
-        </p>
+      <CardContent className="pt-6">
+        <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
+        <p className="text-2xl font-bold mt-2">{value}</p>
+        <p className="text-sm text-muted-foreground mt-1">{description}</p>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
