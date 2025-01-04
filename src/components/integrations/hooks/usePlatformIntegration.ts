@@ -31,6 +31,7 @@ export const usePlatformIntegration = () => {
       }), {});
 
       setIntegrations(integrationsMap);
+      console.log("Intégrations récupérées:", integrationsMap);
     } catch (error: any) {
       console.error('Erreur lors du chargement des intégrations:', error);
       setError(error.message);
@@ -45,21 +46,16 @@ export const usePlatformIntegration = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Vous devez être connecté");
 
-      const { error } = await supabase
-        .from('social_integrations')
-        .upsert({
-          user_id: user.id,
-          platform: platform.name.toLowerCase(),
-          status: 'pending',
-          settings: {},
-          updated_at: new Date().toISOString()
-        });
+      // Appeler la fonction Edge pour initialiser l'intégration
+      const { data, error } = await supabase.functions.invoke('social-platform-auth', {
+        body: { platform: platform.name.toLowerCase() }
+      });
 
       if (error) throw error;
 
       toast({
-        title: "Demande enregistrée",
-        description: `Votre demande d'intégration avec ${platform.name} a été enregistrée. Nous vous guiderons dans la configuration.`,
+        title: "Intégration initiée",
+        description: `L'intégration avec ${platform.name} a été initiée. Nous vous guiderons dans la configuration.`,
       });
 
       await fetchIntegrations();

@@ -1,5 +1,5 @@
-import { ShoppingBag, Instagram, Facebook } from "lucide-react"
-import { PlatformConfig } from '../types/platform'
+import { ShoppingBag, Instagram, Facebook } from "lucide-react";
+import { PlatformConfig } from '../types/platform';
 
 export const socialPlatforms: PlatformConfig[] = [
   {

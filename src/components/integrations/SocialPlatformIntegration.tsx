@@ -4,9 +4,27 @@ import { PlatformCard } from './PlatformCard';
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export const SocialPlatformIntegration = () => {
   const { isLoading, handleIntegration, integrations, error } = usePlatformIntegration();
+  const { toast } = useToast();
+
+  const onIntegrate = async (platform: any) => {
+    try {
+      await handleIntegration(platform);
+      toast({
+        title: "Intégration initiée",
+        description: `L'intégration avec ${platform.name} a été initiée avec succès.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'intégration.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <Card className="w-full">
@@ -27,8 +45,10 @@ export const SocialPlatformIntegration = () => {
             key={platform.name}
             platform={platform}
             isLoading={isLoading[platform.name]}
-            onIntegrate={handleIntegration}
+            onIntegrate={() => onIntegrate(platform)}
             currentStatus={integrations?.[platform.name.toLowerCase()]?.status}
+            integrationId={integrations?.[platform.name.toLowerCase()]?.id}
+            productIds={[]} // À remplir avec les IDs des produits à synchroniser
           />
         ))}
       </div>
