@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ThemeTemplate } from "@/types/theme";
+import { Monitor } from "lucide-react";
 
 interface PreviewProps {
   primaryColor: string;
@@ -47,7 +48,10 @@ export const ThemePreview = ({
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Aperçu en direct</h3>
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <Monitor className="h-5 w-5" />
+          Aperçu en direct
+        </h3>
         <PreviewCard />
       </Card>
 

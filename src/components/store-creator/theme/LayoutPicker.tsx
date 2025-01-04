@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 interface LayoutPickerProps {
   layoutStyle: string;
@@ -21,6 +22,34 @@ export const LayoutPicker = ({
   onLayoutChange,
   onSpacingChange,
 }: LayoutPickerProps) => {
+  const { toast } = useToast();
+
+  const handleStyleChange = (style: string) => {
+    try {
+      onLayoutChange(style);
+    } catch (error) {
+      console.error('Error changing layout style:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de changer le style de mise en page",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSpacingChange = (value: string) => {
+    try {
+      onSpacingChange(value);
+    } catch (error) {
+      console.error('Error changing spacing:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de changer l'espacement",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Card className="p-6">
       <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -28,7 +57,7 @@ export const LayoutPicker = ({
         Mise en page
       </h3>
       <div className="space-y-4">
-        <Select value={layoutStyle} onValueChange={onLayoutChange}>
+        <Select value={layoutStyle} onValueChange={handleStyleChange}>
           <SelectTrigger>
             <SelectValue placeholder="Style de mise en page" />
           </SelectTrigger>
@@ -39,7 +68,7 @@ export const LayoutPicker = ({
           </SelectContent>
         </Select>
 
-        <Select value={spacing} onValueChange={onSpacingChange}>
+        <Select value={spacing} onValueChange={handleSpacingChange}>
           <SelectTrigger>
             <SelectValue placeholder="Espacement" />
           </SelectTrigger>

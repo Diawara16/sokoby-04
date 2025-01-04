@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ThemeTemplate } from "@/types/theme";
+import { useToast } from "@/hooks/use-toast";
 
 interface TemplateSelectorProps {
   templates: ThemeTemplate[];
@@ -20,6 +21,21 @@ export const TemplateSelector = ({
   selectedTemplateId,
   onTemplateChange,
 }: TemplateSelectorProps) => {
+  const { toast } = useToast();
+
+  const handleTemplateChange = (templateId: string) => {
+    try {
+      onTemplateChange(templateId);
+    } catch (error) {
+      console.error('Error changing template:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de changer le template",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Card className="p-6">
       <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -28,7 +44,7 @@ export const TemplateSelector = ({
       </h3>
       <Select
         value={selectedTemplateId}
-        onValueChange={onTemplateChange}
+        onValueChange={handleTemplateChange}
       >
         <SelectTrigger>
           <SelectValue placeholder="Choisir un template" />

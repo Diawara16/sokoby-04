@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 interface TypographyPickerProps {
   headingFont: string;
@@ -21,6 +22,25 @@ export const TypographyPicker = ({
   onHeadingChange,
   onBodyChange,
 }: TypographyPickerProps) => {
+  const { toast } = useToast();
+
+  const handleFontChange = (
+    font: string,
+    type: 'heading' | 'body',
+    handler: (font: string) => void
+  ) => {
+    try {
+      handler(font);
+    } catch (error) {
+      console.error(`Error changing ${type} font:`, error);
+      toast({
+        title: "Erreur",
+        description: `Impossible de changer la police ${type}`,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Card className="p-6">
       <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -28,7 +48,10 @@ export const TypographyPicker = ({
         Typographie
       </h3>
       <div className="space-y-4">
-        <Select value={headingFont} onValueChange={onHeadingChange}>
+        <Select 
+          value={headingFont} 
+          onValueChange={(value) => handleFontChange(value, 'heading', onHeadingChange)}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Police des titres" />
           </SelectTrigger>
@@ -39,7 +62,10 @@ export const TypographyPicker = ({
           </SelectContent>
         </Select>
 
-        <Select value={bodyFont} onValueChange={onBodyChange}>
+        <Select 
+          value={bodyFont} 
+          onValueChange={(value) => handleFontChange(value, 'body', onBodyChange)}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Police du texte" />
           </SelectTrigger>

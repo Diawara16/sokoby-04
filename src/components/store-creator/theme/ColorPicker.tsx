@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Palette } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ColorPickerProps {
   primaryColor: string;
@@ -18,6 +19,25 @@ export const ColorPicker = ({
   onSecondaryChange,
   onAccentChange,
 }: ColorPickerProps) => {
+  const { toast } = useToast();
+
+  const handleColorChange = (
+    color: string, 
+    type: 'primary' | 'secondary' | 'accent',
+    handler: (color: string) => void
+  ) => {
+    try {
+      handler(color);
+    } catch (error) {
+      console.error(`Error changing ${type} color:`, error);
+      toast({
+        title: "Erreur",
+        description: `Impossible de changer la couleur ${type}`,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Card className="p-6">
       <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -32,7 +52,7 @@ export const ColorPicker = ({
           <input
             type="color"
             value={primaryColor}
-            onChange={(e) => onPrimaryChange(e.target.value)}
+            onChange={(e) => handleColorChange(e.target.value, 'primary', onPrimaryChange)}
             className="w-full h-10 rounded cursor-pointer"
           />
         </div>
@@ -43,7 +63,7 @@ export const ColorPicker = ({
           <input
             type="color"
             value={secondaryColor}
-            onChange={(e) => onSecondaryChange(e.target.value)}
+            onChange={(e) => handleColorChange(e.target.value, 'secondary', onSecondaryChange)}
             className="w-full h-10 rounded cursor-pointer"
           />
         </div>
@@ -54,7 +74,7 @@ export const ColorPicker = ({
           <input
             type="color"
             value={accentColor}
-            onChange={(e) => onAccentChange(e.target.value)}
+            onChange={(e) => handleColorChange(e.target.value, 'accent', onAccentChange)}
             className="w-full h-10 rounded cursor-pointer"
           />
         </div>
