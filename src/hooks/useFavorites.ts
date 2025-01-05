@@ -81,9 +81,13 @@ export const useFavorites = () => {
         .from('favorites')
         .select()
         .match({ product_id: productId, user_id: user.id })
-        .single();
+        .maybeSingle();
 
-      if (error) return false;
+      if (error) {
+        console.error('Error checking favorite status:', error);
+        return false;
+      }
+      
       return !!data;
     } catch (error) {
       console.error('Error checking favorite status:', error);
