@@ -1,131 +1,92 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { CreationProgress } from "@/components/store-creator/CreationProgress";
-import { StoreSettingsForm } from "@/components/store-creator/StoreSettingsForm";
-import { MarketplaceSelector } from "@/components/store-creator/MarketplaceSelector";
-import { SupplierSelector } from "@/components/store-creator/SupplierSelector";
 import { NicheSelector } from "@/components/store-creator/NicheSelector";
-import { CreationComplete } from "@/components/store-creator/CreationComplete";
-import { ErrorDisplay } from "@/components/store-creator/ErrorDisplay";
+import { useStoreCreation } from "@/hooks/useStoreCreation";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 
 const CreerBoutiqueIA = () => {
-  const [currentStep, setCurrentStep] = useState<string>('init');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [productsCount, setProductsCount] = useState(0);
+  const { step, progress, error, storeUrl, handleNicheSelect, handleComplete } = useStoreCreation();
   const { isAuthenticated, isLoading: authLoading } = useAuthAndProfile();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/login");
-        toast({
-          title: "Authentification requise",
-          description: "Veuillez vous connecter pour créer une boutique",
-          variant: "destructive",
-        });
-      }
-    };
-    checkAuth();
-  }, [navigate, toast]);
-
   if (authLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <CreationProgress 
-          currentStep="init"
-          progress={0}
-        />
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
       </div>
     );
   }
 
   if (!isAuthenticated) {
+    navigate("/login");
     return null;
   }
 
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <ErrorDisplay error={error} />
-      </div>
-    );
-  }
-
-  const handleNext = () => {
-    const steps = ['init', 'niche', 'marketplace', 'supplier', 'complete'];
-    const currentIndex = steps.indexOf(currentStep);
-    if (currentIndex < steps.length - 1) {
-      setCurrentStep(steps[currentIndex + 1]);
-    }
-  };
-
-  const handleBack = () => {
-    const steps = ['init', 'niche', 'marketplace', 'supplier', 'complete'];
-    const currentIndex = steps.indexOf(currentStep);
-    if (currentIndex > 0) {
-      setCurrentStep(steps[currentIndex - 1]);
-    }
-  };
-
-  const getProgress = () => {
-    const steps = ['init', 'niche', 'marketplace', 'supplier', 'complete'];
-    return ((steps.indexOf(currentStep) + 1) / steps.length) * 100;
-  };
-
-  const renderStep = () => {
-    switch (currentStep) {
-      case 'init':
-        return (
-          <StoreSettingsForm />
-        );
-      case 'niche':
-        return (
-          <NicheSelector
-            selectedNiche=""
-            onSelectNiche={(niche) => {
-              console.log("Selected niche:", niche);
-              handleNext();
-            }}
-          />
-        );
-      case 'marketplace':
-        return (
-          <MarketplaceSelector />
-        );
-      case 'supplier':
-        return (
-          <SupplierSelector
-            selectedSupplier={null}
-            onSupplierSelect={() => handleNext()}
-          />
-        );
-      case 'complete':
-        return (
-          <CreationComplete
-            storeUrl="https://votre-boutique.sokoby.com"
-            productsCount={productsCount}
-            onComplete={() => navigate('/tableau-de-bord')}
-          />
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
-      <CreationProgress
-        currentStep={currentStep}
-        progress={getProgress()}
-      />
-      <div className="mt-8">{renderStep()}</div>
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8">Créer votre boutique IA</h1>
+        
+        {step === 'niche' && (
+          <div className="space-y-6">
+            <p className="text-lg text-muted-foreground">
+              Sélectionnez une niche pour votre boutique. Notre IA générera automatiquement des produits adaptés.
+            </p>
+            <NicheSelector 
+              onSelectNiche={handleNicheSelect}
+              selectedNiche=""
+            />
+          </div>
+        )}
+
+        {step === 'progress' && (
+          <CreationProgress 
+            progress={progress}
+            currentStep="creation"
+          />
+        )}
+
+        {step === 'complete' && (
+          <div className="space-y-6 text-center">
+            <div className="bg-green-50 text-green-800 p-6 rounded-lg">
+              <h2 className="text-2xl font-bold mb-4">🎉 Félicitations !</h2>
+              <p className="text-lg mb-4">
+                Votre boutique a été créée avec succès.
+              </p>
+              {storeUrl && (
+                <p className="text-sm text-muted-foreground mb-4">
+                  Votre boutique est accessible à l'adresse : 
+                  <a 
+                    href={storeUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline ml-2"
+                  >
+                    {storeUrl}
+                  </a>
+                </p>
+              )}
+              <button
+                onClick={handleComplete}
+                className="bg-primary text-white px-6 py-2 rounded-md hover:bg-primary/90"
+              >
+                Aller au tableau de bord
+              </button>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-destructive/10 text-destructive p-4 rounded-md mt-4">
+            {error}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
