@@ -3,28 +3,18 @@ import { useForm } from "react-hook-form"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/lib/supabase"
 import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { applications } from "@/data/applications"
-import { niches } from "@/data/niches"
-
-interface ProductFormData {
-  name: string
-  description: string
-  price: string
-  supplier: string
-  niche: string
-}
+import { ProductNameField } from "./form/ProductNameField"
+import { ProductDescriptionField } from "./form/ProductDescriptionField"
+import { ProductPriceField } from "./form/ProductPriceField"
+import { SupplierField } from "./form/SupplierField"
+import { NicheField } from "./form/NicheField"
+import { ProductFormData } from "./types"
 
 export function ProductImportForm() {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const { register, handleSubmit, formState: { errors } } = useForm<ProductFormData>()
-
-  const dropshippingApps = applications.filter(app => app.type === "dropshipping")
 
   const onSubmit = async (data: ProductFormData) => {
     setIsLoading(true)
@@ -32,7 +22,6 @@ export function ProductImportForm() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error("Non authentifié")
 
-      // Récupérer les paramètres de la boutique
       const { data: storeData, error: storeError } = await supabase
         .from('store_settings')
         .select('id')
@@ -41,10 +30,11 @@ export function ProductImportForm() {
         .maybeSingle()
 
       if (storeError) throw storeError
+      if (!storeData) throw new Error("Aucune boutique trouvée")
 
       const { error } = await supabase.from("ai_generated_products").insert({
         user_id: user.id,
-        store_id: storeData?.id,
+        store_id: storeData.id,
         name: data.name,
         description: data.description,
         price: parseFloat(data.price),
@@ -75,72 +65,11 @@ export function ProductImportForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <Card className="p-6">
         <div className="space-y-6">
-          <div>
-            <Label htmlFor="name">Nom du produit</Label>
-            <Input
-              id="name"
-              {...register("name", { required: true })}
-              className="mt-1"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              {...register("description")}
-              className="mt-1 h-32"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="price">Prix</Label>
-            <Input
-              id="price"
-              type="number"
-              step="0.01"
-              {...register("price", { required: true })}
-              className="mt-1"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="supplier">Fournisseur</Label>
-            <Select onValueChange={(value) => register("supplier").onChange({ target: { value } })}>
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Choisir un fournisseur" />
-              </SelectTrigger>
-              <SelectContent>
-                {dropshippingApps.map((app) => (
-                  <SelectItem key={app.id} value={app.id}>
-                    <div className="flex items-center gap-2">
-                      <app.icon className="h-4 w-4" />
-                      <span>{app.name}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="niche">Catégorie</Label>
-            <Select onValueChange={(value) => register("niche").onChange({ target: { value } })}>
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Choisir une catégorie" />
-              </SelectTrigger>
-              <SelectContent>
-                {niches.map((niche) => (
-                  <SelectItem key={niche.name} value={niche.name}>
-                    <div className="flex items-center gap-2">
-                      <span>{niche.icon}</span>
-                      <span>{niche.name}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <ProductNameField register={register} />
+          <ProductDescriptionField register={register} />
+          <ProductPriceField register={register} />
+          <SupplierField register={register} />
+          <NicheField register={register} />
         </div>
       </Card>
 
