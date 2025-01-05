@@ -13,7 +13,10 @@ export function useProductImport() {
       .limit(1)
       .maybeSingle()
 
-    if (storeError) throw storeError
+    if (storeError) {
+      console.error("Erreur lors de la récupération de la boutique:", storeError)
+      throw new Error("Erreur lors de la récupération de la boutique")
+    }
     if (!storeData) throw new Error("Aucune boutique trouvée")
 
     const { error } = await supabase.from("ai_generated_products").insert({
@@ -23,10 +26,14 @@ export function useProductImport() {
       description: data.description,
       price: parseFloat(data.price),
       supplier: data.supplier,
-      niche: data.niche
+      niche: data.niche,
+      status: 'pending'
     })
 
-    if (error) throw error
+    if (error) {
+      console.error("Erreur lors de l'import du produit:", error)
+      throw error
+    }
   }
 
   return { importProduct }

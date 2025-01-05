@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useToast } from "@/hooks/use-toast"
-import { supabase } from "@/lib/supabase"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ProductNameField } from "./form/ProductNameField"
@@ -35,7 +34,7 @@ export function ProductImportForm() {
       console.error("Erreur lors de l'import du produit:", error)
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de l'import du produit",
+        description: error instanceof Error ? error.message : "Une erreur est survenue lors de l'import du produit",
         variant: "destructive",
       })
     } finally {
