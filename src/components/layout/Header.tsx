@@ -15,9 +15,11 @@ export function Header({ isAuthenticated }: HeaderProps) {
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center">
             <img 
-              src="/lovable-uploads/e423a6d8-87e5-4ef9-af43-7e96b44fd685.png" 
+              src="/lovable-uploads/a23d77a2-5fb5-4b8d-b354-605dc6969483.png" 
               alt="Sokoby" 
               className="h-14 w-auto"
+              width="140"
+              height="56"
             />
           </Link>
           <NavigationLinks />
