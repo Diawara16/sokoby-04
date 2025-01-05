@@ -13,6 +13,7 @@ import AIStore from "@/pages/AIStore";
 import SmartLogistics from "@/pages/logistics/SmartLogistics";
 import VenteMulticanale from "@/pages/VenteMulticanale";
 import Integrations from "@/pages/Integrations";
+import Boutique from "@/pages/Boutique";
 import { ProtectedRoutes } from "@/routes/ProtectedRoutes";
 
 const AppRoutes = () => {
@@ -31,6 +32,7 @@ const AppRoutes = () => {
     { path: "/analytics/trends", element: <AnalyticsTrends /> },
     { path: "/analytics/reports", element: <AnalyticsReports /> },
     { path: "/analytics/custom-reports", element: <CustomReports /> },
+    { path: "/boutique", element: <Boutique /> },
   ];
 
   return (
