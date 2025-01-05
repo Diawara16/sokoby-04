@@ -73,7 +73,6 @@ function generateOAuthHeader(method: string, url: string): string {
     .join(", ");
 }
 
-// Correction de l'URL de base de l'API Twitter
 const BASE_URL = "https://api.twitter.com/2";
 
 async function postTweet(text: string): Promise<any> {
