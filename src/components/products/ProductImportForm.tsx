@@ -14,7 +14,15 @@ import { useProductImport } from "./hooks/useProductImport"
 export function ProductImportForm() {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<ProductFormData>()
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<ProductFormData>({
+    defaultValues: {
+      name: "",
+      description: "",
+      price: "",
+      supplier: "",
+      niche: ""
+    }
+  })
   const { importProduct } = useProductImport()
 
   const onSubmit = async (data: ProductFormData) => {
