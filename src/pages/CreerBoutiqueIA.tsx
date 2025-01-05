@@ -41,7 +41,6 @@ const CreerBoutiqueIA = () => {
         <CreationProgress 
           currentStep="init"
           progress={0}
-          niche=""
         />
       </div>
     );
@@ -125,7 +124,6 @@ const CreerBoutiqueIA = () => {
       <CreationProgress
         currentStep={currentStep}
         progress={getProgress()}
-        niche=""
       />
       <div className="mt-8">{renderStep()}</div>
     </div>
