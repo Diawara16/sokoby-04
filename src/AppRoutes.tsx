@@ -15,6 +15,7 @@ import SmartLogistics from "@/pages/logistics/SmartLogistics";
 import VenteMulticanale from "@/pages/VenteMulticanale";
 import Integrations from "@/pages/Integrations";
 import Boutique from "@/pages/Boutique";
+import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
 import { ProtectedRoutes } from "@/routes/ProtectedRoutes";
 
 const AppRoutes = () => {
@@ -26,7 +27,7 @@ const AppRoutes = () => {
     { path: "/products", element: <Products /> },
     { path: "/products/add", element: <AddProduct /> },
     { path: "/applications", element: <Applications /> },
-    { path: "/creer-boutique-ia", element: <AIStore /> },
+    { path: "/creer-boutique-ia", element: <CreerBoutiqueIA /> },
     { path: "/logistics", element: <SmartLogistics /> },
     { path: "/vente-multicanale", element: <VenteMulticanale /> },
     { path: "/integrations", element: <Integrations /> },

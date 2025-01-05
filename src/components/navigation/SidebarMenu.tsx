@@ -14,7 +14,8 @@ export const SidebarMenu = () => {
           variant={location.pathname === item.href ? "secondary" : "ghost"}
           className={cn(
             "w-full justify-start",
-            location.pathname === item.href && "bg-secondary"
+            location.pathname === item.href && "bg-secondary",
+            item.className
           )}
           asChild
         >
