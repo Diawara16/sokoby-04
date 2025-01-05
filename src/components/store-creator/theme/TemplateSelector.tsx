@@ -1,53 +1,29 @@
-import { Card } from "@/components/ui/card";
-import { Palette } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import React from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ThemeTemplate } from "@/types/theme";
-import { useToast } from "@/hooks/use-toast";
 
 interface TemplateSelectorProps {
   templates: ThemeTemplate[];
-  selectedTemplateId?: string;
-  onTemplateChange: (templateId: string) => void;
+  selectedTemplate: ThemeTemplate | null;
+  onTemplateChange: (template: ThemeTemplate) => void;
 }
 
-export const TemplateSelector = ({
+export function TemplateSelector({
   templates,
-  selectedTemplateId,
-  onTemplateChange,
-}: TemplateSelectorProps) => {
-  const { toast } = useToast();
-
-  const handleTemplateChange = (templateId: string) => {
-    try {
-      onTemplateChange(templateId);
-    } catch (error) {
-      console.error('Error changing template:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de changer le template",
-        variant: "destructive",
-      });
-    }
-  };
-
+  selectedTemplate,
+  onTemplateChange
+}: TemplateSelectorProps) {
   return (
-    <Card className="p-6">
-      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-        <Palette className="h-5 w-5" />
-        Template de base
-      </h3>
+    <div className="space-y-2">
       <Select
-        value={selectedTemplateId}
-        onValueChange={handleTemplateChange}
+        value={selectedTemplate?.id}
+        onValueChange={(value) => {
+          const template = templates.find(t => t.id === value);
+          if (template) onTemplateChange(template);
+        }}
       >
         <SelectTrigger>
-          <SelectValue placeholder="Choisir un template" />
+          <SelectValue placeholder="Choisir un modèle" />
         </SelectTrigger>
         <SelectContent>
           {templates.map((template) => (
@@ -57,6 +33,6 @@ export const TemplateSelector = ({
           ))}
         </SelectContent>
       </Select>
-    </Card>
+    </div>
   );
-};
+}

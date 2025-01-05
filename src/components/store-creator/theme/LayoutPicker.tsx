@@ -1,84 +1,45 @@
-import { Card } from "@/components/ui/card";
-import { Layout } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import React from 'react';
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface LayoutPickerProps {
-  layoutStyle: string;
   spacing: string;
-  onLayoutChange: (style: string) => void;
-  onSpacingChange: (spacing: string) => void;
+  containerWidth: string;
+  onSpacingChange: (value: string) => void;
+  onContainerWidthChange: (value: string) => void;
 }
 
-export const LayoutPicker = ({
-  layoutStyle,
-  spacing,
-  onLayoutChange,
-  onSpacingChange,
-}: LayoutPickerProps) => {
-  const { toast } = useToast();
-
-  const handleStyleChange = (style: string) => {
-    try {
-      onLayoutChange(style);
-    } catch (error) {
-      console.error('Error changing layout style:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de changer le style de mise en page",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleSpacingChange = (value: string) => {
-    try {
-      onSpacingChange(value);
-    } catch (error) {
-      console.error('Error changing spacing:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de changer l'espacement",
-        variant: "destructive",
-      });
-    }
-  };
-
+export function LayoutPicker({ 
+  spacing, 
+  containerWidth, 
+  onSpacingChange, 
+  onContainerWidthChange 
+}: LayoutPickerProps) {
   return (
-    <Card className="p-6">
-      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-        <Layout className="h-5 w-5" />
-        Mise en page
-      </h3>
-      <div className="space-y-4">
-        <Select value={layoutStyle} onValueChange={handleStyleChange}>
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label>Espacement</Label>
+        <Select value={spacing} onValueChange={onSpacingChange}>
           <SelectTrigger>
-            <SelectValue placeholder="Style de mise en page" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="minimal">Minimal</SelectItem>
-            <SelectItem value="grid">Grille</SelectItem>
-            <SelectItem value="organic">Organique</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={spacing} onValueChange={handleSpacingChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Espacement" />
+            <SelectValue placeholder="Choisir l'espacement" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="compact">Compact</SelectItem>
-            <SelectItem value="airy">Aéré</SelectItem>
-            <SelectItem value="breathable">Respirable</SelectItem>
+            <SelectItem value="comfortable">Confortable</SelectItem>
+            <SelectItem value="spacious">Spacieux</SelectItem>
           </SelectContent>
         </Select>
       </div>
-    </Card>
+
+      <div className="space-y-2">
+        <Label>Largeur du conteneur</Label>
+        <Input
+          type="text"
+          value={containerWidth}
+          onChange={(e) => onContainerWidthChange(e.target.value)}
+        />
+      </div>
+    </div>
   );
-};
+}
