@@ -1,40 +1,36 @@
-export interface PricingPlanData {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  features: string[];
-  isPopular?: boolean;
-}
-
 export interface ThemeColors {
   primary: string;
   secondary: string;
-  accent: string;
-  background: string;
+  accent?: string;
+  background?: string;
+  text?: string;
 }
 
 export interface ThemeTypography {
-  heading: string;
-  body: string;
+  fontFamily: string;
+  fontSize: string;
+  headingFont?: string;
+  bodyFont?: string;
 }
 
 export interface ThemeLayout {
-  style: string;
   spacing: string;
+  containerWidth: string;
+  borderRadius?: string;
+}
+
+export interface ThemeComponents {
+  buttons?: {
+    borderRadius?: string;
+    padding?: string;
+  };
+  cards?: {
+    borderRadius?: string;
+    shadow?: string;
+  };
 }
 
 export interface Theme {
-  id?: string;
-  name: string;
-  description: string;
-  features: string[];
-  preview: string;
-  colors: ThemeColors;
-  price: number;
-}
-
-export interface ThemeTemplate {
   id: string;
   name: string;
   description?: string;
@@ -43,5 +39,6 @@ export interface ThemeTemplate {
   colors: ThemeColors;
   typography: ThemeTypography;
   layout: ThemeLayout;
-  components: Record<string, any>;
+  components: ThemeComponents;
+  created_at: string;
 }
