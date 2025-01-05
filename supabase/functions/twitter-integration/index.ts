@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { createHmac } from "node:crypto";
 
 const corsHeaders = {
@@ -74,7 +73,7 @@ function generateOAuthHeader(method: string, url: string): string {
     .join(", ");
 }
 
-// Correction de l'URL de base de l'API Twitter
+// URL de base corrigée pour l'API Twitter
 const BASE_URL = "https://api.twitter.com/2";
 
 async function postTweet(text: string): Promise<any> {
@@ -140,20 +139,6 @@ serve(async (req) => {
         break;
       default:
         throw new Error('Invalid action');
-    }
-
-    // Log the integration in social_integrations
-    const { error: integrationError } = await supabase
-      .from('social_integrations')
-      .upsert({
-        user_id: user.id,
-        platform: 'twitter',
-        status: 'active',
-        updated_at: new Date().toISOString()
-      })
-
-    if (integrationError) {
-      console.error('Error updating integration status:', integrationError);
     }
 
     return new Response(JSON.stringify(result), {
