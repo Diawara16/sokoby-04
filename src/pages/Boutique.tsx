@@ -8,23 +8,40 @@ import { SupplierApps } from "@/components/products/SupplierApps";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Boutique() {
   const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 1000]);
   const [selectedCategories, setSelectedCategories] = React.useState<string[]>([]);
   const [sortBy, setSortBy] = React.useState("price-asc");
+  const { toast } = useToast();
 
-  const { data: products, isLoading } = useQuery({
+  const { data: products, isLoading, error } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
+      console.log("Fetching products...");
       const { data, error } = await supabase
         .from('products')
         .select('*');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching products:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les produits. Veuillez réessayer.",
+          variant: "destructive",
+        });
+        throw error;
+      }
+      
+      console.log("Products fetched:", data);
       return data || [];
     }
   });
+
+  if (error) {
+    console.error('Query error:', error);
+  }
 
   return (
     <div className="flex min-h-screen w-full">
@@ -60,8 +77,16 @@ export default function Boutique() {
                 <div className="flex justify-center items-center h-32">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
+              ) : error ? (
+                <div className="text-center text-red-500">
+                  Une erreur est survenue lors du chargement des produits.
+                </div>
+              ) : products && products.length > 0 ? (
+                <ProductGrid products={products} />
               ) : (
-                <ProductGrid products={products || []} />
+                <div className="text-center text-gray-500">
+                  Aucun produit trouvé. Commencez par en ajouter un !
+                </div>
               )}
             </div>
           </div>
