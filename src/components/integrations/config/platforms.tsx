@@ -28,7 +28,12 @@ export const socialPlatforms: PlatformConfig[] = [
     name: "Instagram Shop",
     icon: <Share2 className="h-5 w-5" />,
     description: "Intégrez votre boutique à Instagram",
-    status: "coming_soon",
-    message: "L'intégration Instagram sera bientôt disponible"
+    status: "pending",
+    features: [
+      "Catalogue de produits",
+      "Shopping Tags",
+      "Instagram Checkout",
+      "Statistiques de vente"
+    ]
   }
 ];
