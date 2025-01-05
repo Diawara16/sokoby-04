@@ -102,9 +102,9 @@ async function postTweet(text: string): Promise<any> {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
@@ -127,4 +127,4 @@ serve(async (req) => {
       status: 400,
     });
   }
-})
+});
