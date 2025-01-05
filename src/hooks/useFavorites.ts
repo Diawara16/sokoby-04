@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { useToast } from './use-toast';
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useToast } from "./use-toast";
 
 export const useFavorites = () => {
   const [loading, setLoading] = useState(false);
@@ -13,8 +13,8 @@ export const useFavorites = () => {
       
       if (!user) {
         toast({
-          title: "Connexion requise",
-          description: "Veuillez vous connecter pour ajouter des favoris",
+          title: "Erreur",
+          description: "Vous devez être connecté pour ajouter des favoris",
           variant: "destructive",
         });
         return;
@@ -27,10 +27,10 @@ export const useFavorites = () => {
       if (error) throw error;
 
       toast({
-        title: "Ajouté aux favoris",
-        description: "Le produit a été ajouté à vos favoris",
+        title: "Succès",
+        description: "Produit ajouté aux favoris",
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error adding to favorites:', error);
       toast({
         title: "Erreur",
@@ -47,7 +47,14 @@ export const useFavorites = () => {
       setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       
-      if (!user) return;
+      if (!user) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour gérer vos favoris",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const { error } = await supabase
         .from('favorites')
@@ -57,10 +64,10 @@ export const useFavorites = () => {
       if (error) throw error;
 
       toast({
-        title: "Retiré des favoris",
-        description: "Le produit a été retiré de vos favoris",
+        title: "Succès",
+        description: "Produit retiré des favoris",
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error removing from favorites:', error);
       toast({
         title: "Erreur",
@@ -72,10 +79,13 @@ export const useFavorites = () => {
     }
   };
 
-  const checkIsFavorite = async (productId: string) => {
+  const checkIsFavorite = async (productId: string): Promise<boolean> => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return false;
+      
+      if (!user) {
+        return false;
+      }
 
       const { data, error } = await supabase
         .from('favorites')
