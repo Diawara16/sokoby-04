@@ -10,7 +10,8 @@ import {
   BarChart,
   Settings,
   Bell,
-  Plug
+  Plug,
+  Plus
 } from "lucide-react";
 
 export const sidebarItems = [
@@ -22,7 +23,14 @@ export const sidebarItems = [
   { 
     icon: Store, 
     label: "Boutique", 
-    href: "/boutique" 
+    href: "/boutique",
+    subItems: [
+      {
+        icon: Plus,
+        label: "Ajouter un produit",
+        href: "/products/add"
+      }
+    ]
   },
   { 
     icon: Package, 

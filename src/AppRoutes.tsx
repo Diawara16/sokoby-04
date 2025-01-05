@@ -4,6 +4,7 @@ import Profile from "@/pages/Profile";
 import Settings from "@/pages/Settings";
 import Orders from "@/pages/Orders";
 import Products from "@/pages/Products";
+import AddProduct from "@/pages/products/AddProduct";
 import Analytics from "@/pages/analytics/Analytics";
 import AnalyticsTrends from "@/pages/analytics/AnalyticsTrends";
 import AnalyticsReports from "@/pages/analytics/AnalyticsReports";
@@ -23,6 +24,7 @@ const AppRoutes = () => {
     { path: "/settings", element: <Settings /> },
     { path: "/orders", element: <Orders /> },
     { path: "/products", element: <Products /> },
+    { path: "/products/add", element: <AddProduct /> },
     { path: "/applications", element: <Applications /> },
     { path: "/creer-boutique-ia", element: <AIStore /> },
     { path: "/logistics", element: <SmartLogistics /> },
