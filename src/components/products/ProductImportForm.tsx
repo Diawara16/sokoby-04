@@ -14,20 +14,24 @@ import { useProductImport } from "./hooks/useProductImport"
 export function ProductImportForm() {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
-  const { register, handleSubmit, formState: { errors } } = useForm<ProductFormData>({
-    defaultValues: {
-      supplier: "",
-      niche: ""
-    }
-  })
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<ProductFormData>()
   const { importProduct } = useProductImport()
 
   const onSubmit = async (data: ProductFormData) => {
+    if (!data.supplier || !data.niche) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez sélectionner un fournisseur et une catégorie",
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsLoading(true)
     try {
       await importProduct(data)
       toast({
-        title: "Produit importé",
+        title: "Succès",
         description: "Le produit a été importé avec succès",
       })
     } catch (error) {
@@ -49,8 +53,16 @@ export function ProductImportForm() {
           <ProductNameField register={register} errors={errors} />
           <ProductDescriptionField register={register} errors={errors} />
           <ProductPriceField register={register} errors={errors} />
-          <SupplierField register={register} errors={errors} />
-          <NicheField register={register} errors={errors} />
+          <SupplierField 
+            register={register} 
+            errors={errors}
+            onValueChange={(value) => setValue('supplier', value)} 
+          />
+          <NicheField 
+            register={register} 
+            errors={errors}
+            onValueChange={(value) => setValue('niche', value)}
+          />
         </div>
       </Card>
 

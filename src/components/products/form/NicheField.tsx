@@ -7,14 +7,15 @@ import { ProductFormData } from "../types"
 interface Props {
   register: UseFormRegister<ProductFormData>
   errors: FieldErrors<ProductFormData>
+  onValueChange: (value: string) => void
 }
 
-export function NicheField({ register, errors }: Props) {
+export function NicheField({ register, errors, onValueChange }: Props) {
   return (
     <div>
       <Label htmlFor="niche">Catégorie</Label>
       <Select 
-        onValueChange={(value) => register("niche", { required: "La catégorie est requise" }).onChange({ target: { value } })}
+        onValueChange={onValueChange}
         required
       >
         <SelectTrigger className="mt-1">

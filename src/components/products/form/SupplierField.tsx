@@ -7,16 +7,17 @@ import { ProductFormData } from "../types"
 interface Props {
   register: UseFormRegister<ProductFormData>
   errors: FieldErrors<ProductFormData>
+  onValueChange: (value: string) => void
 }
 
-export function SupplierField({ register, errors }: Props) {
+export function SupplierField({ register, errors, onValueChange }: Props) {
   const dropshippingApps = applications.filter(app => app.type === "dropshipping")
 
   return (
     <div>
       <Label htmlFor="supplier">Fournisseur</Label>
       <Select 
-        onValueChange={(value) => register("supplier", { required: "Le fournisseur est requis" }).onChange({ target: { value } })}
+        onValueChange={onValueChange}
         required
       >
         <SelectTrigger className="mt-1">
