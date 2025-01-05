@@ -9,12 +9,17 @@ export const useFavorites = () => {
   const addToFavorites = async (productId: string) => {
     try {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) {
+        console.error('Auth error:', authError);
+        throw new Error("Erreur d'authentification");
+      }
       
       if (!user) {
         toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour ajouter des favoris",
+          title: "Connexion requise",
+          description: "Veuillez vous connecter pour ajouter des favoris",
           variant: "destructive",
         });
         return;
@@ -24,17 +29,20 @@ export const useFavorites = () => {
         .from('favorites')
         .insert([{ product_id: productId, user_id: user.id }]);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       toast({
-        title: "Succès",
-        description: "Produit ajouté aux favoris",
+        title: "Ajouté aux favoris",
+        description: "Le produit a été ajouté à vos favoris",
       });
     } catch (error) {
       console.error('Error adding to favorites:', error);
       toast({
         title: "Erreur",
-        description: "Impossible d'ajouter aux favoris",
+        description: "Impossible d'ajouter aux favoris. Veuillez réessayer.",
         variant: "destructive",
       });
     } finally {
@@ -45,12 +53,17 @@ export const useFavorites = () => {
   const removeFromFavorites = async (productId: string) => {
     try {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
       
+      if (authError) {
+        console.error('Auth error:', authError);
+        throw new Error("Erreur d'authentification");
+      }
+
       if (!user) {
         toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour gérer vos favoris",
+          title: "Connexion requise",
+          description: "Veuillez vous connecter pour gérer vos favoris",
           variant: "destructive",
         });
         return;
@@ -61,17 +74,20 @@ export const useFavorites = () => {
         .delete()
         .match({ product_id: productId, user_id: user.id });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       toast({
-        title: "Succès",
-        description: "Produit retiré des favoris",
+        title: "Retiré des favoris",
+        description: "Le produit a été retiré de vos favoris",
       });
     } catch (error) {
       console.error('Error removing from favorites:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de retirer des favoris",
+        description: "Impossible de retirer des favoris. Veuillez réessayer.",
         variant: "destructive",
       });
     } finally {
@@ -81,7 +97,12 @@ export const useFavorites = () => {
 
   const checkIsFavorite = async (productId: string): Promise<boolean> => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) {
+        console.error('Auth error:', authError);
+        return false;
+      }
       
       if (!user) {
         return false;
@@ -94,7 +115,7 @@ export const useFavorites = () => {
         .maybeSingle();
 
       if (error) {
-        console.error('Error checking favorite status:', error);
+        console.error('Supabase error:', error);
         return false;
       }
       
