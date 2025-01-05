@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { TwitterTest } from './TwitterTest';
 
 export const SocialPlatformIntegration = () => {
   const { isLoading, handleIntegration, integrations, error } = usePlatformIntegration();
@@ -49,9 +50,13 @@ export const SocialPlatformIntegration = () => {
             onIntegrate={() => onIntegrate(platform)}
             currentStatus={integrations?.[platform.name.toLowerCase()]?.status}
             integrationId={integrations?.[platform.name.toLowerCase()]?.id}
-            productIds={[]} // À remplir avec les IDs des produits à synchroniser
+            productIds={[]}
           />
         ))}
+      </div>
+
+      <div className="p-4 border-t">
+        <TwitterTest />
       </div>
     </Card>
   );
