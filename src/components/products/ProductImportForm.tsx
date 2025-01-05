@@ -10,45 +10,27 @@ import { ProductPriceField } from "./form/ProductPriceField"
 import { SupplierField } from "./form/SupplierField"
 import { NicheField } from "./form/NicheField"
 import { ProductFormData } from "./types"
+import { useProductImport } from "./hooks/useProductImport"
 
 export function ProductImportForm() {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
-  const { register, handleSubmit, formState: { errors } } = useForm<ProductFormData>()
+  const { register, handleSubmit, formState: { errors } } = useForm<ProductFormData>({
+    defaultValues: {
+      supplier: "",
+      niche: ""
+    }
+  })
+  const { importProduct } = useProductImport()
 
   const onSubmit = async (data: ProductFormData) => {
     setIsLoading(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error("Non authentifié")
-
-      const { data: storeData, error: storeError } = await supabase
-        .from('store_settings')
-        .select('id')
-        .eq('user_id', user.id)
-        .limit(1)
-        .maybeSingle()
-
-      if (storeError) throw storeError
-      if (!storeData) throw new Error("Aucune boutique trouvée")
-
-      const { error } = await supabase.from("ai_generated_products").insert({
-        user_id: user.id,
-        store_id: storeData.id,
-        name: data.name,
-        description: data.description,
-        price: parseFloat(data.price),
-        supplier: data.supplier,
-        niche: data.niche
-      })
-
-      if (error) throw error
-
+      await importProduct(data)
       toast({
         title: "Produit importé",
         description: "Le produit a été importé avec succès",
       })
-      
     } catch (error) {
       console.error("Erreur lors de l'import du produit:", error)
       toast({
@@ -65,11 +47,11 @@ export function ProductImportForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <Card className="p-6">
         <div className="space-y-6">
-          <ProductNameField register={register} />
-          <ProductDescriptionField register={register} />
-          <ProductPriceField register={register} />
-          <SupplierField register={register} />
-          <NicheField register={register} />
+          <ProductNameField register={register} errors={errors} />
+          <ProductDescriptionField register={register} errors={errors} />
+          <ProductPriceField register={register} errors={errors} />
+          <SupplierField register={register} errors={errors} />
+          <NicheField register={register} errors={errors} />
         </div>
       </Card>
 

@@ -1,19 +1,20 @@
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { niches } from "@/data/niches"
-import { UseFormRegister } from "react-hook-form"
+import { UseFormRegister, FieldErrors } from "react-hook-form"
 import { ProductFormData } from "../types"
 
 interface Props {
   register: UseFormRegister<ProductFormData>
+  errors: FieldErrors<ProductFormData>
 }
 
-export function NicheField({ register }: Props) {
+export function NicheField({ register, errors }: Props) {
   return (
     <div>
       <Label htmlFor="niche">Catégorie</Label>
       <Select 
-        onValueChange={(value) => register("niche").onChange({ target: { value } })}
+        onValueChange={(value) => register("niche", { required: "La catégorie est requise" }).onChange({ target: { value } })}
         required
       >
         <SelectTrigger className="mt-1">
@@ -30,6 +31,9 @@ export function NicheField({ register }: Props) {
           ))}
         </SelectContent>
       </Select>
+      {errors.niche && (
+        <p className="text-sm text-red-500 mt-1">{errors.niche.message}</p>
+      )}
     </div>
   )
 }

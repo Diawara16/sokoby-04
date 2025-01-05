@@ -1,21 +1,22 @@
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { applications } from "@/data/applications"
-import { UseFormRegister } from "react-hook-form"
+import { UseFormRegister, FieldErrors } from "react-hook-form"
 import { ProductFormData } from "../types"
 
 interface Props {
   register: UseFormRegister<ProductFormData>
+  errors: FieldErrors<ProductFormData>
 }
 
-export function SupplierField({ register }: Props) {
+export function SupplierField({ register, errors }: Props) {
   const dropshippingApps = applications.filter(app => app.type === "dropshipping")
 
   return (
     <div>
       <Label htmlFor="supplier">Fournisseur</Label>
       <Select 
-        onValueChange={(value) => register("supplier").onChange({ target: { value } })}
+        onValueChange={(value) => register("supplier", { required: "Le fournisseur est requis" }).onChange({ target: { value } })}
         required
       >
         <SelectTrigger className="mt-1">
@@ -32,6 +33,9 @@ export function SupplierField({ register }: Props) {
           ))}
         </SelectContent>
       </Select>
+      {errors.supplier && (
+        <p className="text-sm text-red-500 mt-1">{errors.supplier.message}</p>
+      )}
     </div>
   )
 }
