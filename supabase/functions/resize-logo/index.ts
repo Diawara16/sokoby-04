@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Starting logo resize operation')
+    console.log('Starting Facebook logo resize operation')
     
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -38,7 +38,8 @@ serve(async (req) => {
     const arrayBuffer = await fileData.arrayBuffer()
     const buffer = new Uint8Array(arrayBuffer)
 
-    console.log('Resizing logo')
+    console.log('Resizing logo for Facebook')
+    // Facebook recommande 1024x1024 pixels pour l'icône d'application
     const resizedImage = await ImageMagick.resize(buffer, {
       width: 1024,
       height: 1024,
@@ -49,7 +50,7 @@ serve(async (req) => {
     console.log('Uploading resized logo')
     const { data, error: uploadError } = await supabase.storage
       .from('brand_assets')
-      .upload('facebook-logo.png', resizedImage, {
+      .upload('facebook-app-icon.png', resizedImage, {
         contentType: 'image/png',
         upsert: true
       })
@@ -62,11 +63,11 @@ serve(async (req) => {
     console.log('Getting public URL')
     const { data: { publicUrl } } = supabase.storage
       .from('brand_assets')
-      .getPublicUrl('facebook-logo.png')
+      .getPublicUrl('facebook-app-icon.png')
 
     return new Response(
       JSON.stringify({ 
-        message: 'Logo redimensionné avec succès',
+        message: 'Logo redimensionné avec succès pour Facebook',
         url: publicUrl
       }),
       { 
