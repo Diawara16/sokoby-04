@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
-import Sharp from 'https://esm.sh/sharp@0.32.6'
+import ImageMagick from 'https://deno.land/x/imagemagick_deno@0.0.19/mod.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,33 +13,40 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Starting logo resize operation')
+    
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Récupérer le logo original depuis le bucket brand_assets
-    const { data: fileData } = await supabase.storage
+    console.log('Fetching original logo')
+    const { data: fileData, error: downloadError } = await supabase.storage
       .from('brand_assets')
       .download('logo.png')
+
+    if (downloadError) {
+      console.error('Error downloading logo:', downloadError)
+      throw new Error('Logo original non trouvé')
+    }
 
     if (!fileData) {
       throw new Error('Logo original non trouvé')
     }
 
-    // Convertir le blob en buffer
+    console.log('Converting logo to buffer')
     const arrayBuffer = await fileData.arrayBuffer()
     const buffer = new Uint8Array(arrayBuffer)
 
-    // Redimensionner l'image en 1024x1024
-    const resizedImage = await Sharp(buffer)
-      .resize(1024, 1024, {
-        fit: 'contain',
-        background: { r: 255, g: 255, b: 255, alpha: 1 }
-      })
-      .toBuffer()
+    console.log('Resizing logo')
+    const resizedImage = await ImageMagick.resize(buffer, {
+      width: 1024,
+      height: 1024,
+      fit: 'contain',
+      background: 'white'
+    })
 
-    // Uploader la nouvelle version
+    console.log('Uploading resized logo')
     const { data, error: uploadError } = await supabase.storage
       .from('brand_assets')
       .upload('facebook-logo.png', resizedImage, {
@@ -48,10 +55,11 @@ serve(async (req) => {
       })
 
     if (uploadError) {
+      console.error('Error uploading resized logo:', uploadError)
       throw uploadError
     }
 
-    // Obtenir l'URL publique
+    console.log('Getting public URL')
     const { data: { publicUrl } } = supabase.storage
       .from('brand_assets')
       .getPublicUrl('facebook-logo.png')
@@ -68,6 +76,7 @@ serve(async (req) => {
     )
 
   } catch (error) {
+    console.error('Error in resize-logo function:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
