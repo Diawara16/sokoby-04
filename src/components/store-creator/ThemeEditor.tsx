@@ -45,11 +45,11 @@ export const ThemeEditor = ({ niche, onComplete }: ThemeEditorProps) => {
         setSelectedTemplate(data[0]);
         setPrimaryColor(data[0].colors.primary);
         setSecondaryColor(data[0].colors.secondary);
-        setAccentColor(data[0].colors.accent);
-        setLayoutStyle(data[0].layout.style);
-        setSpacing(data[0].layout.spacing);
-        setHeadingFont(data[0].typography.heading);
-        setBodyFont(data[0].typography.body);
+        setAccentColor(data[0].colors.accent || "#000000");
+        setLayoutStyle(data[0].layout.spacing);
+        setSpacing(data[0].layout.containerWidth);
+        setHeadingFont(data[0].typography.fontFamily);
+        setBodyFont(data[0].typography.fontSize);
       }
     } catch (error) {
       console.error('Error fetching templates:', error);
@@ -67,11 +67,11 @@ export const ThemeEditor = ({ niche, onComplete }: ThemeEditorProps) => {
       setSelectedTemplate(template);
       setPrimaryColor(template.colors.primary);
       setSecondaryColor(template.colors.secondary);
-      setAccentColor(template.colors.accent);
-      setLayoutStyle(template.layout.style);
-      setSpacing(template.layout.spacing);
-      setHeadingFont(template.typography.heading);
-      setBodyFont(template.typography.body);
+      setAccentColor(template.colors.accent || "#000000");
+      setLayoutStyle(template.layout.spacing);
+      setSpacing(template.layout.containerWidth);
+      setHeadingFont(template.typography.fontFamily);
+      setBodyFont(template.typography.fontSize);
     }
   };
 
