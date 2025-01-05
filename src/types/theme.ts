@@ -1,3 +1,12 @@
+export interface PricingPlanData {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  features: string[];
+  isPopular?: boolean;
+}
+
 export interface ThemeColors {
   primary: string;
   secondary: string;
@@ -41,4 +50,10 @@ export interface Theme {
   layout: ThemeLayout;
   components: ThemeComponents;
   created_at: string;
+  price?: number;
+  features?: string[];
+  preview?: string;
 }
+
+// Alias pour la rétrocompatibilité
+export type ThemeTemplate = Theme;

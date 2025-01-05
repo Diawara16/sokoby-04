@@ -1,13 +1,13 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ThemeTemplate } from "@/types/theme";
+import { Theme } from "@/types/theme";
 import { Monitor } from "lucide-react";
 
 interface PreviewProps {
   primaryColor: string;
   secondaryColor: string;
   accentColor: string;
-  selectedTemplate: ThemeTemplate | null;
+  selectedTemplate: Theme | null;
 }
 
 export const ThemePreview = ({
@@ -64,7 +64,7 @@ export const ThemePreview = ({
               <div
                 key={name}
                 className="w-6 h-6 rounded-full border"
-                style={{ backgroundColor: color }}
+                style={{ backgroundColor: color as string }}
                 title={name}
               />
             ))}
