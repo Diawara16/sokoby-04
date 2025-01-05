@@ -22,7 +22,7 @@ interface ProductFormData {
 export function ProductImportForm() {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<ProductFormData>()
+  const { register, handleSubmit, formState: { errors } } = useForm<ProductFormData>()
 
   const dropshippingApps = applications.filter(app => app.type === "dropshipping")
 
@@ -59,7 +59,6 @@ export function ProductImportForm() {
         description: "Le produit a été importé avec succès",
       })
       
-      reset()
     } catch (error) {
       console.error("Erreur lors de l'import du produit:", error)
       toast({

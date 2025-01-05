@@ -1,49 +1,44 @@
-import { PricingPlanData } from "@/types/theme"
+import { PricingPlanData } from "@/types/theme";
 
-export const getMonthlyPlans = (): PricingPlanData[] => [
+export const pricingPlans: PricingPlanData[] = [
   {
-    name: "Démarrage",
-    price: "$11",
-    period: "par mois",
+    id: "basic",
+    name: "Basic",
     description: "Pour démarrer votre boutique en ligne",
-    planType: "starter",
+    price: 11,
     features: [
-      "Jusqu'à 50 produits",
-      "1 utilisateur",
+      "Jusqu'à 100 produits",
       "Support par email",
       "Analyses de base",
-      "Paiements en ligne",
-      "Domaine personnalisé",
+      "Paiements sécurisés",
     ],
   },
   {
-    name: "Croissance",
-    price: "$29",
-    period: "par mois",
-    description: "Pour les boutiques en pleine croissance",
-    planType: "growth",
-    features: [
-      "Jusqu'à 200 produits",
-      "5 utilisateurs",
-      "Support par chat",
-      "Analyses avancées",
-      "Paiements en ligne",
-      "Domaine personnalisé",
-    ],
-  },
-  {
-    name: "Établissement",
-    price: "$79",
-    period: "par mois",
-    description: "Pour les entreprises établies",
-    planType: "established",
+    id: "pro",
+    name: "Pro",
+    description: "Pour les entreprises en croissance",
+    price: 29,
     features: [
       "Produits illimités",
-      "Utilisateurs illimités",
       "Support prioritaire",
-      "Analyses détaillées",
-      "Paiements en ligne",
-      "Domaine personnalisé",
+      "Analyses avancées",
+      "Intégrations marketplaces",
+      "Personnalisation avancée",
+    ],
+    isPopular: true,
+  },
+  {
+    id: "enterprise",
+    name: "Entreprise",
+    description: "Pour les grandes entreprises",
+    price: 99,
+    features: [
+      "Tout dans Pro",
+      "Support dédié 24/7",
+      "API personnalisée",
+      "Déploiement sur mesure",
+      "Formation équipe",
+      "SLA garanti",
     ],
   },
-]
+];
