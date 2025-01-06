@@ -7,7 +7,7 @@ import PrivateRoute from "@/components/PrivateRoute";
 import UpdatePassword from "@/pages/UpdatePassword";
 import ResetPassword from "@/pages/ResetPassword";
 import Register from "@/pages/Register";
-import { SubscriptionDetails } from "@/components/profile/SubscriptionDetails";
+import SubscriptionDetails from "@/components/profile/SubscriptionDetails";
 import { AuthenticatedPricingContent } from "@/components/pricing/AuthenticatedPricingContent";
 import { UnauthenticatedPricingContent } from "@/components/pricing/UnauthenticatedPricingContent";
 import { useSubscriptionHandler } from "@/hooks/useSubscriptionHandler";

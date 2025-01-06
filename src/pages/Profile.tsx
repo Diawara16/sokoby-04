@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { ProfileForm } from "@/components/profile/ProfileForm";
-import { SubscriptionDetails } from "@/components/profile/SubscriptionDetails";
+import SubscriptionDetails from "@/components/profile/SubscriptionDetails";
 
 const Profile = () => {
   const navigate = useNavigate();
