@@ -3,10 +3,58 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { StoreSettings } from "../types";
 
-export const useStoreSettings = () => {
+const createDefaultSettings = (userId: string, userEmail: string | undefined) => ({
+  user_id: userId,
+  store_name: 'Ma boutique',
+  store_email: userEmail,
+  domain_name: null,
+  is_custom_domain: false,
+  store_phone: null,
+  store_address: null
+});
+
+const useStoreSettings = () => {
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+
+  const handleError = (error: any, message: string) => {
+    console.error(message, error);
+    toast({
+      title: "Erreur",
+      description: message,
+      variant: "destructive",
+    });
+  };
+
+  const fetchExistingSettings = async (userId: string) => {
+    const { data: existingSettings, error: fetchError } = await supabase
+      .from('store_settings')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      throw fetchError;
+    }
+
+    return existingSettings;
+  };
+
+  const createNewSettings = async (userId: string, userEmail: string | undefined) => {
+    const defaultSettings = createDefaultSettings(userId, userEmail);
+    const { data: newSettings, error: createError } = await supabase
+      .from('store_settings')
+      .insert([defaultSettings])
+      .select()
+      .single();
+
+    if (createError) {
+      throw createError;
+    }
+
+    return newSettings;
+  };
 
   const loadStoreSettings = async () => {
     try {
@@ -20,47 +68,15 @@ export const useStoreSettings = () => {
           description: "Vous devez être connecté pour accéder aux paramètres de la boutique",
           variant: "destructive",
         });
-        setIsLoading(false);
         return;
       }
 
       console.log("Utilisateur connecté:", user.id);
-      const { data: existingSettings, error: fetchError } = await supabase
-        .from('store_settings')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (fetchError && fetchError.code !== 'PGRST116') {
-        console.error("Erreur lors du chargement des paramètres:", fetchError);
-        throw fetchError;
-      }
-
-      console.log("Paramètres existants:", existingSettings);
+      const existingSettings = await fetchExistingSettings(user.id);
 
       if (!existingSettings) {
         console.log("Création des paramètres par défaut...");
-        const defaultSettings = {
-          user_id: user.id,
-          store_name: 'Ma boutique',
-          store_email: user.email,
-          domain_name: null,
-          is_custom_domain: false,
-          store_phone: null,
-          store_address: null
-        };
-
-        const { data: newSettings, error: createError } = await supabase
-          .from('store_settings')
-          .insert([defaultSettings])
-          .select()
-          .single();
-
-        if (createError) {
-          console.error("Erreur lors de la création des paramètres:", createError);
-          throw createError;
-        }
-
+        const newSettings = await createNewSettings(user.id, user.email);
         console.log("Nouveaux paramètres créés:", newSettings);
         setSettings(newSettings);
       } else {
@@ -68,12 +84,7 @@ export const useStoreSettings = () => {
         setSettings(existingSettings);
       }
     } catch (error: any) {
-      console.error("Erreur lors du chargement des paramètres de la boutique:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les paramètres de la boutique",
-        variant: "destructive",
-      });
+      handleError(error, "Impossible de charger les paramètres de la boutique");
     } finally {
       setIsLoading(false);
     }
@@ -109,12 +120,7 @@ export const useStoreSettings = () => {
         description: "Les paramètres ont été sauvegardés",
       });
     } catch (error: any) {
-      console.error("Erreur lors de la sauvegarde:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de sauvegarder les paramètres",
-        variant: "destructive",
-      });
+      handleError(error, "Impossible de sauvegarder les paramètres");
     }
   };
 
@@ -129,3 +135,5 @@ export const useStoreSettings = () => {
     handleSave
   };
 };
+
+export { useStoreSettings };
