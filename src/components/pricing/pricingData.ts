@@ -17,7 +17,7 @@ export interface PricingPlanData {
 export const getMonthlyPlans = (): PricingPlanData[] => [
   {
     name: "Démarrage",
-    price: "$13",
+    price: "$11",
     period: "par mois",
     description: "Pour démarrer votre boutique en ligne",
     planType: "starter",
@@ -36,7 +36,7 @@ export const getMonthlyPlans = (): PricingPlanData[] => [
   },
   {
     name: "Pro",
-    price: "$19",
+    price: "$25",
     period: "par mois",
     description: "Pour les entreprises en croissance",
     planType: "pro",
@@ -59,7 +59,7 @@ export const getMonthlyPlans = (): PricingPlanData[] => [
   },
   {
     name: "Entreprise",
-    price: "$49",
+    price: "$97",
     period: "par mois",
     description: "Pour les grandes entreprises",
     planType: "enterprise",
