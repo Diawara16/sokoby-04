@@ -38,11 +38,13 @@ export const StoreSettings = ({ showDomainOnly = false }: StoreSettingsProps) =>
     <div className="space-y-6">
       <DomainAlert domainName={settings.domain_name} />
 
-      <StoreSettingsForm 
-        settings={settings}
-        onFieldChange={handleFieldChange}
-        onSave={handleSave}
-      />
+      <Card className="p-6">
+        <StoreSettingsForm 
+          settings={settings}
+          onFieldChange={handleFieldChange}
+          onSave={handleSave}
+        />
+      </Card>
     </div>
   );
 };

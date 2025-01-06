@@ -37,28 +37,7 @@ export const useStoreSettings = () => {
       }
 
       console.log("Paramètres chargés:", data);
-      if (!data) {
-        const { data: newSettings, error: createError } = await supabase
-          .from('store_settings')
-          .insert({
-            user_id: user.id,
-            store_name: 'Ma boutique',
-            store_email: user.email,
-            domain_name: null,
-            is_custom_domain: false
-          })
-          .select()
-          .single();
-
-        if (createError) {
-          console.error("Erreur lors de la création des paramètres:", createError);
-          throw createError;
-        }
-
-        setSettings(newSettings);
-      } else {
-        setSettings(data);
-      }
+      setSettings(data);
     } catch (error: any) {
       console.error("Erreur lors du chargement des paramètres de la boutique:", error);
       toast({
@@ -73,6 +52,8 @@ export const useStoreSettings = () => {
 
   const handleSave = async () => {
     try {
+      if (!settings) return;
+
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -83,8 +64,6 @@ export const useStoreSettings = () => {
         });
         return;
       }
-
-      if (!settings) return;
 
       const { error } = await supabase
         .from('store_settings')
