@@ -1,14 +1,17 @@
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useStoreSettings } from "./hooks/useStoreSettings";
 import { DomainAlert } from "./DomainAlert";
 import { StoreSettingsForm } from "./StoreSettingsForm";
+import { ErrorDisplay } from "../store-creator/ErrorDisplay";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 interface StoreSettingsProps {
   showDomainOnly?: boolean;
 }
 
 export const StoreSettings = ({ showDomainOnly = false }: StoreSettingsProps) => {
-  const { settings, setSettings, isLoading, handleSave } = useStoreSettings();
+  const { settings, setSettings, isLoading, error, handleSave, reloadSettings } = useStoreSettings();
 
   const handleFieldChange = (field: string, value: string) => {
     setSettings(prev => prev ? {...prev, [field]: value} : null);
@@ -17,15 +20,31 @@ export const StoreSettings = ({ showDomainOnly = false }: StoreSettingsProps) =>
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <ReloadIcon className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <ErrorDisplay error={error} />
+        <Button onClick={reloadSettings} variant="outline" className="w-full">
+          Réessayer
+        </Button>
       </div>
     );
   }
 
   if (!settings) {
     return (
-      <div className="text-center p-8 text-muted-foreground">
-        Aucun paramètre trouvé. Veuillez réessayer.
+      <div className="text-center p-8 space-y-4">
+        <p className="text-muted-foreground">
+          Aucun paramètre trouvé.
+        </p>
+        <Button onClick={reloadSettings} variant="outline">
+          Réessayer
+        </Button>
       </div>
     );
   }
