@@ -4,7 +4,6 @@ import { useStoreSettings } from "./hooks/useStoreSettings";
 import { DomainAlert } from "./DomainAlert";
 import { StoreSettingsForm } from "./StoreSettingsForm";
 import { ErrorDisplay } from "../store-creator/ErrorDisplay";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { Loader2 } from "lucide-react";
 
 interface StoreSettingsProps {
