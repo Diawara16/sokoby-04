@@ -10,7 +10,7 @@ export const BillingToggle = ({ isAnnual, onChange }: BillingToggleProps) => {
   return (
     <div className="flex items-center justify-center gap-4">
       <Label htmlFor="billing-toggle" className="text-sm font-medium">
-        Mensuel
+        Monthly
       </Label>
       <Switch
         id="billing-toggle"
@@ -19,7 +19,7 @@ export const BillingToggle = ({ isAnnual, onChange }: BillingToggleProps) => {
       />
       <div className="flex items-center gap-2">
         <Label htmlFor="billing-toggle" className="text-sm font-medium">
-          Annuel
+          Annual
         </Label>
         <span className="inline-block px-2 py-1 text-xs font-medium text-white bg-red-500 rounded-full">
           -17%

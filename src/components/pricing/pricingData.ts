@@ -18,7 +18,7 @@ export const getMonthlyPlans = (): PricingPlanData[] => [
   {
     name: "Démarrage",
     price: "11",
-    period: "par mois",
+    period: "per month",
     description: "Pour démarrer votre boutique en ligne",
     planType: "starter",
     features: [
@@ -37,7 +37,7 @@ export const getMonthlyPlans = (): PricingPlanData[] => [
   {
     name: "Pro",
     price: "25",
-    period: "par mois",
+    period: "per month",
     description: "Pour les entreprises en croissance",
     planType: "pro",
     features: [
@@ -60,7 +60,7 @@ export const getMonthlyPlans = (): PricingPlanData[] => [
   {
     name: "Entreprise",
     price: "97",
-    period: "par mois",
+    period: "per month",
     description: "Pour les grandes entreprises",
     planType: "enterprise",
     features: [
@@ -90,6 +90,6 @@ export const getAnnualPlans = (monthlyPlans: PricingPlanData[]): PricingPlanData
   monthlyPlans.map(plan => ({
     ...plan,
     price: `${Math.floor(Number(plan.price) * 10)}`,
-    period: "par an",
-    description: `${plan.description} (2 mois gratuits)`,
+    period: "per year",
+    description: `${plan.description} (2 months free)`,
   }));
