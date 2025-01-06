@@ -10,7 +10,7 @@ const StoreSettings = () => {
       <Tabs defaultValue="general" className="space-y-4">
         <TabsList>
           <TabsTrigger value="general">Général</TabsTrigger>
-          <TabsTrigger value="domain">Domaine</TabsTrigger>
+          <TabsTrigger value="domain">Nom de domaine</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
@@ -21,7 +21,7 @@ const StoreSettings = () => {
 
         <TabsContent value="domain">
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Configuration du domaine</h2>
+            <h2 className="text-xl font-semibold mb-4">Configuration du nom de domaine</h2>
             <div className="space-y-4">
               <StoreSettingsComponent showDomainOnly />
             </div>
