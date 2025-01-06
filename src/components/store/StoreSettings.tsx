@@ -5,6 +5,7 @@ import { DomainAlert } from "./DomainAlert";
 import { StoreSettingsForm } from "./StoreSettingsForm";
 import { ErrorDisplay } from "../store-creator/ErrorDisplay";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { Loader2 } from "lucide-react";
 
 interface StoreSettingsProps {
   showDomainOnly?: boolean;
@@ -20,7 +21,7 @@ export const StoreSettings = ({ showDomainOnly = false }: StoreSettingsProps) =>
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <ReloadIcon className="h-8 w-8 animate-spin" />
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
