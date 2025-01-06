@@ -37,9 +37,7 @@ const StoreSettings = ({ showDomainOnly }: StoreSettingsProps) => {
         <TabsContent value="domain">
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4">Configuration du nom de domaine</h2>
-            <div className="space-y-4">
-              <StoreSettingsComponent showDomainOnly />
-            </div>
+            <StoreSettingsComponent showDomainOnly />
           </Card>
         </TabsContent>
       </Tabs>

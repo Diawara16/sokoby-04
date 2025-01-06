@@ -23,7 +23,11 @@ export const StoreSettings = ({ showDomainOnly = false }: StoreSettingsProps) =>
   }
 
   if (!settings) {
-    return null;
+    return (
+      <div className="text-center p-8 text-muted-foreground">
+        Aucun paramètre trouvé. Veuillez réessayer.
+      </div>
+    );
   }
 
   if (showDomainOnly) {
