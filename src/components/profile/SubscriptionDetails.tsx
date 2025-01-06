@@ -13,7 +13,7 @@ interface Subscription {
   created_at: string;
 }
 
-export const SubscriptionDetails = () => {
+const SubscriptionDetails = () => {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -118,3 +118,5 @@ export const SubscriptionDetails = () => {
     </Card>
   );
 };
+
+export default SubscriptionDetails;
