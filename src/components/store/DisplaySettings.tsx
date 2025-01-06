@@ -1,7 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface DisplaySettingsProps {
   displaySettings: {
@@ -19,19 +18,14 @@ export const DisplaySettings = ({ displaySettings, onChange }: DisplaySettingsPr
     <div className="space-y-4">
       <div>
         <Label htmlFor="date_format">Format de date</Label>
-        <Select
+        <Input
+          id="date_format"
           value={displaySettings.date_format}
-          onValueChange={(value) => onChange("display_settings.date_format", value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez un format" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="dd/MM/yyyy">31/12/2024</SelectItem>
-            <SelectItem value="MM/dd/yyyy">12/31/2024</SelectItem>
-            <SelectItem value="yyyy-MM-dd">2024-12-31</SelectItem>
-          </SelectContent>
-        </Select>
+          onChange={(e) =>
+            onChange('display_settings', { ...displaySettings, date_format: e.target.value })
+          }
+          placeholder="dd/MM/yyyy"
+        />
       </div>
 
       <div>
@@ -41,8 +35,12 @@ export const DisplaySettings = ({ displaySettings, onChange }: DisplaySettingsPr
           type="number"
           value={displaySettings.products_per_page}
           onChange={(e) =>
-            onChange("display_settings.products_per_page", parseInt(e.target.value))
+            onChange('display_settings', {
+              ...displaySettings,
+              products_per_page: parseInt(e.target.value),
+            })
           }
+          min={1}
         />
       </div>
 
@@ -50,13 +48,13 @@ export const DisplaySettings = ({ displaySettings, onChange }: DisplaySettingsPr
         <div className="space-y-0.5">
           <Label>Afficher les produits en rupture</Label>
           <p className="text-sm text-muted-foreground">
-            Afficher les produits même s'ils ne sont plus en stock
+            Afficher les produits même quand ils sont en rupture de stock
           </p>
         </div>
         <Switch
           checked={displaySettings.show_out_of_stock}
           onCheckedChange={(checked) =>
-            onChange("display_settings.show_out_of_stock", checked)
+            onChange('display_settings', { ...displaySettings, show_out_of_stock: checked })
           }
         />
       </div>
@@ -71,7 +69,7 @@ export const DisplaySettings = ({ displaySettings, onChange }: DisplaySettingsPr
         <Switch
           checked={displaySettings.show_low_stock_warning}
           onCheckedChange={(checked) =>
-            onChange("display_settings.show_low_stock_warning", checked)
+            onChange('display_settings', { ...displaySettings, show_low_stock_warning: checked })
           }
         />
       </div>
@@ -83,8 +81,12 @@ export const DisplaySettings = ({ displaySettings, onChange }: DisplaySettingsPr
           type="number"
           value={displaySettings.low_stock_threshold}
           onChange={(e) =>
-            onChange("display_settings.low_stock_threshold", parseInt(e.target.value))
+            onChange('display_settings', {
+              ...displaySettings,
+              low_stock_threshold: parseInt(e.target.value),
+            })
           }
+          min={0}
         />
       </div>
     </div>

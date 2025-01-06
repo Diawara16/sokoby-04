@@ -25,7 +25,7 @@ export const GDPRSettings = ({ gdprSettings, onChange }: GDPRSettingsProps) => {
         <Switch
           checked={gdprSettings.cookie_consent_enabled}
           onCheckedChange={(checked) =>
-            onChange("gdpr_settings.cookie_consent_enabled", checked)
+            onChange('gdpr_settings', { ...gdprSettings, cookie_consent_enabled: checked })
           }
         />
       </div>
@@ -34,9 +34,9 @@ export const GDPRSettings = ({ gdprSettings, onChange }: GDPRSettingsProps) => {
         <Label htmlFor="privacy_policy">URL de la politique de confidentialité</Label>
         <Input
           id="privacy_policy"
-          value={gdprSettings.privacy_policy_url || ""}
+          value={gdprSettings.privacy_policy_url || ''}
           onChange={(e) =>
-            onChange("gdpr_settings.privacy_policy_url", e.target.value)
+            onChange('gdpr_settings', { ...gdprSettings, privacy_policy_url: e.target.value })
           }
           placeholder="https://example.com/privacy"
         />
@@ -49,8 +49,12 @@ export const GDPRSettings = ({ gdprSettings, onChange }: GDPRSettingsProps) => {
           type="number"
           value={gdprSettings.cookie_duration_days}
           onChange={(e) =>
-            onChange("gdpr_settings.cookie_duration_days", parseInt(e.target.value))
+            onChange('gdpr_settings', {
+              ...gdprSettings,
+              cookie_duration_days: parseInt(e.target.value),
+            })
           }
+          min={1}
         />
       </div>
 
@@ -61,8 +65,12 @@ export const GDPRSettings = ({ gdprSettings, onChange }: GDPRSettingsProps) => {
           type="number"
           value={gdprSettings.data_retention_months}
           onChange={(e) =>
-            onChange("gdpr_settings.data_retention_months", parseInt(e.target.value))
+            onChange('gdpr_settings', {
+              ...gdprSettings,
+              data_retention_months: parseInt(e.target.value),
+            })
           }
+          min={1}
         />
       </div>
     </div>
