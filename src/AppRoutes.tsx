@@ -18,12 +18,23 @@ import Boutique from "@/pages/Boutique";
 import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
 import EmailMarketing from "@/pages/EmailMarketing";
 import { ProtectedRoutes } from "@/routes/ProtectedRoutes";
+import StoreSettings from "@/pages/settings/StoreSettings";
+import PaymentSettings from "@/pages/settings/PaymentSettings";
+import LocationSettings from "@/pages/settings/LocationSettings";
+import SecuritySettings from "@/pages/settings/SecuritySettings";
+import UserSettings from "@/pages/settings/UserSettings";
 
 const AppRoutes = () => {
   const protectedRoutes = [
     { path: "/", element: <Dashboard /> },
     { path: "/profile", element: <Profile /> },
     { path: "/settings", element: <Settings /> },
+    { path: "/settings/general", element: <StoreSettings /> },
+    { path: "/settings/domaine", element: <StoreSettings showDomainOnly /> },
+    { path: "/settings/utilisateurs", element: <UserSettings /> },
+    { path: "/settings/paiements", element: <PaymentSettings /> },
+    { path: "/settings/geolocalisation", element: <LocationSettings /> },
+    { path: "/settings/securite", element: <SecuritySettings /> },
     { path: "/orders", element: <Orders /> },
     { path: "/products", element: <Products /> },
     { path: "/products/add", element: <AddProduct /> },

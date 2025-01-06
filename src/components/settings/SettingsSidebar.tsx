@@ -6,7 +6,8 @@ import {
   CreditCard, 
   Globe, 
   MapPin, 
-  Shield 
+  Shield,
+  Store
 } from "lucide-react";
 
 export const SettingsSidebar = () => {
@@ -15,32 +16,32 @@ export const SettingsSidebar = () => {
   const settingsLinks = [
     {
       label: "Général",
-      href: "/parametres",
-      icon: Settings,
+      href: "/settings/general",
+      icon: Store,
     },
     {
       label: "Nom de domaine",
-      href: "/parametres/domaine",
+      href: "/settings/domaine",
       icon: Globe,
     },
     {
       label: "Utilisateurs",
-      href: "/parametres/utilisateurs",
+      href: "/settings/utilisateurs",
       icon: Users,
     },
     {
       label: "Paiements",
-      href: "/parametres/paiements",
+      href: "/settings/paiements",
       icon: CreditCard,
     },
     {
       label: "Géolocalisation",
-      href: "/parametres/geolocalisation",
+      href: "/settings/geolocalisation",
       icon: MapPin,
     },
     {
       label: "Sécurité",
-      href: "/parametres/securite",
+      href: "/settings/securite",
       icon: Shield,
     },
   ];
