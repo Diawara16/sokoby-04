@@ -21,14 +21,15 @@ export const useStoreSettings = () => {
         return;
       }
 
-      const { data: existingSettings, error: fetchError } = await supabase
+      const { data: existingSettings, error } = await supabase
         .from('store_settings')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (fetchError && fetchError.code !== 'PGRST116') {
-        throw fetchError;
+      if (error) {
+        console.error("Erreur lors de la récupération des paramètres:", error);
+        throw error;
       }
 
       if (!existingSettings) {

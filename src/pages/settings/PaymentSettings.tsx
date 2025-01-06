@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { CreditCard, PaypalIcon } from "lucide-react";
+import { CreditCard, Wallet } from "lucide-react";
 
 const PaymentSettings = () => {
   const { toast } = useToast();
@@ -40,7 +40,10 @@ const PaymentSettings = () => {
         </Card>
 
         <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Clés API</h2>
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Wallet className="h-5 w-5" />
+            Clés API
+          </h2>
           
           <div className="space-y-4">
             <div>
