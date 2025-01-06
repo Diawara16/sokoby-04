@@ -1,174 +1,107 @@
-import { AlertCircle, CheckCircle, XCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
+import { Globe, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface DomainAlertProps {
   domainName: string | null;
 }
 
 export const DomainAlert = ({ domainName }: DomainAlertProps) => {
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const { toast } = useToast();
 
-  const { data: domainVerification, isLoading, refetch } = useQuery({
-    queryKey: ['domain-verification', domainName],
-    queryFn: async () => {
-      try {
-        if (!domainName) return null;
-        
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return null;
-
-        console.log("Vérification du domaine pour:", domainName);
-
-        const { data, error } = await supabase
-          .from('domain_verifications')
-          .select('*')
-          .eq('domain_name', domainName)
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (error) {
-          console.error('Erreur lors de la vérification du domaine:', error);
-          toast({
-            title: "Erreur",
-            description: "Impossible de vérifier le domaine",
-            variant: "destructive",
-          });
-          return null;
-        }
-
-        console.log("Résultat de la vérification:", data);
-        return data;
-      } catch (error) {
-        console.error('Erreur inattendue:', error);
-        toast({
-          title: "Erreur",
-          description: "Une erreur est survenue lors de la vérification",
-          variant: "destructive",
-        });
-        return null;
-      }
-    },
-    enabled: !!domainName,
-    refetchInterval: 30000
-  });
-
-  const handleVerifyDomain = async () => {
+  const verifyDomain = async () => {
     try {
-      console.log("Début de la vérification du domaine:", domainName);
-      
-      const { error } = await supabase.functions.invoke('verify-domain', {
-        body: { domain: domainName }
-      });
-      
+      setIsVerifying(true);
+      console.log("Vérification du domaine pour:", domainName);
+
+      const { data: verificationData, error } = await supabase
+        .from('domain_verifications')
+        .select('*')
+        .eq('domain_name', domainName)
+        .maybeSingle();
+
+      console.log("Résultat de la vérification:", verificationData);
+
       if (error) {
-        console.error('Erreur lors de la vérification:', error);
-        toast({
-          title: "Erreur",
-          description: "Impossible de vérifier le domaine",
-          variant: "destructive",
-        });
-        return;
+        throw error;
       }
-      
-      toast({
-        title: "Succès",
-        description: "Vérification du domaine lancée",
-      });
-      
-      refetch();
+
+      if (verificationData?.verified) {
+        setIsVerified(true);
+        toast({
+          title: "Domaine vérifié",
+          description: "Votre domaine a été vérifié avec succès.",
+        });
+      } else {
+        toast({
+          title: "Domaine non vérifié",
+          description: "La vérification du domaine est en attente.",
+        });
+      }
     } catch (error) {
-      console.error('Erreur lors de la vérification:', error);
+      console.error("Erreur lors de la vérification:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la vérification",
+        description: "Impossible de vérifier le domaine pour le moment.",
         variant: "destructive",
       });
+    } finally {
+      setIsVerifying(false);
     }
   };
 
-  if (isLoading) {
-    return (
-      <Alert className="mb-6">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
-          Vérification du statut du domaine...
-        </AlertDescription>
-      </Alert>
-    );
-  }
+  useEffect(() => {
+    if (domainName) {
+      verifyDomain();
+    }
+  }, [domainName]);
 
   if (!domainName) {
     return (
-      <Alert className="mb-6">
-        <XCircle className="h-4 w-4 text-red-500" />
+      <Alert>
+        <Globe className="h-4 w-4" />
+        <AlertTitle>Domaine non configuré</AlertTitle>
         <AlertDescription>
-          Aucun domaine configuré pour votre boutique
+          Vous n'avez pas encore configuré de domaine pour votre boutique.
+          <Button variant="link" className="px-0 text-primary" asChild>
+            <a href="/settings/domaine">Configurer maintenant</a>
+          </Button>
         </AlertDescription>
       </Alert>
     );
   }
 
   return (
-    <Alert className="mb-6">
-      {domainVerification?.verified ? (
-        <>
-          <CheckCircle className="h-4 w-4 text-green-500" />
-          <AlertDescription>
-            Le domaine {domainName} est correctement déployé et vérifié.
-          </AlertDescription>
-        </>
-      ) : (
-        <>
-          <XCircle className="h-4 w-4 text-red-500" />
-          <AlertDescription>
-            <p className="mb-4">Pour configurer {domainName}, suivez ces étapes :</p>
-            
-            <div className="space-y-4">
-              <div className="bg-gray-50 p-4 rounded-md">
-                <h4 className="font-semibold mb-2">1. Configuration du domaine principal</h4>
-                <p><strong>Type :</strong> A</p>
-                <p><strong>Nom :</strong> @</p>
-                <p><strong>Valeur :</strong> 76.76.21.21</p>
-                <p><strong>TTL :</strong> Automatique</p>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-md">
-                <h4 className="font-semibold mb-2">2. Configuration du sous-domaine www</h4>
-                <p><strong>Type :</strong> CNAME</p>
-                <p><strong>Nom :</strong> www</p>
-                <p><strong>Valeur :</strong> cname.vercel-dns.com</p>
-                <p><strong>TTL :</strong> Automatique</p>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-md">
-                <h4 className="font-semibold mb-2">3. Vérification SSL</h4>
-                <p>Assurez-vous que votre domaine est accessible en HTTPS.</p>
-                <p>Testez votre domaine : <a href={`https://${domainName}`} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">https://{domainName}</a></p>
-              </div>
-
-              <div className="mt-4">
-                <Button onClick={handleVerifyDomain} variant="outline">
-                  Vérifier maintenant
-                </Button>
-              </div>
-
-              <div className="mt-4 text-sm text-gray-600">
-                <p>Notes importantes :</p>
-                <ul className="list-disc pl-4 space-y-1">
-                  <li>La propagation DNS peut prendre jusqu'à 48 heures</li>
-                  <li>Le certificat SSL doit être actif pour que Facebook accepte le domaine</li>
-                  <li>Le site doit être accessible via HTTPS</li>
-                  <li>Nous vérifions automatiquement l'état de la configuration toutes les 30 secondes</li>
-                </ul>
-              </div>
-            </div>
-          </AlertDescription>
-        </>
-      )}
+    <Alert>
+      <Globe className="h-4 w-4" />
+      <AlertTitle>Domaine: {domainName}</AlertTitle>
+      <AlertDescription className="flex items-center gap-2">
+        {isVerifying ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Vérification en cours...
+          </>
+        ) : isVerified ? (
+          "Votre domaine est vérifié et actif."
+        ) : (
+          <>
+            En attente de vérification
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={verifyDomain}
+              disabled={isVerifying}
+            >
+              Vérifier maintenant
+            </Button>
+          </>
+        )}
+      </AlertDescription>
     </Alert>
   );
 };
