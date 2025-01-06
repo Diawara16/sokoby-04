@@ -29,9 +29,9 @@ export const useStoreSettings = () => {
         .from('store_settings')
         .select('*')
         .eq('user_id', user.id)
-        .maybeSingle();
+        .single();
 
-      if (fetchError) {
+      if (fetchError && fetchError.code !== 'PGRST116') {
         console.error("Erreur lors du chargement des paramètres:", fetchError);
         throw fetchError;
       }
@@ -40,17 +40,19 @@ export const useStoreSettings = () => {
 
       if (!existingSettings) {
         console.log("Création des paramètres par défaut...");
+        const defaultSettings = {
+          user_id: user.id,
+          store_name: 'Ma boutique',
+          store_email: user.email,
+          domain_name: null,
+          is_custom_domain: false,
+          store_phone: null,
+          store_address: null
+        };
+
         const { data: newSettings, error: createError } = await supabase
           .from('store_settings')
-          .insert({
-            user_id: user.id,
-            store_name: 'Ma boutique',
-            store_email: user.email,
-            domain_name: null,
-            is_custom_domain: false,
-            store_phone: null,
-            store_address: null
-          })
+          .insert([defaultSettings])
           .select()
           .single();
 
