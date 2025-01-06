@@ -1,88 +1,114 @@
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { Shield, Key, Lock } from "lucide-react";
 
 const SecuritySettings = () => {
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const { toast } = useToast();
 
-  const handlePasswordChange = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (newPassword !== confirmPassword) {
-      toast({
-        title: "Erreur",
-        description: "Les mots de passe ne correspondent pas",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Mot de passe mis à jour",
-        description: "Votre mot de passe a été changé avec succès",
-      });
-
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible de mettre à jour le mot de passe",
-        variant: "destructive",
-      });
-    }
+  const handleSave = () => {
+    toast({
+      title: "Paramètres de sécurité mis à jour",
+      description: "Vos paramètres de sécurité ont été sauvegardés avec succès.",
+    });
   };
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Sécurité</h1>
-      <Card className="p-6">
-        <form onSubmit={handlePasswordChange} className="space-y-4">
-          <div>
-            <Label htmlFor="currentPassword">Mot de passe actuel</Label>
-            <Input
-              id="currentPassword"
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-            />
+    <div className="container mx-auto py-6">
+      <h1 className="text-2xl font-bold mb-6">Paramètres de sécurité</h1>
+      
+      <div className="space-y-6">
+        <Card className="p-6">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Key className="h-5 w-5" />
+            Authentification
+          </h2>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Authentification à deux facteurs</Label>
+                <p className="text-sm text-muted-foreground">
+                  Ajoute une couche de sécurité supplémentaire à votre compte
+                </p>
+              </div>
+              <Switch />
+            </div>
           </div>
-          <div>
-            <Label htmlFor="newPassword">Nouveau mot de passe</Label>
-            <Input
-              id="newPassword"
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
+        </Card>
+
+        <Card className="p-6">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Lock className="h-5 w-5" />
+            Mot de passe
+          </h2>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="current_password">Mot de passe actuel</Label>
+              <Input
+                id="current_password"
+                type="password"
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="new_password">Nouveau mot de passe</Label>
+              <Input
+                id="new_password"
+                type="password"
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="confirm_password">Confirmer le mot de passe</Label>
+              <Input
+                id="confirm_password"
+                type="password"
+                className="mt-1"
+              />
+            </div>
           </div>
-          <div>
-            <Label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
+        </Card>
+
+        <Card className="p-6">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Shield className="h-5 w-5" />
+            Sessions actives
+          </h2>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between py-2 border-b">
+              <div>
+                <p className="font-medium">Chrome sur Windows</p>
+                <p className="text-sm text-muted-foreground">Dernière activité: il y a 2 minutes</p>
+              </div>
+              <Button variant="outline" size="sm">
+                Déconnecter
+              </Button>
+            </div>
+            
+            <div className="flex items-center justify-between py-2">
+              <div>
+                <p className="font-medium">Application mobile iOS</p>
+                <p className="text-sm text-muted-foreground">Dernière activité: il y a 1 heure</p>
+              </div>
+              <Button variant="outline" size="sm">
+                Déconnecter
+              </Button>
+            </div>
           </div>
-          <Button type="submit">Changer le mot de passe</Button>
-        </form>
-      </Card>
+        </Card>
+
+        <Button onClick={handleSave} className="w-full">
+          Sauvegarder les modifications
+        </Button>
+      </div>
     </div>
   );
 };
