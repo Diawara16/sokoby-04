@@ -1,113 +1,75 @@
-import { useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { supabase } from "@/lib/supabase"
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
-import { useToast } from "@/hooks/use-toast"
-import { TrendingUp, Lightbulb } from "lucide-react"
-
-interface Prediction {
-  month: string
-  amount: number
-  growth: number
-}
-
-interface PredictionsData {
-  predictions: Prediction[]
-  insights: string
-  recommendations: string[]
-}
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Loader2 } from "lucide-react";
 
 export const SalesPredictions = () => {
-  const [data, setData] = useState<PredictionsData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const { toast } = useToast()
+  const { data: predictions, isLoading } = useQuery({
+    queryKey: ['sales-predictions'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Non authentifié');
 
-  useEffect(() => {
-    const fetchPredictions = async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke('sales-predictions')
-        
-        if (error) throw error
-        
-        setData(data)
-      } catch (error) {
-        console.error('Error fetching predictions:', error)
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les prévisions de ventes",
-          variant: "destructive",
-        })
-      } finally {
-        setIsLoading(false)
-      }
+      const { data, error } = await supabase
+        .from('stock_predictions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      return data;
     }
-
-    fetchPredictions()
-  }, [])
+  });
 
   if (isLoading) {
     return (
-      <Card className="w-full">
+      <Card>
         <CardHeader>
-          <CardTitle>Prévisions de ventes</CardTitle>
+          <CardTitle>Prévisions des Ventes</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="h-[200px] flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
+        <CardContent className="flex justify-center items-center h-[300px]">
+          <Loader2 className="h-8 w-8 animate-spin" />
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  if (!data) return null
+  const chartData = predictions?.map(prediction => ({
+    date: new Date(prediction.created_at).toLocaleDateString(),
+    demand: prediction.predicted_demand,
+    confidence: prediction.confidence_score * 100
+  }));
 
   return (
-    <Card className="w-full">
+    <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5" />
-          Prévisions de ventes
-        </CardTitle>
+        <CardTitle>Prévisions des Ventes</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[200px] mb-6">
+        <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data.predictions}>
-              <XAxis dataKey="month" />
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="amount"
-                stroke="#8884d8"
-                name="Montant prévu"
+              <Line 
+                type="monotone" 
+                dataKey="demand" 
+                stroke="#3b82f6" 
+                name="Demande prévue"
+              />
+              <Line 
+                type="monotone" 
+                dataKey="confidence" 
+                stroke="#10b981" 
+                name="Confiance (%)"
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
-
-        <div className="space-y-4">
-          <div>
-            <h4 className="font-medium mb-2 flex items-center gap-2">
-              <Lightbulb className="h-4 w-4" />
-              Analyse
-            </h4>
-            <p className="text-sm text-muted-foreground">{data.insights}</p>
-          </div>
-
-          <div>
-            <h4 className="font-medium mb-2">Recommandations</h4>
-            <ul className="list-disc list-inside space-y-1">
-              {data.recommendations.map((rec, index) => (
-                <li key={index} className="text-sm text-muted-foreground">
-                  {rec}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};

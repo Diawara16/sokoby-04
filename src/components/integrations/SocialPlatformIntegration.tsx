@@ -1,63 +1,110 @@
-import { socialPlatforms } from './config/platforms';
-import { usePlatformIntegration } from './hooks/usePlatformIntegration';
-import { PlatformCard } from './PlatformCard';
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { Facebook, Instagram, Twitter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { TwitterTest } from './TwitterTest';
 
 export const SocialPlatformIntegration = () => {
-  const { isLoading, handleIntegration, integrations, error } = usePlatformIntegration();
   const { toast } = useToast();
+  
+  const { data: integrations, isLoading } = useQuery({
+    queryKey: ['social-integrations'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Non authentifié');
 
-  const onIntegrate = async (platform: any) => {
+      const { data, error } = await supabase
+        .from('social_integrations')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const handleConnect = async (platform: string) => {
     try {
-      await handleIntegration(platform);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Non authentifié');
+
+      const { error } = await supabase
+        .from('social_integrations')
+        .insert([
+          {
+            user_id: user.id,
+            platform,
+            status: 'pending'
+          }
+        ]);
+
+      if (error) throw error;
+
       toast({
-        title: "Intégration initiée",
-        description: `L'intégration avec ${platform.name} a été initiée avec succès.`,
+        title: "Connexion initiée",
+        description: `La connexion à ${platform} a été initiée avec succès.`,
       });
     } catch (error) {
-      console.error("Erreur d'intégration:", error);
+      console.error('Erreur lors de la connexion:', error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de l'intégration. Veuillez réessayer.",
+        description: "Impossible de se connecter à la plateforme.",
         variant: "destructive",
       });
     }
   };
 
+  const platforms = [
+    {
+      name: 'Facebook',
+      icon: <Facebook className="h-5 w-5" />,
+      color: 'bg-blue-600'
+    },
+    {
+      name: 'Instagram',
+      icon: <Instagram className="h-5 w-5" />,
+      color: 'bg-pink-600'
+    },
+    {
+      name: 'Twitter',
+      icon: <Twitter className="h-5 w-5" />,
+      color: 'bg-sky-500'
+    }
+  ];
+
   return (
-    <Card className="w-full">
+    <Card>
       <CardHeader>
-        <CardTitle>Intégrations Sociales</CardTitle>
+        <CardTitle>Intégrations Réseaux Sociaux</CardTitle>
       </CardHeader>
-      
-      {error && (
-        <Alert variant="destructive" className="mx-4 mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+      <CardContent>
+        <div className="grid gap-4">
+          {platforms.map((platform) => {
+            const isConnected = integrations?.some(
+              i => i.platform === platform.name.toLowerCase() && i.status === 'active'
+            );
 
-      <div className="grid gap-4 p-4 md:grid-cols-2">
-        {socialPlatforms.map((platform) => (
-          <PlatformCard
-            key={platform.name}
-            platform={platform}
-            isLoading={isLoading[platform.name]}
-            onIntegrate={() => onIntegrate(platform)}
-            currentStatus={integrations?.[platform.name.toLowerCase()]?.status}
-            integrationId={integrations?.[platform.name.toLowerCase()]?.id}
-            productIds={[]}
-          />
-        ))}
-      </div>
-
-      <div className="p-4 border-t">
-        <TwitterTest />
-      </div>
+            return (
+              <div key={platform.name} className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className={`${platform.color} p-2 rounded-full text-white`}>
+                    {platform.icon}
+                  </div>
+                  <span className="font-medium">{platform.name}</span>
+                </div>
+                <Button
+                  variant={isConnected ? "outline" : "default"}
+                  onClick={() => handleConnect(platform.name.toLowerCase())}
+                  disabled={isConnected}
+                >
+                  {isConnected ? 'Connecté' : 'Connecter'}
+                </Button>
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
     </Card>
   );
 };
