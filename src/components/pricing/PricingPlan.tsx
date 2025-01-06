@@ -38,8 +38,11 @@ export const PricingPlan = ({
   const [showPayment, setShowPayment] = useState(false);
   const [couponCode, setCouponCode] = useState("");
 
-  // Formatage du prix pour toujours afficher le symbole $ avant le montant
-  const formattedPrice = price.startsWith('$') ? price : `$${price}`;
+  // Formatage du prix en EUR
+  const formattedPrice = new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(Number(price));
 
   return (
     <Card

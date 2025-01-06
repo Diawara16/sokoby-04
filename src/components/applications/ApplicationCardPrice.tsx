@@ -12,9 +12,9 @@ export function ApplicationCardPrice({ price }: ApplicationCardPriceProps) {
   if (!price) return null;
 
   const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EUR'
     }).format(amount);
   };
 
@@ -22,10 +22,10 @@ export function ApplicationCardPrice({ price }: ApplicationCardPriceProps) {
     <div className="space-y-1">
       <div className="flex items-center gap-2">
         <p className="text-sm font-medium">
-          {formatPrice(price.monthly)}/month
+          {formatPrice(price.monthly)}/mois
           {price.annual && (
             <span className="text-xs text-muted-foreground ml-2">
-              or {formatPrice(price.annual)}/year
+              ou {formatPrice(price.annual)}/an
             </span>
           )}
         </p>
@@ -35,7 +35,7 @@ export function ApplicationCardPrice({ price }: ApplicationCardPriceProps) {
               <InfoIcon className="h-4 w-4 text-muted-foreground" />
             </TooltipTrigger>
             <TooltipContent>
-              <p>Available with Pro plan ({formatPrice(19)}/month) or Enterprise plan ({formatPrice(49)}/month)</p>
+              <p>Disponible avec le plan Pro ({formatPrice(19)}/mois) ou Entreprise ({formatPrice(49)}/mois)</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
