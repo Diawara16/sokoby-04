@@ -22,10 +22,13 @@ export const useStoreData = () => {
 
       console.log("Chargement des paramètres pour l'utilisateur:", user.id);
 
+      // Ajout d'un ORDER BY created_at DESC pour s'assurer d'avoir les paramètres les plus récents
       const { data: existingSettings, error: fetchError } = await supabase
         .from('store_settings')
         .select('*')
         .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (fetchError) {
