@@ -8,6 +8,10 @@ import { StoreSettings } from "./types";
 import { timezones, currencies, languages } from "./constants";
 import { ContactFields } from "./ContactFields";
 import { BillingFields } from "./BillingFields";
+import { GDPRSettings } from "./GDPRSettings";
+import { DisplaySettings } from "./DisplaySettings";
+import { SocialMediaSettings } from "./SocialMediaSettings";
+import { NotificationSettings } from "./NotificationSettings";
 
 interface StoreSettingsFormProps {
   settings: StoreSettings;
@@ -27,6 +31,10 @@ export const StoreSettingsForm = ({
           <TabsTrigger value="general">Général</TabsTrigger>
           <TabsTrigger value="contact">Contact</TabsTrigger>
           <TabsTrigger value="billing">Facturation</TabsTrigger>
+          <TabsTrigger value="gdpr">RGPD</TabsTrigger>
+          <TabsTrigger value="display">Affichage</TabsTrigger>
+          <TabsTrigger value="social">Réseaux sociaux</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
@@ -125,6 +133,73 @@ export const StoreSettingsForm = ({
                 invoiceFooter={settings.invoice_footer_text || ''}
                 invoiceLegalNotice={settings.invoice_legal_notice || ''}
                 invoiceTemplate={settings.invoice_template || {}}
+                onChange={onFieldChange}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="gdpr">
+          <Card>
+            <CardContent className="pt-6">
+              <GDPRSettings
+                gdprSettings={settings.gdpr_settings || {
+                  cookie_consent_enabled: true,
+                  privacy_policy_url: null,
+                  cookie_duration_days: 30,
+                  data_retention_months: 24
+                }}
+                onChange={onFieldChange}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="display">
+          <Card>
+            <CardContent className="pt-6">
+              <DisplaySettings
+                displaySettings={settings.display_settings || {
+                  date_format: "dd/MM/yyyy",
+                  products_per_page: 12,
+                  show_out_of_stock: true,
+                  show_low_stock_warning: true,
+                  low_stock_threshold: 5
+                }}
+                onChange={onFieldChange}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="social">
+          <Card>
+            <CardContent className="pt-6">
+              <SocialMediaSettings
+                socialMedia={settings.social_media || {
+                  facebook: null,
+                  instagram: null,
+                  twitter: null,
+                  linkedin: null,
+                  youtube: null
+                }}
+                onChange={onFieldChange}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="notifications">
+          <Card>
+            <CardContent className="pt-6">
+              <NotificationSettings
+                notificationSettings={settings.notification_settings || {
+                  order_updates: true,
+                  stock_alerts: true,
+                  marketing_emails: true,
+                  security_alerts: true,
+                  newsletter: false
+                }}
                 onChange={onFieldChange}
               />
             </CardContent>

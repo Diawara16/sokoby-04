@@ -25,6 +25,33 @@ export interface StoreSettings {
     header: string;
     footer: string;
   };
+  gdpr_settings: {
+    cookie_consent_enabled: boolean;
+    privacy_policy_url: string | null;
+    cookie_duration_days: number;
+    data_retention_months: number;
+  };
+  display_settings: {
+    date_format: string;
+    products_per_page: number;
+    show_out_of_stock: boolean;
+    show_low_stock_warning: boolean;
+    low_stock_threshold: number;
+  };
+  social_media: {
+    facebook: string | null;
+    instagram: string | null;
+    twitter: string | null;
+    linkedin: string | null;
+    youtube: string | null;
+  };
+  notification_settings: {
+    order_updates: boolean;
+    stock_alerts: boolean;
+    marketing_emails: boolean;
+    security_alerts: boolean;
+    newsletter: boolean;
+  };
 }
 
 export interface StaffMember {
