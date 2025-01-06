@@ -7,11 +7,14 @@ import PrivateRoute from "@/components/PrivateRoute";
 import UpdatePassword from "@/pages/UpdatePassword";
 import ResetPassword from "@/pages/ResetPassword";
 import Register from "@/pages/Register";
-import SubscriptionDetails from "@/components/profile/SubscriptionDetails";
+import { SubscriptionDetails } from "@/components/profile/SubscriptionDetails";
 import { AuthenticatedPricingContent } from "@/components/pricing/AuthenticatedPricingContent";
 import { UnauthenticatedPricingContent } from "@/components/pricing/UnauthenticatedPricingContent";
+import { useSubscriptionHandler } from "@/hooks/useSubscriptionHandler";
 
 const AppRoutes = () => {
+  const { handleSubscribe } = useSubscriptionHandler();
+
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -33,14 +36,7 @@ const AppRoutes = () => {
           </PrivateRoute>
         } 
       />
-      <Route 
-        path="/reset-password" 
-        element={
-          <PrivateRoute>
-            <ResetPassword />
-          </PrivateRoute>
-        } 
-      />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route 
         path="/register" 
         element={
@@ -61,13 +57,20 @@ const AppRoutes = () => {
         path="/authenticated-pricing" 
         element={
           <PrivateRoute>
-            <AuthenticatedPricingContent />
+            <AuthenticatedPricingContent 
+              hasProfile={true}
+              onSubscribe={handleSubscribe}
+            />
           </PrivateRoute>
         } 
       />
       <Route 
         path="/unauthenticated-pricing" 
-        element={<UnauthenticatedPricingContent />} 
+        element={
+          <UnauthenticatedPricingContent 
+            onSubscribe={handleSubscribe}
+          />
+        } 
       />
     </Routes>
   );
