@@ -3,49 +3,90 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface DomainAlertProps {
   domainName: string | null;
 }
 
 export const DomainAlert = ({ domainName }: DomainAlertProps) => {
+  const { toast } = useToast();
+
   const { data: domainVerification, isLoading, refetch } = useQuery({
     queryKey: ['domain-verification', domainName],
     queryFn: async () => {
-      if (!domainName) return null;
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      try {
+        if (!domainName) return null;
+        
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return null;
 
-      const { data, error } = await supabase
-        .from('domain_verifications')
-        .select('*')
-        .eq('domain_name', domainName)
-        .eq('user_id', user.id)
-        .single();
+        console.log("Vérification du domaine pour:", domainName);
 
-      if (error) {
-        console.error('Error fetching domain verification:', error);
+        const { data, error } = await supabase
+          .from('domain_verifications')
+          .select('*')
+          .eq('domain_name', domainName)
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Erreur lors de la vérification du domaine:', error);
+          toast({
+            title: "Erreur",
+            description: "Impossible de vérifier le domaine",
+            variant: "destructive",
+          });
+          return null;
+        }
+
+        console.log("Résultat de la vérification:", data);
+        return data;
+      } catch (error) {
+        console.error('Erreur inattendue:', error);
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de la vérification",
+          variant: "destructive",
+        });
         return null;
       }
-
-      return data;
     },
     enabled: !!domainName,
-    refetchInterval: 30000 // Vérifie toutes les 30 secondes
+    refetchInterval: 30000
   });
 
   const handleVerifyDomain = async () => {
     try {
+      console.log("Début de la vérification du domaine:", domainName);
+      
       const { error } = await supabase.functions.invoke('verify-domain', {
         body: { domain: domainName }
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Erreur lors de la vérification:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de vérifier le domaine",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      toast({
+        title: "Succès",
+        description: "Vérification du domaine lancée",
+      });
       
       refetch();
     } catch (error) {
-      console.error('Error verifying domain:', error);
+      console.error('Erreur lors de la vérification:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la vérification",
+        variant: "destructive",
+      });
     }
   };
 
