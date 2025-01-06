@@ -11,7 +11,9 @@ export const useStoreData = () => {
 
   const loadStoreSettings = async () => {
     try {
+      setIsLoading(true);
       setError(null);
+      
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
