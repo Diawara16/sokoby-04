@@ -6,6 +6,9 @@ export interface StoreSettings {
   store_address: string | null;
   domain_name: string | null;
   is_custom_domain: boolean;
+  timezone: string | null;
+  default_currency: string | null;
+  default_language: string | null;
 }
 
 export interface StaffMember {

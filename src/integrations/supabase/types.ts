@@ -1590,6 +1590,8 @@ export type Database = {
       store_settings: {
         Row: {
           created_at: string
+          default_currency: string | null
+          default_language: string | null
           domain_name: string | null
           id: string
           is_custom_domain: boolean | null
@@ -1597,11 +1599,14 @@ export type Database = {
           store_email: string | null
           store_name: string
           store_phone: string | null
+          timezone: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          default_currency?: string | null
+          default_language?: string | null
           domain_name?: string | null
           id?: string
           is_custom_domain?: boolean | null
@@ -1609,11 +1614,14 @@ export type Database = {
           store_email?: string | null
           store_name: string
           store_phone?: string | null
+          timezone?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
+          default_currency?: string | null
+          default_language?: string | null
           domain_name?: string | null
           id?: string
           is_custom_domain?: boolean | null
@@ -1621,6 +1629,7 @@ export type Database = {
           store_email?: string | null
           store_name?: string
           store_phone?: string | null
+          timezone?: string | null
           updated_at?: string
           user_id?: string
         }
