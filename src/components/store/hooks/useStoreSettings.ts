@@ -25,19 +25,46 @@ export const useStoreSettings = () => {
       }
 
       console.log("Utilisateur connecté:", user.id);
-      const { data, error } = await supabase
+      const { data: existingSettings, error: fetchError } = await supabase
         .from('store_settings')
         .select('*')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (error) {
-        console.error("Erreur lors du chargement des paramètres:", error);
-        throw error;
+      if (fetchError) {
+        console.error("Erreur lors du chargement des paramètres:", fetchError);
+        throw fetchError;
       }
 
-      console.log("Paramètres chargés:", data);
-      setSettings(data);
+      console.log("Paramètres existants:", existingSettings);
+
+      if (!existingSettings) {
+        console.log("Création des paramètres par défaut...");
+        const { data: newSettings, error: createError } = await supabase
+          .from('store_settings')
+          .insert({
+            user_id: user.id,
+            store_name: 'Ma boutique',
+            store_email: user.email,
+            domain_name: null,
+            is_custom_domain: false,
+            store_phone: null,
+            store_address: null
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error("Erreur lors de la création des paramètres:", createError);
+          throw createError;
+        }
+
+        console.log("Nouveaux paramètres créés:", newSettings);
+        setSettings(newSettings);
+      } else {
+        console.log("Paramètres chargés avec succès:", existingSettings);
+        setSettings(existingSettings);
+      }
     } catch (error: any) {
       console.error("Erreur lors du chargement des paramètres de la boutique:", error);
       toast({
