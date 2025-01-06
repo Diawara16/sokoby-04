@@ -1,54 +1,66 @@
-import { NavLink } from "react-router-dom";
-import { CreditCard, Users, Globe, DollarSign, MapPin } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const menuItems = [
-  {
-    title: "Facturation",
-    icon: CreditCard,
-    path: "/parametres/facturation",
-  },
-  {
-    title: "Utilisateurs",
-    icon: Users,
-    path: "/parametres/utilisateurs",
-  },
-  {
-    title: "Paiements",
-    icon: DollarSign,
-    path: "/parametres/paiements",
-  },
-  {
-    title: "Géolocalisation",
-    icon: MapPin,
-    path: "/parametres/geolocalisation",
-  },
-];
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { 
+  Settings, 
+  Users, 
+  CreditCard, 
+  Globe, 
+  MapPin, 
+  Shield 
+} from "lucide-react";
 
 export const SettingsSidebar = () => {
+  const location = useLocation();
+
+  const settingsLinks = [
+    {
+      label: "Général",
+      href: "/parametres",
+      icon: Settings,
+    },
+    {
+      label: "Nom de domaine",
+      href: "/parametres/domaine",
+      icon: Globe,
+    },
+    {
+      label: "Utilisateurs",
+      href: "/parametres/utilisateurs",
+      icon: Users,
+    },
+    {
+      label: "Paiements",
+      href: "/parametres/paiements",
+      icon: CreditCard,
+    },
+    {
+      label: "Géolocalisation",
+      href: "/parametres/geolocalisation",
+      icon: MapPin,
+    },
+    {
+      label: "Sécurité",
+      href: "/parametres/securite",
+      icon: Shield,
+    },
+  ];
+
   return (
-    <div className="w-64 border-r bg-card p-6">
-      <h2 className="text-lg font-semibold mb-6">Paramètres</h2>
-      <nav className="space-y-2">
-        {menuItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
-                "hover:bg-accent hover:text-accent-foreground",
-                isActive
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground"
-              )
-            }
-          >
-            <item.icon className="h-4 w-4" />
-            {item.title}
-          </NavLink>
-        ))}
-      </nav>
+    <div className="w-64 border-r min-h-screen p-4 space-y-2">
+      <h2 className="font-semibold mb-4 text-lg px-2">Paramètres</h2>
+      {settingsLinks.map((link) => (
+        <Button
+          key={link.href}
+          variant={location.pathname === link.href ? "secondary" : "ghost"}
+          className="w-full justify-start"
+          asChild
+        >
+          <Link to={link.href}>
+            <link.icon className="mr-2 h-4 w-4" />
+            {link.label}
+          </Link>
+        </Button>
+      ))}
     </div>
   );
 };
