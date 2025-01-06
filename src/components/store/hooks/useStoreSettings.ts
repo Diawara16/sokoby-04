@@ -15,7 +15,7 @@ export const useStoreSettings = () => {
       if (!user) {
         toast({
           title: "Erreur d'authentification",
-          description: "Vous devez être connecté pour accéder aux paramètres de la boutique",
+          description: "Vous devez être connecté pour accéder aux paramètres",
           variant: "destructive",
         });
         return;
@@ -56,7 +56,7 @@ export const useStoreSettings = () => {
       console.error("Erreur:", error);
       toast({
         title: "Erreur",
-        description: "Impossible de charger les paramètres de la boutique",
+        description: "Impossible de charger les paramètres",
         variant: "destructive",
       });
     } finally {
@@ -73,7 +73,7 @@ export const useStoreSettings = () => {
       if (!user) {
         toast({
           title: "Erreur",
-          description: "Vous devez être connecté pour sauvegarder les paramètres",
+          description: "Vous devez être connecté pour sauvegarder",
           variant: "destructive",
         });
         return;
@@ -91,7 +91,7 @@ export const useStoreSettings = () => {
 
       toast({
         title: "Succès",
-        description: "Les paramètres ont été sauvegardés",
+        description: "Paramètres sauvegardés",
       });
     } catch (error) {
       console.error("Erreur:", error);
