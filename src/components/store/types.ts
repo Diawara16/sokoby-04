@@ -9,6 +9,22 @@ export interface StoreSettings {
   timezone: string | null;
   default_currency: string | null;
   default_language: string | null;
+  vat_number: string | null;
+  vat_rate: number | null;
+  invoice_prefix: string | null;
+  invoice_footer_text: string | null;
+  invoice_legal_notice: string | null;
+  invoice_template: Record<string, boolean>;
+  email_template_order: {
+    subject: string;
+    header: string;
+    footer: string;
+  };
+  email_template_invoice: {
+    subject: string;
+    header: string;
+    footer: string;
+  };
 }
 
 export interface StaffMember {

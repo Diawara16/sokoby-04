@@ -1593,7 +1593,13 @@ export type Database = {
           default_currency: string | null
           default_language: string | null
           domain_name: string | null
+          email_template_invoice: Json | null
+          email_template_order: Json | null
           id: string
+          invoice_footer_text: string | null
+          invoice_legal_notice: string | null
+          invoice_prefix: string | null
+          invoice_template: Json | null
           is_custom_domain: boolean | null
           store_address: string | null
           store_email: string | null
@@ -1602,13 +1608,21 @@ export type Database = {
           timezone: string | null
           updated_at: string
           user_id: string
+          vat_number: string | null
+          vat_rate: number | null
         }
         Insert: {
           created_at?: string
           default_currency?: string | null
           default_language?: string | null
           domain_name?: string | null
+          email_template_invoice?: Json | null
+          email_template_order?: Json | null
           id?: string
+          invoice_footer_text?: string | null
+          invoice_legal_notice?: string | null
+          invoice_prefix?: string | null
+          invoice_template?: Json | null
           is_custom_domain?: boolean | null
           store_address?: string | null
           store_email?: string | null
@@ -1617,13 +1631,21 @@ export type Database = {
           timezone?: string | null
           updated_at?: string
           user_id: string
+          vat_number?: string | null
+          vat_rate?: number | null
         }
         Update: {
           created_at?: string
           default_currency?: string | null
           default_language?: string | null
           domain_name?: string | null
+          email_template_invoice?: Json | null
+          email_template_order?: Json | null
           id?: string
+          invoice_footer_text?: string | null
+          invoice_legal_notice?: string | null
+          invoice_prefix?: string | null
+          invoice_template?: Json | null
           is_custom_domain?: boolean | null
           store_address?: string | null
           store_email?: string | null
@@ -1632,6 +1654,8 @@ export type Database = {
           timezone?: string | null
           updated_at?: string
           user_id?: string
+          vat_number?: string | null
+          vat_rate?: number | null
         }
         Relationships: []
       }
