@@ -58,6 +58,11 @@ export const useStoreData = () => {
 
         console.log("Nouveaux paramètres créés:", newSettings);
         setSettings(newSettings);
+        
+        toast({
+          title: "Paramètres initialisés",
+          description: "Les paramètres de votre boutique ont été créés avec succès",
+        });
       } else {
         setSettings(existingSettings);
       }

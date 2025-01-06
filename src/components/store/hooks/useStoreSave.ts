@@ -21,6 +21,8 @@ export const useStoreSave = () => {
           ...settings,
           user_id: user.id,
           updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
         });
 
       if (saveError) {
@@ -30,7 +32,7 @@ export const useStoreSave = () => {
 
       toast({
         title: "Succès",
-        description: "Paramètres sauvegardés",
+        description: "Paramètres sauvegardés avec succès",
       });
 
       return true;
@@ -38,7 +40,7 @@ export const useStoreSave = () => {
       console.error("Erreur lors de la sauvegarde:", error);
       toast({
         title: "Erreur",
-        description: "Impossible de sauvegarder les paramètres",
+        description: error instanceof Error ? error.message : "Impossible de sauvegarder les paramètres",
         variant: "destructive",
       });
       return false;
