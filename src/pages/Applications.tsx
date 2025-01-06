@@ -1,41 +1,78 @@
-import { ApplicationCard } from "@/components/applications/ApplicationCard";
-import { applications } from "@/data/applications";
-import { useAppConnections } from "@/hooks/useAppConnections";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { AppSidebar } from "@/components/AppSidebar";
+import { Download, Plus, Store } from "lucide-react";
 
 const Applications = () => {
-  const { connectedApps, isLoading, handleConnect, handleDisconnect } = useAppConnections();
-  const isMobile = useIsMobile();
-
   return (
-    <div className="container mx-auto py-6 px-4 sm:py-8">
-      <div className="max-w-5xl mx-auto">
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Applications</h1>
-          <p className="text-muted-foreground text-sm sm:text-base">
-            Intégrez des applications populaires pour améliorer votre boutique
-          </p>
+    <>
+      <AppSidebar />
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <div className="flex items-center justify-between space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight">Applications</h2>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Ajouter une application
+          </Button>
         </div>
 
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {applications.map((app) => (
-            <ApplicationCard
-              key={app.id}
-              name={app.name}
-              description={app.description}
-              icon={app.icon}
-              isConnected={!!connectedApps[app.id]}
-              onConnect={() => handleConnect(app.id, app.authUrl)}
-              onDisconnect={() => handleDisconnect(app.id)}
-              isLoading={isLoading}
-              features={isMobile ? app.features?.slice(0, 3) : app.features}
-              price={app.price}
-              status={connectedApps[app.id]?.status}
-            />
-          ))}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Store className="h-5 w-5" />
+                Gestionnaire de stock
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Gérez votre inventaire efficacement avec des alertes de stock et des commandes automatiques.
+              </p>
+              <Button variant="outline" className="w-full">
+                <Download className="mr-2 h-4 w-4" />
+                Installer
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Store className="h-5 w-5" />
+                Analyse des ventes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Visualisez vos performances de vente avec des graphiques détaillés et des rapports personnalisés.
+              </p>
+              <Button variant="outline" className="w-full">
+                <Download className="mr-2 h-4 w-4" />
+                Installer
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Store className="h-5 w-5" />
+                Marketing Automation
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Automatisez vos campagnes marketing et augmentez vos conversions.
+              </p>
+              <Button variant="outline" className="w-full">
+                <Download className="mr-2 h-4 w-4" />
+                Installer
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

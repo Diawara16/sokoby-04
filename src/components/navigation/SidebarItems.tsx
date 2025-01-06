@@ -24,14 +24,7 @@ export const sidebarItems = [
   { 
     icon: Store, 
     label: "Boutique", 
-    href: "/boutique",
-    subItems: [
-      {
-        icon: Plus,
-        label: "Ajouter un produit",
-        href: "/products/add"
-      }
-    ]
+    href: "/boutique"
   },
   {
     icon: Bot,
