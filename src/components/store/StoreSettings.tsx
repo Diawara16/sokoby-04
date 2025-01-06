@@ -3,7 +3,11 @@ import { useStoreSettings } from "./hooks/useStoreSettings";
 import { DomainAlert } from "./DomainAlert";
 import { StoreSettingsForm } from "./StoreSettingsForm";
 
-export const StoreSettings = () => {
+interface StoreSettingsProps {
+  showDomainOnly?: boolean;
+}
+
+export const StoreSettings = ({ showDomainOnly = false }: StoreSettingsProps) => {
   const { settings, setSettings, isLoading, handleSave } = useStoreSettings();
 
   const handleFieldChange = (field: string, value: string) => {
@@ -22,10 +26,12 @@ export const StoreSettings = () => {
     return null;
   }
 
+  if (showDomainOnly) {
+    return <DomainAlert domainName={settings.domain_name} />;
+  }
+
   return (
-    <Card className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Paramètres de la boutique</h2>
-      
+    <div className="space-y-6">
       <DomainAlert domainName={settings.domain_name} />
 
       <StoreSettingsForm 
@@ -33,6 +39,6 @@ export const StoreSettings = () => {
         onFieldChange={handleFieldChange}
         onSave={handleSave}
       />
-    </Card>
+    </div>
   );
 };
