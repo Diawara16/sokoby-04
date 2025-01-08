@@ -1,51 +1,67 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { HeroSection } from "@/components/home/HeroSection";
-import { FeaturesSection } from "@/components/home/FeaturesSection";
-import { CTASection } from "@/components/home/CTASection";
-import ShoppingInspirationSection from "@/components/home/ShoppingInspirationSection";
-import { useLanguageContext } from "@/contexts/LanguageContext";
-import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
-import { Footer } from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabase";
+import { useToast } from "@/hooks/use-toast";
 
-const Home = () => {
-  const navigate = useNavigate();
-  const { currentLanguage } = useLanguageContext();
-  const { isAuthenticated } = useAuthAndProfile();
+export default function Home() {
+  const { toast } = useToast();
 
-  const handleCreateStore = () => {
-    navigate("/creer-boutique-ia");
+  const testOrderNotification = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour tester les notifications",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Créer une notification de test
+      const { error } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: user.id,
+          title: 'Nouvelle commande reçue',
+          content: 'Commande test #123 créée avec succès',
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Succès",
+        description: "Notification de test envoyée",
+      });
+
+    } catch (error) {
+      console.error('Erreur lors du test:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'envoyer la notification de test",
+        variant: "destructive",
+      });
+    }
   };
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/tableau-de-bord");
-    }
-  }, [isAuthenticated, navigate]);
-
-  if (isAuthenticated) {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen flex flex-col">
-      <main className="flex-grow">
-        <HeroSection 
-          isAuthenticated={isAuthenticated} 
-          currentLanguage={currentLanguage} 
-        />
-        <div className="bg-gradient-to-b from-white to-gray-50">
-          <FeaturesSection currentLanguage={currentLanguage} />
-          <ShoppingInspirationSection />
-          <CTASection 
-            currentLanguage={currentLanguage}
-            onCreateStore={handleCreateStore}
-          />
-        </div>
-      </main>
-      <Footer />
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-4xl font-bold mb-8">Bienvenue sur Sokoby</h1>
+      
+      <div className="mb-8">
+        <Button 
+          onClick={testOrderNotification}
+          className="bg-primary text-white"
+        >
+          Tester le son de notification
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4">
+        <h2 className="text-2xl font-semibold">Nos services</h2>
+        <p>Découvrez nos services et comment nous pouvons vous aider à développer votre entreprise.</p>
+        <p>Nous offrons une variété de solutions adaptées à vos besoins.</p>
+      </div>
     </div>
   );
-};
-
-export default Home;
+}
