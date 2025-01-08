@@ -39,15 +39,30 @@ export function useNotifications() {
           table: "notifications",
         },
         (payload) => {
+          console.log("Nouvelle notification reçue:", payload);
           const newNotification = payload.new as Notification;
           setNotifications((prev) => [newNotification, ...prev]);
           setUnreadCount((prev) => prev + 1);
           
-          // Jouer le son pour les notifications liées aux commandes
-          if (newNotification.title.toLowerCase().includes('commande')) {
-            notificationSound.play().catch(error => {
-              console.error('Erreur lors de la lecture du son:', error);
-            });
+          // Vérifier si c'est une notification de commande
+          const isOrderNotification = newNotification.title.toLowerCase().includes('commande');
+          console.log("Est-ce une notification de commande ?", isOrderNotification);
+          
+          if (isOrderNotification) {
+            console.log("Tentative de lecture du son de notification...");
+            notificationSound.play()
+              .then(() => {
+                console.log("Son de notification joué avec succès");
+              })
+              .catch(error => {
+                console.error("Erreur lors de la lecture du son:", error);
+                console.log("État de l'audio:", {
+                  readyState: notificationSound.readyState,
+                  paused: notificationSound.paused,
+                  src: notificationSound.src,
+                  error: notificationSound.error
+                });
+              });
           }
           
           toast({
