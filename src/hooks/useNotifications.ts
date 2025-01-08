@@ -7,6 +7,9 @@ export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const { toast } = useToast();
+  
+  // Créer une instance Audio pour le son de notification
+  const notificationSound = new Audio("/notification.mp3");
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -39,6 +42,13 @@ export function useNotifications() {
           const newNotification = payload.new as Notification;
           setNotifications((prev) => [newNotification, ...prev]);
           setUnreadCount((prev) => prev + 1);
+          
+          // Jouer le son pour les notifications liées aux commandes
+          if (newNotification.title.toLowerCase().includes('commande')) {
+            notificationSound.play().catch(error => {
+              console.error('Erreur lors de la lecture du son:', error);
+            });
+          }
           
           toast({
             title: newNotification.title,
