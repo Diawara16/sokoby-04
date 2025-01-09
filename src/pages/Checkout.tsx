@@ -1,31 +1,15 @@
 import React, { useState } from 'react';
 import { useCart } from '@/components/cart/CartContext';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { Loader2 } from "lucide-react";
-
-const addressSchema = z.object({
-  fullName: z.string().min(2, "Le nom complet est requis"),
-  address: z.string().min(5, "L'adresse est requise"),
-  city: z.string().min(2, "La ville est requise"),
-  postalCode: z.string().min(5, "Le code postal est requis"),
-  country: z.string().min(2, "Le pays est requis"),
-});
+import { supabase } from '@/lib/supabase';
+import { OrderSummary } from '@/components/checkout/OrderSummary';
+import { AddressForm, addressSchema } from '@/components/checkout/AddressForm';
+import { PaymentSection } from '@/components/checkout/PaymentSection';
 
 const checkoutSchema = z.object({
   shippingAddress: addressSchema,
@@ -39,6 +23,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [orderId, setOrderId] = useState<string>();
 
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
@@ -75,7 +60,6 @@ const Checkout = () => {
         return;
       }
 
-      // Créer la commande
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert([
@@ -92,7 +76,6 @@ const Checkout = () => {
 
       if (orderError) throw orderError;
 
-      // Ajouter les articles de la commande
       const orderItems = state.items.map(item => ({
         order_id: order.id,
         product_id: item.product_id,
@@ -106,16 +89,7 @@ const Checkout = () => {
 
       if (itemsError) throw itemsError;
 
-      // Vider le panier après la création de la commande
-      await clearCart();
-
-      // Rediriger vers la page de confirmation
-      navigate(`/orders/${order.id}`);
-
-      toast({
-        title: "Commande créée",
-        description: "Votre commande a été créée avec succès",
-      });
+      setOrderId(order.id);
 
     } catch (error) {
       console.error('Error creating order:', error);
@@ -124,208 +98,43 @@ const Checkout = () => {
         description: "Une erreur est survenue lors de la création de la commande",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
+  };
+
+  const handlePaymentSuccess = async () => {
+    await clearCart();
+    navigate(`/orders/${orderId}`);
+    toast({
+      title: "Commande créée",
+      description: "Votre commande a été créée avec succès",
+    });
   };
 
   return (
     <div className="container mx-auto py-8">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(createOrder)} className="space-y-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Récapitulatif de votre commande</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {state.items.map((item) => (
-                  <div key={item.id} className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-medium">{item.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Quantité: {item.quantity}
-                      </p>
-                    </div>
-                    <p className="font-medium">
-                      {(item.price * item.quantity).toFixed(2)} €
-                    </p>
-                  </div>
-                ))}
-                <div className="pt-4 border-t">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">Total</span>
-                    <span className="font-medium">{state.total.toFixed(2)} €</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <OrderSummary state={state} />
+          
+          <AddressForm 
+            form={form}
+            type="shipping"
+            title="Adresse de livraison"
+          />
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Adresse de livraison</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="shippingAddress.fullName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nom complet</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="shippingAddress.address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Adresse</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="shippingAddress.city"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Ville</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="shippingAddress.postalCode"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Code postal</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <FormField
-                control={form.control}
-                name="shippingAddress.country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Pays</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
+          <AddressForm 
+            form={form}
+            type="billing"
+            title="Adresse de facturation"
+          />
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Adresse de facturation</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="billingAddress.fullName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nom complet</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="billingAddress.address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Adresse</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="billingAddress.city"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Ville</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="billingAddress.postalCode"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Code postal</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <FormField
-                control={form.control}
-                name="billingAddress.country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Pays</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-
-          <Button 
-            type="submit" 
-            className="w-full" 
-            disabled={isLoading || state.items.length === 0}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Création de la commande...
-              </>
-            ) : (
-              `Payer ${state.total.toFixed(2)} €`
-            )}
-          </Button>
+          <PaymentSection 
+            total={state.total}
+            isLoading={isLoading}
+            orderId={orderId}
+            onPaymentSuccess={handlePaymentSuccess}
+          />
         </form>
       </Form>
     </div>
