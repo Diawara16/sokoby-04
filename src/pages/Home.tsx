@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { Bell } from "lucide-react";
 
 export default function Home() {
   const { toast } = useToast();
@@ -51,8 +52,9 @@ export default function Home() {
       <div className="mb-8">
         <Button 
           onClick={testOrderNotification}
-          className="bg-primary text-white"
+          className="bg-primary text-white flex items-center gap-2 hover:bg-primary/90"
         >
+          <Bell className="h-5 w-5" />
           Tester le son de notification
         </Button>
       </div>
