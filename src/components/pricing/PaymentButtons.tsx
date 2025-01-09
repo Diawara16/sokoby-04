@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { CreditCard } from "lucide-react";
+import { CreditCard, Wallet } from "lucide-react";
+import { InteracPaymentForm } from "@/components/payments/InteracPaymentForm";
 
 interface PaymentButtonsProps {
   planType: 'starter' | 'pro' | 'enterprise';
   couponCode?: string;
   onSubscribe: (
     planType: 'starter' | 'pro' | 'enterprise',
-    paymentMethod: 'card' | 'apple_pay' | 'google_pay',
+    paymentMethod: 'card' | 'apple_pay' | 'google_pay' | 'interac',
     couponCode?: string
   ) => void;
 }
@@ -47,6 +48,15 @@ export const PaymentButtons = ({ planType, couponCode, onSubscribe }: PaymentBut
           <path d="M12 23.2941C14.8235 23.2941 17.2941 22.3529 19.2941 20.5882L16.1176 18.1176C15.0588 18.8235 13.6471 19.2941 12 19.2941C8.94118 19.2941 6.35294 17.3882 5.52941 14.9176L2.35294 17.3882C4.11765 20.9176 7.76471 23.2941 12 23.2941Z" fill="#34A853"/>
         </svg>
         Payer avec Google Pay
+      </Button>
+
+      <Button
+        variant="outline"
+        className="w-full border-2 hover:bg-gray-50"
+        onClick={() => onSubscribe(planType, 'interac', couponCode)}
+      >
+        <Wallet className="mr-2 h-4 w-4" />
+        Payer avec Interac
       </Button>
     </div>
   );

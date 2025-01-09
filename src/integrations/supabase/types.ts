@@ -711,6 +711,83 @@ export type Database = {
           },
         ]
       }
+      interac_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          order_id: string
+          reference_number: string | null
+          security_answer: string | null
+          security_question: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          order_id: string
+          reference_number?: string | null
+          security_answer?: string | null
+          security_question?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          order_id?: string
+          reference_number?: string | null
+          security_answer?: string | null
+          security_question?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interac_payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interac_settings: {
+        Row: {
+          created_at: string
+          email: string
+          enabled: boolean | null
+          id: string
+          merchant_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          enabled?: boolean | null
+          id?: string
+          merchant_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          enabled?: boolean | null
+          id?: string
+          merchant_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       loyalty_points: {
         Row: {
           created_at: string
