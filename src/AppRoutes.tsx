@@ -11,9 +11,16 @@ import SubscriptionDetails from "@/components/profile/SubscriptionDetails";
 import { AuthenticatedPricingContent } from "@/components/pricing/AuthenticatedPricingContent";
 import { UnauthenticatedPricingContent } from "@/components/pricing/UnauthenticatedPricingContent";
 import { useSubscriptionHandler } from "@/hooks/useSubscriptionHandler";
+import { DomainRouter } from "@/components/landing/DomainRouter";
 
 const AppRoutes = () => {
   const { handleSubscribe } = useSubscriptionHandler();
+  const hostname = window.location.hostname;
+
+  // Si ce n'est pas le domaine principal sokoby.com, utiliser le DomainRouter
+  if (hostname !== 'localhost' && hostname !== 'sokoby.com' && !hostname.endsWith('.sokoby.com')) {
+    return <DomainRouter />;
+  }
 
   return (
     <Routes>
