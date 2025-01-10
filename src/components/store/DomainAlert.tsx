@@ -2,11 +2,11 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { Globe, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
 interface DomainAlertProps {
-  domainName: string | null;
+  domainName?: string | null;
 }
 
 export const DomainAlert = ({ domainName }: DomainAlertProps) => {
@@ -15,71 +15,56 @@ export const DomainAlert = ({ domainName }: DomainAlertProps) => {
   const { toast } = useToast();
 
   const verifyDomain = async () => {
+    if (!domainName) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez d'abord configurer un nom de domaine.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       setIsVerifying(true);
       console.log("Vérification du domaine:", domainName);
 
-      // Vérifier si le domaine est sokoby.com
-      if (domainName === 'sokoby.com') {
-        // Vérifier l'enregistrement A
-        const response = await fetch(`https://dns.google/resolve?name=${domainName}&type=A`);
-        const data = await response.json();
-        
-        const hasCorrectARecord = data.Answer?.some(
-          (record: any) => record.type === 1 && record.data === '76.76.21.21'
-        );
+      // Vérifier l'enregistrement A du domaine
+      const response = await fetch(`https://dns.google/resolve?name=${domainName}&type=A`);
+      const data = await response.json();
+      
+      const hasCorrectARecord = data.Answer?.some(
+        (record: any) => record.type === 1 && record.data === '76.76.21.21'
+      );
 
-        if (hasCorrectARecord) {
-          // Mettre à jour le statut dans la base de données
-          const { error: updateError } = await supabase
-            .from('domain_verifications')
-            .upsert({
-              domain_name: domainName,
-              verified: true,
-              verified_at: new Date().toISOString()
-            });
-
-          if (updateError) throw updateError;
-
-          setIsVerified(true);
-          toast({
-            title: "Domaine vérifié",
-            description: "Votre domaine a été vérifié avec succès.",
-          });
-        } else {
-          toast({
-            title: "Configuration DNS incorrecte",
-            description: "Veuillez vérifier que l'enregistrement A pointe vers 76.76.21.21",
-            variant: "destructive",
-          });
-        }
-      } else {
-        const { data: verificationData, error } = await supabase
+      if (hasCorrectARecord) {
+        // Mettre à jour le statut dans la base de données
+        const { error: updateError } = await supabase
           .from('domain_verifications')
-          .select('*')
-          .eq('domain_name', domainName)
-          .maybeSingle();
-
-        if (error) throw error;
-
-        if (verificationData?.verified) {
-          setIsVerified(true);
-          toast({
-            title: "Domaine vérifié",
-            description: "Votre domaine a été vérifié avec succès.",
+          .upsert({
+            domain_name: domainName,
+            verified: true,
+            verified_at: new Date().toISOString()
           });
-        } else {
-          toast({
-            title: "Domaine non vérifié",
-            description: "La vérification du domaine est en attente.",
-          });
-        }
+
+        if (updateError) throw updateError;
+
+        setIsVerified(true);
+        toast({
+          title: "Domaine vérifié",
+          description: "Votre domaine a été vérifié avec succès.",
+        });
+      } else {
+        toast({
+          title: "Configuration DNS incorrecte",
+          description: "Veuillez vérifier que l'enregistrement A pointe vers 76.76.21.21",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error("Erreur lors de la vérification:", error);
       toast({
         title: "Erreur",
-        description: "Impossible de vérifier le domaine pour le moment.",
+        description: "Une erreur est survenue lors de la vérification du domaine.",
         variant: "destructive",
       });
     } finally {
@@ -87,22 +72,13 @@ export const DomainAlert = ({ domainName }: DomainAlertProps) => {
     }
   };
 
-  useEffect(() => {
-    if (domainName) {
-      verifyDomain();
-    }
-  }, [domainName]);
-
   if (!domainName) {
     return (
       <Alert>
-        <Globe className="h-4 w-4" />
-        <AlertTitle>Domaine non configuré</AlertTitle>
+        <AlertTitle>Configuration du domaine</AlertTitle>
         <AlertDescription>
-          Vous n'avez pas encore configuré de domaine pour votre boutique.
-          <Button variant="link" className="px-0 text-primary" asChild>
-            <a href="/settings/domaine">Configurer maintenant</a>
-          </Button>
+          Vous n'avez pas encore configuré de nom de domaine pour votre boutique.
+          Rendez-vous dans les paramètres pour en ajouter un.
         </AlertDescription>
       </Alert>
     );
@@ -110,28 +86,32 @@ export const DomainAlert = ({ domainName }: DomainAlertProps) => {
 
   return (
     <Alert>
-      <Globe className="h-4 w-4" />
-      <AlertTitle>Domaine: {domainName}</AlertTitle>
-      <AlertDescription className="flex items-center gap-2">
-        {isVerifying ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Vérification en cours...
-          </>
-        ) : isVerified ? (
-          "Votre domaine est vérifié et actif."
+      <AlertTitle>Configuration du domaine</AlertTitle>
+      <AlertDescription className="space-y-4">
+        <p>
+          Votre boutique utilise actuellement le domaine : <strong>{domainName}</strong>
+        </p>
+        {isVerified ? (
+          <p className="text-green-600">✓ Domaine vérifié</p>
         ) : (
-          <>
-            En attente de vérification
+          <div className="space-y-2">
+            <p>
+              Pour activer votre domaine, configurez l'enregistrement A suivant chez votre registrar :
+            </p>
+            <div className="bg-muted p-4 rounded-md">
+              <p><strong>Type:</strong> A</p>
+              <p><strong>Nom:</strong> @</p>
+              <p><strong>Valeur:</strong> 76.76.21.21</p>
+              <p><strong>TTL:</strong> 3600</p>
+            </div>
             <Button 
-              variant="outline" 
-              size="sm"
-              onClick={verifyDomain}
+              onClick={verifyDomain} 
               disabled={isVerifying}
             >
+              {isVerifying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Vérifier maintenant
             </Button>
-          </>
+          </div>
         )}
       </AlertDescription>
     </Alert>
