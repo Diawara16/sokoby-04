@@ -17,31 +17,63 @@ export const DomainAlert = ({ domainName }: DomainAlertProps) => {
   const verifyDomain = async () => {
     try {
       setIsVerifying(true);
-      console.log("Vérification du domaine pour:", domainName);
+      console.log("Vérification du domaine:", domainName);
 
-      const { data: verificationData, error } = await supabase
-        .from('domain_verifications')
-        .select('*')
-        .eq('domain_name', domainName)
-        .maybeSingle();
+      // Vérifier si le domaine est sokoby.com
+      if (domainName === 'sokoby.com') {
+        // Vérifier l'enregistrement A
+        const response = await fetch(`https://dns.google/resolve?name=${domainName}&type=A`);
+        const data = await response.json();
+        
+        const hasCorrectARecord = data.Answer?.some(
+          (record: any) => record.type === 1 && record.data === '76.76.21.21'
+        );
 
-      console.log("Résultat de la vérification:", verificationData);
+        if (hasCorrectARecord) {
+          // Mettre à jour le statut dans la base de données
+          const { error: updateError } = await supabase
+            .from('domain_verifications')
+            .upsert({
+              domain_name: domainName,
+              verified: true,
+              verified_at: new Date().toISOString()
+            });
 
-      if (error) {
-        throw error;
-      }
+          if (updateError) throw updateError;
 
-      if (verificationData?.verified) {
-        setIsVerified(true);
-        toast({
-          title: "Domaine vérifié",
-          description: "Votre domaine a été vérifié avec succès.",
-        });
+          setIsVerified(true);
+          toast({
+            title: "Domaine vérifié",
+            description: "Votre domaine a été vérifié avec succès.",
+          });
+        } else {
+          toast({
+            title: "Configuration DNS incorrecte",
+            description: "Veuillez vérifier que l'enregistrement A pointe vers 76.76.21.21",
+            variant: "destructive",
+          });
+        }
       } else {
-        toast({
-          title: "Domaine non vérifié",
-          description: "La vérification du domaine est en attente.",
-        });
+        const { data: verificationData, error } = await supabase
+          .from('domain_verifications')
+          .select('*')
+          .eq('domain_name', domainName)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (verificationData?.verified) {
+          setIsVerified(true);
+          toast({
+            title: "Domaine vérifié",
+            description: "Votre domaine a été vérifié avec succès.",
+          });
+        } else {
+          toast({
+            title: "Domaine non vérifié",
+            description: "La vérification du domaine est en attente.",
+          });
+        }
       }
     } catch (error) {
       console.error("Erreur lors de la vérification:", error);
