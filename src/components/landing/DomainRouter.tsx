@@ -13,13 +13,17 @@ export const DomainRouter = () => {
   useEffect(() => {
     const checkDomain = async () => {
       try {
+        console.log('Vérification du domaine:', hostname);
+        
         // Vérifier si c'est le domaine principal
         if (hostname === 'sokoby.com' || hostname === 'www.sokoby.com') {
+          console.log('Domaine principal détecté');
           setIsDomainValid(true);
           setIsLoading(false);
           return;
         }
 
+        console.log('Vérification dans la base de données pour:', hostname);
         // Vérifier si c'est un sous-domaine personnalisé
         const { data: domainVerification, error } = await supabase
           .from('domain_verifications')
@@ -28,8 +32,12 @@ export const DomainRouter = () => {
           .eq('verified', true)
           .maybeSingle();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Erreur Supabase:', error);
+          throw error;
+        }
 
+        console.log('Résultat de la vérification:', domainVerification);
         setIsDomainValid(!!domainVerification);
       } catch (error) {
         console.error('Erreur lors de la vérification du domaine:', error);
