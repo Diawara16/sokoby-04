@@ -16,9 +16,17 @@ import { DomainRouter } from "@/components/landing/DomainRouter";
 const AppRoutes = () => {
   const { handleSubscribe } = useSubscriptionHandler();
   const hostname = window.location.hostname;
+  
+  console.log('Current hostname:', hostname);
 
-  // Si ce n'est pas le domaine principal sokoby.com, utiliser le DomainRouter
-  if (hostname !== 'localhost' && hostname !== 'sokoby.com' && !hostname.endsWith('.sokoby.com')) {
+  // Liste des domaines principaux
+  const mainDomains = ['localhost', 'sokoby.com', 'www.sokoby.com'];
+  const isMainDomain = mainDomains.includes(hostname);
+
+  console.log('Is main domain:', isMainDomain);
+
+  // Si ce n'est pas le domaine principal, utiliser le DomainRouter
+  if (!isMainDomain) {
     return <DomainRouter />;
   }
 
