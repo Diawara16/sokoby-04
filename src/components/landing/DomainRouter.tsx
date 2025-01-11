@@ -15,16 +15,17 @@ export const DomainRouter = () => {
       try {
         console.log('DomainRouter - Vérification du domaine:', hostname);
         
-        // Vérifier si c'est le domaine principal
-        if (hostname === 'sokoby.com' || hostname === 'www.sokoby.com') {
-          console.log('DomainRouter - Domaine principal détecté');
+        // Liste des domaines principaux pour double vérification
+        const mainDomains = ['localhost', 'sokoby.com', 'www.sokoby.com', 'preview--sokoby-04.lovable.app'];
+        
+        if (mainDomains.includes(hostname)) {
+          console.log('DomainRouter - Domaine principal détecté, validation automatique');
           setIsDomainValid(true);
           setIsLoading(false);
           return;
         }
 
         console.log('DomainRouter - Vérification dans la base de données pour:', hostname);
-        // Vérifier si c'est un sous-domaine personnalisé
         const { data: domainVerification, error } = await supabase
           .from('domain_verifications')
           .select('*')

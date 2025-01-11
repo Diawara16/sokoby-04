@@ -17,13 +17,13 @@ const AppRoutes = () => {
   const { handleSubscribe } = useSubscriptionHandler();
   const hostname = window.location.hostname;
   
-  console.log('Current hostname:', hostname);
+  console.log('AppRoutes - Hostname détecté:', hostname);
 
   // Liste des domaines principaux
-  const mainDomains = ['localhost', 'sokoby.com', 'www.sokoby.com'];
+  const mainDomains = ['localhost', 'sokoby.com', 'www.sokoby.com', 'preview--sokoby-04.lovable.app'];
   const isMainDomain = mainDomains.includes(hostname);
 
-  console.log('Is main domain:', isMainDomain);
+  console.log('AppRoutes - Est-ce un domaine principal ?', isMainDomain);
 
   // Si ce n'est pas le domaine principal, utiliser le DomainRouter
   if (!isMainDomain) {
