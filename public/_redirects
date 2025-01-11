@@ -1,2 +1,5 @@
-# Redirection pour les domaines personnalisés
+# Redirection pour tous les domaines
 /* /index.html 200
+
+# Forcer HTTPS
+http://* https://:splat 301!
