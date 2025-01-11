@@ -27,6 +27,22 @@ export const DomainRouter = () => {
 
         // Si ce n'est pas un domaine principal, vérifier dans la base de données
         console.log('DomainRouter - Vérification dans la base de données pour:', hostname);
+        
+        // Vérifier d'abord si le domaine existe dans store_settings
+        const { data: storeSettings } = await supabase
+          .from('store_settings')
+          .select('*')
+          .eq('domain_name', hostname)
+          .maybeSingle();
+
+        if (storeSettings) {
+          console.log('DomainRouter - Domaine trouvé dans store_settings:', storeSettings);
+          setIsDomainValid(true);
+          setIsLoading(false);
+          return;
+        }
+
+        // Sinon, vérifier dans domain_verifications
         const { data: domainVerification, error } = await supabase
           .from('domain_verifications')
           .select('*')
