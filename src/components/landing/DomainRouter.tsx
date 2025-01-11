@@ -25,13 +25,14 @@ export const DomainRouter = () => {
           return;
         }
 
+        // Si ce n'est pas un domaine principal, vérifier dans la base de données
         console.log('DomainRouter - Vérification dans la base de données pour:', hostname);
         const { data: domainVerification, error } = await supabase
           .from('domain_verifications')
           .select('*')
           .eq('domain_name', hostname)
           .eq('verified', true)
-          .maybeSingle();
+          .single();
 
         if (error) {
           console.error('DomainRouter - Erreur Supabase:', error);
