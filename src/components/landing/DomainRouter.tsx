@@ -32,17 +32,18 @@ export const DomainRouter = () => {
           .select('*')
           .eq('domain_name', hostname)
           .eq('verified', true)
-          .single();
+          .maybeSingle();
 
         if (error) {
           console.error('DomainRouter - Erreur Supabase:', error);
-          throw error;
+          setIsDomainValid(false);
+        } else {
+          console.log('DomainRouter - Résultat de la vérification:', domainVerification);
+          setIsDomainValid(!!domainVerification);
         }
-
-        console.log('DomainRouter - Résultat de la vérification:', domainVerification);
-        setIsDomainValid(!!domainVerification);
       } catch (error) {
         console.error('DomainRouter - Erreur lors de la vérification du domaine:', error);
+        setIsDomainValid(false);
         toast({
           title: "Erreur",
           description: "Impossible de vérifier le domaine",
