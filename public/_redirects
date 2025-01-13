@@ -5,3 +5,6 @@ http://* https://:splat 301!
 
 # Redirection www vers non-www
 https://www.sokoby.com/* https://sokoby.com/:splat 301!
+
+# Redirection du domaine de développement vers le domaine principal
+https://16ad07cd-3490-4e7c-82b3-544f50ffc26d.lovableproject.com/* https://sokoby.com/:splat 301!
