@@ -24,7 +24,8 @@ const AppRoutes = () => {
     'localhost', 
     'sokoby.com', 
     'www.sokoby.com', 
-    'preview--sokoby-04.lovable.app'
+    'preview--sokoby-04.lovable.app',
+    'sokoby-04.lovableproject.com'
   ];
   const isPlatformDomain = platformDomains.includes(hostname);
 
