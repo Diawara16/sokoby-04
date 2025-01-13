@@ -19,17 +19,23 @@ const AppRoutes = () => {
   
   console.log('AppRoutes - Hostname détecté:', hostname);
 
-  // Liste des domaines principaux
-  const mainDomains = ['localhost', 'sokoby.com', 'www.sokoby.com', 'preview--sokoby-04.lovable.app'];
-  const isMainDomain = mainDomains.includes(hostname);
+  // Liste des domaines principaux de la plateforme
+  const platformDomains = [
+    'localhost', 
+    'sokoby.com', 
+    'www.sokoby.com', 
+    'preview--sokoby-04.lovable.app'
+  ];
+  const isPlatformDomain = platformDomains.includes(hostname);
 
-  console.log('AppRoutes - Est-ce un domaine principal ?', isMainDomain);
+  console.log('AppRoutes - Est-ce un domaine de la plateforme ?', isPlatformDomain);
 
-  // Si ce n'est pas le domaine principal, utiliser le DomainRouter
-  if (!isMainDomain) {
+  // Si ce n'est pas un domaine de la plateforme, utiliser le DomainRouter pour les boutiques
+  if (!isPlatformDomain) {
     return <DomainRouter />;
   }
 
+  // Routes de la plateforme principale
   return (
     <Routes>
       <Route path="/" element={<Home />} />

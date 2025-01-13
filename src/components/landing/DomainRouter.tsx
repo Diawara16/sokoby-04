@@ -13,22 +13,9 @@ export const DomainRouter = () => {
   useEffect(() => {
     const checkDomain = async () => {
       try {
-        console.log('DomainRouter - Vérification du domaine:', hostname);
+        console.log('DomainRouter - Vérification du domaine de boutique:', hostname);
         
-        // Liste des domaines principaux pour double vérification
-        const mainDomains = ['localhost', 'sokoby.com', 'www.sokoby.com', 'preview--sokoby-04.lovable.app'];
-        
-        if (mainDomains.includes(hostname)) {
-          console.log('DomainRouter - Domaine principal détecté, validation automatique');
-          setIsDomainValid(true);
-          setIsLoading(false);
-          return;
-        }
-
-        // Si ce n'est pas un domaine principal, vérifier dans la base de données
-        console.log('DomainRouter - Vérification dans la base de données pour:', hostname);
-        
-        // Vérifier d'abord si le domaine existe dans store_settings
+        // Vérifier si le domaine existe dans store_settings
         const { data: storeSettings } = await supabase
           .from('store_settings')
           .select('*')
