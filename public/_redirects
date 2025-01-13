@@ -1,5 +1,7 @@
-# Redirection pour tous les domaines
 /* /index.html 200
 
-# Forcer HTTPS
+# Redirection HTTP vers HTTPS
 http://* https://:splat 301!
+
+# Redirection www vers non-www
+https://www.sokoby.com/* https://sokoby.com/:splat 301!
