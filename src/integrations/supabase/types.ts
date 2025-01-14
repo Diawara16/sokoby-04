@@ -301,6 +301,36 @@ export type Database = {
         }
         Relationships: []
       }
+      cookie_consents: {
+        Row: {
+          consent_date: string | null
+          consent_given: boolean | null
+          created_at: string | null
+          id: string
+          preferences: Json | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          consent_date?: string | null
+          consent_given?: boolean | null
+          created_at?: string | null
+          id?: string
+          preferences?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          consent_date?: string | null
+          consent_given?: boolean | null
+          created_at?: string | null
+          id?: string
+          preferences?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       coupons: {
         Row: {
           code: string
