@@ -3,7 +3,7 @@ import { DomainRouter } from "@/components/landing/DomainRouter";
 import { isPlatformDomain } from "@/config/domains";
 import { PlatformRoutes } from "@/routes/PlatformRoutes";
 
-const AppRoutes = () => {
+export const AppRoutes = () => {
   const { handleSubscribe } = useSubscriptionHandler();
   const hostname = window.location.hostname;
   
@@ -18,5 +18,3 @@ const AppRoutes = () => {
   // Routes de la plateforme principale
   return <PlatformRoutes handleSubscribe={handleSubscribe} />;
 };
-
-export default AppRoutes;
