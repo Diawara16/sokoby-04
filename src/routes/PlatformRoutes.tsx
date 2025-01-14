@@ -12,7 +12,11 @@ import { AuthenticatedPricingContent } from "@/components/pricing/AuthenticatedP
 import { UnauthenticatedPricingContent } from "@/components/pricing/UnauthenticatedPricingContent";
 
 interface PlatformRoutesProps {
-  handleSubscribe: () => void;
+  handleSubscribe: (
+    planType: 'starter' | 'pro' | 'enterprise',
+    paymentMethod: 'card' | 'apple_pay' | 'google_pay',
+    couponCode?: string
+  ) => Promise<void>;
 }
 
 export const PlatformRoutes = ({ handleSubscribe }: PlatformRoutesProps) => {
