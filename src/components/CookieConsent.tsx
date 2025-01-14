@@ -9,13 +9,20 @@ export const CookieConsent = () => {
 
   useEffect(() => {
     const checkConsent = async () => {
-      const { data: existingConsent } = await supabase
-        .from('cookie_consents')
-        .select('*')
-        .single();
+      try {
+        const { data: existingConsent, error } = await supabase
+          .from('cookie_consents')
+          .select('*')
+          .maybeSingle();
 
-      if (!existingConsent) {
-        setShowBanner(true);
+        if (error) {
+          console.error('Erreur lors de la vérification du consentement:', error);
+          return;
+        }
+
+        setShowBanner(!existingConsent);
+      } catch (error) {
+        console.error('Erreur lors de la vérification du consentement:', error);
       }
     };
 
