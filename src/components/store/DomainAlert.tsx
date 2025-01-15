@@ -31,10 +31,13 @@ export const DomainAlert = ({ domainName }: DomainAlertProps) => {
       // Vérifier l'enregistrement A du domaine
       const response = await fetch(`https://dns.google/resolve?name=${domainName}&type=A`);
       const data = await response.json();
+      console.log("Réponse DNS:", data);
       
       const hasCorrectARecord = data.Answer?.some(
         (record: any) => record.type === 1 && record.data === '76.76.21.21'
       );
+
+      console.log("Enregistrement A correct ?", hasCorrectARecord);
 
       if (hasCorrectARecord) {
         // Mettre à jour le statut dans la base de données
@@ -46,14 +49,18 @@ export const DomainAlert = ({ domainName }: DomainAlertProps) => {
             verified_at: new Date().toISOString()
           });
 
-        if (updateError) throw updateError;
+        if (updateError) {
+          console.error("Erreur lors de la mise à jour dans Supabase:", updateError);
+          throw updateError;
+        }
 
         setIsVerified(true);
         toast({
           title: "Domaine vérifié",
-          description: "Votre domaine a été vérifié avec succès.",
+          description: "Votre domaine a été vérifié avec succès. La propagation DNS peut prendre jusqu'à 48h.",
         });
       } else {
+        console.log("Configuration DNS incorrecte détectée");
         toast({
           title: "Configuration DNS incorrecte",
           description: "Veuillez vérifier que l'enregistrement A pointe vers 76.76.21.21",
