@@ -26,22 +26,24 @@ export const DomainAlert = ({ domainName }: DomainAlertProps) => {
 
     try {
       setIsVerifying(true);
-      console.log("Vérification du domaine:", domainName);
+      console.log("Début de la vérification du domaine:", domainName);
 
       // Vérifier l'enregistrement A du domaine
+      console.log("Envoi de la requête DNS pour:", domainName);
       const response = await fetch(`https://dns.google/resolve?name=${domainName}&type=A`);
       const data = await response.json();
-      console.log("Réponse DNS:", data);
+      console.log("Réponse DNS complète:", data);
       
       const hasCorrectARecord = data.Answer?.some(
         (record: any) => record.type === 1 && record.data === '76.76.21.21'
       );
 
-      console.log("Enregistrement A correct ?", hasCorrectARecord);
+      console.log("Enregistrement A correct ?", hasCorrectARecord, "Valeur attendue: 76.76.21.21");
 
       if (hasCorrectARecord) {
+        console.log("Enregistrement A validé, mise à jour dans Supabase");
         // Mettre à jour le statut dans la base de données
-        const { error: updateError } = await supabase
+        const { data: verificationData, error: updateError } = await supabase
           .from('domain_verifications')
           .upsert({
             domain_name: domainName,
@@ -54,6 +56,7 @@ export const DomainAlert = ({ domainName }: DomainAlertProps) => {
           throw updateError;
         }
 
+        console.log("Mise à jour Supabase réussie:", verificationData);
         setIsVerified(true);
         toast({
           title: "Domaine vérifié",
@@ -68,7 +71,7 @@ export const DomainAlert = ({ domainName }: DomainAlertProps) => {
         });
       }
     } catch (error) {
-      console.error("Erreur lors de la vérification:", error);
+      console.error("Erreur détaillée lors de la vérification:", error);
       toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de la vérification du domaine.",
