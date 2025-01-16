@@ -1,64 +1,40 @@
-import { AuthForm } from "@/components/auth/AuthForm";
-import { translations } from "@/translations";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 
 interface HeroSectionProps {
   isAuthenticated: boolean;
   currentLanguage: string;
 }
 
-export const HeroSection = ({ isAuthenticated, currentLanguage }: HeroSectionProps) => {
-  const [showAuthForm, setShowAuthForm] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(true);
-  const t = translations[currentLanguage as keyof typeof translations];
-
-  const handleAuthClick = (signup: boolean) => {
-    setIsSignUp(signup);
-    setShowAuthForm(true);
-  };
-
+export function HeroSection({ isAuthenticated, currentLanguage }: HeroSectionProps) {
   return (
-    <section className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-800 text-white py-24 px-4 sm:px-6 lg:px-8">
-      <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:16px]" />
-      <div className="max-w-7xl mx-auto relative">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="text-left space-y-8">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 animate-fadeIn leading-tight">
-              Construisez votre empire e-commerce
-            </h1>
-            <p className="text-lg sm:text-xl lg:text-2xl mb-8 text-red-100">
-              La plateforme complète pour lancer et développer votre boutique en ligne
-            </p>
-          </div>
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl">
-            {showAuthForm ? (
-              <AuthForm 
-                defaultIsSignUp={isSignUp}
-                onCancel={() => setShowAuthForm(false)}
-              />
-            ) : (
-              <div className="flex flex-col gap-4">
-                <Button 
-                  onClick={() => handleAuthClick(true)}
-                  className="bg-white text-red-600 hover:bg-red-50 w-full"
-                  size="lg"
-                >
-                  Créer mon compte
-                </Button>
-                <Button 
-                  onClick={() => handleAuthClick(false)}
-                  variant="default"
-                  className="bg-red-600 hover:bg-red-700 text-white w-full"
-                  size="lg"
-                >
-                  Se connecter
-                </Button>
-              </div>
+    <section className="relative bg-white py-20 lg:py-32">
+      <div className="container mx-auto px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+            Créez votre boutique en ligne en quelques minutes
+          </h1>
+          <p className="text-xl text-gray-600 mb-8">
+            Une solution complète pour lancer et gérer votre business en ligne. Simple, rapide et efficace.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {!isAuthenticated && (
+              <>
+                <Link to="/essai-gratuit">
+                  <Button size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90">
+                    Démarrer gratuitement
+                  </Button>
+                </Link>
+                <Link to="/plan-tarifaire">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                    Voir les tarifs
+                  </Button>
+                </Link>
+              </>
             )}
           </div>
         </div>
       </div>
     </section>
   );
-};
+}
