@@ -3,6 +3,7 @@ import { FeaturesSection } from "@/components/home/FeaturesSection";
 import { CTASection } from "@/components/home/CTASection";
 import { useNavigate } from "react-router-dom";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
+import ShoppingInspirationSection from "@/components/home/ShoppingInspirationSection";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function Home() {
       <FeaturesSection 
         currentLanguage={currentLanguage}
       />
+      <ShoppingInspirationSection />
       <CTASection 
         currentLanguage={currentLanguage}
         onCreateStore={handleCreateStore}

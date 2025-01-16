@@ -8,5 +8,6 @@ export const platformDomains = [
 ];
 
 export const isPlatformDomain = (hostname: string): boolean => {
-  return platformDomains.includes(hostname);
+  console.log('Checking domain:', hostname);
+  return platformDomains.some(domain => hostname === domain || hostname.endsWith('.' + domain));
 };
