@@ -1,4 +1,3 @@
-import { FacebookIconUploader } from "@/components/facebook/FacebookIconUploader";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -7,12 +6,12 @@ import { useErrorHandler } from "@/hooks/useErrorHandler";
 import { useQuery } from "@tanstack/react-query";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useToast } from "@/hooks/use-toast";
+import { FacebookIconUploader } from "@/components/facebook/FacebookIconUploader";
 
 export default function Index() {
   const { handleError } = useErrorHandler();
   const { toast } = useToast();
 
-  // Exemple de requête avec retry automatique
   const { data, isLoading, isError } = useQuery({
     queryKey: ['initialData'],
     queryFn: async () => {
@@ -22,16 +21,18 @@ export default function Index() {
       }
       return response.json();
     },
-    retry: 3, // Tentatives de retry automatique
+    retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    onError: (error) => {
-      handleError(error);
-      toast({
-        title: "Erreur de chargement",
-        description: "Nous rencontrons des difficultés pour charger les données. Réessai automatique en cours...",
-        variant: "destructive",
-      });
-    },
+    meta: {
+      errorHandler: (error: Error) => {
+        handleError(error);
+        toast({
+          title: "Erreur de chargement",
+          description: "Nous rencontrons des difficultés pour charger les données. Réessai automatique en cours...",
+          variant: "destructive",
+        });
+      }
+    }
   });
 
   useEffect(() => {
