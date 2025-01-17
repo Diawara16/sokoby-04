@@ -1328,28 +1328,43 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
+          bio: string | null
           created_at: string
           email: string | null
           features_usage: Json | null
           id: string
           last_login: string | null
+          phone: string | null
+          social_links: Json | null
           trial_ends_at: string | null
+          website: string | null
         }
         Insert: {
+          avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           email?: string | null
           features_usage?: Json | null
           id: string
           last_login?: string | null
+          phone?: string | null
+          social_links?: Json | null
           trial_ends_at?: string | null
+          website?: string | null
         }
         Update: {
+          avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           email?: string | null
           features_usage?: Json | null
           id?: string
           last_login?: string | null
+          phone?: string | null
+          social_links?: Json | null
           trial_ends_at?: string | null
+          website?: string | null
         }
         Relationships: []
       }
