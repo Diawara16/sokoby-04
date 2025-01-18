@@ -16,6 +16,7 @@ export const PayPalButton = ({ amount, orderId, onSuccess }: PayPalButtonProps) 
       style={{ layout: "horizontal" }}
       createOrder={(data, actions) => {
         return actions.order.create({
+          intent: "CAPTURE",
           purchase_units: [
             {
               amount: {

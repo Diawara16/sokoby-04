@@ -2,7 +2,7 @@ import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
-import AppRoutes from "./AppRoutes";
+import { AppRoutes } from "./AppRoutes";
 
 function App() {
   const [paypalClientId, setPaypalClientId] = useState<string>("");
@@ -22,7 +22,7 @@ function App() {
 
   return (
     <PayPalScriptProvider options={{ 
-      "client-id": paypalClientId,
+      clientId: paypalClientId,
       currency: "EUR"
     }}>
       <AppRoutes />
