@@ -1,29 +1,33 @@
-import { BrowserRouter } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AppRoutes } from "./AppRoutes";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
-import { CookieConsent } from "@/components/CookieConsent";
-import "./App.css";
-
-// Créer une instance de QueryClient
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
-    },
-  },
-});
+import AppRoutes from "./AppRoutes";
 
 function App() {
+  const [paypalClientId, setPaypalClientId] = useState<string>("");
+
+  useEffect(() => {
+    const fetchPayPalClientId = async () => {
+      const { data: { secret } } = await supabase.rpc('get_secret', {
+        name: 'PAYPAL_CLIENT_ID'
+      });
+      if (secret) {
+        setPaypalClientId(secret);
+      }
+    };
+    
+    fetchPayPalClientId();
+  }, []);
+
   return (
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <AppRoutes />
-        <Toaster />
-        <CookieConsent />
-      </QueryClientProvider>
-    </BrowserRouter>
+    <PayPalScriptProvider options={{ 
+      "client-id": paypalClientId,
+      currency: "EUR"
+    }}>
+      <AppRoutes />
+      <Toaster />
+    </PayPalScriptProvider>
   );
 }
 

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { InteracPaymentForm } from "@/components/payments/InteracPaymentForm";
+import { PayPalButton } from "@/components/payments/PayPalButton";
 import { useState } from "react";
 
 interface PaymentSectionProps {
@@ -16,7 +17,7 @@ export const PaymentSection = ({
   orderId,
   onPaymentSuccess 
 }: PaymentSectionProps) => {
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'interac'>('card');
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'interac' | 'paypal'>('card');
 
   if (!orderId) {
     return (
@@ -50,6 +51,14 @@ export const PaymentSection = ({
         </Button>
         <Button
           type="button"
+          variant={paymentMethod === 'paypal' ? 'default' : 'outline'}
+          className="flex-1"
+          onClick={() => setPaymentMethod('paypal')}
+        >
+          PayPal
+        </Button>
+        <Button
+          type="button"
           variant={paymentMethod === 'interac' ? 'default' : 'outline'}
           className="flex-1"
           onClick={() => setPaymentMethod('interac')}
@@ -62,6 +71,12 @@ export const PaymentSection = ({
         <InteracPaymentForm 
           orderId={orderId}
           amount={total}
+          onSuccess={onPaymentSuccess}
+        />
+      ) : paymentMethod === 'paypal' ? (
+        <PayPalButton
+          amount={total}
+          orderId={orderId}
           onSuccess={onPaymentSuccess}
         />
       ) : (
