@@ -4,7 +4,6 @@ import { ProfileForm } from '@/components/profile/ProfileForm';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 
-// Mock dependencies
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     auth: {
@@ -33,7 +32,7 @@ describe('ProfileForm', () => {
 
   it('handles form submission successfully', async () => {
     const mockToast = vi.fn();
-    (useToast as jest.Mock).mockReturnValue({ toast: mockToast });
+    vi.mocked(useToast).mockReturnValue({ toast: mockToast });
 
     render(<ProfileForm />);
 
@@ -57,12 +56,12 @@ describe('ProfileForm', () => {
 
   it('handles form submission error', async () => {
     const mockError = new Error('Test error');
-    (supabase.from as jest.Mock).mockReturnValue({
+    vi.mocked(supabase.from).mockReturnValue({
       upsert: vi.fn().mockReturnValue({ error: mockError }),
     });
 
     const mockToast = vi.fn();
-    (useToast as jest.Mock).mockReturnValue({ toast: mockToast });
+    vi.mocked(useToast).mockReturnValue({ toast: mockToast });
 
     render(<ProfileForm />);
 

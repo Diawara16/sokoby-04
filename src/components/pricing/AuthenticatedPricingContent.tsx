@@ -17,7 +17,7 @@ interface AuthenticatedPricingContentProps {
   ) => void;
 }
 
-export const AuthenticatedPricingContent = ({
+const AuthenticatedPricingContent = ({
   hasProfile,
   onSubscribe,
 }: AuthenticatedPricingContentProps) => {
@@ -50,3 +50,5 @@ export const AuthenticatedPricingContent = ({
     </>
   );
 };
+
+export default AuthenticatedPricingContent;

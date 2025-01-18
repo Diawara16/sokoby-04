@@ -9,7 +9,7 @@ interface UnauthenticatedPricingContentProps {
   ) => void;
 }
 
-export const UnauthenticatedPricingContent = ({
+const UnauthenticatedPricingContent = ({
   onSubscribe,
 }: UnauthenticatedPricingContentProps) => {
   return (
@@ -20,3 +20,5 @@ export const UnauthenticatedPricingContent = ({
     </>
   );
 };
+
+export default UnauthenticatedPricingContent;

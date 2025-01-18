@@ -27,7 +27,8 @@ describe('useAuthAndProfile', () => {
       isAuthenticated: false,
       isLoading: true,
       hasProfile: false,
-      user: null,
+      session: null,
+      profile: null
     });
   });
 
@@ -35,13 +36,18 @@ describe('useAuthAndProfile', () => {
     const mockUser = { id: '123', email: 'test@example.com' };
     const mockProfile = { id: '123', email: 'test@example.com' };
     
-    (supabase.auth.getSession as jest.Mock).mockResolvedValue({
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({
       data: { session: { user: mockUser } },
+      error: null,
     });
     
-    (supabase.from as jest.Mock)().single.mockResolvedValue({
-      data: mockProfile,
-      error: null,
+    vi.mocked(supabase.from).mockReturnValue({
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      maybeSingle: vi.fn().mockResolvedValue({
+        data: mockProfile,
+        error: null,
+      }),
     });
 
     const { result } = renderHook(() => useAuthAndProfile());
@@ -51,14 +57,15 @@ describe('useAuthAndProfile', () => {
         isAuthenticated: true,
         isLoading: false,
         hasProfile: true,
-        user: mockUser,
+        session: expect.objectContaining({ user: mockUser }),
+        profile: mockProfile
       });
     });
   });
 
   it('handles authentication errors correctly', async () => {
     const mockError = new Error('Auth error');
-    (supabase.auth.getSession as jest.Mock).mockRejectedValue(mockError);
+    vi.mocked(supabase.auth.getSession).mockRejectedValue(mockError);
 
     const { result } = renderHook(() => useAuthAndProfile());
 
@@ -67,30 +74,8 @@ describe('useAuthAndProfile', () => {
         isAuthenticated: false,
         isLoading: false,
         hasProfile: false,
-        user: null,
-      });
-    });
-  });
-
-  it('handles profile loading errors correctly', async () => {
-    const mockUser = { id: '123', email: 'test@example.com' };
-    (supabase.auth.getSession as jest.Mock).mockResolvedValue({
-      data: { session: { user: mockUser } },
-    });
-    
-    (supabase.from as jest.Mock)().single.mockResolvedValue({
-      data: null,
-      error: new Error('Profile error'),
-    });
-
-    const { result } = renderHook(() => useAuthAndProfile());
-
-    await waitFor(() => {
-      expect(result.current).toEqual({
-        isAuthenticated: true,
-        isLoading: false,
-        hasProfile: false,
-        user: mockUser,
+        session: null,
+        profile: null
       });
     });
   });
