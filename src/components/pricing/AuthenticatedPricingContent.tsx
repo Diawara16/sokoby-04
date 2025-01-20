@@ -17,7 +17,7 @@ interface AuthenticatedPricingContentProps {
   ) => void;
 }
 
-const AuthenticatedPricingContent = ({
+export const AuthenticatedPricingContent = ({
   hasProfile,
   onSubscribe,
 }: AuthenticatedPricingContentProps) => {

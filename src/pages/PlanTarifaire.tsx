@@ -2,8 +2,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "@/components/pricing/LoadingSpinner";
 import { PricingHeader } from "@/components/pricing/PricingHeader";
-import { AuthenticatedPricingContent } from "@/components/pricing/AuthenticatedPricingContent";
-import { UnauthenticatedPricingContent } from "@/components/pricing/UnauthenticatedPricingContent";
+import AuthenticatedPricingContent from "@/components/pricing/AuthenticatedPricingContent";
+import UnauthenticatedPricingContent from "@/components/pricing/UnauthenticatedPricingContent";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 import { useSubscriptionHandler } from "@/hooks/useSubscriptionHandler";
 
@@ -20,7 +20,7 @@ const PlanTarifaire = () => {
       <PricingHeader 
         currentLanguage="fr"
         isAuthenticated={isAuthenticated}
-        onShowAuthForm={() => {}} // À implémenter si nécessaire
+        onShowAuthForm={() => {}} 
       />
       
       {isAuthenticated ? (

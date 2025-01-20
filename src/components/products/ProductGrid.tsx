@@ -1,11 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppState } from '@/hooks/useAppState';
 import { supabase } from '@/lib/supabase';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Product } from '@/types/product';
 import { ProductCard } from './ProductCard';
 
-export const ProductGrid = () => {
+interface ProductGridProps {
+  products?: Product[];
+}
+
+export const ProductGrid = ({ products: initialProducts }: ProductGridProps = {}) => {
   const {
     isLoading,
     error,
@@ -16,7 +20,7 @@ export const ProductGrid = () => {
     updateCache
   } = useAppState('products');
 
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(initialProducts || []);
 
   const fetchProducts = async () => {
     if (isCacheValid()) return;
@@ -40,8 +44,10 @@ export const ProductGrid = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (!initialProducts) {
+      fetchProducts();
+    }
+  }, [initialProducts]);
 
   if (isLoading) {
     return (
