@@ -3,8 +3,8 @@ import { renderHook, act } from '@testing-library/react';
 import { useCart } from '@/components/cart/CartContext';
 import { CartProvider } from '@/components/cart/CartContext';
 import { supabase } from '@/lib/supabase';
+import { User } from '@/types/auth';
 
-// Mock Supabase
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     from: vi.fn(),
@@ -23,7 +23,25 @@ describe('Cart Operations', () => {
   });
 
   it('should add item to cart', async () => {
-    const mockUser = { id: 'user-123' };
+    const mockUser: User = {
+      id: 'user-123',
+      email: 'test@example.com',
+      app_metadata: {
+        provider: 'email',
+        providers: ['email']
+      },
+      user_metadata: {
+        email: 'test@example.com',
+        email_verified: false,
+        phone_verified: false,
+        sub: 'user-123'
+      },
+      aud: 'authenticated',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      role: 'authenticated'
+    };
+
     vi.mocked(supabase.auth.getUser).mockResolvedValue({ data: { user: mockUser }, error: null });
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -48,7 +66,25 @@ describe('Cart Operations', () => {
   });
 
   it('should remove item from cart', async () => {
-    const mockUser = { id: 'user-123' };
+    const mockUser: User = {
+      id: 'user-123',
+      email: 'test@example.com',
+      app_metadata: {
+        provider: 'email',
+        providers: ['email']
+      },
+      user_metadata: {
+        email: 'test@example.com',
+        email_verified: false,
+        phone_verified: false,
+        sub: 'user-123'
+      },
+      aud: 'authenticated',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      role: 'authenticated'
+    };
+
     vi.mocked(supabase.auth.getUser).mockResolvedValue({ data: { user: mockUser }, error: null });
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (

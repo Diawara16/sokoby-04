@@ -1,16 +1,39 @@
-export type AuthFormState = {
+export interface User {
+  id: string;
   email: string;
-  password: string;
-  isLoading: boolean;
-  isSignUp: boolean;
-  error: string | null;
-};
-
-export type AuthFormActions = {
-  setEmail: (email: string) => void;
-  setPassword: (password: string) => void;
-  setIsSignUp: (isSignUp: boolean) => void;
-  handleSubmit: (e: React.FormEvent) => Promise<void>;
-};
-
-export type UseAuthForm = AuthFormState & AuthFormActions;
+  app_metadata: {
+    provider: string;
+    providers: string[];
+  };
+  user_metadata: {
+    email: string;
+    email_verified: boolean;
+    phone_verified: boolean;
+    sub: string;
+  };
+  aud: string;
+  created_at: string;
+  updated_at: string;
+  role: string;
+  aal?: string;
+  amr?: Array<{
+    method: string;
+    timestamp: number;
+  }>;
+  session_id?: string;
+  phone?: string;
+  confirmed_at?: string;
+  email_confirmed_at?: string;
+  last_sign_in_at?: string;
+  identities?: Array<{
+    id: string;
+    user_id: string;
+    identity_data: {
+      email: string;
+      sub: string;
+    };
+    provider: string;
+    created_at: string;
+    updated_at: string;
+  }>;
+}

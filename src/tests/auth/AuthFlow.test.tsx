@@ -3,8 +3,8 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthForm } from '@/components/auth/AuthForm';
 import { supabase } from '@/lib/supabase';
+import { User } from '@/types/auth';
 
-// Mock Supabase
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     auth: {
@@ -24,7 +24,25 @@ describe('Authentication Flow', () => {
   });
 
   it('should handle successful login', async () => {
-    const mockUser = { id: 'user-123', email: 'test@example.com' };
+    const mockUser: User = {
+      id: 'user-123',
+      email: 'test@example.com',
+      app_metadata: {
+        provider: 'email',
+        providers: ['email']
+      },
+      user_metadata: {
+        email: 'test@example.com',
+        email_verified: false,
+        phone_verified: false,
+        sub: 'user-123'
+      },
+      aud: 'authenticated',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      role: 'authenticated'
+    };
+
     vi.mocked(supabase.auth.signInWithPassword).mockResolvedValueOnce({
       data: { user: mockUser, session: { user: mockUser } },
       error: null,
