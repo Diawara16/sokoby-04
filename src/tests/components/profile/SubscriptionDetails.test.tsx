@@ -22,6 +22,8 @@ vi.mock('@/lib/supabase', () => ({
 vi.mock('@/hooks/use-toast', () => ({
   useToast: vi.fn().mockReturnValue({
     toast: vi.fn(),
+    dismiss: vi.fn(),
+    toasts: []
   }),
 }));
 
@@ -39,7 +41,7 @@ describe('SubscriptionDetails', () => {
       created_at: '2024-01-01T00:00:00Z',
     };
 
-    (supabase.from as jest.Mock)().single.mockResolvedValue({
+    vi.mocked(supabase.from)().single.mockResolvedValue({
       data: mockSubscription,
       error: null,
     });
@@ -55,13 +57,17 @@ describe('SubscriptionDetails', () => {
 
   it('displays error message when loading fails', async () => {
     const mockError = new Error('Failed to load subscription');
-    (supabase.from as jest.Mock)().single.mockResolvedValue({
+    vi.mocked(supabase.from)().single.mockResolvedValue({
       data: null,
       error: mockError,
     });
 
     const mockToast = vi.fn();
-    (useToast as jest.Mock).mockReturnValue({ toast: mockToast });
+    vi.mocked(useToast).mockReturnValue({
+      toast: mockToast,
+      dismiss: vi.fn(),
+      toasts: []
+    });
 
     render(<SubscriptionDetails />);
 
@@ -76,7 +82,7 @@ describe('SubscriptionDetails', () => {
   });
 
   it('displays no subscription message when no data is found', async () => {
-    (supabase.from as jest.Mock)().single.mockResolvedValue({
+    vi.mocked(supabase.from)().single.mockResolvedValue({
       data: null,
       error: null,
     });

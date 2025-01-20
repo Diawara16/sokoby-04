@@ -10,7 +10,13 @@ vi.mock('@/lib/supabase', () => ({
       getUser: vi.fn().mockResolvedValue({ data: { user: { id: '123' } } }),
     },
     from: vi.fn().mockReturnValue({
-      upsert: vi.fn().mockReturnValue({ error: null }),
+      upsert: vi.fn().mockResolvedValue({ error: null }),
+      select: vi.fn(),
+      insert: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      eq: vi.fn(),
+      single: vi.fn(),
     }),
   },
 }));
@@ -18,6 +24,8 @@ vi.mock('@/lib/supabase', () => ({
 vi.mock('@/hooks/use-toast', () => ({
   useToast: vi.fn().mockReturnValue({
     toast: vi.fn(),
+    dismiss: vi.fn(),
+    toasts: []
   }),
 }));
 
@@ -32,7 +40,11 @@ describe('ProfileForm', () => {
 
   it('handles form submission successfully', async () => {
     const mockToast = vi.fn();
-    vi.mocked(useToast).mockReturnValue({ toast: mockToast });
+    vi.mocked(useToast).mockReturnValue({
+      toast: mockToast,
+      dismiss: vi.fn(),
+      toasts: []
+    });
 
     render(<ProfileForm />);
 
@@ -57,11 +69,21 @@ describe('ProfileForm', () => {
   it('handles form submission error', async () => {
     const mockError = new Error('Test error');
     vi.mocked(supabase.from).mockReturnValue({
-      upsert: vi.fn().mockReturnValue({ error: mockError }),
+      upsert: vi.fn().mockResolvedValue({ error: mockError }),
+      select: vi.fn(),
+      insert: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      eq: vi.fn(),
+      single: vi.fn(),
     });
 
     const mockToast = vi.fn();
-    vi.mocked(useToast).mockReturnValue({ toast: mockToast });
+    vi.mocked(useToast).mockReturnValue({
+      toast: mockToast,
+      dismiss: vi.fn(),
+      toasts: []
+    });
 
     render(<ProfileForm />);
 
