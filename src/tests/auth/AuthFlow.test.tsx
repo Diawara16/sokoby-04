@@ -3,13 +3,12 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthForm } from '@/components/auth/AuthForm';
 
 describe('Auth Flow', () => {
-  it('renders auth form correctly', () => {
+  it('renders login form', () => {
     render(
       <BrowserRouter>
-        <AuthForm mode="signin" />
+        <AuthForm onSubmit={() => {}} />
       </BrowserRouter>
     );
-    
-    expect(screen.getByRole('button')).toBeInTheDocument();
+    expect(screen.getByRole('form')).toBeInTheDocument();
   });
 });
