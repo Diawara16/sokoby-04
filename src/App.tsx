@@ -17,14 +17,14 @@ function App() {
   useEffect(() => {
     const fetchPayPalClientId = async () => {
       try {
-        const { data: { secret }, error } = await supabase.rpc('get_secret', {
+        const { data, error } = await supabase.rpc('get_secret', {
           name: 'PAYPAL_CLIENT_ID'
         });
         
         if (error) throw error;
         
-        if (secret) {
-          setPaypalClientId(secret);
+        if (data?.secret) {
+          setPaypalClientId(data.secret);
         } else {
           toast({
             title: "Configuration manquante",
