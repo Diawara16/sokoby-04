@@ -1983,6 +1983,12 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      get_secret: {
+        Args: {
+          name: string
+        }
+        Returns: string
+      }
       update_flash_sales_status: {
         Args: Record<PropertyKey, never>
         Returns: undefined
