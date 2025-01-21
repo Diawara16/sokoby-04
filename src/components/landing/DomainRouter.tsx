@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { DynamicLanding } from "./DynamicLanding";
 import { supabase } from "@/lib/supabase";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { DynamicLanding } from "./DynamicLanding";
 
 export const DomainRouter = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -57,13 +58,15 @@ export const DomainRouter = () => {
       }
     };
 
-    checkDomain();
+    if (hostname) {
+      checkDomain();
+    }
   }, [hostname, toast]);
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Skeleton className="h-8 w-8 rounded-full" />
       </div>
     );
   }
@@ -72,9 +75,15 @@ export const DomainRouter = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-8">
         <h1 className="text-2xl font-bold mb-4">Domaine non configuré</h1>
-        <p className="text-gray-600 text-center">
+        <p className="text-gray-600 text-center mb-8">
           Ce domaine n'est pas configuré correctement. Veuillez vérifier votre configuration DNS.
         </p>
+        <Button 
+          variant="default" 
+          onClick={() => window.location.href = "https://sokoby.com"}
+        >
+          Retour à l'accueil
+        </Button>
       </div>
     );
   }
