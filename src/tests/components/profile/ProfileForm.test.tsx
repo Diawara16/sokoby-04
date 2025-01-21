@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 import { ProfileForm } from '@/components/profile/ProfileForm';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
@@ -11,12 +11,11 @@ vi.mock('@/lib/supabase', () => ({
     },
     from: vi.fn().mockReturnValue({
       upsert: vi.fn().mockResolvedValue({ error: null }),
-      select: vi.fn(),
-      insert: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-      eq: vi.fn(),
-      single: vi.fn(),
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({ data: null, error: null })
+        })
+      })
     }),
   },
 }));
@@ -30,12 +29,13 @@ vi.mock('@/hooks/use-toast', () => ({
 }));
 
 describe('ProfileForm', () => {
-  it('renders the form correctly', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders form fields', () => {
     render(<ProfileForm />);
-    
-    expect(screen.getByLabelText(/Nom complet/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Téléphone/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Mettre à jour/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
   });
 
   it('handles form submission successfully', async () => {
@@ -48,21 +48,17 @@ describe('ProfileForm', () => {
 
     render(<ProfileForm />);
 
-    const nameInput = screen.getByLabelText(/Nom complet/i);
-    const phoneInput = screen.getByLabelText(/Téléphone/i);
-    const submitButton = screen.getByRole('button', { name: /Mettre à jour/i });
+    const emailInput = screen.getByLabelText(/email/i);
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
 
-    fireEvent.change(nameInput, { target: { value: 'John Doe' } });
-    fireEvent.change(phoneInput, { target: { value: '+33612345678' } });
+    const submitButton = screen.getByRole('button', { name: /save/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(mockToast).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: expect.any(String),
-          description: expect.any(String),
-        })
-      );
+      expect(mockToast).toHaveBeenCalledWith({
+        title: 'Success',
+        description: 'Profile updated successfully',
+      });
     });
   });
 
@@ -70,12 +66,11 @@ describe('ProfileForm', () => {
     const mockError = new Error('Test error');
     vi.mocked(supabase.from).mockReturnValue({
       upsert: vi.fn().mockResolvedValue({ error: mockError }),
-      select: vi.fn(),
-      insert: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-      eq: vi.fn(),
-      single: vi.fn(),
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({ data: null, error: null })
+        })
+      })
     });
 
     const mockToast = vi.fn();
@@ -87,15 +82,15 @@ describe('ProfileForm', () => {
 
     render(<ProfileForm />);
 
-    const submitButton = screen.getByRole('button', { name: /Mettre à jour/i });
+    const submitButton = screen.getByRole('button', { name: /save/i });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(mockToast).toHaveBeenCalledWith(
-        expect.objectContaining({
-          variant: 'destructive',
-        })
-      );
+      expect(mockToast).toHaveBeenCalledWith({
+        title: 'Error',
+        description: 'Failed to update profile',
+        variant: 'destructive',
+      });
     });
   });
 });
