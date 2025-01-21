@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useToast } from "@/hooks/use-toast";
 import { FacebookIconUploader } from "@/components/facebook/FacebookIconUploader";
+import { Helmet } from "react-helmet";
 
 export default function Index() {
   const { handleError } = useErrorHandler();
@@ -45,6 +46,26 @@ export default function Index() {
 
   return (
     <ErrorBoundary>
+      <Helmet>
+        <title>Sokoby - Votre plateforme e-commerce</title>
+        <meta name="description" content="Créez et gérez votre boutique en ligne avec Sokoby. Une solution complète pour développer votre activité e-commerce." />
+        <meta name="keywords" content="e-commerce, boutique en ligne, vente en ligne, création site e-commerce" />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://sokoby.com/" />
+        <meta property="og:title" content="Sokoby - Votre plateforme e-commerce" />
+        <meta property="og:description" content="Créez et gérez votre boutique en ligne avec Sokoby. Une solution complète pour développer votre activité e-commerce." />
+        <meta property="og:image" content="https://sokoby.com/og-image.png" />
+
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content="https://sokoby.com/" />
+        <meta property="twitter:title" content="Sokoby - Votre plateforme e-commerce" />
+        <meta property="twitter:description" content="Créez et gérez votre boutique en ligne avec Sokoby. Une solution complète pour développer votre activité e-commerce." />
+        <meta property="twitter:image" content="https://sokoby.com/og-image.png" />
+      </Helmet>
+
       <div className="container mx-auto p-4">
         {isLoading && (
           <div className="flex items-center justify-center min-h-[200px]">

@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://sokoby.com/sitemap.xml
+
+# Ne pas indexer les pages d'administration
+Disallow: /admin/
+Disallow: /settings/
+Disallow: /dashboard/
+
+# Ne pas indexer les pages de test
+Disallow: /test/
+Disallow: /preview/
