@@ -2,30 +2,14 @@ import { useEffect, useState } from 'react';
 import { useAppState } from '@/hooks/useAppState';
 import { ProductCard } from './ProductCard';
 import { supabase } from '@/lib/supabase';
+import { Product } from '@/types/product';
 
-export const ProductGrid = () => {
-  const [products, setProducts] = useState([]);
-  const { loading, errors, startLoading, stopLoading, handleError } = useAppState();
+interface ProductGridProps {
+  products: Product[];
+}
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        startLoading('products');
-        const { data, error } = await supabase
-          .from('products')
-          .select('*');
-
-        if (error) throw error;
-        setProducts(data || []);
-      } catch (error) {
-        handleError('products', error as Error);
-      } finally {
-        stopLoading('products');
-      }
-    };
-
-    fetchProducts();
-  }, []);
+export const ProductGrid = ({ products }: ProductGridProps) => {
+  const { loading, errors } = useAppState();
 
   if (loading?.products) {
     return <div>Chargement...</div>;

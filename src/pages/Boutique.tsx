@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { Product } from "@/types/product";
 
 export default function Boutique() {
   const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 1000]);
@@ -16,7 +17,7 @@ export default function Boutique() {
   const [sortBy, setSortBy] = React.useState("price-asc");
   const { toast } = useToast();
 
-  const { data: products, isLoading, error } = useQuery({
+  const { data: products = [], isLoading, error } = useQuery<Product[]>({
     queryKey: ['products'],
     queryFn: async () => {
       console.log("Fetching products...");
