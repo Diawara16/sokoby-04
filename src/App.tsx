@@ -8,7 +8,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 
 // Create a client
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
   const [paypalClientId, setPaypalClientId] = useState<string>("");
@@ -21,7 +28,15 @@ function App() {
           name: 'PAYPAL_CLIENT_ID'
         });
         
-        if (error) throw error;
+        if (error) {
+          console.error('Erreur lors de la récupération du secret:', error);
+          toast({
+            title: "Erreur",
+            description: "Impossible de récupérer la configuration PayPal",
+            variant: "destructive",
+          });
+          return;
+        }
         
         if (data?.secret) {
           setPaypalClientId(data.secret);
