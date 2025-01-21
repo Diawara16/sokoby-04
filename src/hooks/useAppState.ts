@@ -1,8 +1,17 @@
-import { useAppDispatch } from './useAppDispatch';
-import { useAppSelector } from './useAppSelector';
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState, AppDispatch } from '@/store';
+import { setLoading, setError, clearError } from '@/store/slices/appStateSlice';
 
 export const useAppState = () => {
-  const dispatch = useAppDispatch();
-  const state = useAppSelector((state) => state);
-  return { dispatch, state };
+  const dispatch = useDispatch<AppDispatch>();
+  const state = useSelector((state: RootState) => state.appState);
+
+  return {
+    isLoading: state.isLoading,
+    error: state.error,
+    startLoading: () => dispatch(setLoading(true)),
+    stopLoading: () => dispatch(setLoading(false)),
+    handleError: (error: Error) => dispatch(setError(error.message)),
+    clearError: () => dispatch(clearError()),
+  };
 };
