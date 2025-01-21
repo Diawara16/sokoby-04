@@ -2,6 +2,7 @@ import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
+import { BrowserRouter } from "react-router-dom";
 import { AppRoutes } from "./AppRoutes";
 
 function App() {
