@@ -22,13 +22,15 @@ function App() {
   }, []);
 
   return (
-    <PayPalScriptProvider options={{ 
-      clientId: paypalClientId,
-      currency: "EUR"
-    }}>
-      <AppRoutes />
-      <Toaster />
-    </PayPalScriptProvider>
+    <BrowserRouter>
+      <PayPalScriptProvider options={{ 
+        clientId: paypalClientId,
+        currency: "EUR"
+      }}>
+        <AppRoutes />
+        <Toaster />
+      </PayPalScriptProvider>
+    </BrowserRouter>
   );
 }
 
