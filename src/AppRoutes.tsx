@@ -20,4 +20,4 @@ export function AppRoutes() {
       )}
     </BrowserRouter>
   );
-};
+}
