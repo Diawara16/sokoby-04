@@ -546,6 +546,42 @@ export type Database = {
         }
         Relationships: []
       }
+      dns_monitoring: {
+        Row: {
+          created_at: string
+          dns_records: Json | null
+          domain_name: string
+          id: string
+          issues: string[] | null
+          last_check_time: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dns_records?: Json | null
+          domain_name: string
+          id?: string
+          issues?: string[] | null
+          last_check_time?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dns_records?: Json | null
+          domain_name?: string
+          id?: string
+          issues?: string[] | null
+          last_check_time?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       domain_verifications: {
         Row: {
           created_at: string
@@ -1979,6 +2015,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_dns_records: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       check_subscriptions: {
         Args: Record<PropertyKey, never>
         Returns: undefined
