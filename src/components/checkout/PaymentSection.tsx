@@ -2,6 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { InteracPaymentForm } from "@/components/payments/InteracPaymentForm";
 import { PayPalButton } from "@/components/payments/PayPalButton";
+import { ApplePayButton } from "@/components/payments/ApplePayButton";
+import { GooglePayButton } from "@/components/payments/GooglePayButton";
+import { KlarnaButton } from "@/components/payments/KlarnaButton";
 import { useState } from "react";
 
 interface PaymentSectionProps {
@@ -17,7 +20,7 @@ export const PaymentSection = ({
   orderId,
   onPaymentSuccess 
 }: PaymentSectionProps) => {
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'interac' | 'paypal'>('card');
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'interac' | 'paypal' | 'apple_pay' | 'google_pay' | 'klarna'>('card');
 
   if (!orderId) {
     return (
@@ -40,11 +43,11 @@ export const PaymentSection = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
         <Button
           type="button"
           variant={paymentMethod === 'card' ? 'default' : 'outline'}
-          className="flex-1"
+          className="w-full"
           onClick={() => setPaymentMethod('card')}
         >
           Carte bancaire
@@ -52,7 +55,7 @@ export const PaymentSection = ({
         <Button
           type="button"
           variant={paymentMethod === 'paypal' ? 'default' : 'outline'}
-          className="flex-1"
+          className="w-full"
           onClick={() => setPaymentMethod('paypal')}
         >
           PayPal
@@ -60,10 +63,34 @@ export const PaymentSection = ({
         <Button
           type="button"
           variant={paymentMethod === 'interac' ? 'default' : 'outline'}
-          className="flex-1"
+          className="w-full"
           onClick={() => setPaymentMethod('interac')}
         >
           Interac
+        </Button>
+        <Button
+          type="button"
+          variant={paymentMethod === 'apple_pay' ? 'default' : 'outline'}
+          className="w-full"
+          onClick={() => setPaymentMethod('apple_pay')}
+        >
+          Apple Pay
+        </Button>
+        <Button
+          type="button"
+          variant={paymentMethod === 'google_pay' ? 'default' : 'outline'}
+          className="w-full"
+          onClick={() => setPaymentMethod('google_pay')}
+        >
+          Google Pay
+        </Button>
+        <Button
+          type="button"
+          variant={paymentMethod === 'klarna' ? 'default' : 'outline'}
+          className="w-full"
+          onClick={() => setPaymentMethod('klarna')}
+        >
+          Klarna
         </Button>
       </div>
 
@@ -75,6 +102,24 @@ export const PaymentSection = ({
         />
       ) : paymentMethod === 'paypal' ? (
         <PayPalButton
+          amount={total}
+          orderId={orderId}
+          onSuccess={onPaymentSuccess}
+        />
+      ) : paymentMethod === 'apple_pay' ? (
+        <ApplePayButton
+          amount={total}
+          orderId={orderId}
+          onSuccess={onPaymentSuccess}
+        />
+      ) : paymentMethod === 'google_pay' ? (
+        <GooglePayButton
+          amount={total}
+          orderId={orderId}
+          onSuccess={onPaymentSuccess}
+        />
+      ) : paymentMethod === 'klarna' ? (
+        <KlarnaButton
           amount={total}
           orderId={orderId}
           onSuccess={onPaymentSuccess}

@@ -1218,6 +1218,36 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_integrations: {
+        Row: {
+          created_at: string
+          id: string
+          provider: string
+          settings: Json | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          provider: string
+          settings?: Json | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          provider?: string
+          settings?: Json | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pre_orders: {
         Row: {
           created_at: string
@@ -1521,6 +1551,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      shipping_integrations: {
+        Row: {
+          api_key: string | null
+          created_at: string
+          id: string
+          provider: string
+          settings: Json | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          api_key?: string | null
+          created_at?: string
+          id?: string
+          provider: string
+          settings?: Json | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          api_key?: string | null
+          created_at?: string
+          id?: string
+          provider?: string
+          settings?: Json | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       shipping_partners: {
         Row: {
