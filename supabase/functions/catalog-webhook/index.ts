@@ -7,7 +7,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
@@ -39,38 +38,26 @@ serve(async (req) => {
     }
 
     // Créer une notification pour informer l'utilisateur
-    const { data: catalogItem, error: fetchError } = await supabase
+    const { data: catalogItem } = await supabase
       .from('social_catalog_items')
       .select('user_id')
       .match({ integration_id, product_id })
       .single()
 
-    if (fetchError) {
-      console.error('Error fetching catalog item:', fetchError)
-      throw fetchError
-    }
-
     if (catalogItem) {
-      const { error: notifError } = await supabase
+      await supabase
         .from('notifications')
         .insert({
           user_id: catalogItem.user_id,
           title: 'Produit synchronisé',
           content: 'Un produit a été synchronisé avec succès sur la plateforme sociale.'
         })
-
-      if (notifError) {
-        console.error('Error creating notification:', notifError)
-      }
     }
 
     return new Response(
       JSON.stringify({ success: true }),
       { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json'
-        },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200 
       }
     )
@@ -79,10 +66,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json'
-        },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400
       }
     )

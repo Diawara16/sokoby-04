@@ -8,46 +8,46 @@ const corsHeaders = {
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    const { integration_id, product_ids } = await req.json()
-    
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    console.log('Début de la synchronisation du catalogue pour l\'intégration:', integration_id)
-    console.log('Produits à synchroniser:', product_ids)
+    const { integration_id, product_ids } = await req.json()
+    
+    console.log('Starting catalog sync for:', { integration_id, product_ids })
 
-    // Créer les entrées de synchronisation pour chaque produit
-    const { data: catalogItems, error: syncError } = await supabase
-      .from('social_catalog_items')
-      .upsert(
-        product_ids.map((productId: string) => ({
+    // Mettre à jour le statut de synchronisation pour chaque produit
+    for (const productId of product_ids) {
+      const { error: updateError } = await supabase
+        .from('social_catalog_items')
+        .upsert({
+          user_id: (await supabase.auth.getUser()).data.user?.id,
           integration_id,
           product_id: productId,
           sync_status: 'pending',
           last_sync_at: new Date().toISOString()
-        }))
-      )
-      .select()
+        })
 
-    if (syncError) throw syncError
-
-    console.log('Éléments du catalogue créés:', catalogItems)
+      if (updateError) {
+        console.error('Error updating catalog item:', updateError)
+        throw updateError
+      }
+    }
 
     return new Response(
-      JSON.stringify({ success: true, data: catalogItems }),
+      JSON.stringify({ success: true }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200 
       }
     )
   } catch (error) {
-    console.error('Erreur de synchronisation:', error.message)
+    console.error('Error in catalog sync:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
