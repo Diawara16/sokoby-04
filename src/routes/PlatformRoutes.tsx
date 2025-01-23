@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { LazyComponent } from "@/components/ui/lazy-component";
 import PrivateRoute from "@/components/PrivateRoute";
 
 // Lazy loaded components
@@ -23,72 +23,68 @@ interface PlatformRoutesProps {
   ) => Promise<void>;
 }
 
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <LoadingSpinner size={32} />
-  </div>
-);
-
 export const PlatformRoutes = ({ handleSubscribe }: PlatformRoutesProps) => {
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/connexion" element={<Login />} />
-        <Route path="/plan-tarifaire" element={<PlanTarifaire />} />
-        <Route 
-          path="/onboarding" 
-          element={
-            <PrivateRoute>
-              <Onboarding />
-            </PrivateRoute>
-          } 
-        />
-        <Route 
-          path="/update-password" 
-          element={
-            <PrivateRoute>
-              <UpdatePassword />
-            </PrivateRoute>
-          } 
-        />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route 
-          path="/register" 
-          element={
-            <PrivateRoute>
-              <Register />
-            </PrivateRoute>
-          } 
-        />
-        <Route 
-          path="/subscription-details" 
-          element={
-            <PrivateRoute>
-              <SubscriptionDetails />
-            </PrivateRoute>
-          } 
-        />
-        <Route 
-          path="/authenticated-pricing" 
-          element={
-            <PrivateRoute>
+    <Routes>
+      <Route path="/" element={<LazyComponent><Home /></LazyComponent>} />
+      <Route path="/connexion" element={<LazyComponent><Login /></LazyComponent>} />
+      <Route path="/plan-tarifaire" element={<LazyComponent><PlanTarifaire /></LazyComponent>} />
+      <Route 
+        path="/onboarding" 
+        element={
+          <PrivateRoute>
+            <LazyComponent><Onboarding /></LazyComponent>
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/update-password" 
+        element={
+          <PrivateRoute>
+            <LazyComponent><UpdatePassword /></LazyComponent>
+          </PrivateRoute>
+        } 
+      />
+      <Route path="/reset-password" element={<LazyComponent><ResetPassword /></LazyComponent>} />
+      <Route 
+        path="/register" 
+        element={
+          <PrivateRoute>
+            <LazyComponent><Register /></LazyComponent>
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/subscription-details" 
+        element={
+          <PrivateRoute>
+            <LazyComponent><SubscriptionDetails /></LazyComponent>
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/authenticated-pricing" 
+        element={
+          <PrivateRoute>
+            <LazyComponent>
               <AuthenticatedPricingContent 
                 hasProfile={true}
                 onSubscribe={handleSubscribe}
               />
-            </PrivateRoute>
-          } 
-        />
-        <Route 
-          path="/unauthenticated-pricing" 
-          element={
+            </LazyComponent>
+          </PrivateRoute>
+        } 
+      />
+      <Route 
+        path="/unauthenticated-pricing" 
+        element={
+          <LazyComponent>
             <UnauthenticatedPricingContent 
               onSubscribe={handleSubscribe}
             />
-          } 
-        />
-      </Routes>
-    </Suspense>
+          </LazyComponent>
+        } 
+      />
+    </Routes>
   );
 };
