@@ -955,6 +955,39 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_configurations: {
+        Row: {
+          api_credentials: Json | null
+          created_at: string
+          id: string
+          marketplace_name: string
+          settings: Json | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          api_credentials?: Json | null
+          created_at?: string
+          id?: string
+          marketplace_name: string
+          settings?: Json | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          api_credentials?: Json | null
+          created_at?: string
+          id?: string
+          marketplace_name?: string
+          settings?: Json | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       marketplace_details: {
         Row: {
           api_endpoint: string | null
@@ -1046,6 +1079,60 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      marketplace_products: {
+        Row: {
+          configuration_id: string
+          created_at: string
+          id: string
+          last_sync_at: string | null
+          marketplace_product_id: string | null
+          product_id: string
+          sync_error: string | null
+          sync_status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          configuration_id: string
+          created_at?: string
+          id?: string
+          last_sync_at?: string | null
+          marketplace_product_id?: string | null
+          product_id: string
+          sync_error?: string | null
+          sync_status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          configuration_id?: string
+          created_at?: string
+          id?: string
+          last_sync_at?: string | null
+          marketplace_product_id?: string | null
+          product_id?: string
+          sync_error?: string | null
+          sync_status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_products_configuration_id_fkey"
+            columns: ["configuration_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_configurations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       marketplace_regions: {
         Row: {
