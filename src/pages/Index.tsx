@@ -8,6 +8,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useToast } from "@/hooks/use-toast";
 import { FacebookIconUploader } from "@/components/facebook/FacebookIconUploader";
 import { Helmet } from "react-helmet";
+import { AdvancedInventoryManagement } from "@/components/inventory/AdvancedInventoryManagement";
 
 export default function Index() {
   const { handleError } = useErrorHandler();
@@ -80,7 +81,14 @@ export default function Index() {
         )}
 
         <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-4">Icône d'application Facebook</h1>
+          <h1 className="text-2xl font-bold mb-4">Gestion de votre boutique</h1>
+          <ErrorBoundary>
+            <AdvancedInventoryManagement />
+          </ErrorBoundary>
+        </div>
+
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">Icône d'application Facebook</h2>
           <ErrorBoundary>
             <FacebookIconUploader />
           </ErrorBoundary>
