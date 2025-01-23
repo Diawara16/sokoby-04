@@ -6,20 +6,17 @@ import { BrowserRouter } from "react-router-dom";
 import { AppRoutes } from "./AppRoutes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-
-// Create a client
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+import { useQueryConfig } from "@/hooks/useQueryConfig";
 
 function App() {
   const [paypalClientId, setPaypalClientId] = useState<string>("");
   const { toast } = useToast();
+  const queryConfig = useQueryConfig();
+
+  // Create a client
+  const queryClient = new QueryClient({
+    defaultOptions: queryConfig,
+  });
 
   useEffect(() => {
     const fetchPayPalClientId = async () => {
