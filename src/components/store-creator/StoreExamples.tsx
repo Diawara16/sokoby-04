@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, Quote } from "lucide-react";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 interface Testimonial {
   name: string;
@@ -33,7 +34,6 @@ const testimonials: Testimonial[] = [
 export const StoreExamples = () => {
   return (
     <div className="space-y-16 py-12">
-      {/* Section Exemples */}
       <div className="space-y-8">
         <div className="text-center space-y-4">
           <h2 className="text-3xl font-bold text-gray-900 font-heading">
@@ -47,30 +47,33 @@ export const StoreExamples = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="relative group">
             <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
-              <img 
+              <OptimizedImage 
                 src="/lovable-uploads/0cf990b9-e838-4f20-9840-c9a568e27967.png" 
-                alt="Exemple boutique mode" 
-                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                alt="Exemple boutique mode"
+                className="w-full h-full object-cover"
+                loadingClassName="transition-transform group-hover:scale-105"
               />
             </div>
             <Badge className="absolute top-4 right-4 bg-primary/90">Mode</Badge>
           </div>
           <div className="relative group">
             <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
-              <img 
+              <OptimizedImage 
                 src="/placeholder.svg" 
-                alt="Exemple boutique art" 
-                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                alt="Exemple boutique art"
+                className="w-full h-full object-cover"
+                loadingClassName="transition-transform group-hover:scale-105"
               />
             </div>
             <Badge className="absolute top-4 right-4 bg-primary/90">Art</Badge>
           </div>
           <div className="relative group">
             <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
-              <img 
+              <OptimizedImage 
                 src="/placeholder.svg" 
-                alt="Exemple boutique bijoux" 
-                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                alt="Exemple boutique bijoux"
+                className="w-full h-full object-cover"
+                loadingClassName="transition-transform group-hover:scale-105"
               />
             </div>
             <Badge className="absolute top-4 right-4 bg-primary/90">Bijoux</Badge>
@@ -78,7 +81,6 @@ export const StoreExamples = () => {
         </div>
       </div>
 
-      {/* Section Témoignages */}
       <div className="space-y-8">
         <div className="text-center space-y-4">
           <h2 className="text-3xl font-bold text-gray-900 font-heading">
