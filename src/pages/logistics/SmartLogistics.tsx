@@ -2,6 +2,7 @@ import { AppSidebar } from "@/components/AppSidebar"
 import { ShippingPriceOptimizer } from "@/components/logistics/ShippingPriceOptimizer"
 import { StockPredictions } from "@/components/logistics/StockPredictions"
 import { AutomatedReturns } from "@/components/logistics/AutomatedReturns"
+import { ReturnManagement } from "@/components/logistics/ReturnManagement"
 import { RealTimeTracking } from "@/components/logistics/RealTimeTracking"
 
 const SmartLogistics = () => {
@@ -15,7 +16,7 @@ const SmartLogistics = () => {
           <div className="grid gap-6 md:grid-cols-2">
             <ShippingPriceOptimizer />
             <StockPredictions />
-            <AutomatedReturns />
+            <ReturnManagement />
             <RealTimeTracking />
           </div>
         </div>
