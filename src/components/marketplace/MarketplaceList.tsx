@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { MarketplaceCard } from "./MarketplaceCard";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ShoppingBag, MessageCircle, Briefcase, Camera } from "lucide-react";
 
 const MARKETPLACES = {
   global: [
@@ -20,6 +21,26 @@ const MARKETPLACES = {
       id: "etsy",
       name: "Etsy",
       description: "Marketplace spécialisée dans les produits artisanaux et créatifs."
+    },
+    {
+      id: "pinterest_shop",
+      name: "Pinterest Shop",
+      description: "Plateforme idéale pour les produits visuels avec un fort potentiel de conversion."
+    },
+    {
+      id: "whatsapp_business",
+      name: "WhatsApp Business",
+      description: "Solution de messagerie et catalogue produits intégrée pour une vente directe."
+    },
+    {
+      id: "linkedin_shop",
+      name: "LinkedIn Shop",
+      description: "Marketplace B2B pour atteindre une clientèle professionnelle."
+    },
+    {
+      id: "snapchat_shop",
+      name: "Snapchat Shop",
+      description: "Plateforme de commerce social ciblant principalement la génération Z."
     }
   ],
   usa: [
