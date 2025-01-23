@@ -63,9 +63,16 @@ const MARKETPLACES = {
       description: "Grande marketplace japonaise avec présence internationale."
     },
     {
-      id: "trademe",
-      name: "Trade Me",
-      description: "Plus grande marketplace de Nouvelle-Zélande."
+      id: "shopee",
+      name: "Shopee",
+      description: "La plus grande plateforme de commerce électronique en Asie du Sud-Est."
+    }
+  ],
+  latin_america: [
+    {
+      id: "mercadolibre",
+      name: "Mercado Libre",
+      description: "La plus grande marketplace d'Amérique Latine, présente dans 18 pays."
     }
   ],
   africa: [
@@ -172,6 +179,7 @@ export const MarketplaceList = () => {
         <TabsTrigger value="usa">États-Unis</TabsTrigger>
         <TabsTrigger value="europe">Europe</TabsTrigger>
         <TabsTrigger value="asia_pacific">Asie-Pacifique</TabsTrigger>
+        <TabsTrigger value="latin_america">Amérique Latine</TabsTrigger>
         <TabsTrigger value="africa">Afrique</TabsTrigger>
       </TabsList>
 
