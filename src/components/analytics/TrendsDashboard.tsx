@@ -5,6 +5,7 @@ import { OrdersCustomersChart } from "./charts/OrdersCustomersChart"
 import { useTrendsData } from "./hooks/useTrendsData"
 import { calculateTrend } from "./utils/calculations"
 import { Button } from "@/components/ui/button"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
 
 export const TrendsDashboard = () => {
   const { data: trendsData, isLoading, error, refetch } = useTrendsData()
@@ -12,7 +13,7 @@ export const TrendsDashboard = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <LoadingSpinner size={32} />
       </div>
     )
   }
