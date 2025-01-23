@@ -1158,6 +1158,42 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_webhooks: {
+        Row: {
+          created_at: string
+          id: string
+          last_triggered_at: string | null
+          marketplace_name: string
+          status: string
+          updated_at: string
+          user_id: string
+          webhook_secret: string | null
+          webhook_url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_triggered_at?: string | null
+          marketplace_name: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          webhook_secret?: string | null
+          webhook_url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_triggered_at?: string | null
+          marketplace_name?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          webhook_secret?: string | null
+          webhook_url?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           content: string
