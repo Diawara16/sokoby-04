@@ -38,14 +38,6 @@ export default function Index() {
     }
   });
 
-  useEffect(() => {
-    try {
-      console.log("Page d'index chargée");
-    } catch (error) {
-      handleError(error);
-    }
-  }, []);
-
   return (
     <ErrorBoundary>
       <Helmet>
@@ -68,20 +60,8 @@ export default function Index() {
         <meta property="twitter:image" content="https://sokoby.com/og-image.png" />
       </Helmet>
 
-      <div className="container mx-auto p-4 space-y-8">
-        {isLoading && (
-          <div className="flex items-center justify-center min-h-[200px]">
-            <LoadingSpinner size={32} />
-          </div>
-        )}
-
-        {isError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-            <p className="text-red-700">Une erreur est survenue lors du chargement des données.</p>
-          </div>
-        )}
-
-        <Card className="w-full">
+      <div className="container mx-auto p-4">
+        <Card className="w-full mb-8">
           <CardHeader>
             <CardTitle>Icône pour Facebook Developer</CardTitle>
             <CardDescription>
@@ -93,6 +73,18 @@ export default function Index() {
             <FacebookIconUploader />
           </CardContent>
         </Card>
+
+        {isLoading && (
+          <div className="flex items-center justify-center min-h-[200px]">
+            <LoadingSpinner size={32} />
+          </div>
+        )}
+
+        {isError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+            <p className="text-red-700">Une erreur est survenue lors du chargement des données.</p>
+          </div>
+        )}
 
         <div className="mb-8">
           <h1 className="text-2xl font-bold mb-4">Gestion de votre boutique</h1>
