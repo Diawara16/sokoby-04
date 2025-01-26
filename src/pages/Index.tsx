@@ -47,13 +47,6 @@ export default function Index() {
           </CardContent>
         </Card>
 
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-4">Gestion de votre boutique</h1>
-          <ErrorBoundary>
-            <AdvancedInventoryManagement />
-          </ErrorBoundary>
-        </div>
-
         <div className="mt-8 p-4 bg-muted rounded-lg">
           <h2 className="text-lg font-semibold mb-2">Configuration du domaine</h2>
           <p className="mb-4">
