@@ -47,7 +47,7 @@ export function MobileNav({ isAuthenticated }: MobileNavProps) {
     <div className="md:hidden">
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="relative">
             <Menu className="h-6 w-6" />
           </Button>
         </SheetTrigger>
@@ -58,21 +58,21 @@ export function MobileNav({ isAuthenticated }: MobileNavProps) {
           <div className="flex flex-col gap-4 mt-6">
             <Link 
               to="/themes" 
-              className="text-lg font-medium"
+              className="text-lg font-medium hover:text-red-600 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Thèmes
             </Link>
             <Link 
               to="/tarifs" 
-              className="text-lg font-medium"
+              className="text-lg font-medium hover:text-red-600 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Tarifs
             </Link>
             <Link 
               to="/ressources" 
-              className="text-lg font-medium"
+              className="text-lg font-medium hover:text-red-600 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Ressources
@@ -80,28 +80,46 @@ export function MobileNav({ isAuthenticated }: MobileNavProps) {
 
             <div className="border-t my-4" />
 
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center justify-between w-full p-2 text-lg font-medium">
+            <div className="relative">
+              <Button
+                variant="outline"
+                className="w-full justify-between"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const dropdown = document.getElementById('language-dropdown');
+                  if (dropdown) {
+                    dropdown.click();
+                  }
+                }}
+              >
                 <div className="flex items-center gap-2">
                   <Globe className="h-5 w-5" />
-                  <span>Changer de langue</span>
+                  <span>
+                    {languages.find(lang => lang.code === currentLanguage)?.name || 'Changer de langue'}
+                  </span>
                 </div>
                 <ChevronDown className="h-4 w-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-full">
-                {languages.map((lang) => (
-                  <DropdownMenuItem
-                    key={lang.code}
-                    onClick={() => handleLanguageChange(lang.code)}
-                    className={`cursor-pointer ${
-                      currentLanguage === lang.code ? "bg-red-50 text-red-900" : ""
-                    }`}
-                  >
-                    {lang.name}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger id="language-dropdown" className="hidden">
+                  Langues
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-[calc(100vw-3rem)] sm:w-[370px]">
+                  {languages.map((lang) => (
+                    <DropdownMenuItem
+                      key={lang.code}
+                      onClick={() => handleLanguageChange(lang.code)}
+                      className={`cursor-pointer ${
+                        currentLanguage === lang.code ? "bg-red-50 text-red-900" : ""
+                      }`}
+                    >
+                      {lang.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
 
             {!isAuthenticated && (
               <>
