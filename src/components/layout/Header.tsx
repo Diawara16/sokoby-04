@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
-import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { NavigationLinks } from "./navigation/NavigationLinks";
-import { AuthButtons } from "./navigation/AuthButtons";
-import { MobileMenu } from "./navigation/MobileMenu";
+import { Button } from "@/components/ui/button";
+import { LogIn } from "lucide-react";
 
 interface HeaderProps {
   isAuthenticated: boolean;
@@ -22,18 +20,25 @@ export function Header({ isAuthenticated }: HeaderProps) {
               height="56"
             />
           </Link>
-          <NavigationLinks />
         </div>
         
         <div className="hidden md:flex items-center gap-4">
-          {isAuthenticated ? (
-            <NotificationBell />
-          ) : (
-            <AuthButtons />
+          {!isAuthenticated && (
+            <>
+              <Link to="/login">
+                <Button variant="ghost" className="font-medium flex items-center gap-2">
+                  <LogIn className="h-4 w-4" />
+                  S'identifier
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button className="bg-[#ea384c] hover:bg-[#ea384c]/90 text-white font-medium">
+                  Démarrer l'essai gratuit
+                </Button>
+              </Link>
+            </>
           )}
         </div>
-
-        <MobileMenu isAuthenticated={isAuthenticated} />
       </div>
     </header>
   );

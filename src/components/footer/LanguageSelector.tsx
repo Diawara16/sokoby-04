@@ -15,13 +15,6 @@ interface LanguageSelectorProps {
 }
 
 export const LanguageSelector = ({ t, currentLanguage, onLanguageChange, languages }: LanguageSelectorProps) => {
-  if (!t?.footer?.changeLanguage || !t?.footer?.legalNotice || !t?.footer?.accessibility ||
-      typeof t.footer.changeLanguage !== 'string' ||
-      typeof t.footer.legalNotice !== 'string' ||
-      typeof t.footer.accessibility !== 'string') {
-    return null;
-  }
-
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
@@ -30,12 +23,12 @@ export const LanguageSelector = ({ t, currentLanguage, onLanguageChange, languag
             <Globe className="h-4 w-4 mr-2" />
             {t.footer.changeLanguage}
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent align="end" className="w-[200px]">
             {languages.map((lang) => (
               <DropdownMenuItem 
                 key={lang.code}
                 onClick={() => onLanguageChange(lang.code)}
-                className="cursor-pointer"
+                className={`cursor-pointer ${currentLanguage === lang.code ? 'bg-red-50' : ''}`}
               >
                 {lang.name}
               </DropdownMenuItem>
@@ -44,7 +37,7 @@ export const LanguageSelector = ({ t, currentLanguage, onLanguageChange, languag
         </DropdownMenu>
       </div>
 
-      <div className="text-sm text-gray-400 space-y-2">
+      <div className="text-sm text-gray-300 space-y-2">
         <Link to="/legal" className="hover:text-red-400 transition-colors block">
           {t.footer.legalNotice}
         </Link>

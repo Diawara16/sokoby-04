@@ -7,17 +7,17 @@ interface FeaturesSectionProps {
 export function FeaturesSection({ currentLanguage }: FeaturesSectionProps) {
   const features = [
     {
-      icon: <ShoppingBag className="h-12 w-12 text-primary" />,
+      icon: <ShoppingBag className="h-12 w-12 text-[#ea384c]" />,
       title: "Gestion des produits",
       description: "Gérez facilement votre catalogue de produits"
     },
     {
-      icon: <Shield className="h-12 w-12 text-primary" />,
+      icon: <Shield className="h-12 w-12 text-[#ea384c]" />,
       title: "Paiements sécurisés",
       description: "Acceptez les paiements en toute sécurité"
     },
     {
-      icon: <BarChart className="h-12 w-12 text-primary" />,
+      icon: <BarChart className="h-12 w-12 text-[#ea384c]" />,
       title: "Analyses avancées",
       description: "Suivez vos performances en temps réel"
     }
