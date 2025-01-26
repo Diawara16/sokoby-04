@@ -25,12 +25,17 @@ export function Header({ isAuthenticated }: HeaderProps) {
           {!isAuthenticated && (
             <>
               <Link to="/login">
-                <Button variant="ghost" className="font-medium">
+                <Button 
+                  variant="outline" 
+                  className="font-medium border-black hover:bg-red-50"
+                >
                   S'identifier
                 </Button>
               </Link>
               <Link to="/register">
-                <Button className="bg-[#ea384c] hover:bg-[#ea384c]/90 text-white font-medium">
+                <Button 
+                  className="bg-primary hover:bg-primary/90 text-white font-medium"
+                >
                   Démarrer l'essai gratuit
                 </Button>
               </Link>
