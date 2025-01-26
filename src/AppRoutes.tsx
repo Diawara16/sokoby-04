@@ -5,6 +5,8 @@ import { PlatformRoutes } from "@/routes/PlatformRoutes";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { Routes, Route } from "react-router-dom";
+import Login from "@/pages/Login";
 
 export function AppRoutes() {
   const { handleSubscribe } = useSubscriptionHandler();
@@ -76,7 +78,10 @@ export function AppRoutes() {
     !isPlatformDomain(hostname) ? (
       <DomainRouter />
     ) : (
-      <PlatformRoutes handleSubscribe={handleSubscribe} />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/*" element={<PlatformRoutes handleSubscribe={handleSubscribe} />} />
+      </Routes>
     )
   );
 }

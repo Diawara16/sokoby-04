@@ -18,7 +18,9 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50 flex items-center justify-center p-4">
-      <AuthForm defaultIsSignUp={false} />
+      <div className="w-full max-w-md">
+        <AuthForm defaultIsSignUp={false} />
+      </div>
     </div>
   );
 };
