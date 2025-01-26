@@ -22,12 +22,19 @@ export function HeroSection({ isAuthenticated, currentLanguage }: HeroSectionPro
           
           <div className="flex-1 max-w-md w-full space-y-4">
             <Link to="/register" className="w-full block">
-              <Button className="w-full bg-white hover:bg-white/90 text-[#ea384c] font-medium text-lg py-6" size="lg">
+              <Button 
+                className="w-full bg-white hover:bg-white/90 text-[#ea384c] font-medium text-lg py-6" 
+                size="lg"
+              >
                 Créer mon compte
               </Button>
             </Link>
             <Link to="/login" className="w-full block">
-              <Button variant="outline" className="w-full border-white text-white hover:bg-white/10 font-medium text-lg py-6" size="lg">
+              <Button 
+                variant="outline" 
+                className="w-full border-2 border-white text-white hover:bg-white/10 font-medium text-lg py-6" 
+                size="lg"
+              >
                 Se connecter
               </Button>
             </Link>
