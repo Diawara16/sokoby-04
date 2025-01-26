@@ -63,10 +63,10 @@ export default function Index() {
       <div className="container mx-auto p-4">
         <Card className="w-full mb-8">
           <CardHeader>
-            <CardTitle>Icône pour Facebook Developer</CardTitle>
+            <CardTitle>Générateur d'icône Facebook</CardTitle>
             <CardDescription>
-              Uploadez votre logo ici pour obtenir une version optimisée pour Facebook Developer.
-              L'image sera automatiquement redimensionnée aux dimensions 1024x1024 pixels requises par Facebook.
+              Créez une icône au format 1024x1024 pixels pour Facebook Developer.
+              L'image sera automatiquement redimensionnée aux dimensions requises.
             </CardDescription>
           </CardHeader>
           <CardContent>
