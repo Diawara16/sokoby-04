@@ -7,6 +7,7 @@ import { AppRoutes } from "./AppRoutes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryConfig } from "@/hooks/useQueryConfig";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 function App() {
   const [paypalClientId, setPaypalClientId] = useState<string>("");
@@ -58,17 +59,19 @@ function App() {
   }, [toast]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <PayPalScriptProvider options={{ 
-          clientId: paypalClientId || "test",
-          currency: "EUR"
-        }}>
-          <AppRoutes />
-          <Toaster />
-        </PayPalScriptProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <LanguageProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <PayPalScriptProvider options={{ 
+            clientId: paypalClientId || "test",
+            currency: "EUR"
+          }}>
+            <AppRoutes />
+            <Toaster />
+          </PayPalScriptProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </LanguageProvider>
   );
 }
 
