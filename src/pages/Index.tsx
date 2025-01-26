@@ -2,89 +2,50 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
-import { useErrorHandler } from "@/hooks/useErrorHandler";
 import { useQuery } from "@tanstack/react-query";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useToast } from "@/hooks/use-toast";
 import { FacebookIconUploader } from "@/components/facebook/FacebookIconUploader";
 import { Helmet } from "react-helmet";
-import { AdvancedInventoryManagement } from "@/components/inventory/AdvancedInventoryManagement";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { InfoIcon } from "lucide-react";
 
 export default function Index() {
-  const { handleError } = useErrorHandler();
   const { toast } = useToast();
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['initialData'],
-    queryFn: async () => {
-      const response = await fetch('/api/data');
-      if (!response.ok) {
-        throw new Error('Erreur lors du chargement des données');
-      }
-      return response.json();
-    },
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    meta: {
-      errorHandler: (error: Error) => {
-        handleError(error);
-        toast({
-          title: "Erreur de chargement",
-          description: "Nous rencontrons des difficultés pour charger les données. Réessai automatique en cours...",
-          variant: "destructive",
-        });
-      }
-    }
-  });
 
   return (
     <ErrorBoundary>
       <Helmet>
-        <title>Sokoby - Votre plateforme e-commerce</title>
-        <meta name="description" content="Créez et gérez votre boutique en ligne avec Sokoby. Une solution complète pour développer votre activité e-commerce." />
-        <meta name="keywords" content="e-commerce, boutique en ligne, vente en ligne, création site e-commerce" />
-        
-        {/* Open Graph / Facebook */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://sokoby.com/" />
-        <meta property="og:title" content="Sokoby - Votre plateforme e-commerce" />
-        <meta property="og:description" content="Créez et gérez votre boutique en ligne avec Sokoby. Une solution complète pour développer votre activité e-commerce." />
-        <meta property="og:image" content="https://sokoby.com/og-image.png" />
-
-        {/* Twitter */}
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://sokoby.com/" />
-        <meta property="twitter:title" content="Sokoby - Votre plateforme e-commerce" />
-        <meta property="twitter:description" content="Créez et gérez votre boutique en ligne avec Sokoby. Une solution complète pour développer votre activité e-commerce." />
-        <meta property="twitter:image" content="https://sokoby.com/og-image.png" />
+        <title>Sokoby - Configuration Facebook Developer</title>
+        <meta name="description" content="Configurez votre application Facebook Developer avec Sokoby" />
       </Helmet>
 
       <div className="container mx-auto p-4">
+        <Alert className="mb-6">
+          <InfoIcon className="h-4 w-4" />
+          <AlertDescription>
+            Pour Facebook Developer, votre icône doit être exactement de 1024x1024 pixels. 
+            Utilisez notre outil ci-dessous pour redimensionner automatiquement votre image.
+          </AlertDescription>
+        </Alert>
+
         <Card className="w-full mb-8">
           <CardHeader>
             <CardTitle>Générateur d'icône Facebook</CardTitle>
             <CardDescription>
-              Créez une icône au format 1024x1024 pixels pour Facebook Developer.
-              L'image sera automatiquement redimensionnée aux dimensions requises.
+              <p>Suivez ces étapes :</p>
+              <ol className="list-decimal ml-4 mt-2 space-y-1">
+                <li>Sélectionnez votre logo/image ci-dessous</li>
+                <li>L'image sera automatiquement redimensionnée à 1024x1024 pixels</li>
+                <li>Téléchargez le résultat et utilisez-le sur Facebook Developer</li>
+              </ol>
             </CardDescription>
           </CardHeader>
           <CardContent>
             <FacebookIconUploader />
           </CardContent>
         </Card>
-
-        {isLoading && (
-          <div className="flex items-center justify-center min-h-[200px]">
-            <LoadingSpinner size={32} />
-          </div>
-        )}
-
-        {isError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-            <p className="text-red-700">Une erreur est survenue lors du chargement des données.</p>
-          </div>
-        )}
 
         <div className="mb-8">
           <h1 className="text-2xl font-bold mb-4">Gestion de votre boutique</h1>
