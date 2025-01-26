@@ -8,7 +8,7 @@ interface HeroSectionProps {
 
 export function HeroSection({ isAuthenticated, currentLanguage }: HeroSectionProps) {
   return (
-    <section className="relative bg-[#ea384c] py-20 lg:py-32">
+    <section className="relative bg-gradient-to-br from-red-800 via-red-900 to-red-950 py-20 lg:py-32">
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
           <div className="flex-1 text-white">
@@ -23,7 +23,7 @@ export function HeroSection({ isAuthenticated, currentLanguage }: HeroSectionPro
           <div className="flex-1 max-w-md w-full space-y-4">
             <Link to="/register" className="w-full block">
               <Button 
-                className="w-full bg-white hover:bg-white/90 text-[#ea384c] font-medium text-lg py-6" 
+                className="w-full bg-white hover:bg-white/90 text-black font-medium text-lg py-6" 
                 size="lg"
               >
                 Créer mon compte
@@ -32,7 +32,7 @@ export function HeroSection({ isAuthenticated, currentLanguage }: HeroSectionPro
             <Link to="/login" className="w-full block">
               <Button 
                 variant="outline" 
-                className="w-full border-2 border-white text-white hover:bg-white/10 font-medium text-lg py-6" 
+                className="w-full border-2 border-white text-white hover:bg-[#ea384c]/10 font-medium text-lg py-6" 
                 size="lg"
               >
                 Se connecter

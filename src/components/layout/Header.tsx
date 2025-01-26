@@ -26,8 +26,7 @@ export function Header({ isAuthenticated }: HeaderProps) {
           {!isAuthenticated && (
             <>
               <Link to="/login">
-                <Button variant="ghost" className="font-medium flex items-center gap-2">
-                  <LogIn className="h-4 w-4" />
+                <Button variant="ghost" className="font-medium">
                   S'identifier
                 </Button>
               </Link>
