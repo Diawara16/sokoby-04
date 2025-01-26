@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogIn } from "lucide-react";
 
 interface HeaderProps {
   isAuthenticated: boolean;

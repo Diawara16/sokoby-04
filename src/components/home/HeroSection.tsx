@@ -32,7 +32,7 @@ export function HeroSection({ isAuthenticated, currentLanguage }: HeroSectionPro
             <Link to="/login" className="w-full block">
               <Button 
                 variant="outline" 
-                className="w-full border-2 border-white text-white hover:bg-[#ea384c]/10 font-medium text-lg py-6" 
+                className="w-full border-2 border-white text-white hover:bg-transparent font-medium text-lg py-6" 
                 size="lg"
               >
                 Se connecter
