@@ -1,63 +1,39 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { translations } from "@/translations";
-import { Link, useNavigate } from "react-router-dom";
-import { Info, Briefcase, Palette, MessageSquare, CreditCard } from "lucide-react";
+import { Facebook } from "lucide-react";
 
-interface NavigationProps {
-  currentLanguage: string;
-}
-
-export const Navigation = ({ currentLanguage }: NavigationProps) => {
-  const navigate = useNavigate();
-  const t = translations[currentLanguage as keyof typeof translations];
-
-  if (!t?.navigation?.home || !t?.navigation?.about || !t?.navigation?.services || 
-      !t?.navigation?.themes || !t?.navigation?.pricing || !t?.navigation?.contact || 
-      !t?.cta?.button ||
-      typeof t.navigation.home !== 'string' ||
-      typeof t.navigation.about !== 'string' ||
-      typeof t.navigation.services !== 'string' ||
-      typeof t.navigation.themes !== 'string' ||
-      typeof t.navigation.pricing !== 'string' ||
-      typeof t.navigation.contact !== 'string' ||
-      typeof t.cta.button !== 'string') {
-    return null;
-  }
-
+export function Navigation() {
   return (
-    <div className="flex items-center gap-4">
-      <nav className="hidden md:flex items-center gap-8">
-        <Link to="/" className="text-gray-700 hover:text-gray-900 flex items-center gap-2">
-          {t.navigation.home}
+    <nav className="flex items-center justify-between p-4 bg-white shadow-sm">
+      <div className="flex items-center space-x-8">
+        <Link to="/" className="text-xl font-bold text-primary-700">
+          Sokoby
         </Link>
-        <Link to="/a-propos" className="text-gray-700 hover:text-gray-900 flex items-center gap-2">
-          <Info className="h-4 w-4" />
-          {t.navigation.about}
+        
+        <div className="flex items-center space-x-4">
+          <Link to="/pricing">
+            <Button variant="ghost">Tarifs</Button>
+          </Link>
+          <Link to="/about">
+            <Button variant="ghost">À propos</Button>
+          </Link>
+          <Link to="/index" className="flex items-center space-x-2">
+            <Button variant="ghost" className="flex items-center gap-2">
+              <Facebook className="h-5 w-5 text-blue-600" />
+              <span>Outil Facebook</span>
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+      <div className="flex items-center space-x-4">
+        <Link to="/login">
+          <Button variant="ghost">Connexion</Button>
         </Link>
-        <Link to="/services" className="text-gray-700 hover:text-gray-900 flex items-center gap-2">
-          <Briefcase className="h-4 w-4" />
-          {t.navigation.services}
+        <Link to="/essai-gratuit">
+          <Button variant="default">Démarrer gratuitement</Button>
         </Link>
-        <Link to="/themes" className="text-gray-700 hover:text-gray-900 flex items-center gap-2">
-          <Palette className="h-4 w-4" />
-          {t.navigation.themes}
-        </Link>
-        <Link to="/plan-tarifaire" className="text-gray-700 hover:text-gray-900 flex items-center gap-2">
-          <CreditCard className="h-4 w-4" />
-          {t.navigation.pricing}
-        </Link>
-        <Link to="/contact" className="text-gray-700 hover:text-gray-900 flex items-center gap-2">
-          <MessageSquare className="h-4 w-4" />
-          {t.navigation.contact}
-        </Link>
-      </nav>
-      <Button 
-        variant="default" 
-        className="bg-red-600 hover:bg-red-700 text-white"
-        onClick={() => navigate('/essai-gratuit')}
-      >
-        {t.cta.button}
-      </Button>
-    </div>
+      </div>
+    </nav>
   );
-};
+}
