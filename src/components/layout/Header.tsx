@@ -19,12 +19,24 @@ export function Header({ isAuthenticated }: HeaderProps) {
               height="56"
             />
           </Link>
+          
+          <nav className="hidden md:flex items-center space-x-6">
+            <Link to="/fonctionnalites" className="text-gray-600 hover:text-gray-900">
+              Fonctionnalités
+            </Link>
+            <Link to="/tarifs" className="text-gray-600 hover:text-gray-900">
+              Tarifs
+            </Link>
+            <Link to="/ressources" className="text-gray-600 hover:text-gray-900">
+              Ressources
+            </Link>
+          </nav>
         </div>
         
         <div className="hidden md:flex items-center gap-4">
           {!isAuthenticated && (
             <>
-              <Link to="/login">
+              <Link to="/connexion">
                 <Button 
                   variant="outline" 
                   className="font-medium border-black hover:bg-red-50"
@@ -32,9 +44,9 @@ export function Header({ isAuthenticated }: HeaderProps) {
                   S'identifier
                 </Button>
               </Link>
-              <Link to="/register">
+              <Link to="/inscription">
                 <Button 
-                  className="bg-primary hover:bg-primary/90 text-white font-medium"
+                  className="bg-[#ea384c] hover:bg-[#ea384c]/90 text-white font-medium"
                 >
                   Démarrer l'essai gratuit
                 </Button>

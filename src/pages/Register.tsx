@@ -1,10 +1,24 @@
-import React from "react";
+import { AuthForm } from "@/components/auth/AuthForm";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
 
 const Register = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate('/tableau-de-bord');
+      }
+    };
+    checkSession();
+  }, [navigate]);
+
   return (
-    <div className="container mx-auto py-12">
-      <h1 className="text-3xl font-bold text-center mb-8">Inscription</h1>
-      {/* Contenu à implémenter */}
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50 flex items-center justify-center p-4">
+      <AuthForm defaultIsSignUp={true} />
     </div>
   );
 };

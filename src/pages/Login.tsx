@@ -14,16 +14,6 @@ const Login = () => {
       }
     };
     checkSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        navigate('/tableau-de-bord');
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, [navigate]);
 
   return (
