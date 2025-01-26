@@ -24,11 +24,21 @@ export function PlatformRoutes({ handleSubscribe }: PlatformRoutesProps) {
       <Route path="/tarifs" element={<Pricing />} />
       <Route path="/ressources" element={<Resources />} />
       
-      <Route element={<ProtectedRoute />}>
-        <Route path="/tableau-de-bord" element={<Dashboard />} />
-        <Route path="/parametres" element={<Settings />} />
-        <Route path="/profil" element={<Profile />} />
-      </Route>
+      <Route path="/tableau-de-bord" element={
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/parametres" element={
+        <ProtectedRoute>
+          <Settings />
+        </ProtectedRoute>
+      } />
+      <Route path="/profil" element={
+        <ProtectedRoute>
+          <Profile />
+        </ProtectedRoute>
+      } />
     </Routes>
   );
 }
