@@ -5,6 +5,7 @@ import { SocialLinks } from "./footer/SocialLinks";
 import { Newsletter } from "./footer/Newsletter";
 import { LanguageSelector } from "./footer/LanguageSelector";
 import { CreditCard, Bitcoin, DollarSign, Wallet } from "lucide-react";
+import { useLanguageContext } from "@/contexts/LanguageContext";
 
 const languages = [
   { code: 'fr', name: 'Français' },
@@ -34,28 +35,10 @@ const PaymentMethods = ({ t }: { t: any }) => {
 };
 
 export const Footer = () => {
-  const [currentLanguage, setCurrentLanguage] = useState(() => {
-    return localStorage.getItem('currentLanguage') || 'fr';
-  });
-
-  useEffect(() => {
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'currentLanguage') {
-        setCurrentLanguage(event.newValue || 'fr');
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  const { currentLanguage, setCurrentLanguage } = useLanguageContext();
 
   const handleLanguageChange = (langCode: string) => {
-    localStorage.setItem('currentLanguage', langCode);
     setCurrentLanguage(langCode);
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: 'currentLanguage',
-      newValue: langCode
-    }));
   };
 
   const t = translations[currentLanguage as keyof typeof translations];

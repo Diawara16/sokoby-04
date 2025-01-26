@@ -28,7 +28,7 @@ export const LanguageSelector = ({ t, currentLanguage, onLanguageChange, languag
               <DropdownMenuItem 
                 key={lang.code}
                 onClick={() => onLanguageChange(lang.code)}
-                className={`cursor-pointer ${currentLanguage === lang.code ? 'bg-red-50' : ''}`}
+                className={`cursor-pointer ${currentLanguage === lang.code ? 'bg-red-50 text-red-900' : ''}`}
               >
                 {lang.name}
               </DropdownMenuItem>
