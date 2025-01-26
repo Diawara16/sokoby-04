@@ -9,7 +9,7 @@ import { FacebookIconUploader } from "@/components/facebook/FacebookIconUploader
 import { Helmet } from "react-helmet";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon, Facebook } from "lucide-react";
 
 export default function Index() {
   const { toast } = useToast();
@@ -22,6 +22,11 @@ export default function Index() {
       </Helmet>
 
       <div className="container mx-auto p-4">
+        <div className="flex items-center gap-2 mb-6">
+          <Facebook className="h-8 w-8 text-blue-600" />
+          <h1 className="text-3xl font-bold">Préparation de votre icône Facebook</h1>
+        </div>
+
         <Alert className="mb-6">
           <InfoIcon className="h-4 w-4" />
           <AlertDescription>
@@ -36,9 +41,11 @@ export default function Index() {
             <CardDescription>
               <p>Suivez ces étapes :</p>
               <ol className="list-decimal ml-4 mt-2 space-y-1">
-                <li>Sélectionnez votre logo/image ci-dessous</li>
+                <li>Cliquez sur "Choisir un fichier" ci-dessous</li>
+                <li>Sélectionnez votre logo/image</li>
                 <li>L'image sera automatiquement redimensionnée à 1024x1024 pixels</li>
-                <li>Téléchargez le résultat et utilisez-le sur Facebook Developer</li>
+                <li>Une nouvelle fenêtre s'ouvrira avec votre image redimensionnée</li>
+                <li>Téléchargez cette image et utilisez-la sur Facebook Developer</li>
               </ol>
             </CardDescription>
           </CardHeader>
