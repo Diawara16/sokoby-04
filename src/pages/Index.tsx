@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { FacebookIconUploader } from "@/components/facebook/FacebookIconUploader";
 import { Helmet } from "react-helmet";
 import { AdvancedInventoryManagement } from "@/components/inventory/AdvancedInventoryManagement";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Index() {
   const { handleError } = useErrorHandler();
@@ -67,7 +68,7 @@ export default function Index() {
         <meta property="twitter:image" content="https://sokoby.com/og-image.png" />
       </Helmet>
 
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4 space-y-8">
         {isLoading && (
           <div className="flex items-center justify-center min-h-[200px]">
             <LoadingSpinner size={32} />
@@ -80,17 +81,23 @@ export default function Index() {
           </div>
         )}
 
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Icône pour Facebook Developer</CardTitle>
+            <CardDescription>
+              Uploadez votre logo ici pour obtenir une version optimisée pour Facebook Developer.
+              L'image sera automatiquement redimensionnée aux dimensions 1024x1024 pixels requises par Facebook.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <FacebookIconUploader />
+          </CardContent>
+        </Card>
+
         <div className="mb-8">
           <h1 className="text-2xl font-bold mb-4">Gestion de votre boutique</h1>
           <ErrorBoundary>
             <AdvancedInventoryManagement />
-          </ErrorBoundary>
-        </div>
-
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold mb-4">Icône d'application Facebook</h2>
-          <ErrorBoundary>
-            <FacebookIconUploader />
           </ErrorBoundary>
         </div>
 
