@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Globe, ChevronDown } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -10,6 +10,12 @@ import {
 } from "@/components/ui/sheet";
 import { useState } from "react";
 import { useLanguageContext } from "@/contexts/LanguageContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface MobileNavProps {
   isAuthenticated: boolean;
@@ -19,12 +25,23 @@ const languages = [
   { code: 'fr', name: 'Français' },
   { code: 'en', name: 'English' },
   { code: 'es', name: 'Español' },
+  { code: 'zh', name: '中文' },
+  { code: 'pt', name: 'Português' },
   { code: 'de', name: 'Deutsch' },
+  { code: 'ar', name: 'العربية' },
+  { code: 'ru', name: 'Русский' },
+  { code: 'it', name: 'Italiano' },
+  { code: 'nl', name: 'Nederlands' }
 ];
 
 export function MobileNav({ isAuthenticated }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { currentLanguage, setCurrentLanguage } = useLanguageContext();
+
+  const handleLanguageChange = (langCode: string) => {
+    setCurrentLanguage(langCode);
+    setIsOpen(false);
+  };
 
   return (
     <div className="md:hidden">
@@ -63,23 +80,28 @@ export function MobileNav({ isAuthenticated }: MobileNavProps) {
 
             <div className="border-t my-4" />
 
-            <div className="flex flex-col gap-3">
-              {languages.map((lang) => (
-                <Button
-                  key={lang.code}
-                  variant="ghost"
-                  className={`justify-start ${
-                    currentLanguage === lang.code ? "bg-gray-100" : ""
-                  }`}
-                  onClick={() => {
-                    setCurrentLanguage(lang.code);
-                    setIsOpen(false);
-                  }}
-                >
-                  {lang.name}
-                </Button>
-              ))}
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center justify-between w-full p-2 text-lg font-medium">
+                <div className="flex items-center gap-2">
+                  <Globe className="h-5 w-5" />
+                  <span>Changer de langue</span>
+                </div>
+                <ChevronDown className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-full">
+                {languages.map((lang) => (
+                  <DropdownMenuItem
+                    key={lang.code}
+                    onClick={() => handleLanguageChange(lang.code)}
+                    className={`cursor-pointer ${
+                      currentLanguage === lang.code ? "bg-red-50 text-red-900" : ""
+                    }`}
+                  >
+                    {lang.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {!isAuthenticated && (
               <>
