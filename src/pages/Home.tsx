@@ -1,6 +1,5 @@
 import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturesSection } from "@/components/home/FeaturesSection";
-import { CTASection } from "@/components/home/CTASection";
 import { useNavigate } from "react-router-dom";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 import ShoppingInspirationSection from "@/components/home/ShoppingInspirationSection";
@@ -10,11 +9,7 @@ import { Footer } from "@/components/layout/Footer";
 export default function Home() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthAndProfile();
-  const currentLanguage = "fr"; // Langue par défaut
-
-  const handleCreateStore = () => {
-    navigate('/essai-gratuit');
-  };
+  const currentLanguage = "fr";
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -28,10 +23,6 @@ export default function Home() {
           currentLanguage={currentLanguage}
         />
         <ShoppingInspirationSection />
-        <CTASection 
-          currentLanguage={currentLanguage}
-          onCreateStore={handleCreateStore}
-        />
       </main>
       <Footer />
     </div>
