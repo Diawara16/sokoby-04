@@ -9,17 +9,17 @@ export function FeaturesSection({ currentLanguage }: FeaturesSectionProps) {
   const shoppingCategories = [
     {
       title: "Shopping en Famille",
-      image: "/lovable-uploads/2ad2e1d4-828a-4617-9e4a-f84ad4e9551e.png",
-      alt: "Famille faisant du shopping ensemble"
+      image: "https://images.unsplash.com/photo-1607082349566-187342175e2f",
+      alt: "Famille heureuse faisant du shopping ensemble"
     },
     {
       title: "Créez Votre Boutique",
-      image: "/lovable-uploads/2ad2e1d4-828a-4617-9e4a-f84ad4e9551e.png",
+      image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b",
       alt: "Couple créant leur boutique sur Sokoby"
     },
     {
       title: "Réussite Entrepreneuriale",
-      image: "/lovable-uploads/2ad2e1d4-828a-4617-9e4a-f84ad4e9551e.png",
+      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2",
       alt: "Femme entrepreneur témoignant de son succès sur Sokoby"
     }
   ];
