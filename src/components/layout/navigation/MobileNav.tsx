@@ -144,7 +144,7 @@ export const MobileNav = () => {
               </CollapsibleContent>
             </Collapsible>
 
-            {!isAuthenticated && (
+            {!isAuthenticated ? (
               <div className="border-t pt-4 mt-4 space-y-2">
                 <Link 
                   to="/login"
@@ -158,7 +158,7 @@ export const MobileNav = () => {
                   to="/register"
                   onClick={() => setIsOpen(false)}
                 >
-                  <Button className="w-full">
+                  <Button className="w-full bg-[#ea384c] hover:bg-[#ea384c]/90 text-white">
                     S'inscrire
                   </Button>
                 </Link>
