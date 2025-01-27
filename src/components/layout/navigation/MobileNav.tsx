@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Menu, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Menu, Globe, ChevronDown } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -8,35 +9,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useState } from "react";
 import { useLanguageContext } from "@/contexts/LanguageContext";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
+import { languages } from "@/translations";
 
-interface MobileNavProps {
-  isAuthenticated: boolean;
-}
-
-const languages = [
-  { code: 'fr', name: 'Français' },
-  { code: 'en', name: 'English' },
-  { code: 'es', name: 'Español' },
-  { code: 'zh', name: '中文' },
-  { code: 'pt', name: 'Português' },
-  { code: 'de', name: 'Deutsch' },
-  { code: 'ar', name: 'العربية' },
-  { code: 'ru', name: 'Русский' },
-  { code: 'it', name: 'Italiano' },
-  { code: 'nl', name: 'Nederlands' }
-];
-
-export function MobileNav({ isAuthenticated }: MobileNavProps) {
+export const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { currentLanguage, setCurrentLanguage } = useLanguageContext();
+  const { isAuthenticated } = useAuthAndProfile();
 
   const handleLanguageChange = (langCode: string) => {
     setCurrentLanguage(langCode);
@@ -47,7 +27,7 @@ export function MobileNav({ isAuthenticated }: MobileNavProps) {
     <div className="md:hidden">
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative">
+          <Button variant="ghost" size="icon">
             <Menu className="h-6 w-6" />
           </Button>
         </SheetTrigger>
@@ -80,71 +60,40 @@ export function MobileNav({ isAuthenticated }: MobileNavProps) {
 
             <div className="border-t my-4" />
 
-            <div className="relative">
-              <Button
-                variant="outline"
-                className="w-full justify-between"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const dropdown = document.getElementById('language-dropdown');
-                  if (dropdown) {
-                    dropdown.click();
-                  }
-                }}
-              >
-                <div className="flex items-center gap-2">
-                  <Globe className="h-5 w-5" />
-                  <span>
-                    {languages.find(lang => lang.code === currentLanguage)?.name || 'Changer de langue'}
-                  </span>
-                </div>
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger id="language-dropdown" className="hidden">
-                  Langues
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-[calc(100vw-3rem)] sm:w-[370px]">
-                  {languages.map((lang) => (
-                    <DropdownMenuItem
-                      key={lang.code}
-                      onClick={() => handleLanguageChange(lang.code)}
-                      className={`cursor-pointer ${
-                        currentLanguage === lang.code ? "bg-red-50 text-red-900" : ""
-                      }`}
-                    >
-                      {lang.name}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+            <div className="grid grid-cols-2 gap-2">
+              {languages.map((lang) => (
+                <Button
+                  key={lang.code}
+                  variant={currentLanguage === lang.code ? "default" : "outline"}
+                  className="w-full justify-center"
+                  onClick={() => handleLanguageChange(lang.code)}
+                >
+                  {lang.name}
+                </Button>
+              ))}
             </div>
 
             {!isAuthenticated && (
               <>
                 <div className="border-t my-4" />
-                <Link 
-                  to="/connexion"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Button 
-                    variant="outline" 
-                    className="w-full font-medium border-black hover:bg-red-50"
+                <div className="flex flex-col gap-2">
+                  <Link 
+                    to="/connexion"
+                    onClick={() => setIsOpen(false)}
                   >
-                    S'identifier
-                  </Button>
-                </Link>
-                <Link 
-                  to="/essai-gratuit"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Button 
-                    className="w-full bg-[#ea384c] hover:bg-[#ea384c]/90 text-white font-medium"
+                    <Button variant="outline" className="w-full">
+                      Se connecter
+                    </Button>
+                  </Link>
+                  <Link 
+                    to="/inscription"
+                    onClick={() => setIsOpen(false)}
                   >
-                    Démarrer l'essai gratuit
-                  </Button>
-                </Link>
+                    <Button className="w-full">
+                      S'inscrire
+                    </Button>
+                  </Link>
+                </div>
               </>
             )}
           </div>
@@ -152,4 +101,4 @@ export function MobileNav({ isAuthenticated }: MobileNavProps) {
       </Sheet>
     </div>
   );
-}
+};
