@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sheet";
 import { navigationLinks } from "./NavigationLinks";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { pricingPlans } from "@/data/pricingData";
 
 interface MobileMenuProps {
   isAuthenticated: boolean;
