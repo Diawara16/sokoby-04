@@ -20,7 +20,7 @@ export function Header() {
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-4">
             <LanguageSelector />
-            <AuthButtons isAuthenticated={isAuthenticated} />
+            <AuthButtons />
           </div>
           <MobileNav />
         </div>
