@@ -12,6 +12,7 @@ import {
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 import { languages } from "@/translations";
+import { navigationLinks } from "./NavigationLinks";
 
 export const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,49 +37,42 @@ export const MobileNav = () => {
             <SheetTitle>Menu</SheetTitle>
           </SheetHeader>
           <div className="flex flex-col gap-4 mt-6">
-            <Link 
-              to="/themes" 
-              className="text-lg font-medium hover:text-red-600 transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Thèmes
-            </Link>
-            <Link 
-              to="/tarifs" 
-              className="text-lg font-medium hover:text-red-600 transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Tarifs
-            </Link>
-            <Link 
-              to="/ressources" 
-              className="text-lg font-medium hover:text-red-600 transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Ressources
-            </Link>
+            {navigationLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="flex items-center gap-2 text-lg font-medium hover:text-primary transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                {link.icon}
+                {link.label}
+              </Link>
+            ))}
 
-            <div className="border-t my-4" />
-
-            <div className="grid grid-cols-2 gap-2">
-              {languages.map((lang) => (
-                <Button
-                  key={lang.code}
-                  variant={currentLanguage === lang.code ? "default" : "outline"}
-                  className="w-full justify-center"
-                  onClick={() => handleLanguageChange(lang.code)}
-                >
-                  {lang.name}
-                </Button>
-              ))}
+            <div className="border-t pt-4 mt-4">
+              <h3 className="text-lg font-medium mb-3 flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                Langues
+              </h3>
+              <div className="grid grid-cols-2 gap-2">
+                {languages.map((lang) => (
+                  <Button
+                    key={lang.code}
+                    variant={currentLanguage === lang.code ? "default" : "outline"}
+                    className="w-full justify-center"
+                    onClick={() => handleLanguageChange(lang.code)}
+                  >
+                    {lang.name}
+                  </Button>
+                ))}
+              </div>
             </div>
 
             {!isAuthenticated && (
               <>
-                <div className="border-t my-4" />
-                <div className="flex flex-col gap-2">
+                <div className="border-t pt-4 mt-4">
                   <Link 
-                    to="/connexion"
+                    to="/login"
                     onClick={() => setIsOpen(false)}
                   >
                     <Button variant="outline" className="w-full">
@@ -86,8 +80,9 @@ export const MobileNav = () => {
                     </Button>
                   </Link>
                   <Link 
-                    to="/inscription"
+                    to="/register"
                     onClick={() => setIsOpen(false)}
+                    className="mt-2 block"
                   >
                     <Button className="w-full">
                       S'inscrire
