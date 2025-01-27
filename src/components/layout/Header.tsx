@@ -2,6 +2,8 @@ import { NavigationLinks } from "./navigation/NavigationLinks";
 import { AuthButtons } from "./navigation/AuthButtons";
 import { Logo } from "./navigation/Logo";
 import { MobileMenu } from "./navigation/MobileMenu";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 interface HeaderProps {
   isAuthenticated?: boolean;
