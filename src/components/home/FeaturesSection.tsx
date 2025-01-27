@@ -8,19 +8,19 @@ interface FeaturesSectionProps {
 export function FeaturesSection({ currentLanguage }: FeaturesSectionProps) {
   const shoppingCategories = [
     {
-      title: "Mode Femme",
-      image: "/lovable-uploads/a89473eb-d603-438a-8cbe-cec5929cf8e0.png",
-      alt: "Collection mode femme"
+      title: "Shopping en Famille",
+      image: "/lovable-uploads/2ad2e1d4-828a-4617-9e4a-f84ad4e9551e.png",
+      alt: "Famille faisant du shopping ensemble"
     },
     {
-      title: "Mode Homme",
-      image: "/lovable-uploads/a89473eb-d603-438a-8cbe-cec5929cf8e0.png",
-      alt: "Collection mode homme"
+      title: "Créez Votre Boutique",
+      image: "/lovable-uploads/2ad2e1d4-828a-4617-9e4a-f84ad4e9551e.png",
+      alt: "Couple créant leur boutique sur Sokoby"
     },
     {
-      title: "Mode Enfant",
-      image: "/lovable-uploads/a89473eb-d603-438a-8cbe-cec5929cf8e0.png",
-      alt: "Collection mode enfant"
+      title: "Réussite Entrepreneuriale",
+      image: "/lovable-uploads/2ad2e1d4-828a-4617-9e4a-f84ad4e9551e.png",
+      alt: "Femme entrepreneur témoignant de son succès sur Sokoby"
     }
   ];
 
