@@ -7,7 +7,7 @@ interface HeaderProps {
   isAuthenticated?: boolean;
 }
 
-export function Header({ isAuthenticated }: HeaderProps) {
+export function Header({ isAuthenticated = false }: HeaderProps) {
   return (
     <header className="border-b">
       <div className="container mx-auto px-4">
@@ -15,7 +15,7 @@ export function Header({ isAuthenticated }: HeaderProps) {
           <Logo />
           <NavigationLinks />
           <div className="flex items-center gap-4">
-            <AuthButtons isAuthenticated={isAuthenticated} />
+            <AuthButtons />
             <MobileMenu isAuthenticated={isAuthenticated} />
           </div>
         </div>

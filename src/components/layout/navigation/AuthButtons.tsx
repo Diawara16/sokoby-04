@@ -1,16 +1,9 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Package } from "lucide-react";
 
 export function AuthButtons() {
   return (
     <div className="flex items-center gap-3">
-      <Link to="/suivi-commande">
-        <Button variant="ghost" className="font-medium flex items-center gap-2">
-          <Package className="h-4 w-4" />
-          Suivi de commande
-        </Button>
-      </Link>
       <Link to="/login">
         <Button variant="ghost" className="font-medium">
           Se connecter
