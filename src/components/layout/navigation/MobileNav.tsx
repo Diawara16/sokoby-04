@@ -144,7 +144,7 @@ export const MobileNav = () => {
               </CollapsibleContent>
             </Collapsible>
 
-            {!isAuthenticated ? (
+            {!isAuthenticated && (
               <div className="border-t pt-4 mt-4 space-y-2">
                 <Link 
                   to="/login"
