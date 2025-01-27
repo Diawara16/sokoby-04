@@ -10,17 +10,17 @@ export function FeaturesSection({ currentLanguage }: FeaturesSectionProps) {
     {
       title: "Mode Femme",
       image: "/lovable-uploads/a23d77a2-5fb5-4b8d-b354-605dc6969483.png",
-      alt: "Collection femme"
+      alt: "Collection mode femme"
     },
     {
       title: "Mode Homme",
       image: "/lovable-uploads/0cf990b9-e838-4f20-9840-c9a568e27967.png", 
-      alt: "Collection homme"
+      alt: "Collection mode homme"
     },
     {
       title: "Mode Enfant",
       image: "/lovable-uploads/e423a6d8-87e5-4ef9-af43-7e96b44fd685.png",
-      alt: "Collection enfant"
+      alt: "Collection mode enfant"
     }
   ];
 
