@@ -1,28 +1,23 @@
-import { Link } from "react-router-dom";
-import { MobileNav } from "./navigation/MobileNav";
 import { NavigationLinks } from "./navigation/NavigationLinks";
 import { AuthButtons } from "./navigation/AuthButtons";
 import { Logo } from "./navigation/Logo";
-import { LanguageSelector } from "./navigation/LanguageSelector";
-import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
+import { MobileMenu } from "./navigation/MobileMenu";
 
-export function Header() {
-  const { isAuthenticated } = useAuthAndProfile();
+interface HeaderProps {
+  isAuthenticated?: boolean;
+}
 
+export function Header({ isAuthenticated }: HeaderProps) {
   return (
     <header className="border-b">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-8">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
           <Logo />
           <NavigationLinks />
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center gap-4">
-            <LanguageSelector />
-            <AuthButtons />
+          <div className="flex items-center gap-4">
+            <AuthButtons isAuthenticated={isAuthenticated} />
+            <MobileMenu isAuthenticated={isAuthenticated} />
           </div>
-          <MobileNav />
         </div>
       </div>
     </header>

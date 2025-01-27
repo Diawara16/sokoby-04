@@ -9,17 +9,17 @@ export function FeaturesSection({ currentLanguage }: FeaturesSectionProps) {
   const shoppingCategories = [
     {
       title: "Mode Femme",
-      image: "/lovable-uploads/a23d77a2-5fb5-4b8d-b354-605dc6969483.png",
+      image: "/lovable-uploads/a89473eb-d603-438a-8cbe-cec5929cf8e0.png",
       alt: "Collection mode femme"
     },
     {
       title: "Mode Homme",
-      image: "/lovable-uploads/0cf990b9-e838-4f20-9840-c9a568e27967.png", 
+      image: "/lovable-uploads/a89473eb-d603-438a-8cbe-cec5929cf8e0.png",
       alt: "Collection mode homme"
     },
     {
       title: "Mode Enfant",
-      image: "/lovable-uploads/e423a6d8-87e5-4ef9-af43-7e96b44fd685.png",
+      image: "/lovable-uploads/a89473eb-d603-438a-8cbe-cec5929cf8e0.png",
       alt: "Collection mode enfant"
     }
   ];
