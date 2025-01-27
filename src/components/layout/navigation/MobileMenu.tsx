@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/sheet";
 import { navigationLinks } from "./NavigationLinks";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { pricingPlans } from "@/data/pricingData";
 
 interface MobileMenuProps {
   isAuthenticated: boolean;
@@ -27,7 +26,15 @@ export function MobileMenu({ isAuthenticated }: MobileMenuProps) {
         </SheetTrigger>
         <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0">
           <SheetHeader className="p-6 border-b">
-            <SheetTitle>Menu</SheetTitle>
+            <Link to="/" className="flex items-center mb-4">
+              <img 
+                src="/lovable-uploads/a23d77a2-5fb5-4b8d-b354-605dc6969483.png" 
+                alt="Sokoby" 
+                className="h-14 w-auto"
+                width="140"
+                height="56"
+              />
+            </Link>
           </SheetHeader>
           <div className="flex flex-col p-6">
             {navigationLinks.map((link) => (
@@ -44,13 +51,8 @@ export function MobileMenu({ isAuthenticated }: MobileMenuProps) {
             <div className="mt-6 pt-6 border-t">
               {!isAuthenticated ? (
                 <div className="flex flex-col gap-3">
-                  <Link to="/login">
-                    <Button variant="outline" className="w-full font-medium">
-                      Se connecter
-                    </Button>
-                  </Link>
                   <Link to="/register">
-                    <Button className="w-full bg-primary hover:bg-primary/90 text-white font-medium">
+                    <Button className="w-full bg-[#ea384c] hover:bg-[#ea384c]/90 text-white font-medium">
                       Démarrer l'essai gratuit
                     </Button>
                   </Link>
