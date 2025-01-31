@@ -1,7 +1,3 @@
-import { NavigationLinks } from "./navigation/NavigationLinks";
-import { AuthButtons } from "./navigation/AuthButtons";
-import { Logo } from "./navigation/Logo";
-import { MobileMenu } from "./navigation/MobileMenu";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguageContext } from "@/contexts/LanguageContext";
@@ -25,9 +21,18 @@ export function Header({ isAuthenticated = false }: HeaderProps) {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="hidden md:block">
-            <Logo />
+            <Link to="/" className="text-xl font-bold text-primary-700">
+              Sokoby
+            </Link>
           </div>
-          <NavigationLinks />
+          <div className="hidden md:flex items-center space-x-4">
+            <Link to="/pricing">
+              <Button variant="ghost">{t.header.pricing}</Button>
+            </Link>
+            <Link to="/about">
+              <Button variant="ghost">{t.header.about}</Button>
+            </Link>
+          </div>
           <div className="hidden md:flex items-center gap-4">
             {!isAuthenticated && (
               <>
@@ -36,24 +41,25 @@ export function Header({ isAuthenticated = false }: HeaderProps) {
                   onClick={handleLogin}
                   className="font-medium"
                 >
-                  {t.auth.login}
+                  {t.header.login}
                 </Button>
                 <Link to="/register">
                   <Button className="bg-[#ea384c] hover:bg-[#ea384c]/90 text-white font-medium">
-                    {t.auth.startFreeTrial}
+                    {t.header.startFreeTrial}
                   </Button>
                 </Link>
               </>
             )}
           </div>
           <div className="md:hidden flex items-center justify-between w-full gap-4">
-            <Logo />
+            <Link to="/" className="text-xl font-bold text-primary-700">
+              Sokoby
+            </Link>
             <Link to="/register">
               <Button className="bg-[#ea384c] hover:bg-[#ea384c]/90 text-white">
-                {t.auth.startFreeTrial}
+                {t.header.startFreeTrial}
               </Button>
             </Link>
-            <MobileMenu isAuthenticated={isAuthenticated} />
           </div>
         </div>
       </div>

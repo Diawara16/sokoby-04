@@ -4,7 +4,9 @@ export const fr = {
     pricing: "Tarifs",
     themes: "Thèmes",
     guides: "Guides",
-    contact: "Contact"
+    contact: "Contact",
+    login: "Se connecter",
+    startFreeTrial: "Démarrer l'essai gratuit"
   },
   auth: {
     login: "Se connecter",
