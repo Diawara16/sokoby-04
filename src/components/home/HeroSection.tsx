@@ -21,7 +21,7 @@ export function HeroSection({ isAuthenticated, currentLanguage }: HeroSectionPro
           </div>
           
           <div className="flex-1 max-w-md w-full space-y-4">
-            <Link to="/register" className="w-full block">
+            <Link to="/essai-gratuit" className="w-full block">
               <Button 
                 className="w-full bg-white hover:bg-white/90 text-black font-medium text-lg py-6 border-2 border-primary" 
                 size="lg"
