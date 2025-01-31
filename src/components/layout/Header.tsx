@@ -56,7 +56,7 @@ export function Header({ isAuthenticated = false }: HeaderProps) {
           </div>
 
           {/* Menu mobile */}
-          <MobileNav isAuthenticated={isAuthenticated} />
+          <MobileNav />
         </div>
       </div>
     </header>

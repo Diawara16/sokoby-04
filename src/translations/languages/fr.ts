@@ -58,6 +58,22 @@ export const fr = {
       facebook: "Facebook",
       twitter: "Twitter",
       instagram: "Instagram"
-    }
+    },
+    acceptedPayments: "Moyens de paiement acceptés",
+    allRightsReserved: "Tous droits réservés"
+  },
+  pricing: {
+    title: "Nos tarifs",
+    subtitle: "Choisissez le plan qui vous convient",
+    description: "Des prix adaptés à vos besoins"
+  },
+  profile: {
+    title: "Mon Profil",
+    fullName: "Nom complet",
+    phoneNumber: "Numéro de téléphone",
+    updating: "Mise à jour...",
+    update: "Mettre à jour",
+    success: "Profil mis à jour avec succès",
+    error: "Erreur lors de la mise à jour du profil"
   }
 };
