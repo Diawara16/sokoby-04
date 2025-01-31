@@ -41,7 +41,12 @@ export const fr = {
     legalNotice: "Mentions légales",
     accessibility: "Accessibilité",
     termsOfUse: "Conditions d'utilisation",
-    support: "Support"
+    support: "Support",
+    newsletter: "Newsletter",
+    emailPlaceholder: "Votre adresse email",
+    subscribe: "S'abonner",
+    followUs: "Suivez-nous",
+    socialMedia: "Retrouvez-nous sur les réseaux sociaux"
   },
   pricing: {
     title: "Nos tarifs",
