@@ -62,5 +62,27 @@ export const fr = {
     subtitle: "La plateforme complète pour lancer et développer votre boutique en ligne",
     createAccount: "Créer mon compte",
     login: "Se connecter"
+  },
+  features: {
+    title: "Fonctionnalités",
+    items: [
+      {
+        title: "Gestion simplifiée",
+        description: "Gérez votre boutique facilement"
+      },
+      {
+        title: "Paiements sécurisés",
+        description: "Transactions sûres et fiables"
+      }
+    ]
+  },
+  navigation: {
+    home: "Accueil",
+    about: "À propos",
+    pricing: "Tarifs",
+    contact: "Contact",
+    themes: "Thèmes",
+    services: "Services",
+    profile: "Profil"
   }
 };

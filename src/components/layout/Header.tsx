@@ -27,10 +27,10 @@ export function Header({ isAuthenticated = false }: HeaderProps) {
           </div>
           <div className="hidden md:flex items-center space-x-4">
             <Link to="/pricing">
-              <Button variant="ghost">{t.header.pricing}</Button>
+              <Button variant="ghost">{t.navigation.pricing}</Button>
             </Link>
             <Link to="/about">
-              <Button variant="ghost">{t.header.about}</Button>
+              <Button variant="ghost">{t.navigation.about}</Button>
             </Link>
           </div>
           <div className="hidden md:flex items-center gap-4">
@@ -41,11 +41,11 @@ export function Header({ isAuthenticated = false }: HeaderProps) {
                   onClick={handleLogin}
                   className="font-medium"
                 >
-                  {t.header.login}
+                  {t.auth.login}
                 </Button>
                 <Link to="/register">
                   <Button className="bg-[#ea384c] hover:bg-[#ea384c]/90 text-white font-medium">
-                    {t.header.startFreeTrial}
+                    {t.auth.startFreeTrial}
                   </Button>
                 </Link>
               </>
@@ -57,7 +57,7 @@ export function Header({ isAuthenticated = false }: HeaderProps) {
             </Link>
             <Link to="/register">
               <Button className="bg-[#ea384c] hover:bg-[#ea384c]/90 text-white">
-                {t.header.startFreeTrial}
+                {t.auth.startFreeTrial}
               </Button>
             </Link>
           </div>
