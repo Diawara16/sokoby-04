@@ -36,12 +36,12 @@ const PaymentMethods = ({ t }: { t: any }) => {
 
 export const Footer = () => {
   const { currentLanguage, setCurrentLanguage } = useLanguageContext();
+  const t = translations[currentLanguage as keyof typeof translations];
 
   const handleLanguageChange = (langCode: string) => {
     setCurrentLanguage(langCode);
+    localStorage.setItem('currentLanguage', langCode);
   };
-
-  const t = translations[currentLanguage as keyof typeof translations];
 
   return (
     <footer className="w-full bg-gradient-to-br from-red-700 via-red-800 to-red-900 text-gray-100 py-12 mt-auto">
