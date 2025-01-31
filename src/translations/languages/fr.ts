@@ -6,7 +6,8 @@ export const fr = {
     guides: "Guides",
     contact: "Contact",
     login: "Se connecter",
-    startFreeTrial: "Démarrer l'essai gratuit"
+    startFreeTrial: "Démarrer l'essai gratuit",
+    about: "À propos"
   },
   auth: {
     login: "Se connecter",
