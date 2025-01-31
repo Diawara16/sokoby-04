@@ -14,7 +14,18 @@ export const fr = {
     password: "Mot de passe",
     forgotPassword: "Mot de passe oublié ?",
     alreadyHaveAccount: "Déjà un compte ?",
-    dontHaveAccount: "Pas encore de compte ?"
+    dontHaveAccount: "Pas encore de compte ?",
+    errorDescription: "Une erreur est survenue"
+  },
+  profile: {
+    title: "Mon Profil",
+    subtitle: "Gérer mes informations",
+    fullName: "Nom complet",
+    phoneNumber: "Numéro de téléphone",
+    update: "Mettre à jour",
+    updating: "Mise à jour...",
+    success: "Profil mis à jour avec succès",
+    error: "Erreur lors de la mise à jour"
   },
   footer: {
     quickLinks: "Liens rapides",
