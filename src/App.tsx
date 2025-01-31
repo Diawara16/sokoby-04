@@ -11,6 +11,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 
 function App() {
   const [paypalClientId, setPaypalClientId] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const queryConfig = useQueryConfig();
 
@@ -28,35 +29,25 @@ function App() {
         
         if (error) {
           console.error('Erreur lors de la récupération du secret:', error);
-          toast({
-            title: "Erreur",
-            description: "Impossible de récupérer la configuration PayPal",
-            variant: "destructive",
-          });
           return;
         }
         
         if (data?.secret) {
           setPaypalClientId(data.secret);
-        } else {
-          toast({
-            title: "Configuration manquante",
-            description: "L'ID client PayPal n'est pas configuré",
-            variant: "destructive",
-          });
         }
       } catch (error) {
         console.error('Erreur lors de la récupération du secret:', error);
-        toast({
-          title: "Erreur",
-          description: "Impossible de récupérer la configuration PayPal",
-          variant: "destructive",
-        });
+      } finally {
+        setIsLoading(false);
       }
     };
     
     fetchPayPalClientId();
-  }, [toast]);
+  }, []);
+
+  if (isLoading) {
+    return null; // Or a loading spinner if you prefer
+  }
 
   return (
     <LanguageProvider>
