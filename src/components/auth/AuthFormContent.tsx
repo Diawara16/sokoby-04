@@ -10,6 +10,8 @@ interface AuthFormContentProps {
   setEmail: (email: string) => void;
   password: string;
   setPassword: (password: string) => void;
+  dateOfBirth: string;
+  setDateOfBirth: (date: string) => void;
   isLoading: boolean;
   isSignUp: boolean;
   setIsSignUp: (isSignUp: boolean) => void;
@@ -24,6 +26,8 @@ export function AuthFormContent({
   setEmail,
   password,
   setPassword,
+  dateOfBirth,
+  setDateOfBirth,
   isLoading,
   isSignUp,
   setIsSignUp,
@@ -67,6 +71,24 @@ export function AuthFormContent({
             className="w-full"
           />
         </div>
+
+        {isSignUp && (
+          <div className="space-y-2">
+            <Label htmlFor="dateOfBirth">Date de naissance</Label>
+            <Input
+              id="dateOfBirth"
+              type="date"
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              required
+              className="w-full"
+              max={new Date().toISOString().split('T')[0]}
+            />
+            <p className="text-xs text-gray-500">
+              Vous devez avoir au moins 18 ans pour créer une boutique
+            </p>
+          </div>
+        )}
       </CardContent>
 
       <CardFooter className="flex flex-col space-y-4">

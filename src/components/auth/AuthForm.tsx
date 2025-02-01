@@ -15,6 +15,8 @@ export function AuthForm({ defaultIsSignUp = true, onCancel }: AuthFormProps) {
     return localStorage.getItem('currentLanguage') || 'fr';
   });
 
+  const [dateOfBirth, setDateOfBirth] = useState('');
+
   const {
     email,
     setEmail,
@@ -59,6 +61,8 @@ export function AuthForm({ defaultIsSignUp = true, onCancel }: AuthFormProps) {
           setEmail={setEmail}
           password={password}
           setPassword={setPassword}
+          dateOfBirth={dateOfBirth}
+          setDateOfBirth={setDateOfBirth}
           isLoading={isLoading}
           isSignUp={isSignUp}
           setIsSignUp={setIsSignUp}
