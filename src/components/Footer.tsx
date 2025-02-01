@@ -4,7 +4,7 @@ import { QuickLinks } from "./footer/QuickLinks";
 import { SocialLinks } from "./footer/SocialLinks";
 import { Newsletter } from "./footer/Newsletter";
 import { LanguageSelector } from "./footer/LanguageSelector";
-import { CreditCard, Bitcoin, DollarSign, Wallet } from "lucide-react";
+import { CreditCard, Bitcoin, DollarSign, Wallet, Globe } from "lucide-react";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 
 const languages = [

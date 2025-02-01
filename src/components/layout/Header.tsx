@@ -4,6 +4,7 @@ import { useLanguageContext } from "@/contexts/LanguageContext";
 import { translations } from "@/translations";
 import { Logo } from "./navigation/Logo";
 import { MobileNav } from "./navigation/MobileNav";
+import { ShoppingCart, Search, User } from "lucide-react";
 
 interface HeaderProps {
   isAuthenticated?: boolean;
@@ -19,25 +20,41 @@ export function Header({ isAuthenticated = false }: HeaderProps) {
   };
 
   return (
-    <header className="border-b">
+    <header className="border-b bg-white">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo - visible sur tous les écrans */}
+          {/* Logo */}
           <Logo />
 
-          {/* Navigation - visible sur desktop */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Link to="/pricing">
-              <Button variant="ghost">{t.navigation.pricing}</Button>
+          {/* Navigation principale - visible sur desktop */}
+          <nav className="hidden md:flex items-center space-x-6">
+            <Link to="/boutique" className="text-gray-600 hover:text-gray-900">
+              Boutique
             </Link>
-            <Link to="/about">
-              <Button variant="ghost">{t.navigation.about}</Button>
+            <Link to="/pricing" className="text-gray-600 hover:text-gray-900">
+              {t.navigation.pricing}
             </Link>
-          </div>
+            <Link to="/about" className="text-gray-600 hover:text-gray-900">
+              {t.navigation.about}
+            </Link>
+            <Link to="/contact" className="text-gray-600 hover:text-gray-900">
+              Contact
+            </Link>
+          </nav>
 
-          {/* Boutons d'authentification - visible sur desktop */}
+          {/* Actions - visible sur desktop */}
           <div className="hidden md:flex items-center gap-4">
-            {!isAuthenticated && (
+            <Button variant="ghost" size="icon">
+              <Search className="h-5 w-5" />
+            </Button>
+            
+            <Link to="/cart">
+              <Button variant="ghost" size="icon">
+                <ShoppingCart className="h-5 w-5" />
+              </Button>
+            </Link>
+
+            {!isAuthenticated ? (
               <>
                 <Button
                   variant="ghost"
@@ -52,11 +69,17 @@ export function Header({ isAuthenticated = false }: HeaderProps) {
                   </Button>
                 </Link>
               </>
+            ) : (
+              <Link to="/profile">
+                <Button variant="ghost" size="icon">
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
             )}
           </div>
 
           {/* Menu mobile */}
-          <MobileNav />
+          <MobileNav isAuthenticated={isAuthenticated} />
         </div>
       </div>
     </header>
