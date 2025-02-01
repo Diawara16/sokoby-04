@@ -4,14 +4,10 @@ import {
   Menu, 
   Globe, 
   ChevronRight,
-  Home,
-  CreditCard,
-  Palette,
-  BookOpen,
-  MessageSquare,
-  ShoppingBag,
   Settings,
   HelpCircle,
+  MessageSquare,
+  CreditCard,
   Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,7 +19,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useLanguageContext } from "@/contexts/LanguageContext";
-import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 import { languages } from "@/translations";
 import { 
   Collapsible,
@@ -33,32 +28,12 @@ import {
 
 const menuItems = [
   { 
-    to: "/", 
-    label: "Accueil",
-    icon: <Home className="h-5 w-5" />
-  },
-  { 
-    to: "/plan-tarifaire", 
-    label: "Nos Tarifs",
+    to: "/pricing", 
+    label: "Tarifs",
     icon: <CreditCard className="h-5 w-5" />
   },
   { 
-    to: "/themes", 
-    label: "Thèmes",
-    icon: <Palette className="h-5 w-5" />
-  },
-  { 
-    to: "/guides", 
-    label: "Guides",
-    icon: <BookOpen className="h-5 w-5" />
-  },
-  { 
-    to: "/boutique", 
-    label: "Boutique",
-    icon: <ShoppingBag className="h-5 w-5" />
-  },
-  { 
-    to: "/a-propos", 
+    to: "/about", 
     label: "À propos",
     icon: <Users className="h-5 w-5" />
   },
@@ -79,11 +54,14 @@ const menuItems = [
   }
 ];
 
-export const MobileNav = () => {
+interface MobileNavProps {
+  isAuthenticated: boolean;
+}
+
+export const MobileNav = ({ isAuthenticated }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const { currentLanguage, setCurrentLanguage } = useLanguageContext();
-  const { isAuthenticated } = useAuthAndProfile();
 
   const handleLanguageChange = (langCode: string) => {
     setCurrentLanguage(langCode);

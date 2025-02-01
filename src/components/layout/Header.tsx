@@ -4,7 +4,7 @@ import { useLanguageContext } from "@/contexts/LanguageContext";
 import { translations } from "@/translations";
 import { Logo } from "./navigation/Logo";
 import { MobileNav } from "./navigation/MobileNav";
-import { ShoppingCart, Search, User } from "lucide-react";
+import { Search, User } from "lucide-react";
 
 interface HeaderProps {
   isAuthenticated?: boolean;
@@ -28,9 +28,6 @@ export function Header({ isAuthenticated = false }: HeaderProps) {
 
           {/* Navigation principale - visible sur desktop */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/boutique" className="text-gray-600 hover:text-gray-900">
-              Boutique
-            </Link>
             <Link to="/pricing" className="text-gray-600 hover:text-gray-900">
               {t.navigation.pricing}
             </Link>
@@ -47,12 +44,6 @@ export function Header({ isAuthenticated = false }: HeaderProps) {
             <Button variant="ghost" size="icon">
               <Search className="h-5 w-5" />
             </Button>
-            
-            <Link to="/cart">
-              <Button variant="ghost" size="icon">
-                <ShoppingCart className="h-5 w-5" />
-              </Button>
-            </Link>
 
             {!isAuthenticated ? (
               <>
