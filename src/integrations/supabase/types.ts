@@ -1517,9 +1517,11 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age_verified: boolean | null
           avatar_url: string | null
           bio: string | null
           created_at: string
+          date_of_birth: string | null
           email: string | null
           features_usage: Json | null
           id: string
@@ -1530,9 +1532,11 @@ export type Database = {
           website: string | null
         }
         Insert: {
+          age_verified?: boolean | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          date_of_birth?: string | null
           email?: string | null
           features_usage?: Json | null
           id: string
@@ -1543,9 +1547,11 @@ export type Database = {
           website?: string | null
         }
         Update: {
+          age_verified?: boolean | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          date_of_birth?: string | null
           email?: string | null
           features_usage?: Json | null
           id?: string
