@@ -8,7 +8,18 @@ export const fr = {
     forgotPassword: "Mot de passe oublié ?",
     alreadyHaveAccount: "Vous avez déjà un compte ?",
     dontHaveAccount: "Vous n'avez pas de compte ?",
-    errorDescription: "Une erreur est survenue lors de la connexion"
+    errorDescription: "Une erreur est survenue lors de la connexion",
+    createAccount: "Créer un compte",
+    trialDescription: "Commencez avec un essai gratuit de 14 jours. Aucune carte de crédit requise.",
+    emailPlaceholder: "exemple@email.com",
+    creating: "Création en cours...",
+    signingIn: "Connexion en cours...",
+    create: "Créer un compte",
+    successTitle: "Compte créé avec succès",
+    successDescription: "Profitez de votre essai gratuit de 14 jours !",
+    errorTitle: "Erreur",
+    back: "Retour",
+    continueWithGoogle: "Continuer avec Google"
   },
   hero: {
     title: "Construisez votre e-commerce",

@@ -1,52 +1,47 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "../use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export const useSignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSignUp = async (email: string, password: string) => {
-    setIsLoading(true);
-    setError(null);
-
+  const handleSignUp = async (email: string, password: string, dateOfBirth: string) => {
     try {
-      const { data, error } = await supabase.auth.signUp({
+      setIsLoading(true);
+      setError(null);
+
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/onboarding`,
+          data: {
+            date_of_birth: dateOfBirth,
+          },
         },
       });
 
-      if (error) throw error;
+      if (signUpError) throw signUpError;
 
-      if (data.user) {
-        toast({
-          title: "Compte créé avec succès",
-          description: "Veuillez vérifier votre email pour confirmer votre compte.",
-        });
-        navigate("/onboarding");
-      }
-    } catch (error: any) {
-      console.error("Erreur d'inscription:", error);
-      setError(error.message);
+      toast({
+        title: "Compte créé avec succès",
+        description: "Profitez de votre essai gratuit de 14 jours !",
+      });
+
+      return data;
+    } catch (err: any) {
+      setError(err.message);
       toast({
         title: "Erreur",
-        description: error.message,
+        description: err.message,
         variant: "destructive",
       });
+      return null;
     } finally {
       setIsLoading(false);
     }
   };
 
-  return {
-    isLoading,
-    error,
-    handleSignUp,
-  };
+  return { isLoading, error, handleSignUp };
 };
