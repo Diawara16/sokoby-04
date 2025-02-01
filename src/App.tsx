@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryConfig } from "@/hooks/useQueryConfig";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { CookieConsent } from "@/components/CookieConsent";
 
 function App() {
   const [paypalClientId, setPaypalClientId] = useState<string>("");
@@ -58,6 +59,7 @@ function App() {
             currency: "EUR"
           }}>
             <AppRoutes />
+            <CookieConsent />
             <Toaster />
           </PayPalScriptProvider>
         </BrowserRouter>
