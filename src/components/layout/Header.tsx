@@ -35,7 +35,7 @@ export function Header({ isAuthenticated = false }: HeaderProps) {
               {t.navigation.about}
             </Link>
             <Link to="/contact" className="text-gray-600 hover:text-gray-900">
-              Contact
+              {t.navigation.contact}
             </Link>
           </nav>
 

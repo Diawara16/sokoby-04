@@ -23,7 +23,15 @@ export const fr = {
   navigation: {
     pricing: "Tarifs",
     about: "À propos",
-    contact: "Contact"
+    contact: "Contact",
+    themes: "Thèmes",
+    resources: "Ressources",
+    home: "Accueil",
+    dashboard: "Tableau de bord",
+    products: "Produits",
+    orders: "Commandes",
+    customers: "Clients",
+    settings: "Paramètres"
   },
   footer: {
     acceptedPayments: "Moyens de paiement acceptés",
@@ -41,23 +49,6 @@ export const fr = {
     subscribe: "S'inscrire",
     changeLanguage: "Changer de langue"
   },
-  pricing: {
-    title: "Nos tarifs",
-    subtitle: "Choisissez le plan qui vous convient",
-    monthly: "Mensuel",
-    yearly: "Annuel",
-    features: "Fonctionnalités",
-    startTrial: "Commencer l'essai"
-  },
-  profile: {
-    title: "Mon Profil",
-    fullName: "Nom complet",
-    phoneNumber: "Numéro de téléphone",
-    update: "Mettre à jour",
-    updating: "Mise à jour...",
-    success: "Profil mis à jour avec succès",
-    error: "Erreur lors de la mise à jour du profil"
-  },
   common: {
     loading: "Chargement...",
     error: "Erreur",
@@ -72,6 +63,9 @@ export const fr = {
     sort: "Trier",
     actions: "Actions",
     confirm: "Confirmer",
-    back: "Retour"
+    back: "Retour",
+    next: "Suivant",
+    previous: "Précédent",
+    close: "Fermer"
   }
 };
