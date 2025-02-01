@@ -29,12 +29,17 @@ export const fr = {
     acceptedPayments: "Moyens de paiement acceptés",
     allRightsReserved: "Tous droits réservés",
     quickLinks: "Liens rapides",
-    socialLinks: "Réseaux sociaux",
+    legalNotice: "Mentions légales",
+    accessibility: "Accessibilité",
+    termsOfUse: "Conditions d'utilisation",
+    support: "Support",
+    followUs: "Suivez-nous",
+    socialMedia: "Retrouvez-nous sur les réseaux sociaux",
     newsletter: "Newsletter",
     subscribeNewsletter: "Inscrivez-vous à notre newsletter",
     emailPlaceholder: "Votre email",
     subscribe: "S'inscrire",
-    languageSelector: "Sélectionner la langue"
+    changeLanguage: "Changer de langue"
   },
   pricing: {
     title: "Nos tarifs",
@@ -52,5 +57,21 @@ export const fr = {
     updating: "Mise à jour...",
     success: "Profil mis à jour avec succès",
     error: "Erreur lors de la mise à jour du profil"
+  },
+  common: {
+    loading: "Chargement...",
+    error: "Erreur",
+    success: "Succès",
+    save: "Enregistrer",
+    cancel: "Annuler",
+    delete: "Supprimer",
+    edit: "Modifier",
+    create: "Créer",
+    search: "Rechercher",
+    filter: "Filtrer",
+    sort: "Trier",
+    actions: "Actions",
+    confirm: "Confirmer",
+    back: "Retour"
   }
 };
