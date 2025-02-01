@@ -8,7 +8,8 @@ import {
   HelpCircle,
   MessageSquare,
   CreditCard,
-  Users
+  Users,
+  Info
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,14 +29,14 @@ import {
 
 const menuItems = [
   { 
-    to: "/pricing", 
+    to: "/plan-tarifaire", 
     label: "Tarifs",
     icon: <CreditCard className="h-5 w-5" />
   },
   { 
-    to: "/about", 
+    to: "/qui-sommes-nous", 
     label: "À propos",
-    icon: <Users className="h-5 w-5" />
+    icon: <Info className="h-5 w-5" />
   },
   { 
     to: "/contact", 
@@ -43,7 +44,7 @@ const menuItems = [
     icon: <MessageSquare className="h-5 w-5" />
   },
   { 
-    to: "/aide", 
+    to: "/faq", 
     label: "Aide",
     icon: <HelpCircle className="h-5 w-5" />
   },
