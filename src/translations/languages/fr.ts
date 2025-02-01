@@ -1,4 +1,4 @@
-export default {
+export const fr = {
   auth: {
     login: "Connexion",
     startFreeTrial: "Démarrer l'essai gratuit",
