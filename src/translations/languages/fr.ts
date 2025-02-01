@@ -1,6 +1,6 @@
 export const fr = {
   auth: {
-    login: "Connexion",
+    login: "Se connecter",
     startFreeTrial: "Démarrer l'essai gratuit",
     register: "S'inscrire",
     email: "Email",
@@ -12,7 +12,13 @@ export const fr = {
     errorTitle: "Erreur",
     successTitle: "Succès",
     successDescription: "Opération réussie",
-    continueWithGoogle: "Continuer avec Google"
+    continueWithGoogle: "Continuer avec Google",
+    createAccount: "Créer un compte",
+    trialDescription: "Essai gratuit de 14 jours",
+    emailPlaceholder: "votre@email.com",
+    creating: "Création en cours...",
+    create: "Créer",
+    errorMessage: "Une erreur s'est produite"
   },
   navigation: {
     pricing: "Tarifs",
