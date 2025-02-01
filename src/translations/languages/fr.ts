@@ -49,6 +49,55 @@ export const fr = {
     subscribe: "S'inscrire",
     changeLanguage: "Changer de langue"
   },
+  pricing: {
+    title: "Plans et tarifs",
+    subtitle: "Choisissez le plan qui vous convient",
+    startTrial: "Commencer l'essai gratuit",
+    mostPopular: "Le plus populaire",
+    freeTrial: "14 jours d'essai gratuit",
+    perMonth: "/mois",
+    basic: {
+      name: "Basique",
+      price: "9.99",
+      description: "Pour démarrer",
+      features: [
+        "1 boutique",
+        "100 produits",
+        "Support par email"
+      ]
+    },
+    pro: {
+      name: "Pro",
+      price: "19.99",
+      description: "Pour les professionnels",
+      features: [
+        "3 boutiques",
+        "1000 produits",
+        "Support prioritaire",
+        "Analyses avancées"
+      ]
+    },
+    enterprise: {
+      name: "Entreprise",
+      price: "49.99",
+      description: "Pour les grandes entreprises",
+      features: [
+        "Boutiques illimitées",
+        "Produits illimités",
+        "Support dédié",
+        "API personnalisée"
+      ]
+    }
+  },
+  profile: {
+    title: "Mon Profil",
+    fullName: "Nom complet",
+    phoneNumber: "Numéro de téléphone",
+    update: "Mettre à jour",
+    updating: "Mise à jour...",
+    success: "Profil mis à jour avec succès",
+    error: "Erreur lors de la mise à jour du profil"
+  },
   common: {
     loading: "Chargement...",
     error: "Erreur",
