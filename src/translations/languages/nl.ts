@@ -1,87 +1,61 @@
+
 export const nl = {
-  hero: {
-    title: "Bouw je e-commerce imperium",
-    subtitle: "Het complete platform om je online winkel te lanceren en te laten groeien",
-  },
-  features: {
-    title: "Onze functies",
-    items: [
-      {
-        title: "Productbeheer",
-        description: "Beheer eenvoudig je productcatalogus"
-      },
-      {
-        title: "Veilige betalingen",
-        description: "Accepteer betalingen op een veilige manier"
-      },
-      {
-        title: "Geavanceerde analyses",
-        description: "Volg je prestaties in realtime"
-      }
-    ]
+  auth: {
+    login: "Inloggen",
+    startFreeTrial: "Start gratis proefperiode",
+    register: "Registreren",
+    email: "E-mail",
+    password: "Wachtwoord",
+    forgotPassword: "Wachtwoord vergeten?",
+    alreadyHaveAccount: "Heb je al een account?",
+    dontHaveAccount: "Heb je nog geen account?",
+    errorDescription: "Er is een fout opgetreden",
+    errorTitle: "Fout",
+    successTitle: "Succes",
+    successDescription: "Operatie succesvol uitgevoerd",
+    continueWithGoogle: "Doorgaan met Google",
+    createAccount: "Account aanmaken",
+    trialDescription: "14 dagen gratis proberen",
+    emailPlaceholder: "jouw@email.com",
+    creating: "Aanmaken...",
+    create: "Aanmaken",
+    errorMessage: "Er is een fout opgetreden"
   },
   navigation: {
-    home: "Home",
-    about: "Over ons",
     pricing: "Prijzen",
+    about: "Over ons",
     contact: "Contact",
     themes: "Thema's",
-    services: "Diensten",
-    profile: "Profiel"
-  },
-  cta: {
-    title: "Klaar om te beginnen?",
-    subtitle: "Launch je online winkel in enkele minuten",
-    button: "Maak mijn winkel"
+    resources: "Bronnen",
+    home: "Home",
+    dashboard: "Dashboard",
+    products: "Producten",
+    orders: "Bestellingen",
+    customers: "Klanten",
+    settings: "Instellingen"
   },
   footer: {
-    changeLanguage: "Taal wijzigen",
     acceptedPayments: "Geaccepteerde betalingen",
+    allRightsReserved: "Alle rechten voorbehouden",
+    quickLinks: "Snelle links",
     legalNotice: "Juridische kennisgeving",
     accessibility: "Toegankelijkheid",
-    allRightsReserved: "Alle rechten voorbehouden"
-  },
-  auth: {
-    createAccount: "Account aanmaken",
-    signIn: "Inloggen",
-    trialDescription: "Begin met een gratis proefperiode van 14 dagen. Geen creditcard vereist.",
-    emailPlaceholder: "voorbeeld@email.com",
-    password: "Wachtwoord",
-    creating: "Aanmaken...",
-    signingIn: "Inloggen...",
-    create: "Account aanmaken",
-    successTitle: "Account succesvol aangemaakt",
-    successDescription: "Geniet van je gratis proefperiode van 14 dagen!",
-    errorTitle: "Fout",
-    errorDescription: "Er is een fout opgetreden bij het aanmaken van het account",
-    alreadyHaveAccount: "Heb je al een account? Log in",
-    back: "Terug",
-    continueWithGoogle: "Doorgaan met Google"
-  },
-  profile: {
-    title: "Mijn profiel",
-    subtitle: "Beheer je accountinformatie",
-    personalInfo: "Persoonlijke informatie",
-    email: "E-mail",
-    name: "Naam",
-    save: "Opslaan",
-    password: "Wachtwoord",
-    currentPassword: "Huidig wachtwoord",
-    newPassword: "Nieuw wachtwoord",
-    confirmPassword: "Bevestig wachtwoord",
-    success: "Profiel succesvol bijgewerkt",
-    error: "Fout bij het bijwerken van profiel",
-    updating: "Bijwerken...",
-    update: "Bijwerken",
-    fullName: "Volledige naam",
-    phoneNumber: "Telefoonnummer"
+    termsOfUse: "Gebruiksvoorwaarden",
+    support: "Ondersteuning",
+    followUs: "Volg ons",
+    socialMedia: "Vind ons op sociale media",
+    newsletter: "Nieuwsbrief",
+    subscribeNewsletter: "Abonneer je op onze nieuwsbrief",
+    emailPlaceholder: "Jouw e-mail",
+    subscribe: "Abonneren",
+    changeLanguage: "Taal wijzigen"
   },
   pricing: {
     title: "Plannen en prijzen",
     subtitle: "Kies het plan dat bij je past",
     startTrial: "Start gratis proefperiode",
     mostPopular: "Meest populair",
-    freeTrial: "14 dagen gratis proefperiode",
+    freeTrial: "14 dagen gratis proberen",
     perMonth: "/maand",
     basic: {
       name: "Basis",
@@ -115,5 +89,29 @@ export const nl = {
         "Aangepaste API"
       ]
     }
-  }
-};
+  },
+  profile: {
+    title: "Mijn profiel",
+    fullName: "Volledige naam",
+    phoneNumber: "Telefoonnummer",
+    update: "Bijwerken",
+    updating: "Bijwerken...",
+    success: "Profiel succesvol bijgewerkt",
+    error: "Fout bij het bijwerken van profiel"
+  },
+  common: {
+    loading: "Laden...",
+    error: "Fout",
+    success: "Succes",
+    save: "Opslaan",
+    cancel: "Annuleren",
+    delete: "Verwijderen",
+    edit: "Bewerken",
+    create: "Aanmaken",
+    search: "Zoeken",
+    filter: "Filteren",
+    sort: "Sorteren",
+    actions: "Acties",
+    confirm: "Bevestigen",
+    back: "Terug",
+    next

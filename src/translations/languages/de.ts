@@ -1,84 +1,58 @@
+
 export const de = {
-  hero: {
-    title: "Bauen Sie Ihr E-Commerce-Imperium",
-    subtitle: "Die komplette Plattform zum Starten und Wachsen Ihres Online-Shops",
-  },
-  features: {
-    title: "Unsere Funktionen",
-    items: [
-      {
-        title: "Produktverwaltung",
-        description: "Verwalten Sie Ihren Produktkatalog einfach"
-      },
-      {
-        title: "Sichere Zahlungen",
-        description: "Akzeptieren Sie Zahlungen sicher"
-      },
-      {
-        title: "Erweiterte Analysen",
-        description: "Verfolgen Sie Ihre Leistung in Echtzeit"
-      }
-    ]
+  auth: {
+    login: "Anmelden",
+    startFreeTrial: "Kostenlose Testversion starten",
+    register: "Registrieren",
+    email: "E-Mail",
+    password: "Passwort",
+    forgotPassword: "Passwort vergessen?",
+    alreadyHaveAccount: "Bereits ein Konto?",
+    dontHaveAccount: "Noch kein Konto?",
+    errorDescription: "Ein Fehler ist aufgetreten",
+    errorTitle: "Fehler",
+    successTitle: "Erfolg",
+    successDescription: "Operation erfolgreich",
+    continueWithGoogle: "Mit Google fortfahren",
+    createAccount: "Konto erstellen",
+    trialDescription: "14 Tage kostenlose Testversion",
+    emailPlaceholder: "ihre@email.com",
+    creating: "Erstelle...",
+    create: "Erstellen",
+    errorMessage: "Ein Fehler ist aufgetreten"
   },
   navigation: {
-    home: "Startseite",
-    about: "Über uns",
     pricing: "Preise",
+    about: "Über uns",
     contact: "Kontakt",
-    themes: "Themes",
-    services: "Dienstleistungen",
-    profile: "Profil"
-  },
-  cta: {
-    title: "Bereit loszulegen?",
-    subtitle: "Starten Sie Ihren Online-Shop in Minuten",
-    button: "Shop erstellen"
+    themes: "Designs",
+    resources: "Ressourcen",
+    home: "Start",
+    dashboard: "Dashboard",
+    products: "Produkte",
+    orders: "Bestellungen",
+    customers: "Kunden",
+    settings: "Einstellungen"
   },
   footer: {
-    changeLanguage: "Sprache ändern",
     acceptedPayments: "Akzeptierte Zahlungen",
-    legalNotice: "Rechtliche Hinweise",
+    allRightsReserved: "Alle Rechte vorbehalten",
+    quickLinks: "Schnelllinks",
+    legalNotice: "Impressum",
     accessibility: "Barrierefreiheit",
-    allRightsReserved: "Alle Rechte vorbehalten"
-  },
-  auth: {
-    createAccount: "Konto erstellen",
-    signIn: "Anmelden",
-    trialDescription: "Starten Sie mit einer 14-tägigen kostenlosen Testversion. Keine Kreditkarte erforderlich.",
-    emailPlaceholder: "beispiel@email.com",
-    password: "Passwort",
-    creating: "Wird erstellt...",
-    signingIn: "Anmeldung läuft...",
-    create: "Konto erstellen",
-    successTitle: "Konto erfolgreich erstellt",
-    successDescription: "Genießen Sie Ihre 14-tägige kostenlose Testversion!",
-    errorTitle: "Fehler",
-    errorDescription: "Beim Erstellen des Kontos ist ein Fehler aufgetreten",
-    alreadyHaveAccount: "Bereits ein Konto? Anmelden",
-    back: "Zurück",
-    continueWithGoogle: "Mit Google fortfahren"
-  },
-  profile: {
-    title: "Mein Profil",
-    subtitle: "Verwalten Sie Ihre Kontoinformationen",
-    personalInfo: "Persönliche Informationen",
-    email: "E-Mail",
-    name: "Name",
-    save: "Speichern",
-    password: "Passwort",
-    currentPassword: "Aktuelles Passwort",
-    newPassword: "Neues Passwort",
-    confirmPassword: "Passwort bestätigen",
-    success: "Profil erfolgreich aktualisiert",
-    error: "Fehler beim Aktualisieren des Profils",
-    updating: "Aktualisierung läuft...",
-    update: "Aktualisieren",
-    fullName: "Vollständiger Name",
-    phoneNumber: "Telefonnummer"
+    termsOfUse: "Nutzungsbedingungen",
+    support: "Support",
+    followUs: "Folgen Sie uns",
+    socialMedia: "Finden Sie uns in sozialen Medien",
+    newsletter: "Newsletter",
+    subscribeNewsletter: "Abonnieren Sie unseren Newsletter",
+    emailPlaceholder: "Ihre E-Mail",
+    subscribe: "Abonnieren",
+    changeLanguage: "Sprache ändern"
   },
   pricing: {
     title: "Pläne und Preise",
-    subtitle: "Wählen Sie den Plan, der zu Ihren Bedürfnissen passt",
+    subtitle: "Wählen Sie den Plan, der zu Ihnen passt",
     startTrial: "Kostenlose Testversion starten",
     mostPopular: "Am beliebtesten",
     freeTrial: "14 Tage kostenlose Testversion",
@@ -115,5 +89,33 @@ export const de = {
         "Eigene API"
       ]
     }
+  },
+  profile: {
+    title: "Mein Profil",
+    fullName: "Vollständiger Name",
+    phoneNumber: "Telefonnummer",
+    update: "Aktualisieren",
+    updating: "Aktualisiere...",
+    success: "Profil erfolgreich aktualisiert",
+    error: "Fehler beim Aktualisieren des Profils"
+  },
+  common: {
+    loading: "Lade...",
+    error: "Fehler",
+    success: "Erfolg",
+    save: "Speichern",
+    cancel: "Abbrechen",
+    delete: "Löschen",
+    edit: "Bearbeiten",
+    create: "Erstellen",
+    search: "Suchen",
+    filter: "Filtern",
+    sort: "Sortieren",
+    actions: "Aktionen",
+    confirm: "Bestätigen",
+    back: "Zurück",
+    next: "Weiter",
+    previous: "Zurück",
+    close: "Schließen"
   }
 };

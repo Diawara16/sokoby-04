@@ -1,87 +1,61 @@
+
 export const ar = {
-  hero: {
-    title: "بناء إمبراطوريتك للتجارة الإلكترونية",
-    subtitle: "المنصة الكاملة لإطلاق وتنمية متجرك عبر الإنترنت",
-  },
-  features: {
-    title: "مميزاتنا",
-    items: [
-      {
-        title: "إدارة المنتجات",
-        description: "إدارة كتالوج منتجاتك بسهولة"
-      },
-      {
-        title: "مدفوعات آمنة",
-        description: "قبول المدفوعات بشكل آمن"
-      },
-      {
-        title: "تحليلات متقدمة",
-        description: "تتبع أدائك في الوقت الفعلي"
-      }
-    ]
+  auth: {
+    login: "تسجيل الدخول",
+    startFreeTrial: "ابدأ النسخة التجريبية المجانية",
+    register: "التسجيل",
+    email: "البريد الإلكتروني",
+    password: "كلمة المرور",
+    forgotPassword: "نسيت كلمة المرور؟",
+    alreadyHaveAccount: "لديك حساب بالفعل؟",
+    dontHaveAccount: "ليس لديك حساب؟",
+    errorDescription: "حدث خطأ",
+    errorTitle: "خطأ",
+    successTitle: "نجاح",
+    successDescription: "تمت العملية بنجاح",
+    continueWithGoogle: "المتابعة مع Google",
+    createAccount: "إنشاء حساب",
+    trialDescription: "نسخة تجريبية مجانية لمدة 14 يوماً",
+    emailPlaceholder: "بريدك@الالكتروني.com",
+    creating: "جاري الإنشاء...",
+    create: "إنشاء",
+    errorMessage: "حدث خطأ"
   },
   navigation: {
-    home: "الرئيسية",
-    about: "حول",
-    pricing: "التسعير",
+    pricing: "الأسعار",
+    about: "عن",
     contact: "اتصل بنا",
-    themes: "السمات",
-    services: "الخدمات",
-    profile: "الملف الشخصي"
-  },
-  cta: {
-    title: "مستعد للبدء؟",
-    subtitle: "أطلق متجرك عبر الإنترنت في دقائق",
-    button: "إنشاء متجري"
+    themes: "القوالب",
+    resources: "الموارد",
+    home: "الرئيسية",
+    dashboard: "لوحة التحكم",
+    products: "المنتجات",
+    orders: "الطلبات",
+    customers: "العملاء",
+    settings: "الإعدادات"
   },
   footer: {
-    changeLanguage: "تغيير اللغة",
-    acceptedPayments: "طرق الدفع المقبولة",
+    acceptedPayments: "وسائل الدفع المقبولة",
+    allRightsReserved: "جميع الحقوق محفوظة",
+    quickLinks: "روابط سريعة",
     legalNotice: "إشعار قانوني",
     accessibility: "إمكانية الوصول",
-    allRightsReserved: "جميع الحقوق محفوظة"
-  },
-  auth: {
-    createAccount: "إنشاء حساب",
-    signIn: "تسجيل الدخول",
-    trialDescription: "ابدأ مع تجربة مجانية لمدة 14 يومًا. لا تحتاج إلى بطاقة ائتمان.",
-    emailPlaceholder: "example@email.com",
-    password: "كلمة المرور",
-    creating: "جاري الإنشاء...",
-    signingIn: "جاري تسجيل الدخول...",
-    create: "إنشاء حساب",
-    successTitle: "تم إنشاء الحساب بنجاح",
-    successDescription: "استمتع بتجربتك المجانية لمدة 14 يومًا!",
-    errorTitle: "خطأ",
-    errorDescription: "حدث خطأ أثناء إنشاء الحساب",
-    alreadyHaveAccount: "لديك حساب بالفعل؟ تسجيل الدخول",
-    back: "رجوع",
-    continueWithGoogle: "المتابعة باستخدام Google"
-  },
-  profile: {
-    title: "الملف الشخصي",
-    subtitle: "إدارة معلومات حسابك",
-    personalInfo: "المعلومات الشخصية",
-    email: "البريد الإلكتروني",
-    name: "الاسم",
-    save: "حفظ",
-    password: "كلمة المرور",
-    currentPassword: "كلمة المرور الحالية",
-    newPassword: "كلمة المرور الجديدة",
-    confirmPassword: "تأكيد كلمة المرور",
-    success: "تم تحديث الملف الشخصي بنجاح",
-    error: "حدث خطأ أثناء تحديث الملف الشخصي",
-    updating: "جاري التحديث...",
-    update: "تحديث",
-    fullName: "الاسم الكامل",
-    phoneNumber: "رقم الهاتف"
+    termsOfUse: "شروط الاستخدام",
+    support: "الدعم",
+    followUs: "تابعنا",
+    socialMedia: "تواصل معنا على وسائل التواصل الاجتماعي",
+    newsletter: "النشرة الإخبارية",
+    subscribeNewsletter: "اشترك في نشرتنا الإخبارية",
+    emailPlaceholder: "بريدك الإلكتروني",
+    subscribe: "اشتراك",
+    changeLanguage: "تغيير اللغة"
   },
   pricing: {
     title: "الخطط والأسعار",
-    subtitle: "اختر الخطة التي تناسب احتياجاتك",
+    subtitle: "اختر الخطة التي تناسبك",
     startTrial: "ابدأ النسخة التجريبية المجانية",
     mostPopular: "الأكثر شعبية",
-    freeTrial: "تجربة مجانية لمدة 14 يومًا",
+    freeTrial: "تجربة مجانية لمدة 14 يوماً",
     perMonth: "/شهر",
     basic: {
       name: "أساسي",
@@ -90,7 +64,7 @@ export const ar = {
       features: [
         "متجر واحد",
         "100 منتج",
-        "دعم البريد الإلكتروني"
+        "دعم بالبريد الإلكتروني"
       ]
     },
     pro: {
@@ -112,8 +86,36 @@ export const ar = {
         "متاجر غير محدودة",
         "منتجات غير محدودة",
         "دعم مخصص",
-        "API مخصصة"
+        "واجهة برمجة تطبيقات مخصصة"
       ]
     }
+  },
+  profile: {
+    title: "ملفي الشخصي",
+    fullName: "الاسم الكامل",
+    phoneNumber: "رقم الهاتف",
+    update: "تحديث",
+    updating: "جاري التحديث...",
+    success: "تم تحديث الملف الشخصي بنجاح",
+    error: "خطأ في تحديث الملف الشخصي"
+  },
+  common: {
+    loading: "جاري التحميل...",
+    error: "خطأ",
+    success: "نجاح",
+    save: "حفظ",
+    cancel: "إلغاء",
+    delete: "حذف",
+    edit: "تعديل",
+    create: "إنشاء",
+    search: "بحث",
+    filter: "تصفية",
+    sort: "ترتيب",
+    actions: "إجراءات",
+    confirm: "تأكيد",
+    back: "رجوع",
+    next: "التالي",
+    previous: "السابق",
+    close: "إغلاق"
   }
 };
