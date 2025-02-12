@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguageContext } from "@/contexts/LanguageContext";
@@ -5,6 +6,7 @@ import { translations } from "@/translations";
 import { Logo } from "./navigation/Logo";
 import { MobileNav } from "./navigation/MobileNav";
 import { Search, User } from "lucide-react";
+import { Translation } from "@/types/translations";
 
 interface HeaderProps {
   isAuthenticated?: boolean;
@@ -13,7 +15,7 @@ interface HeaderProps {
 export function Header({ isAuthenticated = false }: HeaderProps) {
   const navigate = useNavigate();
   const { currentLanguage } = useLanguageContext();
-  const t = translations[currentLanguage as keyof typeof translations];
+  const t = translations[currentLanguage] as Translation;
 
   const handleLogin = () => {
     navigate("/login");

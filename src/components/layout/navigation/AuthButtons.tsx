@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { translations } from "@/translations";
+import { Translation } from "@/types/translations";
 
 export function AuthButtons() {
   const { currentLanguage } = useLanguageContext();
-  const t = translations[currentLanguage as keyof typeof translations];
+  const t = translations[currentLanguage] as Translation;
 
   return (
     <div className="flex items-center gap-3">
