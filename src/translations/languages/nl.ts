@@ -114,4 +114,8 @@ export const nl = {
     actions: "Acties",
     confirm: "Bevestigen",
     back: "Terug",
-    next
+    next: "Volgende",
+    previous: "Vorige",
+    close: "Sluiten"
+  }
+};
