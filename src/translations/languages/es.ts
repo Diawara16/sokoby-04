@@ -1,84 +1,58 @@
+
 export const es = {
-  hero: {
-    title: "Construye tu imperio de comercio electrónico",
-    subtitle: "La plataforma completa para lanzar y hacer crecer tu tienda en línea",
-  },
-  features: {
-    title: "Nuestras características",
-    items: [
-      {
-        title: "Gestión de productos",
-        description: "Gestiona fácilmente tu catálogo de productos"
-      },
-      {
-        title: "Pagos seguros",
-        description: "Acepta pagos de forma segura"
-      },
-      {
-        title: "Análisis avanzado",
-        description: "Sigue tu rendimiento en tiempo real"
-      }
-    ]
+  auth: {
+    login: "Iniciar sesión",
+    startFreeTrial: "Comenzar prueba gratuita",
+    register: "Registrarse",
+    email: "Correo electrónico",
+    password: "Contraseña",
+    forgotPassword: "¿Olvidaste tu contraseña?",
+    alreadyHaveAccount: "¿Ya tienes una cuenta?",
+    dontHaveAccount: "¿No tienes una cuenta?",
+    errorDescription: "Ha ocurrido un error",
+    errorTitle: "Error",
+    successTitle: "Éxito",
+    successDescription: "Operación exitosa",
+    continueWithGoogle: "Continuar con Google",
+    createAccount: "Crear cuenta",
+    trialDescription: "Prueba gratuita de 14 días",
+    emailPlaceholder: "tu@email.com",
+    creating: "Creando...",
+    create: "Crear",
+    errorMessage: "Ha ocurrido un error"
   },
   navigation: {
-    home: "Inicio",
-    about: "Acerca de",
     pricing: "Precios",
+    about: "Acerca de",
     contact: "Contacto",
     themes: "Temas",
-    services: "Servicios",
-    profile: "Perfil"
-  },
-  cta: {
-    title: "¿Listo para empezar?",
-    subtitle: "Lanza tu tienda en línea en minutos",
-    button: "Crear mi tienda"
+    resources: "Recursos",
+    home: "Inicio",
+    dashboard: "Panel",
+    products: "Productos",
+    orders: "Pedidos",
+    customers: "Clientes",
+    settings: "Ajustes"
   },
   footer: {
-    changeLanguage: "Cambiar idioma",
     acceptedPayments: "Pagos aceptados",
+    allRightsReserved: "Todos los derechos reservados",
+    quickLinks: "Enlaces rápidos",
     legalNotice: "Aviso legal",
     accessibility: "Accesibilidad",
-    allRightsReserved: "Todos los derechos reservados"
-  },
-  auth: {
-    createAccount: "Crear cuenta",
-    signIn: "Iniciar sesión",
-    trialDescription: "Comienza con una prueba gratuita de 14 días. No se requiere tarjeta de crédito.",
-    emailPlaceholder: "ejemplo@email.com",
-    password: "Contraseña",
-    creating: "Creando...",
-    signingIn: "Iniciando sesión...",
-    create: "Crear cuenta",
-    successTitle: "Cuenta creada con éxito",
-    successDescription: "¡Disfruta de tu prueba gratuita de 14 días!",
-    errorTitle: "Error",
-    errorDescription: "Ocurrió un error al crear la cuenta",
-    alreadyHaveAccount: "¿Ya tienes una cuenta? Inicia sesión",
-    back: "Volver",
-    continueWithGoogle: "Continuar con Google"
-  },
-  profile: {
-    title: "Mi Perfil",
-    subtitle: "Gestiona tu información de cuenta",
-    personalInfo: "Información personal",
-    email: "Correo electrónico",
-    name: "Nombre",
-    save: "Guardar",
-    password: "Contraseña",
-    currentPassword: "Contraseña actual",
-    newPassword: "Nueva contraseña",
-    confirmPassword: "Confirmar contraseña",
-    success: "Perfil actualizado con éxito",
-    error: "Error al actualizar el perfil",
-    updating: "Actualizando...",
-    update: "Actualizar",
-    fullName: "Nombre completo",
-    phoneNumber: "Número de teléfono"
+    termsOfUse: "Términos de uso",
+    support: "Soporte",
+    followUs: "Síguenos",
+    socialMedia: "Encuéntranos en redes sociales",
+    newsletter: "Boletín",
+    subscribeNewsletter: "Suscríbete a nuestro boletín",
+    emailPlaceholder: "Tu email",
+    subscribe: "Suscribirse",
+    changeLanguage: "Cambiar idioma"
   },
   pricing: {
     title: "Planes y precios",
-    subtitle: "Elige el plan que se adapte a tus necesidades",
+    subtitle: "Elige el plan que más te convenga",
     startTrial: "Comenzar prueba gratuita",
     mostPopular: "Más popular",
     freeTrial: "14 días de prueba gratuita",
@@ -86,11 +60,11 @@ export const es = {
     basic: {
       name: "Básico",
       price: "9.99",
-      description: "Para empezar",
+      description: "Para comenzar",
       features: [
         "1 tienda",
         "100 productos",
-        "Soporte por correo"
+        "Soporte por email"
       ]
     },
     pro: {
@@ -101,7 +75,7 @@ export const es = {
         "3 tiendas",
         "1000 productos",
         "Soporte prioritario",
-        "Análisis avanzados"
+        "Análisis avanzado"
       ]
     },
     enterprise: {
@@ -115,5 +89,33 @@ export const es = {
         "API personalizada"
       ]
     }
+  },
+  profile: {
+    title: "Mi Perfil",
+    fullName: "Nombre completo",
+    phoneNumber: "Número de teléfono",
+    update: "Actualizar",
+    updating: "Actualizando...",
+    success: "Perfil actualizado con éxito",
+    error: "Error al actualizar el perfil"
+  },
+  common: {
+    loading: "Cargando...",
+    error: "Error",
+    success: "Éxito",
+    save: "Guardar",
+    cancel: "Cancelar",
+    delete: "Eliminar",
+    edit: "Editar",
+    create: "Crear",
+    search: "Buscar",
+    filter: "Filtrar",
+    sort: "Ordenar",
+    actions: "Acciones",
+    confirm: "Confirmar",
+    back: "Atrás",
+    next: "Siguiente",
+    previous: "Anterior",
+    close: "Cerrar"
   }
 };
