@@ -9,6 +9,8 @@ export function AuthButtons() {
   const { currentLanguage } = useLanguageContext();
   const t = translations[currentLanguage] as Translation;
 
+  console.log("Auth buttons rendering, language:", currentLanguage); // Log pour débugger
+
   return (
     <div className="flex items-center gap-3">
       <Link to="/login">

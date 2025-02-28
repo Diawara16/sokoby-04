@@ -11,6 +11,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CookieConsent } from "@/components/CookieConsent";
 
 function App() {
+  console.log("App component rendering"); // Log pour débugger
   const [paypalClientId, setPaypalClientId] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -53,7 +54,7 @@ function App() {
   return (
     <LanguageProvider>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
+        <BrowserRouter basename="/">
           <PayPalScriptProvider options={{ 
             clientId: paypalClientId || "test",
             currency: "EUR"

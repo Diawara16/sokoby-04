@@ -7,6 +7,8 @@ import EssaiGratuit from "@/pages/EssaiGratuit";
 import { DynamicLanding } from "@/components/landing/DynamicLanding";
 
 export function AppRoutes() {
+  console.log("AppRoutes rendering"); // Ajout d'un log pour débugger
+  
   return (
     <Routes>
       <Route path="/" element={<Home />} />

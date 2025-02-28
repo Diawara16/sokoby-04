@@ -1,3 +1,4 @@
+
 /* /index.html 200
 
 # Redirection HTTP vers HTTPS
@@ -9,5 +10,10 @@ https://www.sokoby.com/* https://sokoby.com/:splat 301!
 # Redirection du domaine de développement vers le domaine principal
 16ad07cd-3490-4e7c-82b3-544f50ffc26d.lovableproject.com/* https://sokoby.com/:splat 301!
 
-# Fallback pour SPA
+# Redirection explicite des routes d'authentification
+/login /index.html 200
+/connexion /index.html 200
+/register /index.html 200
+
+# Fallback pour SPA - TRÈS IMPORTANT
 /* /index.html 200
