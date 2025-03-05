@@ -1,10 +1,12 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Mail } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { sendEmail } from "@/utils/email";
+import { Card } from "@/components/ui/card";
 
 const Contact = () => {
   const [name, setName] = useState("");
@@ -53,24 +55,58 @@ const Contact = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <h1 className="text-3xl font-bold mb-6">Contact</h1>
+    <div className="container mx-auto px-4 py-12 max-w-4xl">
+      <h1 className="text-3xl font-bold mb-8 text-center">Contactez-nous</h1>
       
-      {/* Support Email Section */}
-      <div className="bg-[#ea384c] p-6 rounded-lg mb-8 flex items-center gap-4">
-        <Mail className="w-6 h-6 text-white" />
-        <div>
-          <h2 className="text-lg font-semibold text-white">Email Support</h2>
-          <a href="mailto:support@sokoby.com" className="text-white hover:text-white/90 transition-colors">
-            support@sokoby.com
-          </a>
-        </div>
+      <div className="grid gap-8 md:grid-cols-2 mb-12">
+        <Card className="p-6 hover:shadow-lg transition-all">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="rounded-full bg-primary/10 p-3">
+              <Mail className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold">Email</h2>
+              <a href="mailto:support@sokoby.com" className="text-primary hover:underline">
+                support@sokoby.com
+              </a>
+              <br />
+              <a href="mailto:contact@sokoby.com" className="text-primary hover:underline">
+                contact@sokoby.com
+              </a>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6 hover:shadow-lg transition-all">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="rounded-full bg-primary/10 p-3">
+              <Phone className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold">Téléphone</h2>
+              <p className="text-primary">+1 514 512 7993</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6 hover:shadow-lg transition-all md:col-span-2">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="rounded-full bg-primary/10 p-3">
+              <MapPin className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold">Adresse</h2>
+              <p>7188 Rue Saint-hubert</p>
+              <p>H2R2N1, Montréal, Québec</p>
+            </div>
+          </div>
+        </Card>
       </div>
 
       {/* Contact Form */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <h2 className="text-xl font-semibold mb-4">Formulaire de contact</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="bg-white p-8 rounded-lg shadow-sm border">
+        <h2 className="text-2xl font-semibold mb-6">Formulaire de contact</h2>
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
               Nom
@@ -115,7 +151,7 @@ const Contact = () => {
 
           <Button 
             type="submit" 
-            className="w-full bg-[#ea384c] hover:bg-[#ea384c]/90"
+            className="w-full"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}

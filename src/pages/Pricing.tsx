@@ -17,7 +17,6 @@ const Pricing = () => {
       <PricingPlans 
         currentLanguage="fr"
         onSubscribe={handleSubscribe}
-        currencySymbol="$"
       />
     </div>
   );

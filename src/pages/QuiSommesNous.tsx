@@ -1,8 +1,10 @@
+
 import { AppSidebar } from "@/components/AppSidebar";
 import AboutHeader from "@/components/about/AboutHeader";
 import AboutCard from "@/components/about/AboutCard";
 import ContactSection from "@/components/about/ContactSection";
 import ShippingInfo from "@/components/about/ShippingInfo";
+import TrackingFeatures from "@/components/about/TrackingFeatures";
 import { Target, History, Heart, Users } from "lucide-react";
 
 const QuiSommesNous = () => {
@@ -48,6 +50,7 @@ const QuiSommesNous = () => {
               ))}
             </div>
 
+            <TrackingFeatures />
             <ShippingInfo />
             <ContactSection />
           </div>

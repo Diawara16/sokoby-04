@@ -5,6 +5,10 @@ import Register from "@/pages/Register";
 import Login from "@/pages/Login";
 import EssaiGratuit from "@/pages/EssaiGratuit";
 import { DynamicLanding } from "@/components/landing/DynamicLanding";
+import QuiSommesNous from "@/pages/QuiSommesNous";
+import Contact from "@/pages/Contact";
+import Pricing from "@/pages/Pricing";
+import Support from "@/pages/Support";
 
 export function AppRoutes() {
   console.log("AppRoutes rendering avec URL:", window.location.pathname); // Log amélioré
@@ -17,6 +21,10 @@ export function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/connexion" element={<Login />} />
       <Route path="/essai-gratuit" element={<EssaiGratuit />} />
+      <Route path="/qui-sommes-nous" element={<QuiSommesNous />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/support" element={<Support />} />
       <Route path="/404" element={<div className="min-h-screen flex items-center justify-center">Page non trouvée</div>} />
       <Route path="/:slug" element={<DynamicLanding />} />
       <Route path="*" element={<Navigate to="/404" replace />} />
