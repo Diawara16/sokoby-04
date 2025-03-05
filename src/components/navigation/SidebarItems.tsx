@@ -1,3 +1,4 @@
+
 import { 
   LayoutDashboard, 
   Store, 
@@ -11,8 +12,8 @@ import {
   Settings,
   Bell,
   Plug,
-  Plus,
-  Bot
+  Bot,
+  Wand2
 } from "lucide-react";
 
 export const sidebarItems = [
@@ -30,7 +31,7 @@ export const sidebarItems = [
     icon: Bot,
     label: "Créer ma boutique IA",
     href: "/creer-boutique-ia",
-    className: "text-primary hover:text-primary/90"
+    className: "text-primary hover:text-primary/90 font-semibold"
   },
   { 
     icon: Package, 
@@ -75,7 +76,7 @@ export const sidebarItems = [
   { 
     icon: Settings, 
     label: "Paramètres", 
-    href: "/settings" 
+    href: "/parametres" 
   },
   { 
     icon: Bell, 

@@ -1,9 +1,10 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Palette, Settings, Rocket, Wand, Store } from "lucide-react";
+import { ShoppingBag, Palette, Settings, Rocket, Wand, Store, Globe, Users, CreditCard, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ConfigurationStep {
@@ -14,7 +15,7 @@ interface ConfigurationStep {
   link: string;
 }
 
-const Configuration = () => {
+const Parametres = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [hasSubscription, setHasSubscription] = useState(false);
@@ -55,46 +56,46 @@ const Configuration = () => {
 
   const configurationSteps: ConfigurationStep[] = [
     {
-      title: "Trouver des produits à vendre",
-      description: "Parcourez notre catalogue de produits dropshipping et importez-les directement dans votre boutique.",
-      icon: ShoppingBag,
-      action: "Parcourir les produits",
-      link: "/boutique"
-    },
-    {
-      title: "Personnaliser votre boutique",
-      description: "Choisissez parmi nos thèmes professionnels et personnalisez l'apparence de votre boutique.",
-      icon: Palette,
-      action: "Personnaliser",
-      link: "/themes"
-    },
-    {
-      title: "Configurer les paramètres",
-      description: "Définissez vos préférences de paiement, d'expédition et autres paramètres importants.",
-      icon: Settings,
+      title: "Paramètres généraux",
+      description: "Configurez les informations de base de votre boutique comme le nom, l'adresse et les coordonnées.",
+      icon: Store,
       action: "Configurer",
       link: "/parametres"
     },
     {
-      title: "Connecter des applications",
-      description: "Améliorez votre boutique avec nos applications partenaires pour le marketing, la gestion des stocks et plus encore.",
-      icon: Rocket,
-      action: "Explorer les apps",
-      link: "/applications"
+      title: "Nom de domaine",
+      description: "Configurez votre domaine personnalisé pour votre boutique en ligne.",
+      icon: Globe,
+      action: "Configurer",
+      link: "/parametres/domaine"
     },
     {
-      title: "Assistant IA",
-      description: "Utilisez notre assistant IA pour générer des descriptions de produits uniques et optimisées.",
-      icon: Wand,
-      action: "Essayer l'assistant",
-      link: "/assistant"
+      title: "Gestion des utilisateurs",
+      description: "Gérez les accès et les permissions des utilisateurs de votre boutique.",
+      icon: Users,
+      action: "Configurer",
+      link: "/parametres/utilisateurs"
     },
     {
-      title: "Lancer votre boutique",
-      description: "Vérifiez votre configuration et lancez votre boutique en ligne.",
-      icon: Store,
-      action: "Lancer",
-      link: "/lancement"
+      title: "Méthodes de paiement",
+      description: "Configurez les méthodes de paiement acceptées par votre boutique.",
+      icon: CreditCard,
+      action: "Configurer",
+      link: "/parametres/paiements"
+    },
+    {
+      title: "Options d'expédition",
+      description: "Définissez les options d'expédition et les tarifs pour vos clients.",
+      icon: ShoppingBag,
+      action: "Configurer",
+      link: "/parametres/expedition"
+    },
+    {
+      title: "Sécurité",
+      description: "Renforcez la sécurité de votre boutique et protégez vos données.",
+      icon: Shield,
+      action: "Configurer",
+      link: "/parametres/securite"
     }
   ];
 
@@ -129,9 +130,9 @@ const Configuration = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Guide de configuration</h1>
+        <h1 className="text-3xl font-bold mb-2">Paramètres de la boutique</h1>
         <p className="text-muted-foreground">
-          Utilisez ce guide personnalisé pour rendre votre boutique opérationnelle.
+          Configurez tous les aspects de votre boutique en ligne.
         </p>
       </div>
 
@@ -160,4 +161,4 @@ const Configuration = () => {
   );
 };
 
-export default Configuration;
+export default Parametres;

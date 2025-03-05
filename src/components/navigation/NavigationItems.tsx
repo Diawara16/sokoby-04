@@ -42,7 +42,7 @@ export const navigationItems: NavigationItem[] = [
     title: "Créer ma boutique IA",
     url: "/creer-boutique-ia",
     icon: Bot,
-    className: "text-primary hover:text-primary/90"
+    className: "text-primary hover:text-primary/90 font-semibold"
   },
   {
     title: "Produits",

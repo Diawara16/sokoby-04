@@ -9,9 +9,13 @@ import QuiSommesNous from "@/pages/QuiSommesNous";
 import Contact from "@/pages/Contact";
 import Pricing from "@/pages/Pricing";
 import Support from "@/pages/Support";
+import PlanTarifaire from "@/pages/PlanTarifaire";
+import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
+import Parametres from "@/pages/Parametres";
+import { SettingsRoutes } from "@/routes/SettingsRoutes";
 
 export function AppRoutes() {
-  console.log("AppRoutes rendering avec URL:", window.location.pathname); // Log amélioré
+  console.log("AppRoutes rendering avec URL:", window.location.pathname);
   
   return (
     <Routes>
@@ -24,6 +28,9 @@ export function AppRoutes() {
       <Route path="/qui-sommes-nous" element={<QuiSommesNous />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/pricing" element={<Pricing />} />
+      <Route path="/plan-tarifaire" element={<PlanTarifaire />} />
+      <Route path="/creer-boutique-ia" element={<CreerBoutiqueIA />} />
+      <Route path="/parametres" element={<Parametres />} />
       <Route path="/support" element={<Support />} />
       <Route path="/404" element={<div className="min-h-screen flex items-center justify-center">Page non trouvée</div>} />
       <Route path="/:slug" element={<DynamicLanding />} />
