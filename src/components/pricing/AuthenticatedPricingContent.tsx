@@ -1,3 +1,4 @@
+
 import { PaymentHistory } from "@/components/payments/PaymentHistory";
 import { ReferralCard } from "@/components/referral/ReferralCard";
 import { PlanComparison } from "@/components/pricing/PlanComparison";
@@ -15,11 +16,13 @@ interface AuthenticatedPricingContentProps {
     paymentMethod: 'card' | 'apple_pay' | 'google_pay',
     couponCode?: string
   ) => void;
+  currencySymbol?: string;
 }
 
 export const AuthenticatedPricingContent = ({
   hasProfile,
   onSubscribe,
+  currencySymbol = "$"
 }: AuthenticatedPricingContentProps) => {
   const { isCreatingProfile } = useProfileCreation(hasProfile);
 

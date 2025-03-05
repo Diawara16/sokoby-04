@@ -1,3 +1,4 @@
+
 import { PlanComparison } from "@/components/pricing/PlanComparison";
 import { PricingPlans } from "@/components/pricing/PricingPlans";
 
@@ -7,10 +8,12 @@ interface UnauthenticatedPricingContentProps {
     paymentMethod: 'card' | 'apple_pay' | 'google_pay',
     couponCode?: string
   ) => void;
+  currencySymbol?: string;
 }
 
 const UnauthenticatedPricingContent = ({
   onSubscribe,
+  currencySymbol = "$"
 }: UnauthenticatedPricingContentProps) => {
   return (
     <>

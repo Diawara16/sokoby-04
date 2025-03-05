@@ -28,12 +28,10 @@ const PlanTarifaire = () => {
         <AuthenticatedPricingContent 
           hasProfile={hasProfile}
           onSubscribe={handleSubscribe}
-          currencySymbol="$"
         />
       ) : (
         <UnauthenticatedPricingContent 
           onSubscribe={handleSubscribe}
-          currencySymbol="$"
         />
       )}
     </div>
