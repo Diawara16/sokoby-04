@@ -59,7 +59,7 @@ export const de = {
     perMonth: "/Monat",
     basic: {
       name: "Basic",
-      price: "9.99",
+      price: "11",
       description: "Zum Einstieg",
       features: [
         "1 Shop",
@@ -69,7 +69,7 @@ export const de = {
     },
     pro: {
       name: "Pro",
-      price: "19.99",
+      price: "25",
       description: "Für Profis",
       features: [
         "3 Shops",
@@ -80,7 +80,7 @@ export const de = {
     },
     enterprise: {
       name: "Enterprise",
-      price: "49.99",
+      price: "97",
       description: "Für große Unternehmen",
       features: [
         "Unbegrenzte Shops",

@@ -1,3 +1,4 @@
+
 export const fr = {
   auth: {
     login: "Se connecter",
@@ -58,7 +59,7 @@ export const fr = {
     perMonth: "/mois",
     basic: {
       name: "Basique",
-      price: "9.99",
+      price: "11",
       description: "Pour démarrer",
       features: [
         "1 boutique",
@@ -68,7 +69,7 @@ export const fr = {
     },
     pro: {
       name: "Pro",
-      price: "19.99",
+      price: "25",
       description: "Pour les professionnels",
       features: [
         "3 boutiques",
@@ -79,7 +80,7 @@ export const fr = {
     },
     enterprise: {
       name: "Entreprise",
-      price: "49.99",
+      price: "97",
       description: "Pour les grandes entreprises",
       features: [
         "Boutiques illimitées",

@@ -59,7 +59,7 @@ export const ar = {
     perMonth: "/شهر",
     basic: {
       name: "أساسي",
-      price: "9.99",
+      price: "11",
       description: "للبدء",
       features: [
         "متجر واحد",
@@ -69,7 +69,7 @@ export const ar = {
     },
     pro: {
       name: "احترافي",
-      price: "19.99",
+      price: "25",
       description: "للمحترفين",
       features: [
         "3 متاجر",
@@ -80,7 +80,7 @@ export const ar = {
     },
     enterprise: {
       name: "مؤسسات",
-      price: "49.99",
+      price: "97",
       description: "للشركات الكبيرة",
       features: [
         "متاجر غير محدودة",

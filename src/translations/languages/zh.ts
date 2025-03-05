@@ -59,7 +59,7 @@ export const zh = {
     perMonth: "/月",
     basic: {
       name: "基础版",
-      price: "9.99",
+      price: "11",
       description: "入门级",
       features: [
         "1个商店",
@@ -69,7 +69,7 @@ export const zh = {
     },
     pro: {
       name: "专业版",
-      price: "19.99",
+      price: "25",
       description: "适合专业用户",
       features: [
         "3个商店",
@@ -80,7 +80,7 @@ export const zh = {
     },
     enterprise: {
       name: "企业版",
-      price: "49.99",
+      price: "97",
       description: "适合大型企业",
       features: [
         "无限商店",

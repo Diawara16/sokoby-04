@@ -1,3 +1,4 @@
+
 import { PricingPlanData } from "@/types/theme";
 
 export const pricingPlans: PricingPlanData[] = [

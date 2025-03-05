@@ -59,7 +59,7 @@ export const nl = {
     perMonth: "/maand",
     basic: {
       name: "Basis",
-      price: "9.99",
+      price: "11",
       description: "Om te beginnen",
       features: [
         "1 winkel",
@@ -69,7 +69,7 @@ export const nl = {
     },
     pro: {
       name: "Pro",
-      price: "19.99",
+      price: "25",
       description: "Voor professionals",
       features: [
         "3 winkels",
@@ -80,7 +80,7 @@ export const nl = {
     },
     enterprise: {
       name: "Enterprise",
-      price: "49.99",
+      price: "97",
       description: "Voor grote bedrijven",
       features: [
         "Onbeperkte winkels",
