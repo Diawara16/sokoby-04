@@ -1,3 +1,4 @@
+
 import { InfoIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -12,9 +13,9 @@ export function ApplicationCardPrice({ price }: ApplicationCardPriceProps) {
   if (!price) return null;
 
   const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'EUR'
+      currency: 'USD'
     }).format(amount);
   };
 
@@ -22,10 +23,10 @@ export function ApplicationCardPrice({ price }: ApplicationCardPriceProps) {
     <div className="space-y-1">
       <div className="flex items-center gap-2">
         <p className="text-sm font-medium">
-          {formatPrice(price.monthly)}/mois
+          {formatPrice(price.monthly)}/month
           {price.annual && (
             <span className="text-xs text-muted-foreground ml-2">
-              ou {formatPrice(price.annual)}/an
+              or {formatPrice(price.annual)}/year
             </span>
           )}
         </p>
@@ -35,7 +36,7 @@ export function ApplicationCardPrice({ price }: ApplicationCardPriceProps) {
               <InfoIcon className="h-4 w-4 text-muted-foreground" />
             </TooltipTrigger>
             <TooltipContent>
-              <p>Disponible avec le plan Pro ({formatPrice(19)}/mois) ou Entreprise ({formatPrice(49)}/mois)</p>
+              <p>Available with Pro plan ({formatPrice(19)}/month) or Enterprise plan ({formatPrice(49)}/month)</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

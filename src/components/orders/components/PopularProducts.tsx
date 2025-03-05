@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { PopularProduct } from "../types/orderStats";
 
@@ -24,7 +25,7 @@ export const PopularProducts = ({ products }: PopularProductsProps) => {
                 </p>
               </div>
               <div className="text-right">
-                <p className="font-medium">{product.total_revenue.toFixed(2)} €</p>
+                <p className="font-medium">${product.total_revenue.toFixed(2)}</p>
                 <p className="text-sm text-muted-foreground">
                   CA total
                 </p>

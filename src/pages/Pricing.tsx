@@ -1,3 +1,4 @@
+
 import { PricingPlans } from "@/components/pricing/PricingPlans";
 import { useSubscriptionHandler } from "@/hooks/useSubscriptionHandler";
 
@@ -16,6 +17,7 @@ const Pricing = () => {
       <PricingPlans 
         currentLanguage="fr"
         onSubscribe={handleSubscribe}
+        currencySymbol="$"
       />
     </div>
   );

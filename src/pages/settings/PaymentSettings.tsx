@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -90,7 +91,7 @@ const PaymentSettings = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Stripe</Label>
+              <Label>Stripe (USD)</Label>
               <div className="text-sm text-muted-foreground">
                 Acceptez les paiements par carte bancaire
               </div>
@@ -100,7 +101,7 @@ const PaymentSettings = () => {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>PayPal</Label>
+              <Label>PayPal (USD)</Label>
               <div className="text-sm text-muted-foreground">
                 Acceptez les paiements via PayPal
               </div>

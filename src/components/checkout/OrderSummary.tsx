@@ -1,3 +1,4 @@
+
 import { CartState } from "@/types/cart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -22,14 +23,14 @@ export const OrderSummary = ({ state }: OrderSummaryProps) => {
                 </p>
               </div>
               <p className="font-medium">
-                {(item.price * item.quantity).toFixed(2)} €
+                ${(item.price * item.quantity).toFixed(2)}
               </p>
             </div>
           ))}
           <div className="pt-4 border-t">
             <div className="flex justify-between items-center">
               <span className="font-medium">Total</span>
-              <span className="font-medium">{state.total.toFixed(2)} €</span>
+              <span className="font-medium">${state.total.toFixed(2)}</span>
             </div>
           </div>
         </div>

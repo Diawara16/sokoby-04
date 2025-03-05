@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { SalesChart } from "@/components/analytics/charts/SalesChart";
@@ -84,7 +85,7 @@ const Analytics = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <MetricCard
           title="Revenu Total"
-          value={`${analyticsData?.totalRevenue.toFixed(2)}€`}
+          value={`$${analyticsData?.totalRevenue.toFixed(2)}`}
           description="Revenu total généré"
         />
         <MetricCard
@@ -99,7 +100,7 @@ const Analytics = () => {
         />
         <MetricCard
           title="Panier Moyen"
-          value={`${analyticsData?.averageOrderValue.toFixed(2)}€`}
+          value={`$${analyticsData?.averageOrderValue.toFixed(2)}`}
           description="Valeur moyenne des commandes"
         />
       </div>

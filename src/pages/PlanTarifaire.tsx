@@ -1,3 +1,4 @@
+
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "@/components/pricing/LoadingSpinner";
@@ -27,10 +28,12 @@ const PlanTarifaire = () => {
         <AuthenticatedPricingContent 
           hasProfile={hasProfile}
           onSubscribe={handleSubscribe}
+          currencySymbol="$"
         />
       ) : (
         <UnauthenticatedPricingContent 
           onSubscribe={handleSubscribe}
+          currencySymbol="$"
         />
       )}
     </div>

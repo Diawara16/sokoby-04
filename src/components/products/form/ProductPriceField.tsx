@@ -1,3 +1,4 @@
+
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { UseFormRegister, FieldErrors } from "react-hook-form"
@@ -11,7 +12,7 @@ interface Props {
 export function ProductPriceField({ register, errors }: Props) {
   return (
     <div>
-      <Label htmlFor="price">Prix</Label>
+      <Label htmlFor="price">Prix ($)</Label>
       <Input
         id="price"
         type="number"

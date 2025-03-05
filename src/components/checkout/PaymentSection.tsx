@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { InteracPaymentForm } from "@/components/payments/InteracPaymentForm";
@@ -35,7 +36,7 @@ export const PaymentSection = ({
             Création de la commande...
           </>
         ) : (
-          `Payer ${total.toFixed(2)} €`
+          `Pay $${total.toFixed(2)}`
         )}
       </Button>
     );
@@ -126,7 +127,7 @@ export const PaymentSection = ({
         />
       ) : (
         <Button className="w-full">
-          Payer par carte
+          Pay with Card
         </Button>
       )}
     </div>

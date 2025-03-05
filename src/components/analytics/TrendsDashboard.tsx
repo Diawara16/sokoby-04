@@ -1,3 +1,4 @@
+
 import { TrendingUp, Users, ShoppingBag, DollarSign } from "lucide-react"
 import { MetricCard } from "./metrics/MetricCard"
 import { SalesChart } from "./charts/SalesChart"
@@ -37,7 +38,7 @@ export const TrendsDashboard = () => {
     )
   }
 
-  const formatValue = (value: number) => `${value.toFixed(2)}€`
+  const formatValue = (value: number) => `$${value.toFixed(2)}`
 
   return (
     <div className="space-y-6">
