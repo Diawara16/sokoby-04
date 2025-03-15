@@ -1,6 +1,15 @@
+
 import { Bot, Sparkles } from "lucide-react";
 
-export const StoreHeader = () => {
+interface StoreHeaderProps {
+  title?: string;
+  description?: string;
+}
+
+export const StoreHeader = ({ 
+  title = "Créez votre boutique automatisée",
+  description = "Notre IA va générer une boutique complète et optimisée pour votre niche, avec des produits pertinents et des descriptions détaillées."
+}: StoreHeaderProps) => {
   return (
     <div className="text-center space-y-4">
       <div className="flex justify-center mb-4">
@@ -11,10 +20,10 @@ export const StoreHeader = () => {
         </div>
       </div>
       <h1 className="text-4xl font-bold text-gray-900 font-heading">
-        Créez votre boutique automatisée
+        {title}
       </h1>
       <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-        Notre IA va générer une boutique complète et optimisée pour votre niche, avec des produits pertinents et des descriptions détaillées.
+        {description}
       </p>
     </div>
   );

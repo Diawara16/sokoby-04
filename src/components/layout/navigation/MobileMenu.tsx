@@ -1,6 +1,7 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Bot, Wand2 } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -47,6 +48,25 @@ export function MobileMenu({ isAuthenticated }: MobileMenuProps) {
                 <span className="text-base font-medium">{link.label}</span>
               </Link>
             ))}
+            
+            {isAuthenticated && (
+              <>
+                <Link
+                  to="/boutique-ia"
+                  className="flex items-center gap-3 py-3 text-primary hover:text-primary/90 transition-colors duration-200"
+                >
+                  <Bot className="h-5 w-5" />
+                  <span className="text-base font-medium">Boutique IA</span>
+                </Link>
+                <Link
+                  to="/creer-boutique-ia"
+                  className="flex items-center gap-3 py-3 text-primary hover:text-primary/90 transition-colors duration-200 font-semibold"
+                >
+                  <Wand2 className="h-5 w-5" />
+                  <span className="text-base">Créer ma boutique IA</span>
+                </Link>
+              </>
+            )}
             
             <div className="mt-6 pt-6 border-t">
               {!isAuthenticated ? (

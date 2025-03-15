@@ -13,6 +13,7 @@ import PlanTarifaire from "@/pages/PlanTarifaire";
 import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
 import Parametres from "@/pages/Parametres";
 import { SettingsRoutes } from "@/routes/SettingsRoutes";
+import AIStore from "@/pages/AIStore";
 
 export function AppRoutes() {
   console.log("AppRoutes rendering avec URL:", window.location.pathname);
@@ -30,6 +31,7 @@ export function AppRoutes() {
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/plan-tarifaire" element={<PlanTarifaire />} />
       <Route path="/creer-boutique-ia" element={<CreerBoutiqueIA />} />
+      <Route path="/boutique-ia" element={<AIStore />} />
       <Route path="/parametres" element={<Parametres />} />
       <Route path="/support" element={<Support />} />
       <Route path="/404" element={<div className="min-h-screen flex items-center justify-center">Page non trouvée</div>} />

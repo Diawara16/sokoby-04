@@ -29,6 +29,12 @@ export const sidebarItems = [
   },
   {
     icon: Bot,
+    label: "Boutique IA",
+    href: "/boutique-ia",
+    className: "text-primary hover:text-primary/90"
+  },
+  {
+    icon: Wand2,
     label: "Créer ma boutique IA",
     href: "/creer-boutique-ia",
     className: "text-primary hover:text-primary/90 font-semibold"

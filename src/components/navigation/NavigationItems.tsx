@@ -1,3 +1,4 @@
+
 import { 
   Home, 
   CreditCard, 
@@ -15,7 +16,8 @@ import {
   Bell,
   Bot,
   Share2,
-  LayoutGrid
+  LayoutGrid,
+  Wand2
 } from "lucide-react";
 
 export interface NavigationItem {
@@ -39,9 +41,15 @@ export const navigationItems: NavigationItem[] = [
     icon: Store
   },
   {
+    title: "Boutique IA",
+    url: "/boutique-ia",
+    icon: Bot,
+    className: "text-primary hover:text-primary/90"
+  },
+  {
     title: "Créer ma boutique IA",
     url: "/creer-boutique-ia",
-    icon: Bot,
+    icon: Wand2,
     className: "text-primary hover:text-primary/90 font-semibold"
   },
   {
