@@ -1,3 +1,4 @@
+
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ApplicationCard } from '@/components/applications/ApplicationCard';
 import { Settings } from 'lucide-react';

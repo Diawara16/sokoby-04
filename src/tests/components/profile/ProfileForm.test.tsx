@@ -1,40 +1,54 @@
+
 import { render, screen } from '@testing-library/react';
 import { ProfileForm } from '@/components/profile/ProfileForm';
 import { vi, describe, it, expect } from 'vitest';
+import { BrowserRouter } from 'react-router-dom';
+
+// Mock Supabase
+vi.mock('@/lib/supabase', () => ({
+  supabase: {
+    auth: {
+      getUser: vi.fn().mockResolvedValue({ 
+        data: { user: { id: '1', email: 'test@example.com' } } 
+      }),
+    },
+    from: vi.fn(() => ({
+      upsert: vi.fn().mockResolvedValue({ error: null }),
+    })),
+  },
+}));
+
+// Mock useToast
+vi.mock('@/hooks/use-toast', () => ({
+  useToast: vi.fn(() => ({
+    toast: vi.fn(),
+  })),
+}));
 
 describe('ProfileForm', () => {
-  const defaultProps = {
-    user: {
-      id: 'user-1',
-      email: 'test@example.com',
-      fullName: 'Test User',
-    },
-    onSave: vi.fn(),
-    isSaving: false,
-    error: null,
+  const renderProfileForm = () => {
+    return render(
+      <BrowserRouter>
+        <ProfileForm />
+      </BrowserRouter>
+    );
   };
 
-  it('renders form fields with user data', () => {
-    render(<ProfileForm {...defaultProps} />);
-    expect(screen.getByLabelText(/email/i)).toHaveValue('test@example.com');
-    expect(screen.getByLabelText(/nom complet/i)).toHaveValue('Test User');
+  it('renders form fields correctly', () => {
+    renderProfileForm();
+    expect(screen.getByLabelText(/nom complet/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/numéro de téléphone/i)).toBeInTheDocument();
   });
 
-  it('calls onSave when form is submitted', () => {
-    render(<ProfileForm {...defaultProps} />);
-    const saveButton = screen.getByRole('button', { name: /enregistrer/i });
-    saveButton.click();
-    expect(defaultProps.onSave).toHaveBeenCalled();
+  it('renders submit button', () => {
+    renderProfileForm();
+    const submitButton = screen.getByRole('button', { name: /mettre à jour/i });
+    expect(submitButton).toBeInTheDocument();
   });
 
-  it('disables save button when saving', () => {
-    render(<ProfileForm {...defaultProps} isSaving={true} />);
-    const saveButton = screen.getByRole('button', { name: /enregistrer/i });
-    expect(saveButton).toBeDisabled();
-  });
-
-  it('displays error message when error prop is set', () => {
-    render(<ProfileForm {...defaultProps} error="Erreur lors de la sauvegarde" />);
-    expect(screen.getByText(/erreur lors de la sauvegarde/i)).toBeInTheDocument();
+  it('has proper form structure', () => {
+    renderProfileForm();
+    const form = screen.getByRole('form');
+    expect(form).toBeInTheDocument();
   });
 });

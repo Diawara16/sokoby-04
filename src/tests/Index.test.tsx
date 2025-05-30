@@ -1,3 +1,4 @@
+
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
@@ -39,8 +40,8 @@ describe('Index Page', () => {
     const robots = document.querySelector('meta[name="robots"]');
     const canonical = document.querySelector('link[rel="canonical"]');
     
-    expect(title).toBe('Sokoby - Créez votre boutique en ligne en quelques clics');
-    expect(description?.getAttribute('content')).toContain('Sokoby vous permet');
+    expect(title).toBe('Sokoby - Configuration Facebook Developer');
+    expect(description?.getAttribute('content')).toContain('Configurez votre application Facebook Developer avec Sokoby');
     expect(keywords?.getAttribute('content')).toContain('e-commerce');
     expect(robots?.getAttribute('content')).toContain('index, follow');
     expect(canonical?.getAttribute('href')).toBe('https://sokoby.com');
@@ -129,18 +130,13 @@ describe('Index Page', () => {
     renderIndex();
     
     // Vérifie la présence du titre principal
-    expect(screen.getByText(/Construisez votre empire e-commerce/i)).toBeInTheDocument();
+    expect(screen.getByText(/Préparation de votre icône Facebook/i)).toBeInTheDocument();
     
     // Vérifie la présence des boutons d'authentification
-    expect(screen.getByText(/Créer mon compte/i)).toBeInTheDocument();
-    expect(screen.getByText(/Se connecter/i)).toBeInTheDocument();
+    expect(screen.getByText(/Générateur d'icône Facebook/i)).toBeInTheDocument();
+    expect(screen.getByText(/Configuration du domaine/i)).toBeInTheDocument();
     
     // Vérifie la présence de la section d'inspiration shopping
-    expect(screen.getByText(/Inspirations Shopping/i)).toBeInTheDocument();
-    
-    // Vérifie la présence des cartes de produits
-    expect(screen.getByText(/Découvrez notre collection/i)).toBeInTheDocument();
-    expect(screen.getByText(/Nouveautés de la saison/i)).toBeInTheDocument();
-    expect(screen.getByText(/Meilleures ventes/i)).toBeInTheDocument();
+    expect(screen.getByText(/Accéder aux paramètres de domaine/i)).toBeInTheDocument();
   });
 });

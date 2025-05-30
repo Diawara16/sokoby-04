@@ -1,26 +1,48 @@
+
 import { render, screen, waitFor } from '@testing-library/react';
-import { SubscriptionDetails } from '@/components/profile/SubscriptionDetails';
+import SubscriptionDetails from '@/components/profile/SubscriptionDetails';
 import { vi, describe, it, expect } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 
-jest.mock('@/lib/supabase', () => ({
+vi.mock('@/lib/supabase', () => ({
   supabase: {
-    from: jest.fn(() => ({
-      select: jest.fn(),
-      url: '',
-      headers: {},
-      insert: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-      upsert: jest.fn()
-    }))
-  }
+    auth: {
+      getUser: vi.fn().mockResolvedValue({ 
+        data: { user: { id: '1' } } 
+      }),
+    },
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          order: vi.fn(() => ({
+            limit: vi.fn(() => ({
+              single: vi.fn().mockResolvedValue({ 
+                data: { 
+                  id: '1', 
+                  status: 'active', 
+                  current_period_end: '2024-12-31',
+                  created_at: '2024-01-01' 
+                }, 
+                error: null 
+              }))
+            }))
+          }))
+        }))
+      })),
+    })),
+  },
+}));
+
+vi.mock('@/hooks/use-toast', () => ({
+  useToast: vi.fn(() => ({
+    toast: vi.fn(),
+  })),
 }));
 
 describe('SubscriptionDetails', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders subscription details', async () => {
