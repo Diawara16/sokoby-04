@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import SubscriptionDetails from '@/components/profile/SubscriptionDetails';
+import { SubscriptionDetails } from '@/components/profile/SubscriptionDetails';
+import { vi, describe, it, expect } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 
