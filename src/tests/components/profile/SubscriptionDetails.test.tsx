@@ -25,7 +25,7 @@ vi.mock('@/lib/supabase', () => ({
                   created_at: '2024-01-01' 
                 }, 
                 error: null 
-              }))
+              })
             }))
           }))
         }))
