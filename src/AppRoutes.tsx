@@ -12,6 +12,8 @@ import Support from "@/pages/Support";
 import PlanTarifaire from "@/pages/PlanTarifaire";
 import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
 import Parametres from "@/pages/Parametres";
+import Profile from "@/pages/Profile";
+import Profil from "@/pages/Profil";
 import { SettingsRoutes } from "@/routes/SettingsRoutes";
 import AIStore from "@/pages/AIStore";
 
@@ -33,6 +35,8 @@ export function AppRoutes() {
       <Route path="/creer-boutique-ia" element={<CreerBoutiqueIA />} />
       <Route path="/boutique-ia" element={<AIStore />} />
       <Route path="/parametres" element={<Parametres />} />
+      <Route path="/profil" element={<Profil />} />
+      <Route path="/profile" element={<Profile />} />
       <Route path="/support" element={<Support />} />
       <Route path="/404" element={<div className="min-h-screen flex items-center justify-center">Page non trouvée</div>} />
       <Route path="/:slug" element={<DynamicLanding />} />
