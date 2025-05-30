@@ -29,9 +29,9 @@ vi.mock('@/lib/supabase', () => ({
             }))
           }))
         }))
-      })),
-    })),
-  },
+      }))
+    }))
+  }
 }));
 
 vi.mock('@/hooks/use-toast', () => ({
