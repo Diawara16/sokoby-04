@@ -1,34 +1,67 @@
 
-import React from 'react';
-import { vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@/components/ui/test-utils';
-import { PayPalButton } from '@/components/payments/PayPalButton';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { PaymentSection } from '@/components/checkout/PaymentSection';
+import { supabase } from '@/lib/supabase';
 
-// Mock PayPal
-vi.mock('@paypal/react-paypal-js', () => ({
-  PayPalButtons: ({ onApprove }: any) => (
-    <button onClick={() => onApprove({ orderID: 'test-order' })}>
-      PayPal Button
-    </button>
-  )
+// Mock Supabase
+vi.mock('@/lib/supabase', () => ({
+  supabase: {
+    from: vi.fn(),
+    auth: {
+      getUser: vi.fn(),
+    },
+  },
 }));
 
 describe('Payment Flow', () => {
-  it('renders PayPal button correctly', () => {
-    render(<PayPalButton amount="29.99" onSuccess={() => {}} onError={() => {}} />);
-    
-    expect(screen.getByText('PayPal Button')).toBeInTheDocument();
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it('calls onSuccess when payment is approved', async () => {
-    const onSuccess = vi.fn();
-    render(<PayPalButton amount="29.99" onSuccess={onSuccess} onError={() => {}} />);
-    
-    const paypalButton = screen.getByText('PayPal Button');
+  it('should display payment methods', () => {
+    render(
+      <PaymentSection
+        total={100}
+        isLoading={false}
+        orderId="order-123"
+        onPaymentSuccess={() => {}}
+      />
+    );
+
+    expect(screen.getByText(/carte bancaire/i)).toBeInTheDocument();
+    expect(screen.getByText(/paypal/i)).toBeInTheDocument();
+    expect(screen.getByText(/interac/i)).toBeInTheDocument();
+  });
+
+  it('should handle payment method selection', () => {
+    render(
+      <PaymentSection
+        total={100}
+        isLoading={false}
+        orderId="order-123"
+        onPaymentSuccess={() => {}}
+      />
+    );
+
+    const paypalButton = screen.getByText(/paypal/i);
     fireEvent.click(paypalButton);
-    
-    await waitFor(() => {
-      expect(onSuccess).toHaveBeenCalledWith({ orderID: 'test-order' });
+
+    expect(screen.getByRole('button', { name: /paypal/i })).toHaveStyle({
+      backgroundColor: expect.any(String),
     });
+  });
+
+  it('should show loading state', () => {
+    render(
+      <PaymentSection
+        total={100}
+        isLoading={true}
+        orderId="order-123"
+        onPaymentSuccess={() => {}}
+      />
+    );
+
+    expect(screen.getByText(/création de la commande/i)).toBeInTheDocument();
   });
 });

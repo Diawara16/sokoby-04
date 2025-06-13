@@ -1,7 +1,6 @@
 
-import React from 'react';
-import { vi } from 'vitest';
-import { render, screen, fireEvent } from '@/components/ui/test-utils';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { PricingPlans } from '@/components/pricing/PricingPlans';
 
 describe('PricingPlans', () => {
@@ -12,19 +11,39 @@ describe('PricingPlans', () => {
   });
 
   it('renders all pricing plans', () => {
-    render(<PricingPlans currentLanguage="en" onSubscribe={mockOnSubscribe} />);
+    render(<PricingPlans currentLanguage="fr" onSubscribe={mockOnSubscribe} />);
     
-    expect(screen.getByText('Basic')).toBeInTheDocument();
-    expect(screen.getByText('Pro')).toBeInTheDocument();
-    expect(screen.getByText('Enterprise')).toBeInTheDocument();
+    expect(screen.getByText(/Starter/i)).toBeInTheDocument();
+    expect(screen.getByText(/Pro/i)).toBeInTheDocument();
+    expect(screen.getByText(/Enterprise/i)).toBeInTheDocument();
   });
 
-  it('calls onSubscribe when subscribe button is clicked', () => {
-    render(<PricingPlans currentLanguage="en" onSubscribe={mockOnSubscribe} />);
+  it('calls onSubscribe with correct parameters when subscribing', () => {
+    render(<PricingPlans currentLanguage="fr" onSubscribe={mockOnSubscribe} />);
     
-    const subscribeButtons = screen.getAllByText(/subscribe/i);
-    fireEvent.click(subscribeButtons[0]);
+    const subscribeButton = screen.getAllByRole('button', { name: /S'abonner/i })[0];
+    fireEvent.click(subscribeButton);
     
-    expect(mockOnSubscribe).toHaveBeenCalled();
+    expect(mockOnSubscribe).toHaveBeenCalledWith(
+      'starter',
+      'card',
+      undefined
+    );
+  });
+
+  it('displays prices in correct format', () => {
+    render(<PricingPlans currentLanguage="fr" onSubscribe={mockOnSubscribe} />);
+    
+    const priceElements = screen.getAllByText(/€\/mois/i);
+    expect(priceElements.length).toBeGreaterThan(0);
+  });
+
+  it('shows features for each plan', () => {
+    render(<PricingPlans currentLanguage="fr" onSubscribe={mockOnSubscribe} />);
+    
+    const featureLists = screen.getAllByRole('list');
+    featureLists.forEach(list => {
+      expect(list.children.length).toBeGreaterThan(0);
+    });
   });
 });

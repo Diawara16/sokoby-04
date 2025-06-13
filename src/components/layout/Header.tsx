@@ -33,8 +33,8 @@ export function Header({ isAuthenticated = false }: HeaderProps) {
             <Link to="/pricing" className="text-gray-600 hover:text-gray-900">
               {t.navigation.pricing}
             </Link>
-            <Link to="/qui-sommes-nous" className="text-gray-600 hover:text-gray-900">
-              À propos
+            <Link to="/about" className="text-gray-600 hover:text-gray-900">
+              {t.navigation.about}
             </Link>
             <Link to="/contact" className="text-gray-600 hover:text-gray-900">
               {t.navigation.contact}
