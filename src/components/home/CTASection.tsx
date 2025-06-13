@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Shield, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface CTASectionProps {
   currentLanguage: string;
@@ -43,13 +44,14 @@ export function CTASection({ currentLanguage, onCreateStore }: CTASectionProps) 
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 mb-8">
-          <Button 
-            size="lg" 
-            onClick={onCreateStore}
-            className="bg-white text-red-600 hover:bg-red-50 text-lg px-8 py-4 font-semibold"
-          >
-            🎯 Créer ma boutique gratuitement
-          </Button>
+          <Link to="/plan-tarifaire">
+            <Button 
+              size="lg" 
+              className="bg-white text-red-600 hover:bg-red-50 text-lg px-8 py-4 font-semibold"
+            >
+              🎯 Créer ma boutique gratuitement
+            </Button>
+          </Link>
           <Button 
             variant="outline" 
             size="lg"
