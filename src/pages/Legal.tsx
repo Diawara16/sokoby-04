@@ -1,3 +1,4 @@
+
 export default function Legal() {
   return (
     <div className="min-h-screen bg-white py-12">
@@ -9,10 +10,18 @@ export default function Legal() {
             <h2 className="text-2xl font-semibold mb-4">1. Informations légales</h2>
             <p>
               Sokoby est une plateforme de commerce électronique exploitée par la société Sokoby SAS.
-              Siège social : [Adresse]
-              SIRET : [Numéro SIRET]
-              Capital social : [Montant]
-              Email : support@sokoby.com
+            </p>
+            <p className="mt-4">
+              <strong>Siège social :</strong> 7188 Rue Saint-hubert, H2R2N1, Montréal, Québec, Canada
+            </p>
+            <p>
+              <strong>SIRET :</strong> [Numéro SIRET]
+            </p>
+            <p>
+              <strong>Capital social :</strong> [Montant]
+            </p>
+            <p>
+              <strong>Email :</strong> support@sokoby.com
             </p>
           </section>
 
@@ -20,6 +29,7 @@ export default function Legal() {
             <h2 className="text-2xl font-semibold mb-4">2. Hébergement</h2>
             <p>
               Ce site est hébergé par [Nom de l'hébergeur]
+              <br />
               Adresse : [Adresse de l'hébergeur]
             </p>
           </section>
