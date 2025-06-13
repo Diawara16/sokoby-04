@@ -62,6 +62,13 @@ const EssaiGratuit = () => {
     }
   ];
 
+  const handleFocusEmailInput = () => {
+    const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+    if (emailInput) {
+      emailInput.focus();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -218,7 +225,7 @@ const EssaiGratuit = () => {
             size="lg" 
             variant="secondary"
             className="text-lg px-8 py-3"
-            onClick={() => document.querySelector('input[type="email"]')?.focus()}
+            onClick={handleFocusEmailInput}
           >
             Démarrer maintenant
           </Button>
