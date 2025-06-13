@@ -24,6 +24,7 @@ export function AppRoutes() {
 
   useEffect(() => {
     // Track page views or other analytics here if needed
+    console.log('Current route:', location.pathname);
   }, [location]);
 
   return (
