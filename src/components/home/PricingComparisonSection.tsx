@@ -9,9 +9,9 @@ export function PricingComparisonSection() {
   const comparison = [
     {
       feature: "Prix de base",
-      sokoby: "29€/mois",
+      sokoby: "11$/mois",
       shopify: "29€/mois",
-      sokobyBetter: false
+      sokobyBetter: true
     },
     {
       feature: "Frais de transaction",
@@ -58,7 +58,7 @@ export function PricingComparisonSection() {
   ];
 
   const monthlyTotal = {
-    sokoby: 29,
+    sokoby: 25, // Prix du plan Pro
     shopify: 29 + 200 + 150 + 10 + 1.17 // base + IA + multi-canal + SSL + domaine
   };
 
@@ -127,7 +127,7 @@ export function PricingComparisonSection() {
               <CardTitle className="text-2xl text-center">Sokoby - Total</CardTitle>
             </CardHeader>
             <CardContent className="p-8 text-center">
-              <div className="text-5xl font-bold text-red-600 mb-4">29€</div>
+              <div className="text-5xl font-bold text-red-600 mb-4">25$</div>
               <div className="text-gray-600 mb-6">par mois, tout inclus</div>
               <ul className="text-left space-y-2 mb-6">
                 <li className="flex items-center"><Check className="h-4 w-4 text-green-600 mr-2" /> Toutes fonctionnalités incluses</li>
@@ -135,7 +135,7 @@ export function PricingComparisonSection() {
                 <li className="flex items-center"><Check className="h-4 w-4 text-green-600 mr-2" /> IA + Multi-canal + Analytics</li>
               </ul>
               <Badge className="bg-green-100 text-green-800 text-lg py-2 px-4">
-                Économie : 361€/mois
+                Économie : 365$/mois
               </Badge>
             </CardContent>
           </Card>
@@ -162,7 +162,7 @@ export function PricingComparisonSection() {
         {/* CTA */}
         <div className="text-center mt-16">
           <h3 className="text-2xl font-bold text-gray-900 mb-4">
-            Prêt à économiser 4 320€ par an ?
+            Prêt à économiser 4 380$ par an ?
           </h3>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
             Rejoignez les milliers d'entrepreneurs qui ont fait le bon choix

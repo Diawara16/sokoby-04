@@ -11,14 +11,14 @@ export function CompetitiveAdvantagesSection() {
       title: "IA Intégrée",
       description: "Assistant IA qui gère automatiquement votre boutique, optimise les prix et génère du contenu",
       comparison: "Shopify : Extensions payantes requises",
-      savings: "Économie : 200€/mois"
+      savings: "Économie : 200$/mois"
     },
     {
       icon: DollarSign,
       title: "Tarifs Transparents",
-      description: "Pas de frais cachés, pas de commissions sur les ventes, tout inclus dès 29€/mois",
+      description: "Pas de frais cachés, pas de commissions sur les ventes, à partir de 11$/mois",
       comparison: "Shopify : 2,9% + frais par transaction",
-      savings: "Économie : 300€/mois sur 10k€ de CA"
+      savings: "Économie : 300$/mois sur 10k$ de CA"
     },
     {
       icon: Zap,
@@ -32,21 +32,21 @@ export function CompetitiveAdvantagesSection() {
       title: "Multi-canal Natif",
       description: "Vente sur Facebook, Instagram, TikTok, Amazon intégrée nativement",
       comparison: "Shopify : Apps tierces payantes",
-      savings: "Économie : 150€/mois"
+      savings: "Économie : 150$/mois"
     },
     {
       icon: Shield,
       title: "Sécurité Bancaire",
       description: "Hébergement sécurisé, SSL inclus, conformité RGPD automatique",
       comparison: "Shopify : Options de sécurité avancées payantes",
-      savings: "Économie : 100€/mois"
+      savings: "Économie : 100$/mois"
     },
     {
       icon: TrendingUp,
       title: "Analytics Avancées",
       description: "Tableaux de bord intelligents avec prédictions IA incluses",
-      comparison: "Shopify : Shopify Plus requis (2000€/mois)",
-      savings: "Économie : 1800€/mois"
+      comparison: "Shopify : Shopify Plus requis (2000$/mois)",
+      savings: "Économie : 1800$/mois"
     }
   ];
 
@@ -98,11 +98,11 @@ export function CompetitiveAdvantagesSection() {
         {/* Total Savings Calculation */}
         <div className="text-center bg-gradient-to-r from-red-600 to-red-700 text-white rounded-2xl p-12 shadow-xl">
           <h3 className="text-3xl font-bold mb-4">Économies totales vs Shopify</h3>
-          <div className="text-6xl font-bold mb-2">2 650€</div>
-          <p className="text-xl opacity-90 mb-6">par mois pour une boutique générant 10k€ de CA</p>
+          <div className="text-6xl font-bold mb-2">2 550$</div>
+          <p className="text-xl opacity-90 mb-6">par mois pour une boutique générant 10k$ de CA</p>
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-2xl font-bold">31 800€</div>
+              <div className="text-2xl font-bold">30 600$</div>
               <div className="opacity-80">économisés par an</div>
             </div>
             <div>
