@@ -1,13 +1,17 @@
 
+
 import React from 'react';
-import { render, RenderOptions, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, RenderOptions } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Re-export everything from @testing-library/react
 export * from '@testing-library/react';
 
-// Re-export screen, fireEvent, waitFor directly from @testing-library/react
+// Import screen, fireEvent, waitFor from @testing-library/user-event and @testing-library/react
+import { screen, fireEvent, waitFor } from '@testing-library/react';
+
+// Re-export them
 export { screen, fireEvent, waitFor };
 
 interface AllTheProvidersProps {
@@ -38,3 +42,4 @@ const customRender = (
 ) => render(ui, { wrapper: AllTheProviders, ...options });
 
 export { customRender as render };
+
