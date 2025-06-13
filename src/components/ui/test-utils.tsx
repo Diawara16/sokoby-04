@@ -7,9 +7,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // Re-export everything from @testing-library/react
 export * from '@testing-library/react';
 
-// Import and re-export the commonly used functions from their correct modules
-export { screen } from '@testing-library/react';
-export { fireEvent, waitFor } from '@testing-library/dom';
+// Import and re-export the commonly used functions from @testing-library/react
+export { screen, fireEvent, waitFor } from '@testing-library/react';
 
 interface AllTheProvidersProps {
   children: React.ReactNode;
