@@ -1,15 +1,22 @@
 
-import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import React from 'react';
+import { render, screen } from '@/components/ui/test-utils';
 import { AuthForm } from '@/components/auth/AuthForm';
 
-describe('Auth Flow', () => {
-  it('renders login form', () => {
-    render(
-      <BrowserRouter>
-        <AuthForm defaultIsSignUp={false} />
-      </BrowserRouter>
-    );
-    expect(screen.getByRole('form')).toBeInTheDocument();
+describe('Authentication Flow', () => {
+  it('renders login form correctly', () => {
+    render(<AuthForm mode="login" />);
+    
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
+  });
+
+  it('renders register form correctly', () => {
+    render(<AuthForm mode="register" />);
+    
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
   });
 });

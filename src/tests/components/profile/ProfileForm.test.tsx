@@ -1,54 +1,28 @@
 
-import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { render, screen } from '@/components/ui/test-utils';
 import { ProfileForm } from '@/components/profile/ProfileForm';
-import { vi, describe, it, expect } from 'vitest';
-import { BrowserRouter } from 'react-router-dom';
 
-// Mock Supabase
-vi.mock('@/lib/supabase', () => ({
-  supabase: {
-    auth: {
-      getUser: vi.fn().mockResolvedValue({ 
-        data: { user: { id: '1', email: 'test@example.com' } } 
-      }),
-    },
-    from: vi.fn(() => ({
-      upsert: vi.fn().mockResolvedValue({ error: null }),
-    })),
-  },
-}));
-
-// Mock useToast
-vi.mock('@/hooks/use-toast', () => ({
-  useToast: vi.fn(() => ({
-    toast: vi.fn(),
-  })),
-}));
+const mockProfile = {
+  full_name: 'John Doe',
+  email: 'john@example.com',
+  phone: '+1234567890',
+  company: 'Test Company',
+  website: 'https://example.com'
+};
 
 describe('ProfileForm', () => {
-  const renderProfileForm = () => {
-    return render(
-      <BrowserRouter>
-        <ProfileForm />
-      </BrowserRouter>
-    );
-  };
-
-  it('renders form fields correctly', () => {
-    renderProfileForm();
-    expect(screen.getByLabelText(/nom complet/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/numéro de téléphone/i)).toBeInTheDocument();
+  it('renders profile form fields', () => {
+    render(<ProfileForm profile={mockProfile} onSave={() => {}} />);
+    
+    expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('john@example.com')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('+1234567890')).toBeInTheDocument();
   });
 
-  it('renders submit button', () => {
-    renderProfileForm();
-    const submitButton = screen.getByRole('button', { name: /mettre à jour/i });
-    expect(submitButton).toBeInTheDocument();
-  });
-
-  it('has proper form structure', () => {
-    renderProfileForm();
-    const form = screen.getByRole('form');
-    expect(form).toBeInTheDocument();
+  it('renders save button', () => {
+    render(<ProfileForm profile={mockProfile} onSave={() => {}} />);
+    
+    expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
   });
 });

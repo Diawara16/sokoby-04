@@ -1,59 +1,31 @@
 
-import { render, screen, waitFor } from '@testing-library/react';
-import SubscriptionDetails from '@/components/profile/SubscriptionDetails';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { BrowserRouter } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import React from 'react';
+import { render, screen, waitFor } from '@/components/ui/test-utils';
+import { SubscriptionDetails } from '@/components/profile/SubscriptionDetails';
 
-vi.mock('@/lib/supabase', () => ({
-  supabase: {
-    auth: {
-      getUser: vi.fn().mockResolvedValue({ 
-        data: { user: { id: '1' } } 
-      }),
-    },
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          order: vi.fn(() => ({
-            limit: vi.fn(() => ({
-              single: vi.fn().mockResolvedValue({ 
-                data: { 
-                  id: '1', 
-                  status: 'active', 
-                  current_period_end: '2024-12-31',
-                  created_at: '2024-01-01' 
-                }, 
-                error: null 
-              })
-            }))
-          }))
-        }))
-      }))
-    }))
-  }
-}));
-
-vi.mock('@/hooks/use-toast', () => ({
-  useToast: vi.fn(() => ({
-    toast: vi.fn(),
-  })),
-}));
+const mockSubscription = {
+  id: 'sub_123',
+  status: 'active',
+  plan: 'pro',
+  current_period_end: '2024-12-31',
+  cancel_at_period_end: false
+};
 
 describe('SubscriptionDetails', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+  it('renders subscription information', async () => {
+    render(<SubscriptionDetails subscription={mockSubscription} />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Pro Plan')).toBeInTheDocument();
+      expect(screen.getByText('Active')).toBeInTheDocument();
+    });
   });
 
-  it('renders subscription details', async () => {
-    render(
-      <BrowserRouter>
-        <SubscriptionDetails />
-      </BrowserRouter>
-    );
-
+  it('shows cancel button for active subscriptions', async () => {
+    render(<SubscriptionDetails subscription={mockSubscription} />);
+    
     await waitFor(() => {
-      expect(screen.getByRole('heading')).toBeInTheDocument();
+      expect(screen.getByText(/cancel/i)).toBeInTheDocument();
     });
   });
 });
