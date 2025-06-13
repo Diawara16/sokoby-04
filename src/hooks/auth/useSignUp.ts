@@ -15,6 +15,8 @@ export const useSignUp = () => {
       setIsLoading(true);
       setError(null);
 
+      console.log("Attempting to sign up user:", email);
+
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -26,10 +28,16 @@ export const useSignUp = () => {
         },
       });
 
-      if (signUpError) throw signUpError;
+      if (signUpError) {
+        console.error("Sign up error:", signUpError);
+        throw signUpError;
+      }
+
+      console.log("Sign up successful:", data);
 
       if (data.user && !data.user.email_confirmed_at) {
         // L'utilisateur doit vérifier son email
+        console.log("User needs to verify email");
         toast({
           title: "Vérifiez votre email",
           description: "Un lien de vérification a été envoyé à votre adresse email. Veuillez cliquer sur le lien pour activer votre compte.",
@@ -37,6 +45,7 @@ export const useSignUp = () => {
         navigate("/verify-email");
       } else if (data.user && data.user.email_confirmed_at) {
         // L'email est déjà vérifié
+        console.log("Email already verified");
         toast({
           title: "Compte créé avec succès",
           description: "Bienvenue ! Votre compte a été créé et vérifié.",
@@ -46,6 +55,7 @@ export const useSignUp = () => {
 
       return data;
     } catch (err: any) {
+      console.error("Error during sign up:", err);
       let errorMessage = "Une erreur est survenue lors de la création du compte";
       
       if (err.message.includes("already registered")) {
