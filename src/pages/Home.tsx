@@ -1,6 +1,7 @@
 
 import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturesSection } from "@/components/home/FeaturesSection";
+import { AIStoreSection } from "@/components/home/AIStoreSection";
 import { PricingSection } from "@/components/home/PricingSection";
 import { CompetitiveAdvantagesSection } from "@/components/home/CompetitiveAdvantagesSection";
 import { SocialProofSection } from "@/components/home/SocialProofSection";
@@ -30,6 +31,7 @@ export default function Home() {
       <main className="flex-1">
         <HeroSection />
         <FeaturesSection />
+        <AIStoreSection />
         <PricingSection />
         <CompetitiveAdvantagesSection />
         <SocialProofSection />
