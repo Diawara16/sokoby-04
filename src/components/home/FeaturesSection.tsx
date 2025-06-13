@@ -1,11 +1,8 @@
+
 import { ShoppingBag, Shield, BarChart } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
-interface FeaturesSectionProps {
-  currentLanguage: string;
-}
-
-export function FeaturesSection({ currentLanguage }: FeaturesSectionProps) {
+export function FeaturesSection() {
   const shoppingCategories = [
     {
       title: "Shopping en Famille",
