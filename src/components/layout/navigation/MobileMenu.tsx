@@ -1,6 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Menu, Bot, Wand2 } from "lucide-react";
 import {
   Sheet,
@@ -42,31 +43,21 @@ export function MobileMenu({ isAuthenticated }: MobileMenuProps) {
               <Link
                 key={link.to}
                 to={link.to}
-                className="flex items-center gap-3 py-3 text-gray-600 hover:text-primary transition-colors duration-200"
+                className={`flex items-center gap-3 py-3 transition-colors duration-200 ${
+                  link.highlight 
+                    ? "text-primary hover:text-primary/90" 
+                    : "text-gray-600 hover:text-primary"
+                } ${link.featured ? "font-semibold" : ""}`}
               >
                 {link.icon}
                 <span className="text-base font-medium">{link.label}</span>
+                {link.highlight && (
+                  <Badge className="bg-primary/10 text-primary hover:bg-primary/10 text-xs">
+                    IA
+                  </Badge>
+                )}
               </Link>
             ))}
-            
-            {isAuthenticated && (
-              <>
-                <Link
-                  to="/boutique-ia"
-                  className="flex items-center gap-3 py-3 text-primary hover:text-primary/90 transition-colors duration-200"
-                >
-                  <Bot className="h-5 w-5" />
-                  <span className="text-base font-medium">Boutique IA</span>
-                </Link>
-                <Link
-                  to="/creer-boutique-ia"
-                  className="flex items-center gap-3 py-3 text-primary hover:text-primary/90 transition-colors duration-200 font-semibold"
-                >
-                  <Wand2 className="h-5 w-5" />
-                  <span className="text-base">Créer ma boutique IA</span>
-                </Link>
-              </>
-            )}
             
             <div className="mt-6 pt-6 border-t">
               {!isAuthenticated ? (

@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, Bot, Wand2 } from "lucide-react";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +12,12 @@ export function Header() {
   const navigation = [
     { name: "Accueil", href: "/" },
     { name: "Fonctionnalités", href: "/fonctionnalites" },
+    { 
+      name: "Boutique IA", 
+      href: "/boutique-ia",
+      icon: <Bot className="h-4 w-4" />,
+      highlight: true
+    },
     { name: "Tarifs", href: "/pricing" },
     { name: "À propos", href: "/a-propos" },
     { name: "Contact", href: "/contact" },
@@ -34,9 +41,19 @@ export function Header() {
               <Link
                 key={item.name}
                 to={item.href}
-                className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                className={`flex items-center gap-2 font-medium transition-colors ${
+                  item.highlight 
+                    ? "text-primary hover:text-primary/90" 
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
               >
+                {item.icon}
                 {item.name}
+                {item.highlight && (
+                  <Badge className="bg-primary/10 text-primary hover:bg-primary/10 text-xs">
+                    IA
+                  </Badge>
+                )}
               </Link>
             ))}
           </nav>
@@ -66,12 +83,35 @@ export function Header() {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className="text-gray-600 hover:text-gray-900 font-medium py-2"
+                    className={`flex items-center gap-3 font-medium py-2 ${
+                      item.highlight 
+                        ? "text-primary hover:text-primary/90" 
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}
                     onClick={() => setIsOpen(false)}
                   >
-                    {item.name}
+                    {item.icon}
+                    <span>{item.name}</span>
+                    {item.highlight && (
+                      <Badge className="bg-primary/10 text-primary hover:bg-primary/10 text-xs">
+                        IA
+                      </Badge>
+                    )}
                   </Link>
                 ))}
+                
+                {/* Additional AI Store options in mobile */}
+                <div className="pt-4 border-t">
+                  <Link
+                    to="/creer-boutique-ia"
+                    className="flex items-center gap-3 text-primary hover:text-primary/90 font-semibold py-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Wand2 className="h-4 w-4" />
+                    <span>Créer ma boutique IA</span>
+                  </Link>
+                </div>
+                
                 <div className="flex flex-col space-y-2 pt-4 border-t">
                   <Link to="/connexion" onClick={() => setIsOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start">

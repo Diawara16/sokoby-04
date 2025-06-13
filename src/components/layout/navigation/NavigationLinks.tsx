@@ -1,10 +1,14 @@
+
 import { Link } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 import { 
   Home, 
   CreditCard, 
   Palette, 
   BookOpen, 
-  MessageSquare 
+  MessageSquare,
+  Bot,
+  Wand2
 } from "lucide-react";
 
 export const navigationLinks = [
@@ -17,6 +21,19 @@ export const navigationLinks = [
     to: "/plan-tarifaire", 
     label: "Tarifs",
     icon: <CreditCard className="h-4 w-4" />
+  },
+  { 
+    to: "/boutique-ia", 
+    label: "Boutique IA",
+    icon: <Bot className="h-4 w-4" />,
+    highlight: true
+  },
+  { 
+    to: "/creer-boutique-ia", 
+    label: "Créer ma boutique IA",
+    icon: <Wand2 className="h-4 w-4" />,
+    highlight: true,
+    featured: true
   },
   { 
     to: "/themes", 
@@ -42,10 +59,19 @@ export function NavigationLinks() {
         <Link
           key={link.to}
           to={link.to}
-          className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary transition-colors duration-200 font-medium"
+          className={`flex items-center gap-2 text-sm transition-colors duration-200 font-medium ${
+            link.highlight 
+              ? "text-primary hover:text-primary/90" 
+              : "text-gray-600 hover:text-primary"
+          } ${link.featured ? "font-semibold" : ""}`}
         >
           {link.icon}
           {link.label}
+          {link.highlight && (
+            <Badge className="bg-primary/10 text-primary hover:bg-primary/10 text-xs">
+              IA
+            </Badge>
+          )}
         </Link>
       ))}
     </nav>
