@@ -25,15 +25,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header isAuthenticated={isAuthenticated} />
+      <Header />
       <main className="flex-1">
-        <HeroSection 
-          isAuthenticated={isAuthenticated} 
-          currentLanguage={currentLanguage}
-        />
-        <FeaturesSection 
-          currentLanguage={currentLanguage}
-        />
+        <HeroSection />
+        <FeaturesSection />
         <CompetitiveAdvantagesSection />
         <SocialProofSection />
         <PricingComparisonSection />
