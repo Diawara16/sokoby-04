@@ -1,51 +1,82 @@
 
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import Home from "@/pages/Home";
-import Register from "@/pages/Register";
 import Login from "@/pages/Login";
-import EssaiGratuit from "@/pages/EssaiGratuit";
-import About from "@/pages/About";
-import VerifyEmail from "@/pages/VerifyEmail";
-import { DynamicLanding } from "@/components/landing/DynamicLanding";
-import QuiSommesNous from "@/pages/QuiSommesNous";
-import Contact from "@/pages/Contact";
-import Pricing from "@/pages/Pricing";
-import Support from "@/pages/Support";
-import PlanTarifaire from "@/pages/PlanTarifaire";
-import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
-import Parametres from "@/pages/Parametres";
+import Register from "@/pages/Register";
+import Dashboard from "@/pages/Dashboard";
+import Settings from "@/pages/Settings";
 import Profile from "@/pages/Profile";
-import Profil from "@/pages/Profil";
-import { SettingsRoutes } from "@/routes/SettingsRoutes";
-import AIStore from "@/pages/AIStore";
+import Pricing from "@/pages/Pricing";
+import Features from "@/pages/Features";
+import Resources from "@/pages/Resources";
+import Legal from "@/pages/Legal";
+import Accessibility from "@/pages/Accessibility";
+import Conditions from "@/pages/Conditions";
+import Support from "@/pages/Support";
+import Index from "@/pages/Index";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { DynamicLanding } from "@/components/landing/DynamicLanding";
 
 export function AppRoutes() {
-  console.log("AppRoutes rendering avec URL:", window.location.pathname);
-  
+  const location = useLocation();
+
+  useEffect(() => {
+    // Track page views or other analytics here if needed
+  }, [location]);
+
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/inscription" element={<Register />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="/index" element={<Index />} />
       <Route path="/connexion" element={<Login />} />
-      <Route path="/essai-gratuit" element={<EssaiGratuit />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/a-propos" element={<About />} />
-      <Route path="/qui-sommes-nous" element={<QuiSommesNous />} />
-      <Route path="/verify-email" element={<VerifyEmail />} />
-      <Route path="/contact" element={<Contact />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/inscription" element={<Register />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/fonctionnalites" element={<Features />} />
+      <Route path="/features" element={<Features />} />
+      <Route path="/tarifs" element={<Pricing />} />
       <Route path="/pricing" element={<Pricing />} />
-      <Route path="/plan-tarifaire" element={<PlanTarifaire />} />
-      <Route path="/creer-boutique-ia" element={<CreerBoutiqueIA />} />
-      <Route path="/boutique-ia" element={<AIStore />} />
-      <Route path="/parametres" element={<Parametres />} />
-      <Route path="/profil" element={<Profil />} />
-      <Route path="/profile" element={<Profile />} />
+      <Route path="/ressources" element={<Resources />} />
+      <Route path="/resources" element={<Resources />} />
+      <Route path="/legal" element={<Legal />} />
+      <Route path="/accessibility" element={<Accessibility />} />
+      <Route path="/conditions" element={<Conditions />} />
       <Route path="/support" element={<Support />} />
-      <Route path="/404" element={<div className="min-h-screen flex items-center justify-center">Page non trouvée</div>} />
+      
+      <Route path="/tableau-de-bord" element={
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/parametres" element={
+        <ProtectedRoute>
+          <Settings />
+        </ProtectedRoute>
+      } />
+      <Route path="/settings" element={
+        <ProtectedRoute>
+          <Settings />
+        </ProtectedRoute>
+      } />
+      <Route path="/profil" element={
+        <ProtectedRoute>
+          <Profile />
+        </ProtectedRoute>
+      } />
+      <Route path="/profile" element={
+        <ProtectedRoute>
+          <Profile />
+        </ProtectedRoute>
+      } />
+      
+      {/* Catch-all route for dynamic landing pages */}
       <Route path="/:slug" element={<DynamicLanding />} />
-      <Route path="*" element={<Navigate to="/404" replace />} />
     </Routes>
   );
 }
