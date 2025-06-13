@@ -4,6 +4,8 @@ import Home from "@/pages/Home";
 import Register from "@/pages/Register";
 import Login from "@/pages/Login";
 import EssaiGratuit from "@/pages/EssaiGratuit";
+import About from "@/pages/About";
+import VerifyEmail from "@/pages/VerifyEmail";
 import { DynamicLanding } from "@/components/landing/DynamicLanding";
 import QuiSommesNous from "@/pages/QuiSommesNous";
 import Contact from "@/pages/Contact";
@@ -28,7 +30,10 @@ export function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/connexion" element={<Login />} />
       <Route path="/essai-gratuit" element={<EssaiGratuit />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/a-propos" element={<About />} />
       <Route path="/qui-sommes-nous" element={<QuiSommesNous />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/plan-tarifaire" element={<PlanTarifaire />} />

@@ -1,11 +1,14 @@
+
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 export const useSignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSignUp = async (email: string, password: string, dateOfBirth: string) => {
     try {
@@ -19,22 +22,44 @@ export const useSignUp = () => {
           data: {
             date_of_birth: dateOfBirth,
           },
+          emailRedirectTo: `${window.location.origin}/tableau-de-bord`,
         },
       });
 
       if (signUpError) throw signUpError;
 
-      toast({
-        title: "Compte créé avec succès",
-        description: "Profitez de votre essai gratuit de 14 jours !",
-      });
+      if (data.user && !data.user.email_confirmed_at) {
+        // L'utilisateur doit vérifier son email
+        toast({
+          title: "Vérifiez votre email",
+          description: "Un lien de vérification a été envoyé à votre adresse email. Veuillez cliquer sur le lien pour activer votre compte.",
+        });
+        navigate("/verify-email");
+      } else if (data.user && data.user.email_confirmed_at) {
+        // L'email est déjà vérifié
+        toast({
+          title: "Compte créé avec succès",
+          description: "Bienvenue ! Votre compte a été créé et vérifié.",
+        });
+        navigate("/tableau-de-bord");
+      }
 
       return data;
     } catch (err: any) {
-      setError(err.message);
+      let errorMessage = "Une erreur est survenue lors de la création du compte";
+      
+      if (err.message.includes("already registered")) {
+        errorMessage = "Cette adresse email est déjà utilisée";
+      } else if (err.message.includes("password")) {
+        errorMessage = "Le mot de passe doit contenir au moins 8 caractères";
+      } else if (err.message.includes("email")) {
+        errorMessage = "Veuillez entrer une adresse email valide";
+      }
+      
+      setError(errorMessage);
       toast({
-        title: "Erreur",
-        description: err.message,
+        title: "Erreur lors de l'inscription",
+        description: errorMessage,
         variant: "destructive",
       });
       return null;
