@@ -1,6 +1,6 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@/components/ui/test-utils';
 import { PaymentSection } from '@/components/checkout/PaymentSection';
 import { supabase } from '@/lib/supabase';
 

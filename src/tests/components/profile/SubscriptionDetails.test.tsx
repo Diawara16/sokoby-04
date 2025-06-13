@@ -1,8 +1,7 @@
 
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@/components/ui/test-utils';
 import SubscriptionDetails from '@/components/profile/SubscriptionDetails';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { BrowserRouter } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 
 vi.mock('@/lib/supabase', () => ({
@@ -46,11 +45,7 @@ describe('SubscriptionDetails', () => {
   });
 
   it('renders subscription details', async () => {
-    render(
-      <BrowserRouter>
-        <SubscriptionDetails />
-      </BrowserRouter>
-    );
+    render(<SubscriptionDetails />);
 
     await waitFor(() => {
       expect(screen.getByRole('heading')).toBeInTheDocument();

@@ -1,7 +1,6 @@
 
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { render, screen, fireEvent, waitFor } from '@/components/ui/test-utils';
 import { AuthForm } from '@/components/auth/AuthForm';
 import { supabase } from '@/lib/supabase';
 
@@ -21,11 +20,7 @@ vi.mock('@/lib/supabase', () => ({
 
 describe('Auth Error Handling', () => {
   const renderAuthForm = () => {
-    return render(
-      <BrowserRouter>
-        <AuthForm />
-      </BrowserRouter>
-    );
+    return render(<AuthForm />);
   };
 
   it('affiche une erreur pour un email invalide', async () => {

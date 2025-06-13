@@ -218,7 +218,10 @@ const EssaiGratuit = () => {
             size="lg" 
             variant="secondary"
             className="text-lg px-8 py-3"
-            onClick={() => document.querySelector('input[type="email"]')?.focus()}
+            onClick={() => {
+              const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+              emailInput?.focus();
+            }}
           >
             Démarrer maintenant
           </Button>

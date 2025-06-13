@@ -1,6 +1,6 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@/components/ui/test-utils';
 import { PricingPlans } from '@/components/pricing/PricingPlans';
 
 describe('PricingPlans', () => {

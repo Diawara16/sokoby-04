@@ -1,5 +1,5 @@
 
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@/components/ui/test-utils';
 import { ApplicationCard } from '@/components/applications/ApplicationCard';
 import { Settings } from 'lucide-react';
 import { vi, describe, it, expect } from 'vitest';

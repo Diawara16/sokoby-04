@@ -1,8 +1,7 @@
 
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '@/components/ui/test-utils';
 import { ProfileForm } from '@/components/profile/ProfileForm';
 import { vi, describe, it, expect } from 'vitest';
-import { BrowserRouter } from 'react-router-dom';
 
 // Mock Supabase
 vi.mock('@/lib/supabase', () => ({
@@ -27,11 +26,7 @@ vi.mock('@/hooks/use-toast', () => ({
 
 describe('ProfileForm', () => {
   const renderProfileForm = () => {
-    return render(
-      <BrowserRouter>
-        <ProfileForm />
-      </BrowserRouter>
-    );
+    return render(<ProfileForm />);
   };
 
   it('renders form fields correctly', () => {

@@ -1,7 +1,6 @@
 
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { render, screen } from '@/components/ui/test-utils';
 import Index from '../pages/Index';
 
 // Mock des dépendances
@@ -19,11 +18,7 @@ vi.mock('@/lib/supabase', () => ({
 
 describe('Index Page', () => {
   const renderIndex = () => {
-    return render(
-      <BrowserRouter>
-        <Index />
-      </BrowserRouter>
-    );
+    return render(<Index />);
   };
 
   it('renders without crashing', () => {
