@@ -16,6 +16,7 @@ import Conditions from "@/pages/Conditions";
 import Support from "@/pages/Support";
 import Index from "@/pages/Index";
 import BoutiqueIA from "@/pages/BoutiqueIA";
+import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DynamicLanding } from "@/components/landing/DynamicLanding";
 
@@ -32,6 +33,7 @@ export function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route path="/index" element={<Index />} />
       <Route path="/boutique-ia" element={<BoutiqueIA />} />
+      <Route path="/creer-boutique-ia" element={<CreerBoutiqueIA />} />
       <Route path="/connexion" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/inscription" element={<Register />} />
