@@ -1,7 +1,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Play, Volume2, VolumeX, Maximize, ClosedCaptioning } from "lucide-react";
+import { Play, Volume2, VolumeX, Maximize, Captions } from "lucide-react";
 import { useState } from "react";
 
 export const VideoExplainer = () => {
@@ -66,7 +66,7 @@ export const VideoExplainer = () => {
                     className={`text-white hover:bg-white/20 ${showSubtitles ? 'bg-white/20' : ''}`}
                     onClick={() => setShowSubtitles(!showSubtitles)}
                   >
-                    <ClosedCaptioning className="w-4 h-4" />
+                    <Captions className="w-4 h-4" />
                   </Button>
                   <Button
                     size="sm"
