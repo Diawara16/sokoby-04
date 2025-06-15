@@ -1,16 +1,17 @@
 
 import React from 'react';
 import { render, RenderOptions } from '@testing-library/react';
+import { screen } from '@testing-library/dom';
+import { fireEvent } from '@testing-library/dom';
+import { waitFor } from '@testing-library/dom';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Re-export everything from @testing-library/react
 export * from '@testing-library/react';
 
-// Import and re-export the specific functions that tests need
-export { screen } from '@testing-library/react';
-export { fireEvent } from '@testing-library/react';
-export { waitFor } from '@testing-library/react';
+// Re-export the specific functions that tests need from their correct modules
+export { screen, fireEvent, waitFor };
 
 interface AllTheProvidersProps {
   children: React.ReactNode;
