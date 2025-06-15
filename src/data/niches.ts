@@ -1,3 +1,4 @@
+
 export const niches = [
   {
     name: "Fitness Store",
@@ -54,6 +55,13 @@ export const niches = [
     description: "Bijoux et accessoires",
     products: 30,
     price: 19
+  },
+  {
+    name: "Wigs Store",
+    icon: "💇",
+    description: "Perruques et extensions capillaires",
+    products: 30,
+    price: 20
   },
   {
     name: "Premium Supplements Store",

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,8 @@ const NICHES = [
   "Jardin",
   "Cuisine",
   "Bien-être",
-  "Art & Collection"
+  "Art & Collection",
+  "Perruques"
 ];
 
 interface NicheSelectorProps {
