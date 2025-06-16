@@ -36,6 +36,7 @@ export function AppRoutes() {
       <Route path="/index" element={<Index />} />
       <Route path="/boutique-ia" element={<BoutiqueIA />} />
       <Route path="/creer-boutique-ia" element={<CreerBoutiqueIA />} />
+      <Route path="/comparaison-modeles" element={<ComparisonModeles />} />
       
       {/* Migration routes - main and platform-specific */}
       <Route path="/migration-shopify" element={<ShopifyMigration />} />

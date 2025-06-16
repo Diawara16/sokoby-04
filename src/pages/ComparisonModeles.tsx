@@ -2,17 +2,22 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Bot, User, Zap, Clock, DollarSign, Star } from "lucide-react";
+import { Check, X, Bot, User, Zap, ArrowRight, HelpCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ROICalculator } from "@/components/comparison/ROICalculator";
+import { ProcessTimeline } from "@/components/comparison/ProcessTimeline";
+import { MythBuster } from "@/components/comparison/MythBuster";
+import { PerformanceStats } from "@/components/comparison/PerformanceStats";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export default function ComparisonModeles() {
   const features = [
     {
       feature: "Temps de création",
       aiStore: "5-10 minutes",
-      manual: "Plusieurs heures/jours",
+      manual: "25-35 heures",
       aiIcon: <Zap className="h-4 w-4 text-green-500" />,
-      manualIcon: <Clock className="h-4 w-4 text-yellow-500" />
+      manualIcon: <X className="h-4 w-4 text-red-500" />
     },
     {
       feature: "Effort requis",
@@ -22,54 +27,105 @@ export default function ComparisonModeles() {
       manualIcon: <X className="h-4 w-4 text-red-500" />
     },
     {
-      feature: "Personnalisation",
-      aiStore: "Limitée aux templates IA",
-      manual: "Totale liberté créative",
-      aiIcon: <X className="h-4 w-4 text-red-500" />,
-      manualIcon: <Check className="h-4 w-4 text-green-500" />
+      feature: "Expertise technique",
+      aiStore: "Aucune requise",
+      manual: "SEO, design, marketing",
+      aiIcon: <Check className="h-4 w-4 text-green-500" />,
+      manualIcon: <X className="h-4 w-4 text-red-500" />
     },
     {
       feature: "Produits inclus",
-      aiStore: "30 ou 100+ produits optimisés",
-      manual: "Vous ajoutez vos produits",
+      aiStore: "30-100+ produits optimisés",
+      manual: "Vous trouvez et ajoutez",
       aiIcon: <Check className="h-4 w-4 text-green-500" />,
       manualIcon: <User className="h-4 w-4 text-blue-500" />
     },
     {
       feature: "SEO optimisé",
       aiStore: "Automatique par IA",
-      manual: "Vous configurez",
+      manual: "Vous configurez tout",
       aiIcon: <Check className="h-4 w-4 text-green-500" />,
       manualIcon: <User className="h-4 w-4 text-blue-500" />
+    },
+    {
+      feature: "Fournisseurs intégrés",
+      aiStore: "Automatiquement connectés",
+      manual: "Recherche et négociation",
+      aiIcon: <Check className="h-4 w-4 text-green-500" />,
+      manualIcon: <X className="h-4 w-4 text-red-500" />
+    },
+    {
+      feature: "Personnalisation",
+      aiStore: "Modifiable après génération",
+      manual: "Contrôle total dès le début",
+      aiIcon: <Check className="h-4 w-4 text-green-500" />,
+      manualIcon: <Check className="h-4 w-4 text-green-500" />
     },
     {
       feature: "Coût initial",
       aiStore: "$20-80 (une fois)",
       manual: "Gratuit",
-      aiIcon: <DollarSign className="h-4 w-4 text-yellow-500" />,
+      aiIcon: <X className="h-4 w-4 text-red-500" />,
       manualIcon: <Check className="h-4 w-4 text-green-500" />
+    }
+  ];
+
+  const faqItems = [
+    {
+      question: "Quelle est vraiment la différence entre les deux approches ?",
+      answer: "La Boutique IA est un service premium où notre équipe + IA créent votre boutique complète automatiquement. La création manuelle vous donne tous les outils pour créer vous-même, mais nécessite du temps et des compétences techniques."
     },
     {
-      feature: "Coût mensuel",
-      aiStore: "Plan Sokoby requis",
-      manual: "Plan Sokoby requis",
-      aiIcon: <DollarSign className="h-4 w-4 text-blue-500" />,
-      manualIcon: <DollarSign className="h-4 w-4 text-blue-500" />
+      question: "Pourquoi payer 20-80€ quand je peux créer gratuitement ?",
+      answer: "Vous payez pour économiser 25-35 heures de travail, avoir une boutique optimisée dès le départ, et bénéficier de notre expertise. Si votre temps vaut 25€/h, vous économisez 600-800€ en frais de main d'œuvre."
+    },
+    {
+      question: "Les boutiques IA sont-elles vraiment performantes ?",
+      answer: "Oui ! Nos statistiques montrent un CA moyen de 4 200€/mois vs 2 800€ pour les créations manuelles, car elles sont optimisées dès le départ avec des données de marché réelles."
+    },
+    {
+      question: "Puis-je modifier ma boutique IA après création ?",
+      answer: "Absolument ! Une fois générée, vous avez accès à tous les outils Sokoby : ajout de produits, modification du design, gestion des commandes, marketing, etc."
+    },
+    {
+      question: "Que se passe-t-il si je ne suis pas satisfait de ma boutique IA ?",
+      answer: "Nous offrons une garantie satisfait ou remboursé de 14 jours. Si la boutique ne correspond pas à vos attentes, nous la modifions ou remboursons intégralement."
+    },
+    {
+      question: "Combien de temps pour voir les premiers résultats ?",
+      answer: "Nos clients voient généralement leurs premières ventes dans les 7-14 jours suivant la création, contre 4-8 semaines pour les créations manuelles."
     }
   ];
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto space-y-16">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">
             Boutique IA vs Création Manuelle
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Deux approches différentes pour créer votre boutique en ligne. 
-            Choisissez selon vos besoins, votre budget et le temps disponible.
+            Comparaison complète pour vous aider à choisir l'approche qui correspond 
+            le mieux à vos besoins, votre budget et vos objectifs business.
           </p>
+        </div>
+
+        {/* Performance Stats */}
+        <PerformanceStats />
+
+        {/* ROI Calculator */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold mb-4">Calculez votre retour sur investissement</h2>
+          <p className="text-gray-600 mb-8">Découvrez combien vous économisez vraiment avec la Boutique IA</p>
+          <ROICalculator />
+        </div>
+
+        {/* Process Timeline */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold mb-4">Comparaison des processus</h2>
+          <p className="text-gray-600 mb-8">Visualisez concrètement la différence de temps et d'effort</p>
+          <ProcessTimeline />
         </div>
 
         {/* Comparison Cards */}
@@ -79,7 +135,7 @@ export default function ComparisonModeles() {
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
               <Badge className="bg-primary">
                 <Bot className="h-4 w-4 mr-1" />
-                Service Premium
+                Recommandé pour débuter
               </Badge>
             </div>
             <CardHeader className="text-center pb-4">
@@ -118,10 +174,15 @@ export default function ComparisonModeles() {
                   <Check className="h-4 w-4 text-green-500" />
                   <span className="text-sm">Fournisseurs intégrés automatiquement</span>
                 </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-500" />
+                  <span className="text-sm">Support prioritaire inclus</span>
+                </li>
               </ul>
               <Button asChild className="w-full">
                 <Link to="/creer-boutique-ia">
                   Créer ma Boutique IA
+                  <ArrowRight className="h-4 w-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -165,10 +226,15 @@ export default function ComparisonModeles() {
                   <X className="h-4 w-4 text-red-500" />
                   <span className="text-sm">Temps de création plus long</span>
                 </li>
+                <li className="flex items-center gap-2">
+                  <X className="h-4 w-4 text-red-500" />
+                  <span className="text-sm">Compétences techniques requises</span>
+                </li>
               </ul>
               <Button variant="outline" asChild className="w-full">
                 <Link to="/register">
                   Commencer gratuitement
+                  <ArrowRight className="h-4 w-4 ml-2" />
                 </Link>
               </Button>
             </CardContent>
@@ -178,21 +244,25 @@ export default function ComparisonModeles() {
         {/* Detailed Comparison Table */}
         <Card className="mb-12">
           <CardHeader>
-            <CardTitle className="text-center">Comparaison détaillée</CardTitle>
+            <CardTitle className="text-center">Comparaison détaillée critère par critère</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-4 px-2">Critère</th>
+                    <th className="text-left py-4 px-2 font-semibold">Critère</th>
                     <th className="text-center py-4 px-2">
-                      <Bot className="h-5 w-5 mx-auto mb-1" />
-                      Boutique IA
+                      <div className="flex items-center justify-center gap-2">
+                        <Bot className="h-5 w-5" />
+                        <span className="font-semibold">Boutique IA</span>
+                      </div>
                     </th>
                     <th className="text-center py-4 px-2">
-                      <User className="h-5 w-5 mx-auto mb-1" />
-                      Création Manuelle
+                      <div className="flex items-center justify-center gap-2">
+                        <User className="h-5 w-5" />
+                        <span className="font-semibold">Création Manuelle</span>
+                      </div>
                     </th>
                   </tr>
                 </thead>
@@ -220,65 +290,54 @@ export default function ComparisonModeles() {
           </CardContent>
         </Card>
 
-        {/* Recommendations */}
-        <div className="grid md:grid-cols-2 gap-8">
-          <Card className="bg-primary/5 border-primary/20">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bot className="h-5 w-5 text-primary" />
-                Choisissez la Boutique IA si :
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-start gap-2">
-                  <Star className="h-4 w-4 text-yellow-500 mt-0.5" />
-                  <span>Vous voulez une boutique rapidement opérationnelle</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Star className="h-4 w-4 text-yellow-500 mt-0.5" />
-                  <span>Vous préférez un service "clé en main"</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Star className="h-4 w-4 text-yellow-500 mt-0.5" />
-                  <span>Vous débutez dans l'e-commerce</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Star className="h-4 w-4 text-yellow-500 mt-0.5" />
-                  <span>Vous voulez des produits pré-sélectionnés</span>
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
+        {/* Myth Buster */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold mb-4">Démystifions les idées reçues</h2>
+          <p className="text-gray-600 mb-8">La vérité sur l'IA et la création de boutiques e-commerce</p>
+          <MythBuster />
+        </div>
 
-          <Card className="bg-blue-50 border-blue-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-blue-600" />
-                Choisissez la Création Manuelle si :
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-start gap-2">
-                  <Star className="h-4 w-4 text-yellow-500 mt-0.5" />
-                  <span>Vous avez une vision précise de votre boutique</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Star className="h-4 w-4 text-yellow-500 mt-0.5" />
-                  <span>Vous voulez un contrôle total du design</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Star className="h-4 w-4 text-yellow-500 mt-0.5" />
-                  <span>Vous avez vos propres produits à vendre</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Star className="h-4 w-4 text-yellow-500 mt-0.5" />
-                  <span>Vous voulez économiser sur les frais initiaux</span>
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
+        {/* FAQ Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <HelpCircle className="h-5 w-5" />
+              Questions fréquentes sur le choix
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Accordion type="single" collapsible className="w-full">
+              {faqItems.map((item, index) => (
+                <AccordionItem key={index} value={`item-${index}`}>
+                  <AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
+                  <AccordionContent className="text-gray-700">{item.answer}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </CardContent>
+        </Card>
+
+        {/* Final CTA */}
+        <div className="text-center bg-gradient-to-r from-primary/10 to-blue-50 rounded-2xl p-8">
+          <h2 className="text-3xl font-bold mb-4">Prêt à faire votre choix ?</h2>
+          <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
+            Que vous choisissiez la rapidité de l'IA ou le contrôle de la création manuelle, 
+            Sokoby vous accompagne vers le succès de votre business e-commerce.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
+              <Link to="/creer-boutique-ia">
+                <Bot className="h-5 w-5 mr-2" />
+                Créer ma Boutique IA
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <Link to="/register">
+                <User className="h-5 w-5 mr-2" />
+                Création manuelle gratuite
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
