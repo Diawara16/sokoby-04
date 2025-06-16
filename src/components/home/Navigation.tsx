@@ -1,7 +1,6 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Facebook } from "lucide-react";
 import { T } from "@/components/translation/T";
 
 export function Navigation() {
@@ -21,12 +20,6 @@ export function Navigation() {
           <Link to="/about">
             <Button variant="ghost">
               <T>À propos</T>
-            </Button>
-          </Link>
-          <Link to="/index" className="flex items-center space-x-2">
-            <Button variant="ghost" className="flex items-center gap-2">
-              <Facebook className="h-5 w-5 text-blue-600" />
-              <T>Outil Facebook</T>
             </Button>
           </Link>
         </div>
