@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
@@ -50,23 +51,32 @@ export const useStoreCreation = () => {
       const uniqueDomainName = await generateUniqueDomainName(user.id, nicheName);
       console.log("Nom de domaine généré:", uniqueDomainName);
 
-      // Étape 3: Création des paramètres de la boutique
+      // Étape 3: Création/Mise à jour des paramètres de la boutique
       updateProgress(40, 'store');
-      console.log("Création des paramètres de la boutique...");
+      console.log("Création/Mise à jour des paramètres de la boutique...");
+      
+      // Utiliser upsert pour éviter les conflits de contrainte unique
       const { data: storeData, error: storeError } = await supabase
         .from('store_settings')
         .upsert({
           user_id: user.id,
           domain_name: uniqueDomainName,
           store_name: `${nicheName} Store`,
+          store_email: user.email,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id',
+          ignoreDuplicates: false
         })
         .select()
         .single();
 
       if (storeError) {
-        console.error("Erreur lors de la création des paramètres:", storeError);
-        throw storeError;
+        console.error("Erreur lors de la création/mise à jour des paramètres:", storeError);
+        throw new Error(`Erreur lors de la configuration de la boutique: ${storeError.message}`);
       }
+
+      console.log("Paramètres de boutique configurés:", storeData);
 
       // Étape 4: Génération des produits
       updateProgress(60, 'products');
@@ -81,7 +91,7 @@ export const useStoreCreation = () => {
 
       if (error) {
         console.error("Erreur lors de la génération de la boutique:", error);
-        throw error;
+        throw new Error(`Erreur lors de la génération des produits: ${error.message}`);
       }
 
       // Étape 5: Finalisation
@@ -93,13 +103,18 @@ export const useStoreCreation = () => {
       setStoreUrl(`https://${uniqueDomainName}.sokoby.com`);
       setStep('complete');
 
+      toast({
+        title: "Boutique créée avec succès",
+        description: `Votre boutique "${nicheName}" a été créée et configurée automatiquement.`,
+      });
+
     } catch (error: any) {
       console.error('Erreur lors de la création de la boutique:', error);
-      setError(error.message);
+      setError(error.message || "Une erreur inattendue s'est produite");
       setStep('niche');
       toast({
         title: "Erreur",
-        description: "Impossible de créer la boutique. Veuillez réessayer.",
+        description: error.message || "Impossible de créer la boutique. Veuillez réessayer.",
         variant: "destructive",
       });
     } finally {
