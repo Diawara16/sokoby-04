@@ -1,14 +1,10 @@
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Shield, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 
-interface CTASectionProps {
-  currentLanguage: string;
-  onCreateStore: () => void;
-}
-
-export function CTASection({ currentLanguage, onCreateStore }: CTASectionProps) {
+export function CTASection() {
   return (
     <section className="bg-gradient-to-r from-red-600 via-red-700 to-red-800 py-20 relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:16px]" />
