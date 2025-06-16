@@ -51,29 +51,64 @@ export const useStoreCreation = () => {
       const uniqueDomainName = await generateUniqueDomainName(user.id, nicheName);
       console.log("Nom de domaine généré:", uniqueDomainName);
 
-      // Étape 3: Création/Mise à jour des paramètres de la boutique
+      // Étape 3: Gestion intelligente des paramètres de la boutique
       updateProgress(40, 'store');
-      console.log("Création/Mise à jour des paramètres de la boutique...");
+      console.log("Configuration des paramètres de la boutique...");
       
-      // Utiliser upsert pour éviter les conflits de contrainte unique
-      const { data: storeData, error: storeError } = await supabase
+      // Vérifier si des paramètres existent déjà pour cet utilisateur
+      const { data: existingSettings, error: checkError } = await supabase
         .from('store_settings')
-        .upsert({
-          user_id: user.id,
-          domain_name: uniqueDomainName,
-          store_name: `${nicheName} Store`,
-          store_email: user.email,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id',
-          ignoreDuplicates: false
-        })
-        .select()
-        .single();
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      if (storeError) {
-        console.error("Erreur lors de la création/mise à jour des paramètres:", storeError);
-        throw new Error(`Erreur lors de la configuration de la boutique: ${storeError.message}`);
+      if (checkError) {
+        console.error("Erreur lors de la vérification des paramètres existants:", checkError);
+        throw new Error(`Erreur lors de la vérification des paramètres: ${checkError.message}`);
+      }
+
+      let storeData;
+      
+      if (existingSettings) {
+        // Mettre à jour les paramètres existants
+        console.log("Mise à jour des paramètres existants...");
+        const { data: updatedData, error: updateError } = await supabase
+          .from('store_settings')
+          .update({
+            domain_name: uniqueDomainName,
+            store_name: `${nicheName} Store`,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', user.id)
+          .select()
+          .single();
+
+        if (updateError) {
+          console.error("Erreur lors de la mise à jour des paramètres:", updateError);
+          throw new Error(`Erreur lors de la mise à jour des paramètres: ${updateError.message}`);
+        }
+        
+        storeData = updatedData;
+      } else {
+        // Créer de nouveaux paramètres
+        console.log("Création de nouveaux paramètres...");
+        const { data: newData, error: insertError } = await supabase
+          .from('store_settings')
+          .insert({
+            user_id: user.id,
+            domain_name: uniqueDomainName,
+            store_name: `${nicheName} Store`,
+            store_email: user.email,
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error("Erreur lors de la création des paramètres:", insertError);
+          throw new Error(`Erreur lors de la création des paramètres: ${insertError.message}`);
+        }
+        
+        storeData = newData;
       }
 
       console.log("Paramètres de boutique configurés:", storeData);
