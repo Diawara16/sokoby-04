@@ -6,6 +6,7 @@ import { ModelComparisonSection } from "@/components/home/ModelComparisonSection
 import { PricingSection } from "@/components/home/PricingSection";
 import { SocialProofSection } from "@/components/home/SocialProofSection";
 import { CTASection } from "@/components/home/CTASection";
+import { Footer } from "@/components/layout/Footer";
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
       <PricingSection />
       <SocialProofSection />
       <CTASection />
+      <Footer />
     </div>
   );
 }
