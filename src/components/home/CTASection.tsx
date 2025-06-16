@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Shield, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
-import { T, TH2, TP } from "@/components/translation/T";
+import { T } from "@/components/translation/T";
 
 export function CTASection() {
   return (
@@ -14,15 +14,14 @@ export function CTASection() {
           🚀 <T>Offre de lancement limitée</T>
         </Badge>
         
-        <TH2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-          Créez votre empire e-commerce<br />
-          <span className="text-red-200">dès aujourd'hui</span>
-        </TH2>
+        <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <T>Créez votre empire e-commerce</T><br />
+          <span className="text-red-200"><T>dès aujourd'hui</T></span>
+        </h2>
         
-        <TP className="text-xl text-red-100 mb-8 max-w-3xl mx-auto">
-          Rejoignez les 25 000+ entrepreneurs qui ont choisi Sokoby plutôt que Shopify 
-          et économisent en moyenne 4 320€ par an
-        </TP>
+        <p className="text-xl text-red-100 mb-8 max-w-3xl mx-auto">
+          <T>Rejoignez les 25 000+ entrepreneurs qui ont choisi Sokoby plutôt que Shopify et économisent en moyenne 4 320€ par an</T>
+        </p>
 
         <div className="flex flex-wrap justify-center gap-6 mb-12">
           <div className="flex items-center text-white">
@@ -78,9 +77,9 @@ export function CTASection() {
           </div>
         </div>
 
-        <TP className="text-red-200 text-sm mt-8">
-          ✅ Aucune carte bancaire requise • ✅ Support 24/7 inclus • ✅ Migration Shopify gratuite
-        </TP>
+        <p className="text-red-200 text-sm mt-8">
+          ✅ <T>Aucune carte bancaire requise</T> • ✅ <T>Support 24/7 inclus</T> • ✅ <T>Migration Shopify gratuite</T>
+        </p>
       </div>
     </section>
   );
