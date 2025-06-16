@@ -1,3 +1,4 @@
+
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Home from "@/pages/Home";
@@ -16,6 +17,7 @@ import Support from "@/pages/Support";
 import Index from "@/pages/Index";
 import BoutiqueIA from "@/pages/BoutiqueIA";
 import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
+import ComparisonModeles from "@/pages/ComparisonModeles";
 import ShopifyMigration from "@/pages/ShopifyMigration";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DynamicLanding } from "@/components/landing/DynamicLanding";
