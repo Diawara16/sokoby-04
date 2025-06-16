@@ -1,6 +1,8 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Facebook } from "lucide-react";
+import { T } from "@/components/translation/T";
 
 export function Navigation() {
   return (
@@ -12,15 +14,19 @@ export function Navigation() {
         
         <div className="flex items-center space-x-4">
           <Link to="/pricing">
-            <Button variant="ghost">Tarifs</Button>
+            <Button variant="ghost">
+              <T>Tarifs</T>
+            </Button>
           </Link>
           <Link to="/about">
-            <Button variant="ghost">À propos</Button>
+            <Button variant="ghost">
+              <T>À propos</T>
+            </Button>
           </Link>
           <Link to="/index" className="flex items-center space-x-2">
             <Button variant="ghost" className="flex items-center gap-2">
               <Facebook className="h-5 w-5 text-blue-600" />
-              <span>Outil Facebook</span>
+              <T>Outil Facebook</T>
             </Button>
           </Link>
         </div>
@@ -28,10 +34,14 @@ export function Navigation() {
 
       <div className="flex items-center space-x-4">
         <Link to="/login">
-          <Button variant="ghost">Connexion</Button>
+          <Button variant="ghost">
+            <T>Connexion</T>
+          </Button>
         </Link>
         <Link to="/essai-gratuit">
-          <Button variant="default">Démarrer gratuitement</Button>
+          <Button variant="default">
+            <T>Démarrer gratuitement</T>
+          </Button>
         </Link>
       </div>
     </nav>
