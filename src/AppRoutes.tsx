@@ -17,6 +17,7 @@ import Support from "@/pages/Support";
 import Index from "@/pages/Index";
 import BoutiqueIA from "@/pages/BoutiqueIA";
 import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
+import ShopifyMigration from "@/pages/ShopifyMigration";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DynamicLanding } from "@/components/landing/DynamicLanding";
 
@@ -34,6 +35,7 @@ export function AppRoutes() {
       <Route path="/index" element={<Index />} />
       <Route path="/boutique-ia" element={<BoutiqueIA />} />
       <Route path="/creer-boutique-ia" element={<CreerBoutiqueIA />} />
+      <Route path="/migration-shopify" element={<ShopifyMigration />} />
       <Route path="/connexion" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/inscription" element={<Register />} />

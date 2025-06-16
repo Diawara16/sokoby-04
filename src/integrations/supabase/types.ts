@@ -1194,6 +1194,160 @@ export type Database = {
         }
         Relationships: []
       }
+      migration_data: {
+        Row: {
+          created_at: string
+          data_type: string
+          id: string
+          mapped_data: Json | null
+          migrated_id: string | null
+          migration_request_id: string
+          source_data: Json
+          source_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data_type: string
+          id?: string
+          mapped_data?: Json | null
+          migrated_id?: string | null
+          migration_request_id: string
+          source_data: Json
+          source_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data_type?: string
+          id?: string
+          mapped_data?: Json | null
+          migrated_id?: string | null
+          migration_request_id?: string
+          source_data?: Json
+          source_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "migration_data_migration_request_id_fkey"
+            columns: ["migration_request_id"]
+            isOneToOne: false
+            referencedRelation: "migration_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      migration_requests: {
+        Row: {
+          contact_email: string
+          contact_phone: string | null
+          created_at: string
+          estimated_completion_date: string | null
+          id: string
+          migration_type: Json | null
+          notes: string | null
+          priority: string
+          shopify_access_token: string | null
+          shopify_store_url: string | null
+          source_platform: string
+          status: string
+          store_size: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contact_email: string
+          contact_phone?: string | null
+          created_at?: string
+          estimated_completion_date?: string | null
+          id?: string
+          migration_type?: Json | null
+          notes?: string | null
+          priority?: string
+          shopify_access_token?: string | null
+          shopify_store_url?: string | null
+          source_platform?: string
+          status?: string
+          store_size?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contact_email?: string
+          contact_phone?: string | null
+          created_at?: string
+          estimated_completion_date?: string | null
+          id?: string
+          migration_type?: Json | null
+          notes?: string | null
+          priority?: string
+          shopify_access_token?: string | null
+          shopify_store_url?: string | null
+          source_platform?: string
+          status?: string
+          store_size?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      migration_steps: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          data_migrated: Json | null
+          error_message: string | null
+          id: string
+          migration_request_id: string
+          notes: string | null
+          started_at: string | null
+          status: string
+          step_name: string
+          step_order: number
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          data_migrated?: Json | null
+          error_message?: string | null
+          id?: string
+          migration_request_id: string
+          notes?: string | null
+          started_at?: string | null
+          status?: string
+          step_name: string
+          step_order: number
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          data_migrated?: Json | null
+          error_message?: string | null
+          id?: string
+          migration_request_id?: string
+          notes?: string | null
+          started_at?: string | null
+          status?: string
+          step_name?: string
+          step_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "migration_steps_migration_request_id_fkey"
+            columns: ["migration_request_id"]
+            isOneToOne: false
+            referencedRelation: "migration_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           content: string

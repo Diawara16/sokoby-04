@@ -1,186 +1,167 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Check, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
-export function PricingComparisonSection() {
-  const comparison = [
-    {
-      feature: "Prix de base",
-      sokoby: "11$/mois",
-      shopify: "29€/mois",
-      sokobyBetter: true
-    },
-    {
-      feature: "Frais de transaction",
-      sokoby: "0%",
-      shopify: "2,9% + 0,30€",
-      sokobyBetter: true
-    },
-    {
-      feature: "IA intégrée",
-      sokoby: "Incluse",
-      shopify: "200€/mois en apps",
-      sokobyBetter: true
-    },
-    {
-      feature: "Multi-canal",
-      sokoby: "Inclus",
-      shopify: "150€/mois en apps",
-      sokobyBetter: true
-    },
-    {
-      feature: "Analytics avancées",
-      sokoby: "Incluses",
-      shopify: "Shopify Plus (2000€/mois)",
-      sokobyBetter: true
-    },
-    {
-      feature: "Support 24/7",
-      sokoby: "Inclus",
-      shopify: "Email uniquement",
-      sokobyBetter: true
-    },
-    {
-      feature: "Domaine personnalisé",
-      sokoby: "Inclus",
-      shopify: "14€/an",
-      sokobyBetter: true
-    },
-    {
-      feature: "Certificat SSL",
-      sokoby: "Inclus",
-      shopify: "10€/mois",
-      sokobyBetter: true
-    }
-  ];
+const comparisonData = [
+  {
+    feature: "Frais mensuels",
+    sokoby: "€29/mois",
+    shopifyTotal: "€79/mois"
+  },
+  {
+    feature: "Apps essentielles",
+    sokoby: "Incluses",
+    shopifyTotal: "€120/mois"
+  },
+  {
+    feature: "Frais de transaction",
+    sokoby: "0%",
+    shopifyTotal: "2.4% + 0.30€"
+  },
+  {
+    feature: "Support prioritaire",
+    sokoby: "Inclus",
+    shopifyTotal: "€99/mois"
+  },
+  {
+    feature: "Domaine personnalisé",
+    sokoby: "Inclus",
+    shopifyTotal: "€14/an"
+  },
+  {
+    feature: "Thèmes premium",
+    sokoby: "Inclus",
+    shopifyTotal: "€180 one-time"
+  }
+];
 
-  const monthlyTotal = {
-    sokoby: 25, // Prix du plan Pro
-    shopify: 29 + 200 + 150 + 10 + 1.17 // base + IA + multi-canal + SSL + domaine
+export const PricingComparisonSection = () => {
+  const navigate = useNavigate();
+
+  const handleMigrationClick = () => {
+    navigate('/migration-shopify');
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-gray-50">
+    <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <Badge className="mb-4 bg-purple-100 text-purple-800 hover:bg-purple-100">
-            Comparaison détaillée
-          </Badge>
-          <h2 className="text-4xl font-bold text-gray-900 mb-6">
-            Sokoby vs Shopify : Le vrai coût
+          <h2 className="text-4xl font-bold mb-4">
+            Sokoby vs Shopify: The real cost
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Comparaison transparente des coûts et fonctionnalités pour une boutique génénérant 10 000€/mois
+          <p className="text-xl text-gray-600">
+            Découvrez combien vous pouvez économiser en passant à Sokoby
           </p>
         </div>
 
-        {/* Comparison Table */}
-        <div className="max-w-5xl mx-auto mb-16">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Headers */}
-            <div className="text-center">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Fonctionnalité</h3>
-            </div>
-            <div className="text-center">
-              <div className="bg-red-600 text-white p-4 rounded-t-lg">
-                <h3 className="text-2xl font-bold mb-2">Sokoby</h3>
-                <Badge className="bg-red-700 text-white">Recommandé</Badge>
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {/* Sokoby Column */}
+            <Card className="border-2 border-red-500 relative">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                  Recommandé
+                </span>
               </div>
-            </div>
-            <div className="text-center">
-              <div className="bg-gray-600 text-white p-4 rounded-t-lg">
-                <h3 className="text-2xl font-bold">Shopify</h3>
-              </div>
+              <CardHeader className="text-center pb-4">
+                <CardTitle className="text-2xl text-red-600">Sokoby</CardTitle>
+                <div className="text-4xl font-bold">€29<span className="text-xl text-gray-600">/mois</span></div>
+                <CardDescription>Tout inclus, transparent</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  {comparisonData.map((item, index) => (
+                    <li key={index} className="flex items-center justify-between">
+                      <span className="text-gray-700">{item.feature}</span>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                        <span className="font-medium text-green-600">{item.sokoby}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Shopify Total Column */}
+            <Card>
+              <CardHeader className="text-center pb-4">
+                <CardTitle className="text-2xl">Shopify - Total</CardTitle>
+                <div className="text-4xl font-bold text-red-600">€365<span className="text-xl text-gray-600">/mois</span></div>
+                <CardDescription>Avec apps et frais cachés</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  {comparisonData.map((item, index) => (
+                    <li key={index} className="flex items-center justify-between">
+                      <span className="text-gray-700">{item.feature}</span>
+                      <div className="flex items-center gap-2">
+                        <X className="h-4 w-4 text-red-500" />
+                        <span className="font-medium text-red-600">{item.shopifyTotal}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Savings Highlight */}
+          <div className="text-center bg-gradient-to-r from-green-500 to-emerald-600 text-white p-8 rounded-2xl mb-8">
+            <h3 className="text-3xl font-bold mb-2">Ready to save $4,380 a year?</h3>
+            <p className="text-xl mb-6">
+              Migrez de Shopify vers Sokoby et économisez €365/mois
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                onClick={handleMigrationClick}
+                size="lg" 
+                className="bg-white text-green-600 hover:bg-gray-100 font-semibold"
+              >
+                Migration gratuite depuis Shopify
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white text-white hover:bg-white hover:text-green-600"
+                onClick={() => navigate('/creer-boutique-ia')}
+              >
+                Créer ma boutique
+              </Button>
             </div>
           </div>
 
-          <Card className="shadow-xl">
-            <CardContent className="p-0">
-              {comparison.map((item, index) => (
-                <div key={index} className={`grid grid-cols-1 md:grid-cols-3 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
-                  <div className="p-4 font-medium text-gray-900 border-b md:border-b-0 md:border-r">
-                    {item.feature}
-                  </div>
-                  <div className={`p-4 text-center border-b md:border-b-0 md:border-r ${item.sokobyBetter ? 'bg-green-50' : ''}`}>
-                    <span className={`font-semibold ${item.sokobyBetter ? 'text-green-700' : 'text-gray-700'}`}>
-                      {item.sokoby}
-                    </span>
-                    {item.sokobyBetter && <Check className="inline h-4 w-4 text-green-600 ml-2" />}
-                  </div>
-                  <div className="p-4 text-center border-b md:border-b-0">
-                    <span className="font-semibold text-gray-700">{item.shopify}</span>
-                    {item.sokobyBetter && <X className="inline h-4 w-4 text-red-600 ml-2" />}
-                  </div>
+          {/* Migration Benefits */}
+          <div className="bg-white p-6 rounded-xl border">
+            <h4 className="text-xl font-bold mb-4 text-center">Migration 100% gratuite et sécurisée</h4>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle className="h-6 w-6 text-blue-600" />
                 </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Total Cost Comparison */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <Card className="border-2 border-red-200 shadow-xl">
-            <CardHeader className="bg-red-600 text-white">
-              <CardTitle className="text-2xl text-center">Sokoby - Total</CardTitle>
-            </CardHeader>
-            <CardContent className="p-8 text-center">
-              <div className="text-5xl font-bold text-red-600 mb-4">25$</div>
-              <div className="text-gray-600 mb-6">par mois, tout inclus</div>
-              <ul className="text-left space-y-2 mb-6">
-                <li className="flex items-center"><Check className="h-4 w-4 text-green-600 mr-2" /> Toutes fonctionnalités incluses</li>
-                <li className="flex items-center"><Check className="h-4 w-4 text-green-600 mr-2" /> 0% de commission</li>
-                <li className="flex items-center"><Check className="h-4 w-4 text-green-600 mr-2" /> IA + Multi-canal + Analytics</li>
-              </ul>
-              <Badge className="bg-green-100 text-green-800 text-lg py-2 px-4">
-                Économie : 365$/mois
-              </Badge>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-xl">
-            <CardHeader className="bg-gray-600 text-white">
-              <CardTitle className="text-2xl text-center">Shopify - Total</CardTitle>
-            </CardHeader>
-            <CardContent className="p-8 text-center">
-              <div className="text-5xl font-bold text-gray-600 mb-4">390€</div>
-              <div className="text-gray-600 mb-6">par mois avec extensions</div>
-              <ul className="text-left space-y-2 mb-6 text-sm">
-                <li>• Base: 29€ + IA: 200€ + Multi-canal: 150€</li>
-                <li>• SSL: 10€ + Domaine: 1€</li>
-                <li>• + 2,9% sur 10k€ = 290€ de commissions</li>
-              </ul>
-              <Badge className="bg-red-100 text-red-800 text-lg py-2 px-4">
-                Coût réel avec commissions
-              </Badge>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* CTA */}
-        <div className="text-center mt-16">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
-            Prêt à économiser 4 380$ par an ?
-          </h3>
-          <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Rejoignez les milliers d'entrepreneurs qui ont fait le bon choix
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/essai-gratuit">
-              <Button size="lg" className="bg-red-600 hover:bg-red-700">
-                Essai Gratuit 14 jours
-              </Button>
-            </Link>
-            <Link to="/contact">
-              <Button variant="outline" size="lg">
-                Migration gratuite depuis Shopify
-              </Button>
-            </Link>
+                <h5 className="font-semibold mb-2">Migration complète</h5>
+                <p className="text-sm text-gray-600">Produits, clients, commandes - tout est transféré</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                </div>
+                <h5 className="font-semibold mb-2">Support dédié</h5>
+                <p className="text-sm text-gray-600">Notre équipe vous accompagne à chaque étape</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle className="h-6 w-6 text-purple-600" />
+                </div>
+                <h5 className="font-semibold mb-2">Zéro interruption</h5>
+                <p className="text-sm text-gray-600">Votre boutique reste en ligne pendant la migration</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
   );
-}
+};
