@@ -1,7 +1,6 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Wordpress, Box, Palette, Layers, Zap } from "lucide-react";
+import { ShoppingCart, Globe, Box, Palette, Layers, Zap } from "lucide-react";
 
 interface Platform {
   id: string;
@@ -27,7 +26,7 @@ const platforms: Platform[] = [
     id: 'woocommerce',
     name: 'WooCommerce',
     description: 'Plugin WordPress le plus populaire pour l\'e-commerce',
-    icon: <Wordpress className="h-8 w-8" />,
+    icon: <Globe className="h-8 w-8" />,
     marketShare: '28.24%',
     difficulty: 'Medium',
     estimatedTime: '7-10 jours'
