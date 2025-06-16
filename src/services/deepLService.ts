@@ -16,14 +16,14 @@ class DeepLService {
   private baseUrl = 'https://api-free.deepl.com/v2';
 
   constructor() {
-    // En production, cette clé devrait être récupérée depuis Supabase secrets
+    // La clé API sera récupérée depuis localStorage ou configuration admin
     this.loadApiKey();
   }
 
-  private async loadApiKey() {
-    // Pour l'instant, on utilise une clé factice
-    // En production, utiliser Supabase secrets
-    this.apiKey = process.env.DEEPL_API_KEY || 'your-deepl-api-key';
+  private loadApiKey() {
+    // Récupérer la clé depuis localStorage (configurée via l'admin)
+    const storedKey = localStorage.getItem('deepl_api_key');
+    this.apiKey = storedKey || '';
   }
 
   private getCacheKey(text: string, targetLang: string): string {
@@ -44,7 +44,7 @@ class DeepLService {
     }
 
     // Si pas de clé API, retourner le texte original
-    if (!this.apiKey || this.apiKey === 'your-deepl-api-key') {
+    if (!this.apiKey) {
       console.warn('DeepL API key not configured, returning original text');
       return text;
     }

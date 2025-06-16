@@ -79,7 +79,7 @@ export function CTASection() {
         </div>
 
         <TP className="text-red-200 text-sm mt-8">
-          ✅ <T>Aucune carte bancaire requise</T> • ✅ <T>Support 24/7 inclus</T> • ✅ <T>Migration Shopify gratuite</T>
+          ✅ Aucune carte bancaire requise • ✅ Support 24/7 inclus • ✅ Migration Shopify gratuite
         </TP>
       </div>
     </section>
