@@ -17,7 +17,7 @@ export function Navigation() {
               <T>Tarifs</T>
             </Button>
           </Link>
-          <Link to="/about">
+          <Link to="/qui-sommes-nous">
             <Button variant="ghost">
               <T>À propos</T>
             </Button>
@@ -26,7 +26,7 @@ export function Navigation() {
       </div>
 
       <div className="flex items-center space-x-4">
-        <Link to="/login">
+        <Link to="/connexion">
           <Button variant="ghost">
             <T>Connexion</T>
           </Button>
