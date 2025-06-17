@@ -39,7 +39,7 @@ export function CTASection() {
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 mb-8">
-          <Link to="/pricing">
+          <Link to="/inscription">
             <Button 
               size="lg" 
               className="bg-white text-red-600 hover:bg-red-50 text-lg px-8 py-4 font-semibold"
