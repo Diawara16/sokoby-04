@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "./LanguageSelector";
@@ -34,7 +35,7 @@ export function DesktopNav({ isAuthenticated }: DesktopNavProps) {
                 S'identifier
               </Button>
             </Link>
-            <Link to="/essai-gratuit">
+            <Link to="/inscription">
               <Button 
                 className="bg-[#ea384c] hover:bg-[#ea384c]/90 text-white font-medium"
               >

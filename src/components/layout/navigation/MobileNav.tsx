@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { 
@@ -126,7 +127,7 @@ export const MobileNav = ({ isAuthenticated }: MobileNavProps) => {
             {!isAuthenticated && (
               <div className="border-t pt-4 mt-4 space-y-2">
                 <Link 
-                  to="/login"
+                  to="/connexion"
                   onClick={() => setIsOpen(false)}
                 >
                   <Button variant="outline" className="w-full">
@@ -134,7 +135,7 @@ export const MobileNav = ({ isAuthenticated }: MobileNavProps) => {
                   </Button>
                 </Link>
                 <Link 
-                  to="/register"
+                  to="/inscription"
                   onClick={() => setIsOpen(false)}
                 >
                   <Button className="w-full bg-[#ea384c] hover:bg-[#ea384c]/90 text-white">
