@@ -11,7 +11,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CreerBoutiqueIA = () => {
-  const { step, progress, error, storeUrl, handleNicheSelect, handleComplete } = useStoreCreation();
+  const { step, processStep, progress, error, storeUrl, handleNicheSelect, handleComplete } = useStoreCreation();
   const { isAuthenticated, isLoading: authLoading } = useAuthAndProfile();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -78,7 +78,8 @@ const CreerBoutiqueIA = () => {
           <div className="max-w-2xl mx-auto">
             <CreationProgress 
               progress={progress}
-              currentStep="creation"
+              processStep={processStep}
+              error={error}
             />
             <div className="text-center mt-6">
               <p className="text-lg font-medium mb-2">
