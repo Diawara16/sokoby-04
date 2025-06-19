@@ -12,8 +12,8 @@ export function AuthButtons() {
   console.log("Auth buttons rendering, language:", currentLanguage, "current path:", window.location.pathname);
 
   // Utilisons la route /connexion qui est plus française
-  const loginPath = "/connexion";
-  const registerPath = "/inscription";
+  const loginPath = currentLanguage === "fr" ? "/connexion" : "/login";
+  const registerPath = currentLanguage === "fr" ? "/inscription" : "/register";
 
   return (
     <div className="flex items-center gap-3">

@@ -8,7 +8,6 @@ import Dashboard from "@/pages/Dashboard";
 import Settings from "@/pages/Settings";
 import Profile from "@/pages/Profile";
 import Pricing from "@/pages/Pricing";
-import PlanTarifaire from "@/pages/PlanTarifaire";
 import Features from "@/pages/Features";
 import Resources from "@/pages/Resources";
 import Legal from "@/pages/Legal";
@@ -20,9 +19,6 @@ import BoutiqueIA from "@/pages/BoutiqueIA";
 import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
 import ComparisonModeles from "@/pages/ComparisonModeles";
 import ShopifyMigration from "@/pages/ShopifyMigration";
-import EssaiGratuit from "@/pages/EssaiGratuit";
-import QuiSommesNous from "@/pages/QuiSommesNous";
-import About from "@/pages/About";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DynamicLanding } from "@/components/landing/DynamicLanding";
 
@@ -50,23 +46,14 @@ export function AppRoutes() {
       <Route path="/migration-magento" element={<ShopifyMigration />} />
       <Route path="/migration-volusion" element={<ShopifyMigration />} />
       
-      {/* French and English routes for authentication */}
       <Route path="/connexion" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/inscription" element={<Register />} />
       <Route path="/register" element={<Register />} />
-      
-      {/* Trial and about pages */}
-      <Route path="/essai-gratuit" element={<EssaiGratuit />} />
-      <Route path="/qui-sommes-nous" element={<QuiSommesNous />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/a-propos" element={<About />} />
-      
       <Route path="/fonctionnalites" element={<Features />} />
       <Route path="/features" element={<Features />} />
       <Route path="/tarifs" element={<Pricing />} />
       <Route path="/pricing" element={<Pricing />} />
-      <Route path="/plan-tarifaire" element={<PlanTarifaire />} />
       <Route path="/ressources" element={<Resources />} />
       <Route path="/resources" element={<Resources />} />
       <Route path="/legal" element={<Legal />} />

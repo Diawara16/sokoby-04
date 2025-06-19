@@ -12,12 +12,12 @@ export function Navigation() {
         </Link>
         
         <div className="flex items-center space-x-4">
-          <Link to="/plan-tarifaire">
+          <Link to="/pricing">
             <Button variant="ghost">
               <T>Tarifs</T>
             </Button>
           </Link>
-          <Link to="/qui-sommes-nous">
+          <Link to="/about">
             <Button variant="ghost">
               <T>À propos</T>
             </Button>
@@ -26,12 +26,12 @@ export function Navigation() {
       </div>
 
       <div className="flex items-center space-x-4">
-        <Link to="/connexion">
+        <Link to="/login">
           <Button variant="ghost">
             <T>Connexion</T>
           </Button>
         </Link>
-        <Link to="/inscription">
+        <Link to="/essai-gratuit">
           <Button variant="default">
             <T>Démarrer gratuitement</T>
           </Button>
