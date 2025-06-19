@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PricingPlans } from "@/components/pricing/PricingPlans";
 import { useSubscriptionHandler } from "@/hooks/useSubscriptionHandler";
 import { Link } from "react-router-dom";
+import { Gift } from "lucide-react";
 
 export function PricingSection() {
   const { handleSubscribe } = useSubscriptionHandler();
@@ -12,15 +13,16 @@ export function PricingSection() {
     <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <Badge className="mb-4 bg-blue-100 text-blue-800 hover:bg-blue-100">
-            Tarification transparente
+          <Badge className="mb-4 bg-green-100 text-green-800 hover:bg-green-100">
+            <Gift className="h-4 w-4 mr-2" />
+            Essai gratuit disponible
           </Badge>
           <h2 className="text-4xl font-bold text-gray-900 mb-6">
             Choisissez le plan qui vous convient
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Commencez gratuitement, puis choisissez un plan qui évolue avec votre entreprise.
-            Tous nos plans incluent un essai gratuit de 14 jours.
+            Commencez avec notre essai gratuit manuel, puis choisissez un plan qui évolue avec votre entreprise.
+            Tous nos plans payants incluent la création automatique de boutique par IA.
           </p>
         </div>
 
