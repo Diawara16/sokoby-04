@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bot, Wand2, Sparkles, ShoppingBag, Zap, TrendingUp, Lock } from "lucide-react";
+import { Bot, Wand2, Sparkles, ShoppingBag, Zap, TrendingUp } from "lucide-react";
 
 export function AIStoreSection() {
   const features = [
@@ -28,9 +28,9 @@ export function AIStoreSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <div className="flex justify-center mb-4">
-            <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100 px-4 py-2">
-              <Lock className="h-4 w-4 mr-2" />
-              Fonctionnalité Premium
+            <Badge className="bg-primary/10 text-primary hover:bg-primary/10 px-4 py-2">
+              <Bot className="h-4 w-4 mr-2" />
+              Powered by AI
               <Sparkles className="h-4 w-4 ml-2" />
             </Badge>
           </div>
@@ -38,7 +38,7 @@ export function AIStoreSection() {
             Créez votre <span className="text-primary">Boutique IA</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Fonctionnalité premium : Laissez notre intelligence artificielle créer une boutique complète et optimisée 
+            Laissez notre intelligence artificielle créer une boutique complète et optimisée 
             pour votre niche en quelques minutes seulement.
           </p>
         </div>
@@ -57,21 +57,21 @@ export function AIStoreSection() {
 
         <div className="text-center space-y-6">
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link to="/pricing">
+            <Link to="/creer-boutique-ia">
               <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg font-semibold">
                 <Wand2 className="h-5 w-5 mr-2" />
-                Choisir un plan premium
+                Créer ma boutique IA
               </Button>
             </Link>
             <Link to="/boutique-ia">
               <Button variant="outline" size="lg" className="px-8 py-4 text-lg font-semibold border-primary text-primary hover:bg-primary/5">
                 <ShoppingBag className="h-5 w-5 mr-2" />
-                Découvrir les boutiques IA
+                Voir les boutiques IA
               </Button>
             </Link>
           </div>
           <p className="text-sm text-gray-500">
-            Abonnement requis • Création automatisée par IA
+            Essai gratuit • Aucune carte de crédit requise
           </p>
         </div>
       </div>
