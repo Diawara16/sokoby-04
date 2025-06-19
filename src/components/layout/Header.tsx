@@ -18,8 +18,8 @@ export function Header() {
       icon: <Bot className="h-4 w-4" />,
       highlight: true
     },
-    { name: "Tarifs", href: "/pricing" },
-    { name: "À propos", href: "/a-propos" },
+    { name: "Tarifs", href: "/tarifs" },
+    { name: "À propos", href: "/qui-sommes-nous" },
     { name: "Contact", href: "/contact" },
   ];
 
@@ -63,7 +63,7 @@ export function Header() {
             <Link to="/connexion">
               <Button variant="ghost">Se connecter</Button>
             </Link>
-            <Link to="/inscription">
+            <Link to="/essai-gratuit">
               <Button className="bg-red-600 hover:bg-red-700">
                 Essai gratuit
               </Button>
@@ -118,7 +118,7 @@ export function Header() {
                       Se connecter
                     </Button>
                   </Link>
-                  <Link to="/inscription" onClick={() => setIsOpen(false)}>
+                  <Link to="/essai-gratuit" onClick={() => setIsOpen(false)}>
                     <Button className="w-full bg-red-600 hover:bg-red-700">
                       Essai gratuit
                     </Button>
