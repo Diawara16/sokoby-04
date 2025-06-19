@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { screen, fireEvent, waitFor } from '@testing-library/dom';
@@ -8,7 +9,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // Re-export everything from @testing-library/react
 export * from '@testing-library/react';
 
-// Re-export the specific functions that tests need from their correct modules
+// Explicitly re-export commonly used utilities to ensure they're available
 export { screen, fireEvent, waitFor };
 
 interface AllTheProvidersProps {
@@ -39,3 +40,4 @@ const customRender = (
 ) => render(ui, { wrapper: AllTheProviders, ...options });
 
 export { customRender as render };
+

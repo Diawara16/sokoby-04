@@ -1,3 +1,4 @@
+
 import { ShoppingBag, Shield, BarChart } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
@@ -5,18 +6,18 @@ export function FeaturesSection() {
   const shoppingCategories = [
     {
       title: "Shopping en Famille",
-      image: "/lovable-uploads/9de27742-f1f6-4c4b-b3b8-605445a8fe46.png",
+      image: "https://images.unsplash.com/photo-1607082349566-187342175e2f",
       alt: "Famille heureuse faisant du shopping ensemble"
     },
     {
       title: "Créez Votre Boutique",
-      image: "/lovable-uploads/47d16737-1ff8-4951-b284-7f126643ce26.png",
-      alt: "Commerce mobile et création de boutique en ligne"
+      image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b",
+      alt: "Couple créant leur boutique sur Sokoby"
     },
     {
       title: "Réussite Entrepreneuriale",
-      image: "/lovable-uploads/d3e41de9-a098-4923-b50d-e21b69cd66e3.png",
-      alt: "Entrepreneurs travaillant ensemble sur leur startup"
+      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2",
+      alt: "Femme entrepreneur témoignant de son succès sur Sokoby"
     }
   ];
 

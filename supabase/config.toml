@@ -1,8 +1,4 @@
-
 project_id = "zlwvggnzyfldswpgebij"
 
 [functions.send-email]
 verify_jwt = false
-
-[functions.shopify-migration]
-verify_jwt = true
