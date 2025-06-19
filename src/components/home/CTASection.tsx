@@ -1,7 +1,6 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Shield, Zap, Gift } from "lucide-react";
+import { Clock, Shield, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface CTASectionProps {
@@ -15,8 +14,7 @@ export function CTASection({ currentLanguage, onCreateStore }: CTASectionProps) 
       <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:16px]" />
       <div className="container mx-auto px-4 text-center relative">
         <Badge className="mb-6 bg-white/20 text-white hover:bg-white/20 text-lg py-2 px-6">
-          <Gift className="h-5 w-5 mr-2" />
-          Essai gratuit manuel disponible
+          🚀 Offre de lancement limitée
         </Badge>
         
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -25,22 +23,22 @@ export function CTASection({ currentLanguage, onCreateStore }: CTASectionProps) 
         </h2>
         
         <p className="text-xl text-red-100 mb-8 max-w-3xl mx-auto">
-          Commencez avec notre essai gratuit manuel ou choisissez un plan premium 
-          pour la création automatique par IA
+          Rejoignez les 25 000+ entrepreneurs qui ont choisi Sokoby plutôt que Shopify 
+          et économisent en moyenne 4 320€ par an
         </p>
 
         <div className="flex flex-wrap justify-center gap-6 mb-12">
           <div className="flex items-center text-white">
-            <Gift className="h-6 w-6 mr-2" />
-            <span>Essai gratuit manuel</span>
+            <Clock className="h-6 w-6 mr-2" />
+            <span>Création en 10 minutes</span>
           </div>
           <div className="flex items-center text-white">
             <Shield className="h-6 w-6 mr-2" />
-            <span>14 jours d'essai</span>
+            <span>14 jours gratuits</span>
           </div>
           <div className="flex items-center text-white">
             <Zap className="h-6 w-6 mr-2" />
-            <span>IA avec abonnement</span>
+            <span>IA incluse</span>
           </div>
         </div>
 
@@ -50,18 +48,16 @@ export function CTASection({ currentLanguage, onCreateStore }: CTASectionProps) 
               size="lg" 
               className="bg-white text-red-600 hover:bg-red-50 text-lg px-8 py-4 font-semibold"
             >
-              🎯 Commencer l'essai gratuit
+              🎯 Créer ma boutique gratuitement
             </Button>
           </Link>
-          <Link to="/contact">
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-white text-white hover:bg-white hover:text-red-600 text-lg px-8 py-4"
-            >
-              📞 Démo personnalisée
-            </Button>
-          </Link>
+          <Button 
+            variant="outline" 
+            size="lg"
+            className="border-white text-white hover:bg-white hover:text-red-600 text-lg px-8 py-4"
+          >
+            📞 Démo personnalisée
+          </Button>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -80,7 +76,7 @@ export function CTASection({ currentLanguage, onCreateStore }: CTASectionProps) 
         </div>
 
         <p className="text-red-200 text-sm mt-8">
-          ✅ Essai gratuit manuel • ✅ Support 24/7 inclus • ✅ IA avec plans premium
+          ✅ Aucune carte bancaire requise • ✅ Support 24/7 inclus • ✅ Migration Shopify gratuite
         </p>
       </div>
     </section>
