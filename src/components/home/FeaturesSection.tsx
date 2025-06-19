@@ -5,18 +5,18 @@ export function FeaturesSection() {
   const shoppingCategories = [
     {
       title: "Shopping en Famille",
-      image: "/lovable-uploads/8df8669b-0ee8-4a15-ba70-1119906d3be3.png",
+      image: "/lovable-uploads/9de27742-f1f6-4c4b-b3b8-605445a8fe46.png",
       alt: "Famille heureuse faisant du shopping ensemble"
     },
     {
-      title: "E-commerce Mobile",
-      image: "/lovable-uploads/b7b5c43c-e2f5-4234-906c-311ac46974b2.png",
-      alt: "Shopping sur mobile avec application e-commerce"
+      title: "Créez Votre Boutique",
+      image: "/lovable-uploads/47d16737-1ff8-4951-b284-7f126643ce26.png",
+      alt: "Commerce mobile et création de boutique en ligne"
     },
     {
       title: "Réussite Entrepreneuriale",
-      image: "/lovable-uploads/ba4f669d-b7c4-4458-bed7-3c6f6fe4cb97.png",
-      alt: "Entrepreneurs témoignant de leur succès sur Sokoby"
+      image: "/lovable-uploads/d3e41de9-a098-4923-b50d-e21b69cd66e3.png",
+      alt: "Entrepreneurs travaillant ensemble sur leur startup"
     }
   ];
 

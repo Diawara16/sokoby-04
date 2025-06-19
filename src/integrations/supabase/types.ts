@@ -301,60 +301,6 @@ export type Database = {
         }
         Relationships: []
       }
-      comments: {
-        Row: {
-          content: string | null
-          created_at: string
-          has_voice_note: boolean
-          id: string
-          parent_comment_id: string | null
-          post_id: string
-          updated_at: string
-          user_id: string
-          voice_note_url: string | null
-          voice_transcription: string | null
-        }
-        Insert: {
-          content?: string | null
-          created_at?: string
-          has_voice_note?: boolean
-          id?: string
-          parent_comment_id?: string | null
-          post_id: string
-          updated_at?: string
-          user_id: string
-          voice_note_url?: string | null
-          voice_transcription?: string | null
-        }
-        Update: {
-          content?: string | null
-          created_at?: string
-          has_voice_note?: boolean
-          id?: string
-          parent_comment_id?: string | null
-          post_id?: string
-          updated_at?: string
-          user_id?: string
-          voice_note_url?: string | null
-          voice_transcription?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "comments_parent_comment_id_fkey"
-            columns: ["parent_comment_id"]
-            isOneToOne: false
-            referencedRelation: "comments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "comments_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       cookie_consents: {
         Row: {
           consent_date: string | null
@@ -831,66 +777,6 @@ export type Database = {
           },
         ]
       }
-      friend_invitations: {
-        Row: {
-          created_at: string
-          expires_at: string
-          id: string
-          invitation_code: string
-          invited_email: string | null
-          invited_user_id: string | null
-          inviter_id: string
-          status: string
-        }
-        Insert: {
-          created_at?: string
-          expires_at?: string
-          id?: string
-          invitation_code?: string
-          invited_email?: string | null
-          invited_user_id?: string | null
-          inviter_id: string
-          status?: string
-        }
-        Update: {
-          created_at?: string
-          expires_at?: string
-          id?: string
-          invitation_code?: string
-          invited_email?: string | null
-          invited_user_id?: string | null
-          inviter_id?: string
-          status?: string
-        }
-        Relationships: []
-      }
-      friendships: {
-        Row: {
-          created_at: string
-          friend_id: string
-          id: string
-          status: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          friend_id: string
-          id?: string
-          status?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          friend_id?: string
-          id?: string
-          status?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       interac_payments: {
         Row: {
           amount: number
@@ -967,38 +853,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
-      }
-      likes: {
-        Row: {
-          comment_id: string | null
-          created_at: string
-          id: string
-          post_id: string | null
-          user_id: string
-        }
-        Insert: {
-          comment_id?: string | null
-          created_at?: string
-          id?: string
-          post_id?: string | null
-          user_id: string
-        }
-        Update: {
-          comment_id?: string | null
-          created_at?: string
-          id?: string
-          post_id?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "likes_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       loyalty_points: {
         Row: {
@@ -1668,45 +1522,6 @@ export type Database = {
           status?: string | null
           updated_at?: string
           user_id?: string
-        }
-        Relationships: []
-      }
-      posts: {
-        Row: {
-          content: string | null
-          created_at: string
-          has_voice_note: boolean
-          id: string
-          metadata: Json | null
-          updated_at: string
-          user_id: string
-          visibility: string
-          voice_note_url: string | null
-          voice_transcription: string | null
-        }
-        Insert: {
-          content?: string | null
-          created_at?: string
-          has_voice_note?: boolean
-          id?: string
-          metadata?: Json | null
-          updated_at?: string
-          user_id: string
-          visibility?: string
-          voice_note_url?: string | null
-          voice_transcription?: string | null
-        }
-        Update: {
-          content?: string | null
-          created_at?: string
-          has_voice_note?: boolean
-          id?: string
-          metadata?: Json | null
-          updated_at?: string
-          user_id?: string
-          visibility?: string
-          voice_note_url?: string | null
-          voice_transcription?: string | null
         }
         Relationships: []
       }
@@ -2503,57 +2318,6 @@ export type Database = {
           page_url?: string | null
           session_id?: string | null
           user_id?: string
-        }
-        Relationships: []
-      }
-      user_profiles: {
-        Row: {
-          accessibility_settings: Json | null
-          avatar_url: string | null
-          bio: string | null
-          created_at: string
-          date_of_birth: string | null
-          display_name: string | null
-          id: string
-          location: string | null
-          phone: string | null
-          privacy_settings: Json | null
-          updated_at: string
-          user_id: string
-          username: string | null
-          website: string | null
-        }
-        Insert: {
-          accessibility_settings?: Json | null
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string
-          date_of_birth?: string | null
-          display_name?: string | null
-          id?: string
-          location?: string | null
-          phone?: string | null
-          privacy_settings?: Json | null
-          updated_at?: string
-          user_id: string
-          username?: string | null
-          website?: string | null
-        }
-        Update: {
-          accessibility_settings?: Json | null
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string
-          date_of_birth?: string | null
-          display_name?: string | null
-          id?: string
-          location?: string | null
-          phone?: string | null
-          privacy_settings?: Json | null
-          updated_at?: string
-          user_id?: string
-          username?: string | null
-          website?: string | null
         }
         Relationships: []
       }
