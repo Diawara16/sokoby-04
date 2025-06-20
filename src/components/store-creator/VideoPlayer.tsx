@@ -13,7 +13,7 @@ interface VideoPlayerProps {
 }
 
 export const VideoPlayer = ({ 
-  videoUrl = "/placeholder-video.mp4", 
+  videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", 
   title, 
   description 
 }: VideoPlayerProps) => {
@@ -25,6 +25,7 @@ export const VideoPlayer = ({
   const [volume, setVolume] = useState(1);
   const [showSubtitles, setShowSubtitles] = useState(true);
   const [showControls, setShowControls] = useState(true);
+  const [videoError, setVideoError] = useState(false);
   
   const { currentLanguage } = useLanguageContext();
   const { currentSubtitle, updateCurrentSubtitle, isLoading } = useVideoSubtitles();
@@ -43,31 +44,48 @@ export const VideoPlayer = ({
 
     const handleLoadedMetadata = () => {
       setDuration(video.duration);
+      setVideoError(false);
     };
 
     const handleEnded = () => {
       setIsPlaying(false);
     };
 
+    const handleError = () => {
+      setVideoError(true);
+      console.error('Erreur de chargement de la vidéo');
+    };
+
+    const handleCanPlay = () => {
+      setVideoError(false);
+    };
+
     video.addEventListener('timeupdate', handleTimeUpdate);
     video.addEventListener('loadedmetadata', handleLoadedMetadata);
     video.addEventListener('ended', handleEnded);
+    video.addEventListener('error', handleError);
+    video.addEventListener('canplay', handleCanPlay);
 
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate);
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
       video.removeEventListener('ended', handleEnded);
+      video.removeEventListener('error', handleError);
+      video.removeEventListener('canplay', handleCanPlay);
     };
   }, [updateCurrentSubtitle]);
 
   const togglePlay = () => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || videoError) return;
 
     if (isPlaying) {
       video.pause();
     } else {
-      video.play();
+      video.play().catch((error) => {
+        console.error('Erreur lors de la lecture:', error);
+        setVideoError(true);
+      });
     }
     setIsPlaying(!isPlaying);
   };
@@ -91,7 +109,7 @@ export const VideoPlayer = ({
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     const video = videoRef.current;
-    if (!video || !duration) return;
+    if (!video || !duration || videoError) return;
 
     const rect = e.currentTarget.getBoundingClientRect();
     const percent = (e.clientX - rect.left) / rect.width;
@@ -126,6 +144,7 @@ export const VideoPlayer = ({
         poster="/placeholder-video-thumbnail.jpg"
         onMouseEnter={() => setShowControls(true)}
         onMouseLeave={() => setShowControls(true)}
+        crossOrigin="anonymous"
       >
         <source src={videoUrl} type="video/mp4" />
         <track
@@ -134,10 +153,27 @@ export const VideoPlayer = ({
           label={`Sous-titres ${currentLanguage.toUpperCase()}`}
           default
         />
+        Votre navigateur ne supporte pas la lecture vidéo.
       </video>
 
-      {/* Placeholder Overlay (when no video) */}
-      {!videoUrl.includes('.mp4') && (
+      {/* Error Overlay */}
+      {videoError && (
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+          <div className="text-center space-y-4 text-white">
+            <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
+              <Play className="w-8 h-8 text-white ml-1" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xl font-semibold">{translatedTitle}</h3>
+              <p className="text-sm opacity-90">{translatedDescription}</p>
+              <p className="text-xs text-gray-300">Vidéo de démonstration temporairement indisponible</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Placeholder Overlay (when no real video) */}
+      {!videoError && videoUrl.includes('placeholder') && (
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-blue-600/20 flex items-center justify-center">
           <div className="text-center space-y-4">
             <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
@@ -152,7 +188,7 @@ export const VideoPlayer = ({
       )}
 
       {/* Subtitles Overlay */}
-      {showSubtitles && currentSubtitle && (
+      {showSubtitles && currentSubtitle && !videoError && (
         <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-20">
           <div className="bg-black/80 text-white text-center px-4 py-2 rounded max-w-md">
             <p className="text-sm leading-relaxed">
@@ -163,7 +199,7 @@ export const VideoPlayer = ({
       )}
 
       {/* Controls Overlay */}
-      {showControls && (
+      {showControls && !videoError && (
         <div className="absolute bottom-4 left-4 right-4 z-30">
           <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3">
             {/* Progress Bar */}
