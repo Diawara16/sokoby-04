@@ -2,10 +2,11 @@
 import { Card } from "@/components/ui/card";
 import { VideoPlayer } from "./VideoPlayer";
 import { VideoProductionManager } from "./VideoProductionManager";
+import { CastingManager } from "./CastingManager";
 import { useLanguageContext } from "@/contexts/LanguageContext";
 import { useTranslation } from "@/hooks/useDeepLTranslation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Video, Settings, Play } from "lucide-react";
+import { Video, Settings, Play, Users } from "lucide-react";
 
 export const VideoExplainer = () => {
   const { currentLanguage } = useLanguageContext();
@@ -49,10 +50,14 @@ export const VideoExplainer = () => {
       </div>
 
       <Tabs defaultValue="video" className="w-full max-w-6xl mx-auto">
-        <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
+        <TabsList className="grid w-full grid-cols-3 max-w-lg mx-auto">
           <TabsTrigger value="video" className="flex items-center gap-2">
             <Play className="h-4 w-4" />
             {useTranslation("Vidéo Démo")}
+          </TabsTrigger>
+          <TabsTrigger value="casting" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            {useTranslation("Casting")}
           </TabsTrigger>
           <TabsTrigger value="production" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
@@ -91,6 +96,10 @@ export const VideoExplainer = () => {
               </div>
             </div>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="casting" className="mt-6">
+          <CastingManager />
         </TabsContent>
 
         <TabsContent value="production" className="mt-6">
