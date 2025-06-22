@@ -148,9 +148,9 @@ export const CandidateGallery = ({
               className="p-2 border rounded-md"
             >
               <option value="all">{useTranslation('Tous budgets')}</option>
-              <option value="low">≤ 500€/jour</option>
+              <option value="low">&le; 500€/jour</option>
               <option value="mid">500-800€/jour</option>
-              <option value="high">> 800€/jour</option>
+              <option value="high">&gt; 800€/jour</option>
             </select>
           </div>
 
