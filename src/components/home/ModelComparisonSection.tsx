@@ -84,9 +84,9 @@ export function ModelComparisonSection() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-1">Gratuit</div>
-                <div className="text-sm text-gray-600">Aucun frais de création</div>
-                <div className="text-xs text-gray-500">Seulement l'abonnement mensuel</div>
+                <div className="text-3xl font-bold text-blue-600 mb-1">À partir de 11$</div>
+                <div className="text-sm text-gray-600">Abonnement mensuel</div>
+                <div className="text-xs text-gray-500">Essai gratuit de 14 jours</div>
               </div>
               
               <div className="space-y-3">
@@ -109,8 +109,8 @@ export function ModelComparisonSection() {
               </div>
 
               <Button variant="outline" asChild className="w-full">
-                <Link to="/register">
-                  Commencer gratuitement
+                <Link to="/tarifs">
+                  Voir les plans tarifaires
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Link>
               </Button>
