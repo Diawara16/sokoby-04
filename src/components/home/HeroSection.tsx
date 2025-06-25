@@ -1,6 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { T } from "@/components/translation/T";
 
 export function HeroSection() {
   return (
@@ -9,10 +10,10 @@ export function HeroSection() {
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 md:gap-12">
           <div className="flex-1 text-white">
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4">
-              Construisez votre empire e-commerce
+              <T>Construisez votre empire e-commerce</T>
             </h1>
             <p className="text-xl text-white/90 mb-6">
-              La plateforme complète pour lancer et développer votre boutique en ligne
+              <T>La plateforme complète pour lancer et développer votre boutique en ligne</T>
             </p>
           </div>
           
@@ -22,7 +23,7 @@ export function HeroSection() {
                 className="w-full bg-white hover:bg-white/90 text-black font-medium text-lg py-6 border-2 border-primary" 
                 size="lg"
               >
-                Créer mon compte
+                <T>Créer mon compte</T>
               </Button>
             </Link>
             <Link to="/connexion" className="w-full block">
@@ -30,7 +31,7 @@ export function HeroSection() {
                 className="w-full bg-primary hover:bg-primary/90 text-white font-medium text-lg py-6 border-2 border-black" 
                 size="lg"
               >
-                Se connecter
+                <T>Se connecter</T>
               </Button>
             </Link>
           </div>

@@ -10,43 +10,60 @@ interface TranslationCache {
   [key: string]: string;
 }
 
+interface TranslationOptions {
+  skipCache?: boolean;
+  fallback?: string;
+  context?: string;
+}
+
 class DeepLService {
   private apiKey: string = '';
   private cache: TranslationCache = {};
   private baseUrl = 'https://api-free.deepl.com/v2';
+  private isConfigured = false;
 
   constructor() {
-    // La clé API sera récupérée depuis localStorage ou configuration admin
     this.loadApiKey();
   }
 
   private loadApiKey() {
-    // Récupérer la clé depuis localStorage (configurée via l'admin)
     const storedKey = localStorage.getItem('deepl_api_key');
     this.apiKey = storedKey || '';
+    this.isConfigured = !!this.apiKey;
   }
 
-  private getCacheKey(text: string, targetLang: string): string {
-    return `${text}__${targetLang}`;
+  public setApiKey(key: string) {
+    this.apiKey = key;
+    this.isConfigured = !!key;
+    localStorage.setItem('deepl_api_key', key);
   }
 
-  async translate(text: string, targetLang: string): Promise<string> {
-    // Si c'est déjà en français et on demande français, retourner tel quel
+  public isReady(): boolean {
+    return this.isConfigured;
+  }
+
+  private getCacheKey(text: string, targetLang: string, context?: string): string {
+    return `${text}__${targetLang}__${context || 'default'}`;
+  }
+
+  async translate(text: string, targetLang: string, options: TranslationOptions = {}): Promise<string> {
     if (targetLang === 'fr') {
       return text;
     }
 
-    const cacheKey = this.getCacheKey(text, targetLang);
+    if (!text?.trim()) {
+      return text;
+    }
+
+    const cacheKey = this.getCacheKey(text, targetLang, options.context);
     
-    // Vérifier le cache
-    if (this.cache[cacheKey]) {
+    if (!options.skipCache && this.cache[cacheKey]) {
       return this.cache[cacheKey];
     }
 
-    // Si pas de clé API, retourner le texte original
-    if (!this.apiKey) {
-      console.warn('DeepL API key not configured, returning original text');
-      return text;
+    if (!this.isConfigured) {
+      console.warn('DeepL API key not configured, returning fallback or original text');
+      return options.fallback || text;
     }
 
     try {
@@ -64,20 +81,38 @@ class DeepLService {
       });
 
       if (!response.ok) {
-        throw new Error(`DeepL API error: ${response.status}`);
+        throw new Error(`DeepL API error: ${response.status} - ${response.statusText}`);
       }
 
       const data: DeepLResponse = await response.json();
       const translatedText = data.translations[0]?.text || text;
 
-      // Mettre en cache
       this.cache[cacheKey] = translatedText;
-
       return translatedText;
     } catch (error) {
       console.error('DeepL translation error:', error);
-      return text; // Fallback vers le texte original
+      return options.fallback || text;
     }
+  }
+
+  async translateBatch(texts: string[], targetLang: string, options: TranslationOptions = {}): Promise<string[]> {
+    if (targetLang === 'fr') {
+      return texts;
+    }
+
+    const results: string[] = [];
+    
+    for (const text of texts) {
+      try {
+        const translated = await this.translate(text, targetLang, options);
+        results.push(translated);
+      } catch (error) {
+        console.error('Batch translation error for text:', text, error);
+        results.push(options.fallback || text);
+      }
+    }
+
+    return results;
   }
 
   private mapLanguageCode(langCode: string): string {
@@ -91,15 +126,31 @@ class DeepLService {
       'ru': 'RU',
       'zh': 'ZH',
       'nl': 'NL',
-      'ar': 'AR', // Note: DeepL ne supporte pas l'arabe pour l'instant
+      'ar': 'EN', // Fallback to English for unsupported languages
     };
     return mapping[langCode] || 'EN';
   }
 
-  // Méthode pour précharger des traductions communes
   async preloadCommonTranslations(texts: string[], targetLang: string) {
+    if (targetLang === 'fr' || !this.isConfigured) return;
+    
     const promises = texts.map(text => this.translate(text, targetLang));
-    await Promise.all(promises);
+    try {
+      await Promise.all(promises);
+    } catch (error) {
+      console.error('Preload translations error:', error);
+    }
+  }
+
+  clearCache() {
+    this.cache = {};
+  }
+
+  getCacheStats() {
+    return {
+      totalCached: Object.keys(this.cache).length,
+      isConfigured: this.isConfigured,
+    };
   }
 }
 

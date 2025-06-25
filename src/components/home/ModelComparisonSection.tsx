@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Bot, User, Zap, Check, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { T } from "@/components/translation/T";
+import { TFeatureList } from "@/components/translation/TFeatureList";
+import { modelComparisonFeatures } from "@/data/translatable";
 
 export function ModelComparisonSection() {
   return (
@@ -11,10 +14,10 @@ export function ModelComparisonSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">
-            Deux façons de créer votre boutique
+            <T>Deux façons de créer votre boutique</T>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Choisissez l'approche qui convient le mieux à vos besoins et à votre style
+            <T>Choisissez l'approche qui convient le mieux à vos besoins et à votre style</T>
           </p>
         </div>
 
@@ -24,47 +27,41 @@ export function ModelComparisonSection() {
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
               <Badge className="bg-primary px-4 py-1">
                 <Zap className="h-4 w-4 mr-1" />
-                Service Premium
+                <T>Service Premium</T>
               </Badge>
             </div>
             <CardHeader className="text-center pb-4">
               <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Bot className="h-10 w-10 text-primary" />
               </div>
-              <CardTitle className="text-2xl mb-2">Boutique IA</CardTitle>
+              <CardTitle className="text-2xl mb-2">
+                <T>Boutique IA</T>
+              </CardTitle>
               <CardDescription className="text-base">
-                Notre IA crée votre boutique complète automatiquement
+                <T>Notre IA crée votre boutique complète automatiquement</T>
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary mb-1">$20 - $80</div>
-                <div className="text-sm text-gray-600">Frais unique de génération</div>
-                <div className="text-xs text-gray-500">+ Abonnement mensuel Sokoby</div>
+                <div className="text-sm text-gray-600">
+                  <T>Frais unique de génération</T>
+                </div>
+                <div className="text-xs text-gray-500">
+                  <T>+ Abonnement mensuel Sokoby</T>
+                </div>
               </div>
               
               <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">Boutique créée en 5-10 minutes</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">30-100+ produits inclus et optimisés</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">SEO et fournisseurs intégrés</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">Design professionnel automatique</span>
-                </div>
+                <TFeatureList 
+                  features={modelComparisonFeatures.aiStore}
+                  iconComponent={<Check className="h-5 w-5 text-green-500 flex-shrink-0 mr-3" />}
+                />
               </div>
 
               <Button asChild className="w-full">
                 <Link to="/boutique-ia">
-                  Découvrir la Boutique IA
+                  <T>Découvrir la Boutique IA</T>
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Link>
               </Button>
@@ -77,40 +74,36 @@ export function ModelComparisonSection() {
               <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <User className="h-10 w-10 text-blue-600" />
               </div>
-              <CardTitle className="text-2xl mb-2">Création Manuelle</CardTitle>
+              <CardTitle className="text-2xl mb-2">
+                <T>Création Manuelle</T>
+              </CardTitle>
               <CardDescription className="text-base">
-                Créez votre boutique vous-même avec nos outils
+                <T>Créez votre boutique vous-même avec nos outils</T>
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-1">À partir de 11$</div>
-                <div className="text-sm text-gray-600">Abonnement mensuel</div>
-                <div className="text-xs text-gray-500">Essai gratuit de 14 jours</div>
+                <div className="text-3xl font-bold text-blue-600 mb-1">
+                  <T>À partir de 11$</T>
+                </div>
+                <div className="text-sm text-gray-600">
+                  <T>Abonnement mensuel</T>
+                </div>
+                <div className="text-xs text-gray-500">
+                  <T>Essai gratuit de 14 jours</T>
+                </div>
               </div>
               
               <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">Contrôle total du design</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">Personnalisation illimitée</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">Ajoutez vos propres produits</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">Évolutif selon vos besoins</span>
-                </div>
+                <TFeatureList 
+                  features={modelComparisonFeatures.manual}
+                  iconComponent={<Check className="h-5 w-5 text-green-500 flex-shrink-0 mr-3" />}
+                />
               </div>
 
               <Button variant="outline" asChild className="w-full">
                 <Link to="/tarifs">
-                  Voir les plans tarifaires
+                  <T>Voir les plans tarifaires</T>
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Link>
               </Button>
@@ -121,11 +114,11 @@ export function ModelComparisonSection() {
         {/* Call to Action */}
         <div className="text-center">
           <p className="text-gray-600 mb-4">
-            Pas sûr de votre choix ? Comparez en détail les deux approches.
+            <T>Pas sûr de votre choix ? Comparez en détail les deux approches.</T>
           </p>
           <Button variant="outline" asChild>
             <Link to="/comparaison-modeles">
-              Voir la comparaison complète
+              <T>Voir la comparaison complète</T>
               <ArrowRight className="h-4 w-4 ml-2" />
             </Link>
           </Button>

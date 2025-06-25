@@ -7,6 +7,7 @@ interface LanguageContextType {
   setCurrentLanguage: (lang: string) => void;
   isTranslationEnabled: boolean;
   setTranslationEnabled: (enabled: boolean) => void;
+  isTranslationReady: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -27,6 +28,12 @@ const COMMON_TEXTS = [
   'Précédent',
   'Sauvegarder',
   'Annuler',
+  'Construisez votre empire e-commerce',
+  'La plateforme complète pour lancer et développer votre boutique en ligne',
+  'Créer mon compte',
+  'Se connecter',
+  'Deux façons de créer votre boutique',
+  'Choisissez l\'approche qui convient le mieux à vos besoins et à votre style'
 ];
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
@@ -45,22 +52,36 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     return saved !== null ? JSON.parse(saved) : true;
   });
 
+  const [isTranslationReady, setIsTranslationReady] = useState(false);
+
   useEffect(() => {
     localStorage.setItem('language', currentLanguage);
     document.documentElement.lang = currentLanguage;
 
-    // Précharger les traductions communes
-    if (isTranslationEnabled && currentLanguage !== 'fr') {
-      deepLService.preloadCommonTranslations(COMMON_TEXTS, currentLanguage);
+    // Vérifier si DeepL est configuré
+    setIsTranslationReady(deepLService.isReady());
+
+    // Précharger les traductions communes si on change de langue
+    if (isTranslationEnabled && currentLanguage !== 'fr' && deepLService.isReady()) {
+      deepLService.preloadCommonTranslations(COMMON_TEXTS, currentLanguage)
+        .then(() => {
+          console.log(`Traductions préchargées pour ${currentLanguage}`);
+        })
+        .catch((error) => {
+          console.error('Erreur lors du préchargement:', error);
+        });
     }
   }, [currentLanguage, isTranslationEnabled]);
 
   useEffect(() => {
     localStorage.setItem('translationEnabled', JSON.stringify(isTranslationEnabled));
+    setIsTranslationReady(deepLService.isReady());
   }, [isTranslationEnabled]);
 
   const handleLanguageChange = (lang: string) => {
-    setCurrentLanguage(lang);
+    if (SUPPORTED_LANGUAGES.includes(lang)) {
+      setCurrentLanguage(lang);
+    }
   };
 
   return (
@@ -69,6 +90,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       setCurrentLanguage: handleLanguageChange,
       isTranslationEnabled,
       setTranslationEnabled,
+      isTranslationReady,
     }}>
       {children}
     </LanguageContext.Provider>
