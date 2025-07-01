@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
@@ -32,13 +33,25 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
             description: "Veuillez vous connecter pour accéder à cette page",
             variant: "destructive",
           });
-          navigate("/");
+          navigate("/connexion");
           return;
         }
 
         console.log("Session trouvée:", session.user.id);
 
-        // Vérifier l'abonnement
+        // Vérifier le profil utilisateur et la période d'essai
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('trial_ends_at')
+          .eq('id', session.user.id)
+          .maybeSingle();
+
+        if (profileError) {
+          console.error("Erreur de profil:", profileError);
+          throw profileError;
+        }
+
+        // Vérifier l'abonnement actif
         const { data: subscriptions, error: subError } = await supabase
           .from('subscriptions')
           .select('*')
@@ -54,28 +67,30 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         const hasActiveSubscription = subscriptions !== null;
         console.log("Abonnement actif:", hasActiveSubscription);
 
+        // Si pas d'abonnement actif, vérifier la période d'essai
         if (!hasActiveSubscription) {
-          // Vérifier si l'utilisateur est en période d'essai
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('trial_ends_at')
-            .eq('id', session.user.id)
-            .maybeSingle();
+          const trialEndsAt = profile?.trial_ends_at;
+          const isTrialActive = trialEndsAt && new Date(trialEndsAt) > new Date();
+          
+          console.log("Période d'essai active:", isTrialActive);
+          console.log("Date fin d'essai:", trialEndsAt);
 
-          if (profileError) {
-            console.error("Erreur de profil:", profileError);
-            throw profileError;
-          }
-
-          if (!profile?.trial_ends_at || new Date(profile.trial_ends_at) < new Date()) {
-            console.log("Période d'essai expirée ou non existante");
+          if (!isTrialActive) {
+            console.log("Période d'essai expirée ou inexistante");
             toast({
               title: "Abonnement requis",
-              description: "Veuillez souscrire à un abonnement pour accéder à cette fonctionnalité",
+              description: "Votre période d'essai gratuit est terminée. Veuillez souscrire à un abonnement pour continuer.",
               variant: "destructive",
             });
             navigate("/plan-tarifaire");
             return;
+          } else {
+            // Afficher un message informatif sur la période d'essai restante
+            const daysLeft = Math.ceil((new Date(trialEndsAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+            toast({
+              title: "Période d'essai active",
+              description: `Il vous reste ${daysLeft} jour(s) d'essai gratuit.`,
+            });
           }
         }
 
@@ -87,7 +102,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           description: "Une erreur est survenue lors de la vérification de votre accès",
           variant: "destructive",
         });
-        navigate("/");
+        navigate("/connexion");
       } finally {
         setIsLoading(false);
       }
@@ -98,7 +113,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
         setIsAuthenticated(false);
-        navigate("/");
+        navigate("/connexion");
       }
     });
 

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
@@ -30,19 +31,28 @@ export const useProfileCreation = (hasProfile: boolean) => {
 
         if (!existingProfile) {
           console.log("Création d'un nouveau profil...");
+          
+          // Calculer la date de fin d'essai (14 jours à partir d'aujourd'hui)
+          const trialEndsAt = new Date();
+          trialEndsAt.setDate(trialEndsAt.getDate() + 14);
+
           const { error: insertError } = await supabase
             .from('profiles')
-            .insert([{ id: user.id, email: user.email }]);
+            .insert([{ 
+              id: user.id, 
+              email: user.email,
+              trial_ends_at: trialEndsAt.toISOString(),
+            }]);
 
           if (insertError) {
             console.error("Erreur lors de l'insertion du profil:", insertError);
             throw insertError;
           }
 
-          console.log("Profil créé avec succès");
+          console.log("Profil créé avec succès avec période d'essai de 14 jours");
           toast({
-            title: "Profil créé",
-            description: "Votre profil a été créé avec succès",
+            title: "Bienvenue !",
+            description: "Votre compte a été créé avec succès. Vous disposez de 14 jours d'essai gratuit.",
           });
         }
       } catch (error: any) {

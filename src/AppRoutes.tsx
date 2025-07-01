@@ -8,6 +8,7 @@ import Dashboard from "@/pages/Dashboard";
 import Settings from "@/pages/Settings";
 import Profile from "@/pages/Profile";
 import Pricing from "@/pages/Pricing";
+import PlanTarifaire from "@/pages/PlanTarifaire";
 import Features from "@/pages/Features";
 import Resources from "@/pages/Resources";
 import Legal from "@/pages/Legal";
@@ -65,6 +66,7 @@ export function AppRoutes() {
       <Route path="/features" element={<Features />} />
       <Route path="/tarifs" element={<Pricing />} />
       <Route path="/pricing" element={<Pricing />} />
+      <Route path="/plan-tarifaire" element={<PlanTarifaire />} />
       <Route path="/ressources" element={<Resources />} />
       <Route path="/resources" element={<Resources />} />
       <Route path="/legal" element={<Legal />} />
