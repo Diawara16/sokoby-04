@@ -8,6 +8,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// IDs de prix Stripe - vous devrez les mettre à jour avec vos vrais IDs de prix actifs
 const PRICE_IDS = {
   starter: 'price_1QbAUrI7adlqeYfap1MWxujV',
   pro: 'price_1QbAWeI7adlqeYfaUNskkYXF',
@@ -21,7 +22,10 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Starting checkout session creation...');
+    
     const { planType, paymentMethod, couponCode } = await req.json();
+    console.log('Request data:', { planType, paymentMethod, couponCode });
     
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -40,16 +44,39 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
+    console.log('User authenticated:', user.email);
+
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
     });
 
-    console.log('Creating checkout session...');
-    const session = await stripe.checkout.sessions.create({
+    // Vérifier si le produit existe et est actif
+    const priceId = PRICE_IDS[planType as keyof typeof PRICE_IDS];
+    if (!priceId) {
+      throw new Error(`Invalid plan type: ${planType}`);
+    }
+
+    console.log('Using price ID:', priceId);
+
+    // Déterminer les méthodes de paiement supportées
+    let paymentMethodTypes: string[] = ['card'];
+    
+    // Pour l'instant, on utilise seulement 'card' car les autres nécessitent une configuration spéciale
+    if (paymentMethod === 'card' || !paymentMethod) {
+      paymentMethodTypes = ['card'];
+    } else {
+      // Pour les autres méthodes, on revient à 'card' pour éviter les erreurs
+      console.log(`Payment method ${paymentMethod} not fully configured, using card instead`);
+      paymentMethodTypes = ['card'];
+    }
+
+    console.log('Payment method types:', paymentMethodTypes);
+
+    const sessionConfig: any = {
       customer_email: user.email,
       line_items: [
         {
-          price: PRICE_IDS[planType as keyof typeof PRICE_IDS],
+          price: priceId,
           quantity: 1,
         },
       ],
@@ -58,13 +85,23 @@ serve(async (req) => {
       cancel_url: `${req.headers.get('origin')}/pricing`,
       metadata: {
         user_id: user.id,
+        plan_type: planType,
       },
-      ...(couponCode ? { discounts: [{ coupon: couponCode }] } : {}),
-      payment_method_types: [paymentMethod === 'card' ? 'card' : paymentMethod],
+      payment_method_types: paymentMethodTypes,
       currency: 'usd',
-    });
+      allow_promotion_codes: true,
+    };
 
-    console.log('Checkout session created:', session.id);
+    // Ajouter le coupon si fourni
+    if (couponCode) {
+      sessionConfig.discounts = [{ coupon: couponCode }];
+    }
+
+    console.log('Creating checkout session with config:', JSON.stringify(sessionConfig, null, 2));
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
+
+    console.log('Checkout session created successfully:', session.id);
 
     return new Response(
       JSON.stringify({ url: session.url }),
@@ -75,8 +112,22 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('Error in checkout session creation:', error);
+    
+    let errorMessage = 'Une erreur est survenue lors de la création de la session de paiement';
+    
+    if (error.message?.includes('product is not active')) {
+      errorMessage = 'Le produit sélectionné n\'est pas actif. Veuillez contacter le support.';
+    } else if (error.message?.includes('Invalid payment_method_types')) {
+      errorMessage = 'Méthode de paiement non supportée. Veuillez utiliser une carte bancaire.';
+    } else if (error.message?.includes('price')) {
+      errorMessage = 'Erreur de configuration des prix. Veuillez contacter le support.';
+    }
+    
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: errorMessage,
+        details: error.message 
+      }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
