@@ -23,6 +23,9 @@ import ShopifyMigration from "@/pages/ShopifyMigration";
 import EssaiGratuit from "@/pages/EssaiGratuit";
 import QuiSommesNous from "@/pages/QuiSommesNous";
 import About from "@/pages/About";
+import Marketplace from "@/pages/Marketplace";
+import PageEditor from "@/pages/PageEditor";
+import ZapierIntegration from "@/pages/ZapierIntegration";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DynamicLanding } from "@/components/landing/DynamicLanding";
 
@@ -73,6 +76,25 @@ export function AppRoutes() {
       <Route path="/accessibility" element={<Accessibility />} />
       <Route path="/conditions" element={<Conditions />} />
       <Route path="/support" element={<Support />} />
+      
+      {/* New platform features */}
+      <Route path="/marketplace" element={<Marketplace />} />
+      <Route path="/extensions" element={<Marketplace />} />
+      <Route path="/editeur-pages" element={
+        <ProtectedRoute>
+          <PageEditor />
+        </ProtectedRoute>
+      } />
+      <Route path="/zapier" element={
+        <ProtectedRoute>
+          <ZapierIntegration />
+        </ProtectedRoute>
+      } />
+      <Route path="/integrations-zapier" element={
+        <ProtectedRoute>
+          <ZapierIntegration />
+        </ProtectedRoute>
+      } />
       
       <Route path="/tableau-de-bord" element={
         <ProtectedRoute>

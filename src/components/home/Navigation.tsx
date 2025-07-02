@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { T } from "@/components/translation/T";
+import { MainNavigation } from "@/components/layout/navigation/MainNavigation";
 
 export function Navigation() {
   return (
@@ -11,18 +12,7 @@ export function Navigation() {
           Sokoby
         </Link>
         
-        <div className="flex items-center space-x-4">
-          <Link to="/pricing">
-            <Button variant="ghost">
-              <T>Tarifs</T>
-            </Button>
-          </Link>
-          <Link to="/qui-sommes-nous">
-            <Button variant="ghost">
-              <T>À propos</T>
-            </Button>
-          </Link>
-        </div>
+        <MainNavigation />
       </div>
 
       <div className="flex items-center space-x-4">
