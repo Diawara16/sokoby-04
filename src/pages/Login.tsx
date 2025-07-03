@@ -7,10 +7,15 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('Page Login chargée');
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      console.log('Session dans Login:', session);
       if (session) {
+        console.log('Utilisateur connecté, redirection vers tableau-de-bord');
         navigate('/tableau-de-bord');
+      } else {
+        console.log('Aucune session, affichage du formulaire de connexion');
       }
     };
     checkSession();
