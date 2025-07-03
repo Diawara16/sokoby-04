@@ -24,9 +24,12 @@ export const useSubscriptionHandler = () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
+        console.log('No session found, redirecting to login...');
+        // Stocker le plan choisi pour après la connexion
+        localStorage.setItem('pendingSubscription', JSON.stringify({ planType, paymentMethod, couponCode }));
         toast({
           title: "Connexion requise",
-          description: "Veuillez vous connecter pour souscrire à un abonnement",
+          description: "Connectez-vous pour continuer votre abonnement",
           variant: "destructive",
         });
         navigate('/connexion');

@@ -7,10 +7,14 @@ import AuthenticatedPricingContent from "@/components/pricing/AuthenticatedPrici
 import UnauthenticatedPricingContent from "@/components/pricing/UnauthenticatedPricingContent";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 import { useSubscriptionHandler } from "@/hooks/useSubscriptionHandler";
+import { usePendingSubscription } from "@/hooks/usePendingSubscription";
 
 const PlanTarifaire = () => {
   const { isAuthenticated, isLoading, hasProfile } = useAuthAndProfile();
   const { handleSubscribe } = useSubscriptionHandler();
+  
+  // Gérer la reprise d'abonnement après connexion
+  usePendingSubscription();
 
   if (isLoading) {
     return <LoadingSpinner />;
