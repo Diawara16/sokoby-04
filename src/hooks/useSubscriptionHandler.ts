@@ -21,7 +21,12 @@ export const useSubscriptionHandler = () => {
     try {
       console.log('Starting subscription process:', { planType, paymentMethod, couponCode });
       
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        throw new Error('Erreur de session');
+      }
       
       if (!session) {
         console.log('No session found, redirecting to login...');
@@ -29,7 +34,7 @@ export const useSubscriptionHandler = () => {
         localStorage.setItem('pendingSubscription', JSON.stringify({ planType, paymentMethod, couponCode }));
         toast({
           title: "Connexion requise",
-          description: "Connectez-vous pour continuer votre abonnement",
+          description: "Veuillez vous connecter pour continuer votre abonnement",
           variant: "destructive",
         });
         navigate('/connexion');
