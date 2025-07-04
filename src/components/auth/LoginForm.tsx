@@ -16,6 +16,8 @@ export function LoginForm({ onCancel }: LoginFormProps) {
   const [password, setPassword] = useState("");
   const { isLoading, error, handleSignIn } = useSignIn();
 
+  console.log("LoginForm component loaded - NOUVEAU COMPOSANT DE CONNEXION");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await handleSignIn(email, password);

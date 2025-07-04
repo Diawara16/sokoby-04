@@ -17,6 +17,8 @@ export function RegisterForm({ onCancel }: RegisterFormProps) {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const { isLoading, error, handleSignUp } = useSignUp();
 
+  console.log("RegisterForm component loaded - NOUVEAU COMPOSANT D'INSCRIPTION");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await handleSignUp(email, password, dateOfBirth);
