@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
 import Dashboard from "@/pages/Dashboard";
 import Settings from "@/pages/Settings";
 import Profile from "@/pages/Profile";
@@ -58,6 +60,9 @@ export function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/inscription" element={<Register />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       
       {/* Trial and about pages */}
       <Route path="/essai-gratuit" element={<EssaiGratuit />} />
