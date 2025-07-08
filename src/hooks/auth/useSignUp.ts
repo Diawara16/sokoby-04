@@ -33,6 +33,8 @@ export const useSignUp = () => {
         },
       });
 
+      console.log("Supabase signup response:", { data, error: signUpError });
+
       if (signUpError) {
         console.error("Sign up error:", signUpError);
         throw signUpError;
