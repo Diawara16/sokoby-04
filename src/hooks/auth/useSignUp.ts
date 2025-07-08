@@ -48,21 +48,9 @@ export const useSignUp = () => {
           description: "Un lien de vérification a été envoyé à votre adresse email. Veuillez cliquer sur le lien pour activer votre compte et commencer votre essai gratuit de 14 jours.",
         });
       } else if (data.user && data.user.email_confirmed_at) {
-        // L'email est déjà vérifié, créer le profil avec la période d'essai
-        console.log("Email already verified, creating profile");
+        // L'email est déjà vérifié
+        console.log("Email already verified");
         
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            email: data.user.email,
-            trial_ends_at: trialEndsAt.toISOString(),
-          });
-
-        if (profileError) {
-          console.error("Error creating profile:", profileError);
-        }
-
         toast({
           title: "Compte créé avec succès",
           description: "Bienvenue ! Votre essai gratuit de 14 jours commence maintenant.",
