@@ -17,18 +17,11 @@ export const useSignUp = () => {
 
       console.log("Attempting to sign up user:", email);
 
-      // Calculer la date de fin d'essai (14 jours à partir d'aujourd'hui)
-      const trialEndsAt = new Date();
-      trialEndsAt.setDate(trialEndsAt.getDate() + 14);
-
+      // Simplification : inscription basique sans métadonnées complexes
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: {
-            date_of_birth: dateOfBirth,
-            trial_ends_at: trialEndsAt.toISOString(),
-          },
           emailRedirectTo: `${window.location.origin}/tableau-de-bord`,
         },
       });
@@ -42,35 +35,33 @@ export const useSignUp = () => {
 
       console.log("Sign up successful:", data);
 
-      if (data.user && !data.user.email_confirmed_at) {
-        // L'utilisateur doit vérifier son email
-        console.log("User needs to verify email");
+      // Toujours afficher le message de vérification d'email
+      if (data.user) {
+        console.log("User created successfully, showing verification message");
         toast({
-          title: "Vérifiez votre email",
-          description: "Un lien de vérification a été envoyé à votre adresse email. Veuillez cliquer sur le lien pour activer votre compte et commencer votre essai gratuit de 14 jours.",
+          title: "Compte créé avec succès !",
+          description: "Un email de vérification a été envoyé à votre adresse. Veuillez cliquer sur le lien pour activer votre compte.",
         });
-      } else if (data.user && data.user.email_confirmed_at) {
-        // L'email est déjà vérifié
-        console.log("Email already verified");
-        
-        toast({
-          title: "Compte créé avec succès",
-          description: "Bienvenue ! Votre essai gratuit de 14 jours commence maintenant.",
-        });
-        navigate("/tableau-de-bord");
       }
 
       return data;
     } catch (err: any) {
       console.error("Error during sign up:", err);
+      console.error("Full error object:", err);
+      
       let errorMessage = "Une erreur est survenue lors de la création du compte";
       
-      if (err.message.includes("already registered")) {
-        errorMessage = "Cette adresse email est déjà utilisée";
-      } else if (err.message.includes("password")) {
-        errorMessage = "Le mot de passe doit contenir au moins 8 caractères";
-      } else if (err.message.includes("email")) {
-        errorMessage = "Veuillez entrer une adresse email valide";
+      // Gestion d'erreurs plus spécifique
+      if (err.message?.includes("User already registered")) {
+        errorMessage = "Cette adresse email est déjà utilisée. Essayez de vous connecter.";
+      } else if (err.message?.includes("Password should be at least")) {
+        errorMessage = "Le mot de passe doit contenir au moins 6 caractères";
+      } else if (err.message?.includes("Unable to validate email address")) {
+        errorMessage = "Adresse email invalide";
+      } else if (err.message?.includes("Email rate limit exceeded")) {
+        errorMessage = "Trop de tentatives. Veuillez réessayer dans quelques minutes.";
+      } else if (err.message) {
+        errorMessage = `Erreur: ${err.message}`;
       }
       
       setError(errorMessage);
