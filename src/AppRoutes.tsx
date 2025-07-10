@@ -30,6 +30,7 @@ import PageEditor from "@/pages/PageEditor";
 import ZapierIntegration from "@/pages/ZapierIntegration";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DynamicLanding } from "@/components/landing/DynamicLanding";
+import TestSupabase from "@/pages/TestSupabase";
 
 export function AppRoutes() {
   const location = useLocation();
@@ -81,6 +82,7 @@ export function AppRoutes() {
       <Route path="/accessibility" element={<Accessibility />} />
       <Route path="/conditions" element={<Conditions />} />
       <Route path="/support" element={<Support />} />
+      <Route path="/test-supabase" element={<TestSupabase />} />
       
       {/* New platform features */}
       <Route path="/marketplace" element={<Marketplace />} />

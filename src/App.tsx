@@ -1,5 +1,5 @@
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { BrowserRouter } from "react-router-dom";
@@ -34,8 +34,8 @@ function App() {
           return;
         }
         
-        if (data?.secret) {
-          setPaypalClientId(data.secret);
+        if (data) {
+          setPaypalClientId(data);
         }
       } catch (error) {
         console.error('Erreur lors de la récupération du secret:', error);

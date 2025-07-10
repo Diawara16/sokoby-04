@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -16,14 +16,12 @@ export const useSignUp = () => {
       setError(null);
 
       console.log("Attempting to sign up user:", email);
+      console.log("Using Supabase client for signup");
 
-      // Simplification : inscription basique sans métadonnées complexes
+      // Inscription ultra-simplifiée sans options
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/tableau-de-bord`,
-        },
       });
 
       console.log("Supabase signup response:", { data, error: signUpError });
