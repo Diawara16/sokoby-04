@@ -10,7 +10,7 @@ export const useSignUp = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSignUp = async (email: string, password: string, dateOfBirth: string) => {
+  const handleSignUp = async (email: string, password: string) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -18,10 +18,13 @@ export const useSignUp = () => {
       console.log("Attempting to sign up user:", email);
       console.log("Using Supabase client for signup");
 
-      // Inscription ultra-simplifiée sans options
+      // Inscription avec URL de redirection
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
       });
 
       console.log("Supabase signup response:", { data, error: signUpError });
@@ -33,13 +36,20 @@ export const useSignUp = () => {
 
       console.log("Sign up successful:", data);
 
-      // Toujours afficher le message de vérification d'email
+      // Message de succès
       if (data.user) {
-        console.log("User created successfully, showing verification message");
+        console.log("User created successfully");
         toast({
           title: "Compte créé avec succès !",
-          description: "Un email de vérification a été envoyé à votre adresse. Veuillez cliquer sur le lien pour activer votre compte.",
+          description: data.user.email_confirmed_at 
+            ? "Votre compte a été créé et vous êtes maintenant connecté."
+            : "Un email de vérification a été envoyé à votre adresse. Veuillez cliquer sur le lien pour activer votre compte.",
         });
+        
+        // Redirection vers le tableau de bord si l'email est confirmé
+        if (data.user.email_confirmed_at) {
+          navigate('/tableau-de-bord');
+        }
       }
 
       return data;

@@ -6,20 +6,7 @@ import { supabase } from "@/lib/supabase";
 const Login = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log('Page Login chargée');
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      console.log('Session dans Login:', session);
-      if (session) {
-        console.log('Utilisateur connecté, redirection vers tableau-de-bord');
-        navigate('/tableau-de-bord');
-      } else {
-        console.log('Aucune session, affichage du formulaire de connexion');
-      }
-    };
-    checkSession();
-  }, [navigate]);
+  // Removed automatic session check to allow users to access login page
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50 flex items-center justify-center p-4">

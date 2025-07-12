@@ -31,6 +31,7 @@ import ZapierIntegration from "@/pages/ZapierIntegration";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DynamicLanding } from "@/components/landing/DynamicLanding";
 import TestSupabase from "@/pages/TestSupabase";
+import AuthTest from "@/pages/AuthTest";
 
 export function AppRoutes() {
   const location = useLocation();
@@ -83,6 +84,7 @@ export function AppRoutes() {
       <Route path="/conditions" element={<Conditions />} />
       <Route path="/support" element={<Support />} />
       <Route path="/test-supabase" element={<TestSupabase />} />
+      <Route path="/auth-test" element={<AuthTest />} />
       
       {/* New platform features */}
       <Route path="/marketplace" element={<Marketplace />} />
