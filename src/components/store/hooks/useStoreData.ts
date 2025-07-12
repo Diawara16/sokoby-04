@@ -57,14 +57,14 @@ export const useStoreData = () => {
         }
 
         console.log("Nouveaux paramètres créés:", newSettings);
-        setSettings(newSettings);
+        setSettings(newSettings as unknown as StoreSettings);
         
         toast({
           title: "Paramètres initialisés",
           description: "Les paramètres de votre boutique ont été créés avec succès",
         });
       } else {
-        setSettings(existingSettings);
+        setSettings(existingSettings as unknown as StoreSettings);
       }
     } catch (error) {
       console.error("Erreur lors du chargement des paramètres:", error);

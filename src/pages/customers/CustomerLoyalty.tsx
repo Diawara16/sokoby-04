@@ -60,9 +60,18 @@ export default function CustomerLoyalty() {
     }
 
     try {
-      const { error } = await supabase.rpc("redeem_reward", {
-        reward_id: rewardId,
-      });
+      // Note: redeem_reward function needs to be created in database
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('User not authenticated')
+      
+      // Deduct points manually for now
+      const { error } = await supabase
+        .from('loyalty_points_history')
+        .insert({
+          user_id: user.id,
+          points_change: -pointsCost,
+          reason: `Reward redeemed: ${rewardId}`
+        })
 
       if (error) throw error;
 

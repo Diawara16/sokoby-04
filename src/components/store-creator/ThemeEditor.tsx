@@ -33,15 +33,22 @@ export function ThemeEditor() {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        setTemplates(data);
-        setSelectedTemplate(data[0]);
-        setPrimaryColor(data[0].colors.primary);
-        setSecondaryColor(data[0].colors.secondary);
-        setAccentColor(data[0].colors.accent || "#000000");
-        setLayoutStyle(data[0].layout.spacing);
-        setSpacing(data[0].layout.containerWidth);
-        setHeadingFont(data[0].typography.fontFamily);
-        setBodyFont(data[0].typography.fontSize);
+        const typedData = data.map(template => ({
+          ...template,
+          colors: template.colors as any,
+          layout: template.layout as any,
+          typography: template.typography as any
+        })) as ThemeTemplate[];
+        
+        setTemplates(typedData);
+        setSelectedTemplate(typedData[0]);
+        setPrimaryColor((typedData[0].colors as any)?.primary || "#000000");
+        setSecondaryColor((typedData[0].colors as any)?.secondary || "#000000");
+        setAccentColor((typedData[0].colors as any)?.accent || "#000000");
+        setLayoutStyle((typedData[0].layout as any)?.spacing || "");
+        setSpacing((typedData[0].layout as any)?.containerWidth || "");
+        setHeadingFont((typedData[0].typography as any)?.fontFamily || "");
+        setBodyFont((typedData[0].typography as any)?.fontSize || "");
       }
     } catch (error) {
       console.error('Error fetching templates:', error);
@@ -56,13 +63,13 @@ export function ThemeEditor() {
   const handleTemplateChange = (template: ThemeTemplate) => {
     if (template) {
       setSelectedTemplate(template);
-      setPrimaryColor(template.colors.primary);
-      setSecondaryColor(template.colors.secondary);
-      setAccentColor(template.colors.accent || "#000000");
-      setLayoutStyle(template.layout.spacing);
-      setSpacing(template.layout.containerWidth);
-      setHeadingFont(template.typography.fontFamily);
-      setBodyFont(template.typography.fontSize);
+      setPrimaryColor((template.colors as any)?.primary || "#000000");
+      setSecondaryColor((template.colors as any)?.secondary || "#000000");
+      setAccentColor((template.colors as any)?.accent || "#000000");
+      setLayoutStyle((template.layout as any)?.spacing || "");
+      setSpacing((template.layout as any)?.containerWidth || "");
+      setHeadingFont((template.typography as any)?.fontFamily || "");
+      setBodyFont((template.typography as any)?.fontSize || "");
     }
   };
 
