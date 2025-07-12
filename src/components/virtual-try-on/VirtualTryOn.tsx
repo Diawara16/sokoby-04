@@ -52,12 +52,16 @@ export function VirtualTryOn({ productId }: { productId: string }) {
       if (aiError) throw aiError;
 
       // Save the result to the database
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
       const { error: dbError } = await supabase
         .from("virtual_try_ons")
         .insert({
           product_id: productId,
           user_image: publicUrl,
-          generated_image: aiData.generatedImageUrl
+          generated_image: aiData.generatedImageUrl,
+          user_id: user.id
         });
 
       if (dbError) throw dbError;

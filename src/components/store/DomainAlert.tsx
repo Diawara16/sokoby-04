@@ -43,12 +43,17 @@ export const DomainAlert = ({ domainName }: DomainAlertProps) => {
       if (hasCorrectARecord) {
         console.log("Enregistrement A validé, mise à jour dans Supabase");
         // Mettre à jour le statut dans la base de données
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
         const { data: verificationData, error: updateError } = await supabase
           .from('domain_verifications')
           .upsert({
             domain_name: domainName,
             verified: true,
-            verified_at: new Date().toISOString()
+            verified_at: new Date().toISOString(),
+            user_id: user.id,
+            verification_token: Math.random().toString(36)
           });
 
         if (updateError) {
