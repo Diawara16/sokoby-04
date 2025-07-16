@@ -32,6 +32,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DynamicLanding } from "@/components/landing/DynamicLanding";
 import TestSupabase from "@/pages/TestSupabase";
 import AuthTest from "@/pages/AuthTest";
+import Success from "@/pages/Success";
 
 export function AppRoutes() {
   const location = useLocation();
@@ -83,6 +84,7 @@ export function AppRoutes() {
       <Route path="/accessibility" element={<Accessibility />} />
       <Route path="/conditions" element={<Conditions />} />
       <Route path="/support" element={<Support />} />
+      <Route path="/success" element={<Success />} />
       <Route path="/test-supabase" element={<TestSupabase />} />
       <Route path="/auth-test" element={<AuthTest />} />
       
