@@ -896,6 +896,66 @@ export type Database = {
         }
         Relationships: []
       }
+      group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      groups: {
+        Row: {
+          created_at: string
+          creator_id: string
+          description: string | null
+          id: string
+          image_url: string | null
+          member_count: number
+          name: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          member_count?: number
+          name: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          member_count?: number
+          name?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: []
+      }
       interac_payments: {
         Row: {
           amount: number
@@ -1683,6 +1743,7 @@ export type Database = {
           has_voice_note: boolean
           id: string
           metadata: Json | null
+          shared_post_id: string | null
           updated_at: string
           user_id: string
           visibility: string
@@ -1695,6 +1756,7 @@ export type Database = {
           has_voice_note?: boolean
           id?: string
           metadata?: Json | null
+          shared_post_id?: string | null
           updated_at?: string
           user_id: string
           visibility?: string
@@ -1707,6 +1769,7 @@ export type Database = {
           has_voice_note?: boolean
           id?: string
           metadata?: Json | null
+          shared_post_id?: string | null
           updated_at?: string
           user_id?: string
           visibility?: string
@@ -2362,6 +2425,45 @@ export type Database = {
           user_id?: string
           vat_number?: string | null
           vat_rate?: number | null
+        }
+        Relationships: []
+      }
+      stories: {
+        Row: {
+          background_color: string | null
+          content: string | null
+          created_at: string
+          expires_at: string
+          has_voice_note: boolean
+          id: string
+          user_id: string
+          visibility: string
+          voice_note_url: string | null
+          voice_transcription: string | null
+        }
+        Insert: {
+          background_color?: string | null
+          content?: string | null
+          created_at?: string
+          expires_at?: string
+          has_voice_note?: boolean
+          id?: string
+          user_id: string
+          visibility?: string
+          voice_note_url?: string | null
+          voice_transcription?: string | null
+        }
+        Update: {
+          background_color?: string | null
+          content?: string | null
+          created_at?: string
+          expires_at?: string
+          has_voice_note?: boolean
+          id?: string
+          user_id?: string
+          visibility?: string
+          voice_note_url?: string | null
+          voice_transcription?: string | null
         }
         Relationships: []
       }

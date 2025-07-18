@@ -8,9 +8,9 @@ export const useSubscriptionHandler = () => {
   const navigate = useNavigate();
 
   const PRICE_IDS = {
-    starter: 'price_1QbAUrI7adlqeYfap1MWxujV',
-    pro: 'price_1QbAWeI7adlqeYfaUNskkYXF',
-    enterprise: 'price_1QbAYDI7adlqeYfaRUI9dbH1'
+    starter: 'price_1Qe7tDI7adlqeYfaKU02O1Wj',
+    pro: 'price_1Qe81sI7adlqeYfamEd7Ylpd',
+    enterprise: 'price_1Qe867I7adlqeYfaJqj2sbrv'
   };
 
   const handleSubscribe = async (
