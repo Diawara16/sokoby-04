@@ -91,12 +91,16 @@ serve(async (req) => {
       subscription_data: {
         trial_period_days: 14, // 14 jours d'essai gratuit
       },
-      customer_update: {
-        name: "auto",
-        address: "auto",
-      },
       billing_address_collection: "required",
     };
+
+    // Only add customer_update if we have an existing customer
+    if (customerId) {
+      sessionParams.customer_update = {
+        name: "auto",
+        address: "auto",
+      };
+    }
 
     // Add coupon if provided
     if (couponCode) {
