@@ -20,6 +20,7 @@ import Support from "@/pages/Support";
 import Index from "@/pages/Index";
 import BoutiqueIA from "@/pages/BoutiqueIA";
 import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
+import CreerBoutiqueManuelle from "@/pages/CreerBoutiqueManuelle";
 import ComparisonModeles from "@/pages/ComparisonModeles";
 import ShopifyMigration from "@/pages/ShopifyMigration";
 import EssaiGratuit from "@/pages/EssaiGratuit";
@@ -48,6 +49,11 @@ export function AppRoutes() {
       <Route path="/index" element={<Index />} />
       <Route path="/boutique-ia" element={<BoutiqueIA />} />
       <Route path="/creer-boutique-ia" element={<CreerBoutiqueIA />} />
+      <Route path="/creer-boutique-manuelle" element={
+        <ProtectedRoute>
+          <CreerBoutiqueManuelle />
+        </ProtectedRoute>
+      } />
       <Route path="/comparaison-modeles" element={<ComparisonModeles />} />
       
       {/* Migration routes - main and platform-specific */}
