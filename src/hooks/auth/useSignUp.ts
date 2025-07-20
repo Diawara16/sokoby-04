@@ -23,7 +23,7 @@ export const useSignUp = () => {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`
+          emailRedirectTo: `${window.location.origin}/tableau-de-bord`
         }
       });
 
@@ -39,16 +39,19 @@ export const useSignUp = () => {
       // Message de succès
       if (data.user) {
         console.log("User created successfully");
-        toast({
-          title: "Compte créé avec succès !",
-          description: data.user.email_confirmed_at 
-            ? "Votre compte a été créé et vous êtes maintenant connecté."
-            : "Un email de vérification a été envoyé à votre adresse. Veuillez cliquer sur le lien pour activer votre compte.",
-        });
         
-        // Redirection vers le tableau de bord si l'email est confirmé
-        if (data.user.email_confirmed_at) {
+        // Avec auto-confirm activé, l'utilisateur est automatiquement connecté
+        if (data.user.email_confirmed_at || data.session) {
+          toast({
+            title: "Compte créé avec succès !",
+            description: "Votre compte a été créé et vous êtes maintenant connecté.",
+          });
           navigate('/tableau-de-bord');
+        } else {
+          toast({
+            title: "Compte créé !",
+            description: "Un email de vérification a été envoyé à votre adresse. Veuillez cliquer sur le lien pour activer votre compte.",
+          });
         }
       }
 
