@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,8 @@ import { Link } from "react-router-dom";
 
 export default function CreerBoutiqueManuelle() {
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [formData, setFormData] = useState({
     storeName: "",
     description: "",
@@ -23,6 +25,59 @@ export default function CreerBoutiqueManuelle() {
   
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Charger les données existantes si la boutique existe déjà
+  useEffect(() => {
+    const loadExistingStore = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          setInitialLoading(false);
+          return;
+        }
+
+        // Vérifier si l'utilisateur a déjà une boutique
+        const { data: existingStore } = await supabase
+          .from('store_settings')
+          .select('store_name, store_description, category')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (existingStore) {
+          setIsUpdating(true);
+          setFormData(prev => ({
+            ...prev,
+            storeName: existingStore.store_name || "",
+            description: existingStore.store_description || "",
+            category: existingStore.category || ""
+          }));
+        }
+
+        // Charger les paramètres de marque existants
+        const { data: existingBrand } = await supabase
+          .from('brand_settings')
+          .select('primary_color, secondary_color')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (existingBrand) {
+          setFormData(prev => ({
+            ...prev,
+            primaryColor: existingBrand.primary_color || "#3b82f6",
+            secondaryColor: existingBrand.secondary_color || "#64748b"
+          }));
+        }
+
+      } catch (error) {
+        console.error('Error loading existing store:', error);
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    loadExistingStore();
+  }, []);
 
   const categories = [
     { value: "fashion", label: "Mode et vêtements" },
@@ -63,43 +118,51 @@ export default function CreerBoutiqueManuelle() {
         return;
       }
 
-      // Créer les paramètres de boutique
+      // Utiliser upsert pour les paramètres de boutique
       const { error: storeError } = await supabase
         .from('store_settings')
-        .insert({
+        .upsert({
           user_id: user.id,
           store_name: formData.storeName,
           store_description: formData.description,
-          category: formData.category || 'other'
+          category: formData.category || 'other',
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
         });
 
       if (storeError) {
-        console.error('Error creating store settings:', storeError);
+        console.error('Error saving store settings:', storeError);
         toast({
           title: "Erreur",
-          description: "Impossible de créer les paramètres de la boutique",
+          description: "Impossible de sauvegarder les paramètres de la boutique",
           variant: "destructive"
         });
         return;
       }
 
-      // Créer les paramètres de marque
+      // Utiliser upsert pour les paramètres de marque
       const { error: brandError } = await supabase
         .from('brand_settings')
-        .insert({
+        .upsert({
           user_id: user.id,
           primary_color: formData.primaryColor,
-          secondary_color: formData.secondaryColor
+          secondary_color: formData.secondaryColor,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
         });
 
       if (brandError) {
-        console.error('Error creating brand settings:', brandError);
+        console.error('Error saving brand settings:', brandError);
         // Continuer même si l'erreur de marque échoue
       }
 
       toast({
-        title: "Boutique créée avec succès !",
-        description: "Votre boutique a été créée. Vous pouvez maintenant ajouter des produits.",
+        title: isUpdating ? "Boutique mise à jour !" : "Boutique créée avec succès !",
+        description: isUpdating 
+          ? "Vos paramètres de boutique ont été mis à jour."
+          : "Votre boutique a été créée. Vous pouvez maintenant ajouter des produits.",
       });
 
       // Rediriger vers la page boutique
@@ -117,6 +180,19 @@ export default function CreerBoutiqueManuelle() {
     }
   };
 
+  if (initialLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Chargement...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <div className="mb-6">
@@ -132,10 +208,15 @@ export default function CreerBoutiqueManuelle() {
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
             <Store className="h-5 w-5 text-primary" />
           </div>
-          <h1 className="text-3xl font-bold">Créer ma boutique manuellement</h1>
+          <h1 className="text-3xl font-bold">
+            {isUpdating ? "Modifier ma boutique" : "Créer ma boutique manuellement"}
+          </h1>
         </div>
         <p className="text-muted-foreground">
-          Configurez votre boutique étape par étape selon vos préférences
+          {isUpdating 
+            ? "Modifiez les paramètres de votre boutique existante"
+            : "Configurez votre boutique étape par étape selon vos préférences"
+          }
         </p>
       </div>
 
@@ -143,7 +224,10 @@ export default function CreerBoutiqueManuelle() {
         <CardHeader>
           <CardTitle>Informations de base</CardTitle>
           <CardDescription>
-            Définissez les informations principales de votre boutique
+            {isUpdating 
+              ? "Modifiez les informations principales de votre boutique"
+              : "Définissez les informations principales de votre boutique"
+            }
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -243,7 +327,10 @@ export default function CreerBoutiqueManuelle() {
                 disabled={loading}
                 className="flex-1"
               >
-                {loading ? "Création..." : "Créer ma boutique"}
+                {loading 
+                  ? (isUpdating ? "Mise à jour..." : "Création...") 
+                  : (isUpdating ? "Mettre à jour" : "Créer ma boutique")
+                }
               </Button>
             </div>
           </form>
