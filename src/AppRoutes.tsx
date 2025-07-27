@@ -34,6 +34,7 @@ import { DynamicLanding } from "@/components/landing/DynamicLanding";
 import TestSupabase from "@/pages/TestSupabase";
 import AuthTest from "@/pages/AuthTest";
 import Success from "@/pages/Success";
+import GestionCompte from "@/pages/GestionCompte";
 
 export function AppRoutes() {
   const location = useLocation();
@@ -141,6 +142,11 @@ export function AppRoutes() {
       <Route path="/profile" element={
         <ProtectedRoute>
           <Profile />
+        </ProtectedRoute>
+      } />
+      <Route path="/gestion-compte" element={
+        <ProtectedRoute>
+          <GestionCompte />
         </ProtectedRoute>
       } />
       
