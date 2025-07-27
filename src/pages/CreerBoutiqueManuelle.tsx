@@ -69,7 +69,7 @@ export default function CreerBoutiqueManuelle() {
         .insert({
           user_id: user.id,
           store_name: formData.storeName,
-          description: formData.description,
+          store_description: formData.description,
           category: formData.category || 'other'
         });
 
