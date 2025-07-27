@@ -3049,6 +3049,7 @@ export type Database = {
       }
       store_settings: {
         Row: {
+          category: string | null
           created_at: string
           default_currency: string | null
           default_language: string | null
@@ -3066,6 +3067,7 @@ export type Database = {
           notification_settings: Json | null
           social_media: Json | null
           store_address: string | null
+          store_description: string | null
           store_email: string | null
           store_name: string
           store_phone: string | null
@@ -3076,6 +3078,7 @@ export type Database = {
           vat_rate: number | null
         }
         Insert: {
+          category?: string | null
           created_at?: string
           default_currency?: string | null
           default_language?: string | null
@@ -3093,6 +3096,7 @@ export type Database = {
           notification_settings?: Json | null
           social_media?: Json | null
           store_address?: string | null
+          store_description?: string | null
           store_email?: string | null
           store_name: string
           store_phone?: string | null
@@ -3103,6 +3107,7 @@ export type Database = {
           vat_rate?: number | null
         }
         Update: {
+          category?: string | null
           created_at?: string
           default_currency?: string | null
           default_language?: string | null
@@ -3120,6 +3125,7 @@ export type Database = {
           notification_settings?: Json | null
           social_media?: Json | null
           store_address?: string | null
+          store_description?: string | null
           store_email?: string | null
           store_name?: string
           store_phone?: string | null
