@@ -18,12 +18,9 @@ export function ForgotPasswordForm() {
     setIsLoading(true);
 
     try {
-      // Appeler directement notre edge function pour envoyer l'email
-      const { error } = await supabase.functions.invoke('send-reset-password-email', {
-        body: { 
-          email,
-          confirmationUrl: `${window.location.origin}/reset-password`
-        }
+      // Utiliser temporairement le système d'email de Supabase
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
       });
 
       if (error) throw error;
