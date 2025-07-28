@@ -20,6 +20,9 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Sending password reset email to:", email);
     console.log("Reset URL:", confirmationUrl);
     
+    // Construire l'URL de redirection vers la page de réinitialisation
+    const resetUrl = confirmationUrl.replace('/auth/confirm', '/reset-password');
+    
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -45,7 +48,7 @@ const handler = async (req: Request): Promise<Response> => {
             </div>
             
             <div style="text-align: center; margin: 40px 0;">
-              <a href="${confirmationUrl}" 
+              <a href="${resetUrl}" 
                  style="background-color: #dc2626; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(220, 38, 38, 0.2);">
                 Réinitialiser mon mot de passe
               </a>
@@ -54,7 +57,7 @@ const handler = async (req: Request): Promise<Response> => {
             <div style="margin: 30px 0; padding: 20px; background-color: #fef3f2; border-left: 4px solid #dc2626; border-radius: 4px;">
               <p style="margin: 0; font-size: 14px;"><strong>Le bouton ne fonctionne pas ?</strong></p>
               <p style="margin: 10px 0 0 0; font-size: 14px;">Copiez et collez ce lien dans votre navigateur :</p>
-              <p style="background-color: #f3f4f6; padding: 10px; border-radius: 4px; word-break: break-all; font-family: monospace; font-size: 12px; margin: 10px 0 0 0;">${confirmationUrl}</p>
+              <p style="background-color: #f3f4f6; padding: 10px; border-radius: 4px; word-break: break-all; font-family: monospace; font-size: 12px; margin: 10px 0 0 0;">${resetUrl}</p>
             </div>
             
             <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
