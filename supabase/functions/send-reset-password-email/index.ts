@@ -1,4 +1,10 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.3';
+
+const supabase = createClient(
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+);
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
@@ -20,8 +26,21 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Sending password reset email to:", email);
     console.log("Reset URL:", confirmationUrl);
     
-    // Construire l'URL de redirection vers la page de réinitialisation
-    const resetUrl = confirmationUrl.replace('/auth/confirm', '/reset-password');
+    // Générer le token de réinitialisation via Supabase Auth
+    const { data, error } = await supabase.auth.admin.generateLink({
+      type: 'recovery',
+      email: email,
+      options: {
+        redirectTo: confirmationUrl
+      }
+    });
+    
+    if (error) {
+      console.error("Error generating reset link:", error);
+      throw error;
+    }
+    
+    const resetUrl = data.properties?.action_link || confirmationUrl;
     
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
