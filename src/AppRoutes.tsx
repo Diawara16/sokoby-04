@@ -35,6 +35,7 @@ import TestSupabase from "@/pages/TestSupabase";
 import AuthTest from "@/pages/AuthTest";
 import Success from "@/pages/Success";
 import GestionCompte from "@/pages/GestionCompte";
+import UpdatePassword from "@/pages/UpdatePassword";
 
 export function AppRoutes() {
   const location = useLocation();
@@ -73,6 +74,12 @@ export function AppRoutes() {
       <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/nouveau-mot-de-passe" element={<ResetPassword />} />
+      <Route path="/modifier-mot-de-passe" element={
+        <ProtectedRoute>
+          <UpdatePassword />
+        </ProtectedRoute>
+      } />
       
       {/* Trial and about pages */}
       <Route path="/essai-gratuit" element={<EssaiGratuit />} />
