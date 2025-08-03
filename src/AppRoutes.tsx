@@ -19,6 +19,7 @@ import Conditions from "@/pages/Conditions";
 import Support from "@/pages/Support";
 import Index from "@/pages/Index";
 import BoutiqueIA from "@/pages/BoutiqueIA";
+import Boutique from "@/pages/Boutique";
 import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
 import CreerBoutiqueManuelle from "@/pages/CreerBoutiqueManuelle";
 import ComparisonModeles from "@/pages/ComparisonModeles";
@@ -49,6 +50,11 @@ export function AppRoutes() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/index" element={<Index />} />
+      <Route path="/boutique" element={
+        <ProtectedRoute>
+          <Boutique />
+        </ProtectedRoute>
+      } />
       <Route path="/boutique-ia" element={<BoutiqueIA />} />
       <Route path="/creer-boutique-ia" element={<CreerBoutiqueIA />} />
       <Route path="/creer-boutique-manuelle" element={
