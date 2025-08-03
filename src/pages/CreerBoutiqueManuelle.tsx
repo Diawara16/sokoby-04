@@ -197,11 +197,11 @@ export default function CreerBoutiqueManuelle() {
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <div className="mb-6">
         <Link 
-          to="/tableau-de-bord" 
+          to="/plan-tarifaire" 
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4"
         >
           <ArrowLeft className="h-4 w-4" />
-          Retour au tableau de bord
+          Retour au dashboard
         </Link>
         
         <div className="flex items-center gap-3 mb-2">
@@ -317,7 +317,7 @@ export default function CreerBoutiqueManuelle() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate('/tableau-de-bord')}
+                onClick={() => navigate('/plan-tarifaire')}
                 className="flex-1"
               >
                 Annuler
