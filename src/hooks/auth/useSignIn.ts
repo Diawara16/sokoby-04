@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../use-toast";
 
@@ -22,6 +22,12 @@ export const useSignIn = () => {
       if (error) throw error;
 
       if (data.user) {
+        const { data: storeSettings } = await supabase
+          .from('store_settings')
+          .select('*')
+          .eq('user_id', data.user.id)
+          .single();
+
         toast({
           title: "Connexion réussie",
           description: "Vous êtes maintenant connecté.",

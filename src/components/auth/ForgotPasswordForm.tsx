@@ -18,10 +18,9 @@ export function ForgotPasswordForm() {
     setIsLoading(true);
 
     try {
-      // Utiliser temporairement le système d'email de Supabase
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/nouveau-mot-de-passe`,
-    });
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
 
       if (error) throw error;
 

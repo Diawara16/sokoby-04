@@ -5,7 +5,7 @@ import { useSignIn } from "./auth/useSignIn";
 export const useAuthForm = (defaultIsSignUp: boolean = false) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // Removed dateOfBirth to simplify
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [isSignUp, setIsSignUp] = useState(defaultIsSignUp);
   
   const { isLoading: isSignUpLoading, error: signUpError, handleSignUp } = useSignUp();
@@ -14,7 +14,7 @@ export const useAuthForm = (defaultIsSignUp: boolean = false) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSignUp) {
-      await handleSignUp(email, password);
+      await handleSignUp(email, password, dateOfBirth);
     } else {
       await handleSignIn(email, password);
     }
@@ -25,7 +25,8 @@ export const useAuthForm = (defaultIsSignUp: boolean = false) => {
     setEmail,
     password,
     setPassword,
-    // Removed dateOfBirth exports
+    dateOfBirth,
+    setDateOfBirth,
     isLoading: isSignUp ? isSignUpLoading : isSignInLoading,
     isSignUp,
     setIsSignUp,

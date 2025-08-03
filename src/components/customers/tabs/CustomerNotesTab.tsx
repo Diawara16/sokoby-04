@@ -59,9 +59,6 @@ export const CustomerNotesTab = ({ customerId }: CustomerNotesTabProps) => {
     
     setIsLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const { error } = await supabase
         .from('customer_notes')
         .insert([
@@ -69,7 +66,6 @@ export const CustomerNotesTab = ({ customerId }: CustomerNotesTabProps) => {
             customer_id: customerId,
             content: newNote.trim(),
             category,
-            created_by: user.id
           }
         ]);
 

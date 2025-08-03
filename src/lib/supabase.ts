@@ -1,9 +1,8 @@
-// Temporary compatibility file - redirects to the correct client
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/integrations/supabase/types';
+import type { Database } from '@/types/supabase';
 
-const supabaseUrl = "https://zlwvggnzyfldswpgebij.supabase.co";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpsd3ZnZ256eWZsZHN3cGdlYmlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQxOTEwOTUsImV4cCI6MjA0OTc2NzA5NX0.8qWuWDK2TS87_mlOhXo1oj5CYerMK86LRDPnOF8WysE";
+const supabaseUrl = "https://sydqmpmsqbyffbcbnwod.supabase.co";
+const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5ZHFtcG1zcWJ5ZmZiY2Jud29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4NjU2NzgsImV4cCI6MjA2NzQ0MTY3OH0.tBSM-F2dbw-sb9d4kc4IvPbm7b93lDSYJqIOTtMnmzQ";
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -12,8 +11,11 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true,
     storage: localStorage,
     flowType: 'pkce',
-    debug: true
+    debug: true // Activer le mode debug pour voir plus de détails
   }
 });
 
-export type { Database };
+// Ajouter un listener global pour les erreurs d'authentification
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Auth state changed:', event, session?.user?.id);
+});

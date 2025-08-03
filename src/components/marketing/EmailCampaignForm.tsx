@@ -22,9 +22,6 @@ export function EmailCampaignForm({ onSuccess }: EmailCampaignFormProps) {
     setIsSending(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       // Créer la campagne
       const { data: campaign, error: campaignError } = await supabase
         .from("email_campaigns")
@@ -32,8 +29,7 @@ export function EmailCampaignForm({ onSuccess }: EmailCampaignFormProps) {
           name,
           subject,
           content,
-          status: "draft",
-          user_id: user.id
+          status: "draft"
         })
         .select()
         .single();

@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -10,24 +10,28 @@ export const useSignUp = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSignUp = async (email: string, password: string) => {
+  const handleSignUp = async (email: string, password: string, dateOfBirth: string) => {
     try {
       setIsLoading(true);
       setError(null);
 
       console.log("Attempting to sign up user:", email);
-      console.log("Using Supabase client for signup");
 
-      // Inscription avec URL de redirection
+      // Calculer la date de fin d'essai (14 jours à partir d'aujourd'hui)
+      const trialEndsAt = new Date();
+      trialEndsAt.setDate(trialEndsAt.getDate() + 14);
+
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/tableau-de-bord`
-        }
+          data: {
+            date_of_birth: dateOfBirth,
+            trial_ends_at: trialEndsAt.toISOString(),
+          },
+          emailRedirectTo: `${window.location.origin}/tableau-de-bord`,
+        },
       });
-
-      console.log("Supabase signup response:", { data, error: signUpError });
 
       if (signUpError) {
         console.error("Sign up error:", signUpError);
@@ -36,43 +40,47 @@ export const useSignUp = () => {
 
       console.log("Sign up successful:", data);
 
-      // Message de succès
-      if (data.user) {
-        console.log("User created successfully");
+      if (data.user && !data.user.email_confirmed_at) {
+        // L'utilisateur doit vérifier son email
+        console.log("User needs to verify email");
+        toast({
+          title: "Vérifiez votre email",
+          description: "Un lien de vérification a été envoyé à votre adresse email. Veuillez cliquer sur le lien pour activer votre compte et commencer votre essai gratuit de 14 jours.",
+        });
+      } else if (data.user && data.user.email_confirmed_at) {
+        // L'email est déjà vérifié, créer le profil avec la période d'essai
+        console.log("Email already verified, creating profile");
         
-        // Avec auto-confirm activé, l'utilisateur est automatiquement connecté
-        if (data.user.email_confirmed_at || data.session) {
-          toast({
-            title: "Compte créé avec succès !",
-            description: "Votre compte a été créé et vous êtes maintenant connecté.",
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            email: data.user.email,
+            trial_ends_at: trialEndsAt.toISOString(),
           });
-          navigate('/tableau-de-bord');
-        } else {
-          toast({
-            title: "Compte créé !",
-            description: "Un email de vérification a été envoyé à votre adresse. Veuillez cliquer sur le lien pour activer votre compte.",
-          });
+
+        if (profileError) {
+          console.error("Error creating profile:", profileError);
         }
+
+        toast({
+          title: "Compte créé avec succès",
+          description: "Bienvenue ! Votre essai gratuit de 14 jours commence maintenant.",
+        });
+        navigate("/tableau-de-bord");
       }
 
       return data;
     } catch (err: any) {
       console.error("Error during sign up:", err);
-      console.error("Full error object:", err);
-      
       let errorMessage = "Une erreur est survenue lors de la création du compte";
       
-      // Gestion d'erreurs plus spécifique
-      if (err.message?.includes("User already registered")) {
-        errorMessage = "Cette adresse email est déjà utilisée. Essayez de vous connecter.";
-      } else if (err.message?.includes("Password should be at least")) {
-        errorMessage = "Le mot de passe doit contenir au moins 6 caractères";
-      } else if (err.message?.includes("Unable to validate email address")) {
-        errorMessage = "Adresse email invalide";
-      } else if (err.message?.includes("Email rate limit exceeded")) {
-        errorMessage = "Trop de tentatives. Veuillez réessayer dans quelques minutes.";
-      } else if (err.message) {
-        errorMessage = `Erreur: ${err.message}`;
+      if (err.message.includes("already registered")) {
+        errorMessage = "Cette adresse email est déjà utilisée";
+      } else if (err.message.includes("password")) {
+        errorMessage = "Le mot de passe doit contenir au moins 8 caractères";
+      } else if (err.message.includes("email")) {
+        errorMessage = "Veuillez entrer une adresse email valide";
       }
       
       setError(errorMessage);

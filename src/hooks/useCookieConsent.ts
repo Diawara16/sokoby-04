@@ -37,7 +37,7 @@ export const useCookieConsent = () => {
         .from('cookie_consents')
         .insert({
           consent_given: true,
-          preferences: preferences as any
+          preferences
         });
 
       if (error) throw error;
