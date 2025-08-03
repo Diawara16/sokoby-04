@@ -84,6 +84,13 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
             });
             navigate("/plan-tarifaire");
             return;
+          } else {
+            // Afficher un message informatif sur la période d'essai restante
+            const daysLeft = Math.ceil((new Date(trialEndsAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+            toast({
+              title: "Période d'essai active",
+              description: `Il vous reste ${daysLeft} jour(s) d'essai gratuit.`,
+            });
           }
         }
 

@@ -25,16 +25,6 @@ export function BlogPostGenerator() {
 
     setIsGenerating(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour générer un article",
-          variant: "destructive",
-        })
-        return
-      }
-
       const keywordsArray = keywords
         .split(',')
         .map(k => k.trim())
@@ -57,8 +47,7 @@ export function BlogPostGenerator() {
           seo_description: data.seoDescription,
           seo_keywords: data.suggestedKeywords,
           slug: data.title.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-'),
-          status: 'draft',
-          user_id: user.id
+          status: 'draft'
         })
 
       if (insertError) throw insertError

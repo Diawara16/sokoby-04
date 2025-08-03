@@ -44,11 +44,7 @@ export const StaffManagement = () => {
       }
 
       console.log("Membres chargés:", members);
-      setStaffMembers((members || []).map(member => ({
-        ...member,
-        invited_email: member.email,
-        permissions: member.permissions as any
-      })));
+      setStaffMembers(members || []);
     } catch (error: any) {
       console.error('Erreur globale:', error);
       setError(error.message || "Une erreur est survenue");

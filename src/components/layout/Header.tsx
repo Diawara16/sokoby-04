@@ -5,12 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Bot, Wand2 } from "lucide-react";
-import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
-import { UserMenu } from "@/components/layout/navigation/UserMenu";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated } = useAuthAndProfile();
 
   const navigation = [
     { name: "Accueil", href: "/" },
@@ -63,20 +60,14 @@ export function Header() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            {isAuthenticated ? (
-              <UserMenu />
-            ) : (
-              <>
-                <Link to="/connexion">
-                  <Button variant="ghost">Se connecter</Button>
-                </Link>
-                <Link to="/essai-gratuit">
-                  <Button className="bg-red-600 hover:bg-red-700">
-                    Essai gratuit
-                  </Button>
-                </Link>
-              </>
-            )}
+            <Link to="/connexion">
+              <Button variant="ghost">Se connecter</Button>
+            </Link>
+            <Link to="/essai-gratuit">
+              <Button className="bg-red-600 hover:bg-red-700">
+                Essai gratuit
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu */}
@@ -122,33 +113,16 @@ export function Header() {
                 </div>
                 
                 <div className="flex flex-col space-y-2 pt-4 border-t">
-                  {isAuthenticated ? (
-                    <>
-                      <Link to="/gestion-compte" onClick={() => setIsOpen(false)}>
-                        <Button variant="ghost" className="w-full justify-start">
-                          Mon compte
-                        </Button>
-                      </Link>
-                      <Link to="/tableau-de-bord" onClick={() => setIsOpen(false)}>
-                        <Button className="w-full bg-red-600 hover:bg-red-700">
-                          Tableau de bord
-                        </Button>
-                      </Link>
-                    </>
-                  ) : (
-                    <>
-                      <Link to="/connexion" onClick={() => setIsOpen(false)}>
-                        <Button variant="ghost" className="w-full justify-start">
-                          Se connecter
-                        </Button>
-                      </Link>
-                      <Link to="/essai-gratuit" onClick={() => setIsOpen(false)}>
-                        <Button className="w-full bg-red-600 hover:bg-red-700">
-                          Essai gratuit
-                        </Button>
-                      </Link>
-                    </>
-                  )}
+                  <Link to="/connexion" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">
+                      Se connecter
+                    </Button>
+                  </Link>
+                  <Link to="/essai-gratuit" onClick={() => setIsOpen(false)}>
+                    <Button className="w-full bg-red-600 hover:bg-red-700">
+                      Essai gratuit
+                    </Button>
+                  </Link>
                 </div>
               </nav>
             </SheetContent>

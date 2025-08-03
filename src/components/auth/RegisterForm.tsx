@@ -14,14 +14,14 @@ interface RegisterFormProps {
 export function RegisterForm({ onCancel }: RegisterFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // Removed dateOfBirth state to simplify registration
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const { isLoading, error, handleSignUp } = useSignUp();
 
   console.log("RegisterForm component loaded - NOUVEAU COMPOSANT D'INSCRIPTION");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await handleSignUp(email, password);
+    await handleSignUp(email, password, dateOfBirth);
   };
 
   return (
@@ -73,7 +73,20 @@ export function RegisterForm({ onCancel }: RegisterFormProps) {
             />
           </div>
 
-          {/* Removed date of birth field to simplify registration */}
+          <div className="space-y-2">
+            <Label htmlFor="dateOfBirth">Date de naissance</Label>
+            <Input
+              id="dateOfBirth"
+              type="date"
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              required
+              max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+            />
+            <p className="text-xs text-gray-500">
+              Vous devez avoir au moins 18 ans pour créer un compte
+            </p>
+          </div>
 
           {error && (
             <div className="text-red-600 text-sm">

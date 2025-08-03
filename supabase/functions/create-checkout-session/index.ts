@@ -1,126 +1,137 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@14.21.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import Stripe from 'https://esm.sh/stripe@12.18.0';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Helper logging function for enhanced debugging
-const logStep = (step: string, details?: any) => {
-  const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
-  console.log(`[CREATE-CHECKOUT-SESSION] ${step}${detailsStr}`);
+// IDs de prix Stripe - vous devrez les mettre à jour avec vos vrais IDs de prix actifs
+const PRICE_IDS = {
+  starter: 'price_1QbAUrI7adlqeYfap1MWxujV',
+  pro: 'price_1QbAWeI7adlqeYfaUNskkYXF',
+  enterprise: 'price_1QbAYDI7adlqeYfaRUI9dbH1'
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    logStep("Function started");
-
-    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
-    logStep("Stripe key verified");
-
-    // Use the service role key to perform writes (upsert) in Supabase
+    console.log('Starting checkout session creation...');
+    
+    const { planType, paymentMethod, couponCode } = await req.json();
+    console.log('Request data:', { planType, paymentMethod, couponCode });
+    
     const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-      { auth: { persistSession: false } }
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     );
 
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("No authorization header provided");
-    logStep("Authorization header found");
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('No authorization header');
+    }
 
-    const token = authHeader.replace("Bearer ", "");
-    logStep("Authenticating user with token");
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
-    if (userError) throw new Error(`Authentication error: ${userError.message}`);
-    const user = userData.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
-    logStep("User authenticated", { userId: user.id, email: user.email });
+    if (userError || !user) {
+      throw new Error('Unauthorized');
+    }
 
-    const { planType, paymentMethod, couponCode } = await req.json();
-    logStep("Request data", { planType, paymentMethod, couponCode });
+    console.log('User authenticated:', user.email);
 
-    const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
-    
-    // Price IDs for different plans
-    const PRICE_IDS = {
-      starter: 'price_1Qe7tDI7adlqeYfaKU02O1Wj',
-      pro: 'price_1Qe81sI7adlqeYfamEd7Ylpd',
-      enterprise: 'price_1Qe867I7adlqeYfaJqj2sbrv'
-    };
+    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+      apiVersion: '2023-10-16',
+    });
 
+    // Vérifier si le produit existe et est actif
     const priceId = PRICE_IDS[planType as keyof typeof PRICE_IDS];
     if (!priceId) {
-      throw new Error(`Plan type ${planType} not supported`);
-    }
-    logStep("Price ID found", { planType, priceId });
-
-    // Check if customer already exists
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-      logStep("Existing customer found", { customerId });
-    } else {
-      logStep("No existing customer, will create during checkout");
+      throw new Error(`Invalid plan type: ${planType}`);
     }
 
-    const origin = req.headers.get("origin") || "https://preview-sokoby-04.lovable.app";
+    console.log('Using price ID:', priceId);
+
+    // Déterminer les méthodes de paiement supportées
+    let paymentMethodTypes: string[] = ['card'];
     
-    // Create checkout session
-    const sessionParams: any = {
-      customer: customerId,
-      customer_email: customerId ? undefined : user.email,
+    // Pour l'instant, on utilise seulement 'card' car les autres nécessitent une configuration spéciale
+    if (paymentMethod === 'card' || !paymentMethod) {
+      paymentMethodTypes = ['card'];
+    } else {
+      // Pour les autres méthodes, on revient à 'card' pour éviter les erreurs
+      console.log(`Payment method ${paymentMethod} not fully configured, using card instead`);
+      paymentMethodTypes = ['card'];
+    }
+
+    console.log('Payment method types:', paymentMethodTypes);
+
+    const sessionConfig: any = {
+      customer_email: user.email,
       line_items: [
         {
           price: priceId,
           quantity: 1,
         },
       ],
-      mode: "subscription",
-      success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/`,
-      subscription_data: {
-        trial_period_days: 14, // 14 jours d'essai gratuit
+      mode: 'subscription',
+      success_url: `${req.headers.get('origin')}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get('origin')}/pricing`,
+      metadata: {
+        user_id: user.id,
+        plan_type: planType,
       },
-      billing_address_collection: "required",
+      payment_method_types: paymentMethodTypes,
+      currency: 'usd',
+      allow_promotion_codes: true,
     };
 
-    // Only add customer_update if we have an existing customer
-    if (customerId) {
-      sessionParams.customer_update = {
-        name: "auto",
-        address: "auto",
-      };
-    }
-
-    // Add coupon if provided
+    // Ajouter le coupon si fourni
     if (couponCode) {
-      sessionParams.discounts = [{ coupon: couponCode }];
-      logStep("Coupon applied", { couponCode });
+      sessionConfig.discounts = [{ coupon: couponCode }];
     }
 
-    const session = await stripe.checkout.sessions.create(sessionParams);
-    logStep("Checkout session created", { sessionId: session.id, url: session.url });
+    console.log('Creating checkout session with config:', JSON.stringify(sessionConfig, null, 2));
 
-    return new Response(JSON.stringify({ url: session.url, sessionId: session.id }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    const session = await stripe.checkout.sessions.create(sessionConfig);
+
+    console.log('Checkout session created successfully:', session.id);
+
+    return new Response(
+      JSON.stringify({ url: session.url }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      }
+    );
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    logStep("ERROR in create-checkout-session", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    console.error('Error in checkout session creation:', error);
+    
+    let errorMessage = 'Une erreur est survenue lors de la création de la session de paiement';
+    
+    if (error.message?.includes('product is not active')) {
+      errorMessage = 'Le produit sélectionné n\'est pas actif. Veuillez contacter le support.';
+    } else if (error.message?.includes('Invalid payment_method_types')) {
+      errorMessage = 'Méthode de paiement non supportée. Veuillez utiliser une carte bancaire.';
+    } else if (error.message?.includes('price')) {
+      errorMessage = 'Erreur de configuration des prix. Veuillez contacter le support.';
+    }
+    
+    return new Response(
+      JSON.stringify({ 
+        error: errorMessage,
+        details: error.message 
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500,
+      }
+    );
   }
 });

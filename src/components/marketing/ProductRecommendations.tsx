@@ -57,9 +57,8 @@ export function ProductRecommendations({ customerId }: { customerId: string }) {
         return;
       }
 
-      if (data && data.products) {
-        const products = Array.isArray(data.products) ? data.products as unknown as Recommendation[] : [];
-        setRecommendations(products);
+      if (data) {
+        setRecommendations(data.products);
       }
     };
 

@@ -44,15 +44,7 @@ export const OrderDetails = ({ orderId }: OrderDetailsProps) => {
       return;
     }
 
-    setOrder({
-      ...data,
-      shipping_address: data.shipping_address as any,
-      billing_address: data.billing_address as any,
-      items: data.items.map((item: any) => ({
-        ...item,
-        product_id: item.product_id || item.id
-      }))
-    });
+    setOrder(data);
   };
 
   useEffect(() => {
