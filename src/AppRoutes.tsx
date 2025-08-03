@@ -20,6 +20,7 @@ import Support from "@/pages/Support";
 import Index from "@/pages/Index";
 import BoutiqueIA from "@/pages/BoutiqueIA";
 import CreerBoutiqueIA from "@/pages/CreerBoutiqueIA";
+import CreerBoutiqueManuelle from "@/pages/CreerBoutiqueManuelle";
 import ComparisonModeles from "@/pages/ComparisonModeles";
 import ShopifyMigration from "@/pages/ShopifyMigration";
 import EssaiGratuit from "@/pages/EssaiGratuit";
@@ -30,6 +31,11 @@ import PageEditor from "@/pages/PageEditor";
 import ZapierIntegration from "@/pages/ZapierIntegration";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DynamicLanding } from "@/components/landing/DynamicLanding";
+import TestSupabase from "@/pages/TestSupabase";
+import AuthTest from "@/pages/AuthTest";
+import Success from "@/pages/Success";
+import GestionCompte from "@/pages/GestionCompte";
+import UpdatePassword from "@/pages/UpdatePassword";
 
 export function AppRoutes() {
   const location = useLocation();
@@ -45,6 +51,11 @@ export function AppRoutes() {
       <Route path="/index" element={<Index />} />
       <Route path="/boutique-ia" element={<BoutiqueIA />} />
       <Route path="/creer-boutique-ia" element={<CreerBoutiqueIA />} />
+      <Route path="/creer-boutique-manuelle" element={
+        <ProtectedRoute>
+          <CreerBoutiqueManuelle />
+        </ProtectedRoute>
+      } />
       <Route path="/comparaison-modeles" element={<ComparisonModeles />} />
       
       {/* Migration routes - main and platform-specific */}
@@ -63,6 +74,12 @@ export function AppRoutes() {
       <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/nouveau-mot-de-passe" element={<ResetPassword />} />
+      <Route path="/modifier-mot-de-passe" element={
+        <ProtectedRoute>
+          <UpdatePassword />
+        </ProtectedRoute>
+      } />
       
       {/* Trial and about pages */}
       <Route path="/essai-gratuit" element={<EssaiGratuit />} />
@@ -81,6 +98,9 @@ export function AppRoutes() {
       <Route path="/accessibility" element={<Accessibility />} />
       <Route path="/conditions" element={<Conditions />} />
       <Route path="/support" element={<Support />} />
+      <Route path="/success" element={<Success />} />
+      <Route path="/test-supabase" element={<TestSupabase />} />
+      <Route path="/auth-test" element={<AuthTest />} />
       
       {/* New platform features */}
       <Route path="/marketplace" element={<Marketplace />} />
@@ -129,6 +149,11 @@ export function AppRoutes() {
       <Route path="/profile" element={
         <ProtectedRoute>
           <Profile />
+        </ProtectedRoute>
+      } />
+      <Route path="/gestion-compte" element={
+        <ProtectedRoute>
+          <GestionCompte />
         </ProtectedRoute>
       } />
       

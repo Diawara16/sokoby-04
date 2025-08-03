@@ -74,6 +74,9 @@ export const ReviewForm = ({ productId, onSuccess }: ReviewFormProps) => {
     try {
       setIsSubmitting(true);
 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
       const { data: review, error } = await supabase
         .from("product_reviews")
         .insert({
@@ -81,6 +84,7 @@ export const ReviewForm = ({ productId, onSuccess }: ReviewFormProps) => {
           title: values.title,
           content: values.content,
           rating: values.rating,
+          user_id: user.id
         })
         .select()
         .single();

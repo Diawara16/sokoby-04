@@ -8,26 +8,46 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, Star, Users, Zap, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useSignUp } from "@/hooks/auth/useSignUp";
 
 const EssaiGratuit = () => {
   const [email, setEmail] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [password, setPassword] = useState("");
+  const { isLoading, handleSignUp } = useSignUp();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-
-    setIsSubmitting(true);
-    
-    // Simuler l'inscription
-    setTimeout(() => {
+    if (!email || !password) {
       toast({
-        title: "Inscription réussie !",
-        description: "Votre essai gratuit de 14 jours commence maintenant.",
+        title: "Erreur",
+        description: "Veuillez remplir tous les champs",
+        variant: "destructive",
       });
-      setIsSubmitting(false);
-    }, 1000);
+      return;
+    }
+
+    // Validation email simple
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez entrer une adresse email valide",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      toast({
+        title: "Erreur",
+        description: "Le mot de passe doit contenir au moins 6 caractères",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    await handleSignUp(email, password);
   };
 
   const features = [
@@ -99,12 +119,20 @@ const EssaiGratuit = () => {
                   required
                   className="text-center"
                 />
+                <Input
+                  type="password"
+                  placeholder="Créer un mot de passe (min. 6 caractères)"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="text-center"
+                />
                 <Button 
                   type="submit" 
                   className="w-full bg-red-600 hover:bg-red-700 text-lg py-6"
-                  disabled={isSubmitting}
+                  disabled={isLoading}
                 >
-                  {isSubmitting ? "Création en cours..." : "Créer ma boutique gratuite"}
+                  {isLoading ? "Création en cours..." : "Créer ma boutique gratuite"}
                 </Button>
                 <p className="text-xs text-gray-500 text-center">
                   En vous inscrivant, vous acceptez nos{" "}

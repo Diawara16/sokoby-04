@@ -14,8 +14,9 @@ describe('CRUD Operations', () => {
     } as any);
 
     const { data, error } = await supabase
-      .from('test')
-      .select('*');
+      .from('products')
+      .select('*')
+      .limit(1);
 
     expect(error).toBeNull();
     expect(data).toEqual(mockData);

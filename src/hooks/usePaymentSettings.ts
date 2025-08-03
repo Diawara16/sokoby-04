@@ -16,18 +16,13 @@ export const usePaymentSettings = () => {
         throw new Error('Non authentifié');
       }
 
-      const { error } = await supabase
-        .from('store_settings')
-        .update({ 
-          payment_settings: settings 
-        })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
+      // Note: payment_settings column doesn't exist in store_settings table
+      // This would need to be created or use a different approach
+      console.log('Payment settings would be saved:', settings);
+      
       toast({
-        title: "Succès",
-        description: "Paramètres de paiement mis à jour",
+        title: "Information",
+        description: "Fonctionnalité en cours de développement",
       });
     } catch (error) {
       console.error('Erreur:', error);

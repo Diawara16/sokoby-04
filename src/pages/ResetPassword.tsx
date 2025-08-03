@@ -16,18 +16,49 @@ const ResetPassword = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Vérifier si nous avons les tokens nécessaires
-    const accessToken = searchParams.get('access_token');
-    const refreshToken = searchParams.get('refresh_token');
-    
-    if (!accessToken || !refreshToken) {
-      toast({
-        title: "Lien invalide",
-        description: "Ce lien de réinitialisation n'est pas valide ou a expiré.",
-        variant: "destructive",
-      });
-      navigate('/connexion');
-    }
+    const checkResetSession = async () => {
+      try {
+        // Récupérer la session actuelle pour vérifier si nous sommes en mode reset
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Erreur lors de la vérification de la session:", error);
+          toast({
+            title: "Lien invalide",
+            description: "Ce lien de réinitialisation n'est pas valide ou a expiré.",
+            variant: "destructive",
+          });
+          navigate('/mot-de-passe-oublie');
+          return;
+        }
+
+        // Si pas de session, vérifier les paramètres d'URL pour les tokens
+        if (!session) {
+          const error = searchParams.get('error');
+          const errorDescription = searchParams.get('error_description');
+          
+          if (error) {
+            console.error("Erreur dans l'URL:", error, errorDescription);
+            toast({
+              title: "Lien invalide",
+              description: errorDescription || "Ce lien de réinitialisation n'est pas valide ou a expiré.",
+              variant: "destructive",
+            });
+            navigate('/mot-de-passe-oublie');
+          }
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification du reset:", error);
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de la vérification du lien.",
+          variant: "destructive",
+        });
+        navigate('/mot-de-passe-oublie');
+      }
+    };
+
+    checkResetSession();
   }, [searchParams, navigate, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {

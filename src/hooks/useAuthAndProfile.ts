@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
 
 interface Profile {
   id: string;
   email: string | null;
   trial_ends_at: string | null;
-  features_usage: Record<string, number>;
+  features_usage: any;
   last_login: string | null;
 }
 
