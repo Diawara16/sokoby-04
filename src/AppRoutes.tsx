@@ -36,6 +36,9 @@ import AuthTest from "@/pages/AuthTest";
 import Success from "@/pages/Success";
 import GestionCompte from "@/pages/GestionCompte";
 import UpdatePassword from "@/pages/UpdatePassword";
+import Boutique from "@/pages/Boutique";
+import AddProduct from "@/pages/products/AddProduct";
+import { ProductRoutes } from "@/routes/ProductRoutes";
 
 export function AppRoutes() {
   const location = useLocation();
@@ -156,6 +159,21 @@ export function AppRoutes() {
           <GestionCompte />
         </ProtectedRoute>
       } />
+      
+      {/* Boutique and Products routes */}
+      <Route path="/boutique" element={
+        <ProtectedRoute>
+          <Boutique />
+        </ProtectedRoute>
+      } />
+      <Route path="/products/add" element={
+        <ProtectedRoute>
+          <AddProduct />
+        </ProtectedRoute>
+      } />
+      
+      {/* Product management routes */}
+      <ProductRoutes />
       
       {/* Catch-all route for dynamic landing pages */}
       <Route path="/:slug" element={<DynamicLanding />} />
