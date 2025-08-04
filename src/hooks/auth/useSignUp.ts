@@ -75,8 +75,12 @@ export const useSignUp = () => {
       console.error("Error during sign up:", err);
       let errorMessage = "Une erreur est survenue lors de la création du compte";
       
-      if (err.message.includes("already registered")) {
-        errorMessage = "Cette adresse email est déjà utilisée";
+      if (err.message.includes("already registered") || err.message.includes("User already registered")) {
+        errorMessage = "Cette adresse email est déjà utilisée. Veuillez vous connecter à la place.";
+        // Rediriger vers la page de connexion après un délai
+        setTimeout(() => {
+          navigate("/connexion");
+        }, 3000);
       } else if (err.message.includes("password")) {
         errorMessage = "Le mot de passe doit contenir au moins 8 caractères";
       } else if (err.message.includes("email")) {
