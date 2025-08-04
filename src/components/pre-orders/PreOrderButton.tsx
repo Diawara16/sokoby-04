@@ -30,7 +30,7 @@ export function PreOrderButton({ productId }: { productId: string }) {
           product_id: productId,
           user_id: user.id,
           status: "pending",
-          estimated_arrival: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // +14 jours
+          estimated_arrival: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() // +14 jours
         });
 
       if (error) {

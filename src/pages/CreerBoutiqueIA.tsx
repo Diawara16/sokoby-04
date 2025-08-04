@@ -59,7 +59,7 @@ const CreerBoutiqueIA = () => {
         {/* Header with back button */}
         <div className="flex items-center gap-4 mb-8">
           <Button variant="ghost" size="sm" asChild>
-            <Link to="/boutique-ia">
+            <Link to="/plan-tarifaire">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Retour
             </Link>

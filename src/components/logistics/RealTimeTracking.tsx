@@ -46,7 +46,7 @@ export const RealTimeTracking = () => {
                     </span>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    <p>Temps estimé: {route.estimated_delivery_time || 'Non disponible'}</p>
+                    <p>Temps estimé: {route.estimated_delivery_time ? String(route.estimated_delivery_time) : 'Non disponible'}</p>
                     <p>Points de livraison: {(route.route_data as any)?.stops?.length || 0}</p>
                   </div>
                 </div>

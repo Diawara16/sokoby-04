@@ -46,6 +46,9 @@ export function CreateFlashSale() {
 
     setIsSubmitting(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
       const { error } = await supabase
         .from("flash_sales")
         .insert([
@@ -56,6 +59,7 @@ export function CreateFlashSale() {
             sale_price: salePrice,
             start_time: new Date(startTime).toISOString(),
             end_time: new Date(endTime).toISOString(),
+            user_id: user.id
           }
         ]);
 

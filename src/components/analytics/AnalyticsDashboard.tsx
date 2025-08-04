@@ -47,11 +47,19 @@ export const AnalyticsDashboard = () => {
 
   useEffect(() => {
     const trackPageView = async () => {
-      await supabase.from('user_behaviors').insert({
-        event_type: 'page_view',
-        page_url: window.location.pathname,
-        event_data: { referrer: document.referrer }
-      });
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        
+        await supabase.from('user_behaviors').insert({
+          event_type: 'page_view',
+          page_url: window.location.pathname,
+          event_data: { referrer: document.referrer },
+          user_id: user.id
+        });
+      } catch (error) {
+        console.error('Error tracking page view:', error);
+      }
     };
     trackPageView();
   }, []);

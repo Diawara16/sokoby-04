@@ -37,9 +37,12 @@ export const CustomerTagsManager = ({
 
   const createTag = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
       const { data: tag, error } = await supabase
         .from('customer_tags')
-        .insert([{ name: newTagName }])
+        .insert([{ name: newTagName, user_id: user.id }])
         .select()
         .single();
 

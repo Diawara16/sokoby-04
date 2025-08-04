@@ -55,7 +55,11 @@ export const useProfileData = () => {
 
         if (cartError) throw cartError;
 
-        setProfile(data);
+        setProfile({
+          trial_ends_at: data.trial_ends_at,
+          features_usage: (data.features_usage as Record<string, number>) || {},
+          last_login: data.last_login
+        });
         setCartItemsCount(cartItems?.length || 0);
       } catch (error) {
         console.error("Erreur lors du chargement du profil:", error);
