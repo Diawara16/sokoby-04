@@ -2639,6 +2639,7 @@ export type Database = {
           phone: string | null
           social_links: Json | null
           trial_ends_at: string | null
+          user_id: string | null
           website: string | null
         }
         Insert: {
@@ -2654,6 +2655,7 @@ export type Database = {
           phone?: string | null
           social_links?: Json | null
           trial_ends_at?: string | null
+          user_id?: string | null
           website?: string | null
         }
         Update: {
@@ -2669,6 +2671,7 @@ export type Database = {
           phone?: string | null
           social_links?: Json | null
           trial_ends_at?: string | null
+          user_id?: string | null
           website?: string | null
         }
         Relationships: []
