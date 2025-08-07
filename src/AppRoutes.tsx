@@ -43,6 +43,7 @@ import ProductCatalog from "@/pages/products/ProductCatalog";
 import ProductStock from "@/pages/products/ProductStock";
 import ProductMovements from "@/pages/products/ProductMovements";
 import GiftCards from "@/pages/products/GiftCards";
+import StoreEditor from "@/pages/StoreEditor";
 
 export function AppRoutes() {
   const location = useLocation();
@@ -166,6 +167,11 @@ export function AppRoutes() {
       
       {/* Boutique and Products routes */}
       <Route path="/boutique" element={<Boutique />} />
+      <Route path="/store-editor" element={
+        <ProtectedRoute>
+          <StoreEditor />
+        </ProtectedRoute>
+      } />
       <Route path="/products/add" element={
         <ProtectedRoute>
           <AddProduct />

@@ -165,8 +165,8 @@ export default function CreerBoutiqueManuelle() {
           : "Votre boutique a été créée. Vous pouvez maintenant ajouter des produits.",
       });
 
-      // Rediriger vers la page boutique
-      navigate('/boutique');
+      // Rediriger vers l'éditeur de boutique
+      navigate('/store-editor');
       
     } catch (error) {
       console.error('Error creating store:', error);
