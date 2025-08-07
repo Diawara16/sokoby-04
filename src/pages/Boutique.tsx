@@ -23,7 +23,9 @@ export default function Boutique() {
 
   React.useEffect(() => {
     const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      console.log("Checking user auth...");
+      const { data: { user }, error } = await supabase.auth.getUser();
+      console.log("Auth check result:", { user, error });
       setUser(user);
       setIsCheckingAuth(false);
     };
