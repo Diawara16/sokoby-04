@@ -10,6 +10,7 @@ import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Product } from "@/types/product";
+import { AddProductDemo } from "@/components/products/AddProductDemo";
 
 export default function Boutique() {
   const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 1000]);
@@ -20,10 +21,18 @@ export default function Boutique() {
   const { data: products = [], isLoading, error } = useQuery<Product[]>({
     queryKey: ['products'],
     queryFn: async () => {
-      console.log("Fetching products...");
+      console.log("Fetching products for current user...");
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        console.log("No user found, returning empty array");
+        return [];
+      }
+
       const { data, error } = await supabase
         .from('products')
-        .select('*');
+        .select('*')
+        .eq('user_id', user.id);
       
       if (error) {
         console.error('Error fetching products:', error);
@@ -35,7 +44,7 @@ export default function Boutique() {
         throw error;
       }
       
-      console.log("Products fetched:", data);
+      console.log("Products fetched for user:", data);
       return data || [];
     }
   });
@@ -85,8 +94,37 @@ export default function Boutique() {
               ) : products && products.length > 0 ? (
                 <ProductGrid products={products} />
               ) : (
-                <div className="text-center text-gray-500">
-                  Aucun produit trouvé. Commencez par en ajouter un !
+                <div className="space-y-8">
+                  <div className="text-center space-y-4 py-8">
+                    <div className="text-muted-foreground">
+                      Aucun produit trouvé dans votre boutique.
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Commencez par ajouter des produits à votre catalogue pour les voir apparaître ici.
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                    <AddProductDemo />
+                    
+                    <div className="space-y-4">
+                      <Link to="/products/add" className="block">
+                        <Button className="w-full" size="lg">
+                          <Plus className="mr-2 h-4 w-4" />
+                          Ajouter un produit manuellement
+                        </Button>
+                      </Link>
+                      
+                      <div className="text-center">
+                        <div className="text-xs text-muted-foreground mb-2">
+                          Ou utilisez nos applications partenaires
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Elles se trouvent dans la section ci-dessus
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

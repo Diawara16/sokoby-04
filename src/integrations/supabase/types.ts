@@ -2603,25 +2603,40 @@ export type Database = {
       }
       products: {
         Row: {
+          category: string | null
           created_at: string
+          description: string | null
           id: string
           image: string | null
           name: string
           price: number
+          status: string | null
+          stock: number | null
+          user_id: string | null
         }
         Insert: {
+          category?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           image?: string | null
           name: string
           price: number
+          status?: string | null
+          stock?: number | null
+          user_id?: string | null
         }
         Update: {
+          category?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           image?: string | null
           name?: string
           price?: number
+          status?: string | null
+          stock?: number | null
+          user_id?: string | null
         }
         Relationships: []
       }
