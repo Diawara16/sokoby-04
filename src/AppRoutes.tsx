@@ -165,11 +165,7 @@ export function AppRoutes() {
       } />
       
       {/* Boutique and Products routes */}
-      <Route path="/boutique" element={
-        <ProtectedRoute>
-          <Boutique />
-        </ProtectedRoute>
-      } />
+      <Route path="/boutique" element={<Boutique />} />
       <Route path="/products/add" element={
         <ProtectedRoute>
           <AddProduct />

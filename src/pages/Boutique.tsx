@@ -18,11 +18,22 @@ export default function Boutique() {
   const [sortBy, setSortBy] = React.useState("price-asc");
   const { toast } = useToast();
 
+  const [user, setUser] = React.useState<any>(null);
+  const [isCheckingAuth, setIsCheckingAuth] = React.useState(true);
+
+  React.useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      setIsCheckingAuth(false);
+    };
+    checkUser();
+  }, []);
+
   const { data: products = [], isLoading, error } = useQuery<Product[]>({
-    queryKey: ['products'],
+    queryKey: ['products', user?.id],
     queryFn: async () => {
       console.log("Fetching products for current user...");
-      const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
         console.log("No user found, returning empty array");
@@ -46,11 +57,63 @@ export default function Boutique() {
       
       console.log("Products fetched for user:", data);
       return data || [];
-    }
+    },
+    enabled: !!user
   });
 
   if (error) {
     console.error('Query error:', error);
+  }
+
+  if (isCheckingAuth) {
+    return (
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <main className="flex-1 overflow-y-auto bg-background p-8">
+          <div className="flex justify-center items-center h-32">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <main className="flex-1 overflow-y-auto bg-background p-8">
+          <div className="container mx-auto">
+            <div className="flex justify-between items-center mb-8">
+              <h1 className="text-3xl font-bold">Ma Boutique</h1>
+            </div>
+            <div className="text-center space-y-6 py-16">
+              <div className="space-y-4">
+                <h2 className="text-2xl font-semibold text-muted-foreground">
+                  Connectez-vous pour accéder à votre boutique
+                </h2>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Vous devez être connecté pour voir et gérer vos produits. 
+                  Créez un compte gratuit ou connectez-vous pour commencer.
+                </p>
+              </div>
+              <div className="flex gap-4 justify-center">
+                <Link to="/connexion">
+                  <Button size="lg">
+                    Se connecter
+                  </Button>
+                </Link>
+                <Link to="/inscription">
+                  <Button variant="outline" size="lg">
+                    Créer un compte
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
   }
 
   return (
