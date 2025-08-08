@@ -45,13 +45,9 @@ export default function CreerBoutiqueManuelle() {
           .maybeSingle();
 
         if (existingStore) {
-          setIsUpdating(true);
-          setFormData(prev => ({
-            ...prev,
-            storeName: existingStore.store_name || "",
-            description: existingStore.store_description || "",
-            category: existingStore.category || ""
-          }));
+          // User already has a store: skip edit step and go to the editor
+          navigate('/store-editor');
+          return;
         }
 
         // Charger les paramètres de marque existants

@@ -27,7 +27,14 @@ export const useSignIn = () => {
           description: "Vous êtes maintenant connecté.",
         });
 
-        navigate("/tableau-de-bord");
+        // Redirect based on store existence
+        const { data: existingStore } = await supabase
+          .from('store_settings')
+          .select('user_id')
+          .eq('user_id', data.user.id)
+          .maybeSingle();
+
+        navigate(existingStore ? "/store-editor" : "/tableau-de-bord");
       }
     } catch (error: any) {
       console.error("Erreur de connexion:", error);
