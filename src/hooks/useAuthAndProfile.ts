@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
+import { isPreviewEnv } from "@/utils/env";
 
 interface Profile {
   id: string;
@@ -20,6 +21,18 @@ export const useAuthAndProfile = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    const inPreview = isPreviewEnv();
+    if (inPreview) {
+      // Force sign-out and disable auto-auth in preview environments
+      supabase.auth.signOut().finally(() => {
+        setIsAuthenticated(false);
+        setSession(null);
+        setHasProfile(false);
+        setProfile(null);
+        setIsLoading(false);
+      });
+      return;
+    }
     const checkAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();

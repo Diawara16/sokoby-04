@@ -2,12 +2,23 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { isPreviewEnv } from "@/utils/env";
 
 const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     let active = true;
+    const inPreview = isPreviewEnv();
+
+    if (inPreview) {
+      // In preview domains, never auto-login or redirect; always show login form
+      supabase.auth.signOut();
+      return () => {
+        active = false;
+      };
+    }
+
     const redirectToDestination = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
