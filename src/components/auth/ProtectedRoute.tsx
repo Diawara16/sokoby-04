@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
@@ -11,6 +11,7 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -82,8 +83,11 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
               description: "Votre période d'essai gratuit est terminée. Veuillez souscrire à un abonnement pour continuer.",
               variant: "destructive",
             });
-            navigate("/plan-tarifaire");
-            return;
+            if (location.pathname !== "/gestion-compte") {
+              navigate("/gestion-compte", { replace: true });
+              return;
+            }
+            // Autoriser la page de gestion du compte sans abonnement actif
           } else {
             // Afficher un message informatif sur la période d'essai restante
             const daysLeft = Math.ceil((new Date(trialEndsAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
