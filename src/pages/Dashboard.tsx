@@ -1,11 +1,19 @@
-
+import { Helmet } from "react-helmet";
 import { UserDashboard } from "@/components/dashboard/UserDashboard";
 import { MigrationDashboard } from "@/components/migration/MigrationDashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ActiveStoreCard } from "@/components/dashboard/ActiveStoreCard";
+import { QuickActions } from "@/components/dashboard/QuickActions";
+import { MarketplaceIntegrationsCard } from "@/components/integrations/MarketplaceIntegrationsCard";
 
 export default function Dashboard() {
   return (
     <div className="container mx-auto px-4 py-8">
+      <Helmet>
+        <title>Tableau de bord | Boutique</title>
+        <meta name="description" content="Tableau de bord boutique: accès rapide, boutique active et intégrations marketplace." />
+        <link rel="canonical" href={window.location.origin + "/"} />
+      </Helmet>
       <h1 className="text-3xl font-bold mb-8">Tableau de bord</h1>
       
       <Tabs defaultValue="overview" className="space-y-6">
@@ -16,6 +24,9 @@ export default function Dashboard() {
         </TabsList>
         
         <TabsContent value="overview" className="space-y-6">
+          <QuickActions />
+          <ActiveStoreCard />
+          <MarketplaceIntegrationsCard />
           <UserDashboard />
         </TabsContent>
         

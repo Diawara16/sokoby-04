@@ -1,4 +1,3 @@
-
 import { 
   LayoutDashboard, 
   Store, 
@@ -13,7 +12,8 @@ import {
   Bell,
   Plug,
   Bot,
-  Wand2
+  Wand2,
+  CreditCard
 } from "lucide-react";
 
 export const sidebarItems = [
@@ -22,6 +22,42 @@ export const sidebarItems = [
     label: "Tableau de bord", 
     href: "/" 
   },
+  { 
+    icon: Package, 
+    label: "Produits", 
+    href: "/products" 
+  },
+  { 
+    icon: ShoppingCart, 
+    label: "Commandes", 
+    href: "/orders" 
+  },
+  { 
+    icon: Users, 
+    label: "Clients", 
+    href: "/clients" 
+  },
+  { 
+    icon: BarChart, 
+    label: "Statistiques", 
+    href: "/analytics" 
+  },
+  { 
+    icon: CreditCard, 
+    label: "Paiements", 
+    href: "/payments" 
+  },
+  { 
+    icon: Mail, 
+    label: "Marketing", 
+    href: "/email-marketing" 
+  },
+  { 
+    icon: Settings, 
+    label: "Paramètres", 
+    href: "/parametres" 
+  },
+  // Autres éléments existants conservés ci-dessous
   { 
     icon: Store, 
     label: "Boutique", 
@@ -40,26 +76,6 @@ export const sidebarItems = [
     className: "text-primary hover:text-primary/90 font-semibold"
   },
   { 
-    icon: Package, 
-    label: "Produits", 
-    href: "/products" 
-  },
-  { 
-    icon: ShoppingCart, 
-    label: "Commandes", 
-    href: "/orders" 
-  },
-  { 
-    icon: Users, 
-    label: "Clients", 
-    href: "/clients" 
-  },
-  { 
-    icon: Mail, 
-    label: "Email Marketing", 
-    href: "/email-marketing" 
-  },
-  { 
     icon: Grid, 
     label: "Applications", 
     href: "/applications" 
@@ -73,16 +89,6 @@ export const sidebarItems = [
     icon: Share2, 
     label: "Canaux de vente", 
     href: "/vente-multicanale" 
-  },
-  { 
-    icon: BarChart, 
-    label: "Analytiques", 
-    href: "/analytics" 
-  },
-  { 
-    icon: Settings, 
-    label: "Paramètres", 
-    href: "/parametres" 
   },
   { 
     icon: Bell, 
