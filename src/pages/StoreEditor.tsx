@@ -140,14 +140,9 @@ export default function StoreEditor() {
   const handlePreviewStore = () => {
     if (!storeData) return;
     
-    // Si domaine personnalisé configuré, utiliser celui-ci
-    if (storeData.is_custom_domain && storeData.domain_name) {
-      window.open(`https://${storeData.domain_name}`, '_blank');
-    } else {
-      // Sinon, créer un aperçu local basé sur l'ID de la boutique
-      const previewUrl = `/boutique/${storeData.id}`;
-      window.open(previewUrl, '_blank');
-    }
+    // Créer l'URL d'aperçu locale
+    const previewUrl = `/boutique-apercu/${storeData.id}`;
+    window.open(previewUrl, '_blank');
   };
 
   const handlePublishStore = async () => {
