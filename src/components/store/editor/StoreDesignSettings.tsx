@@ -34,7 +34,12 @@ export function StoreDesignSettings({ brandData, onDataChange }: Props) {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        throw new Error("Vous devez être connecté");
+        toast({
+          title: "Connexion requise",
+          description: "Vous devez être connecté pour sauvegarder le design",
+          variant: "destructive"
+        });
+        return;
       }
 
       const { error } = await supabase
@@ -51,6 +56,7 @@ export function StoreDesignSettings({ brandData, onDataChange }: Props) {
         });
 
       if (error) {
+        console.error('Database error:', error);
         throw error;
       }
 
@@ -63,7 +69,7 @@ export function StoreDesignSettings({ brandData, onDataChange }: Props) {
       console.error('Error saving brand settings:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de sauvegarder le design",
+        description: error.message || "Impossible de sauvegarder le design",
         variant: "destructive"
       });
     } finally {
