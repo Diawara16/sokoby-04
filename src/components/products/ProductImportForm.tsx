@@ -11,7 +11,11 @@ import { NicheField } from "./form/NicheField"
 import { ProductFormData } from "./types"
 import { useProductImport } from "./hooks/useProductImport"
 
-export function ProductImportForm() {
+interface ProductImportFormProps {
+  onSuccess?: () => void;
+}
+
+export function ProductImportForm({ onSuccess }: ProductImportFormProps = {}) {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<ProductFormData>({
@@ -42,6 +46,11 @@ export function ProductImportForm() {
         title: "Succès",
         description: "Le produit a été importé avec succès",
       })
+      
+      // Rediriger après succès
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       console.error("Erreur lors de l'import du produit:", error)
       toast({

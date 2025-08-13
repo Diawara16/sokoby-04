@@ -138,11 +138,16 @@ export default function StoreEditor() {
   };
 
   const handlePreviewStore = () => {
-    const previewUrl = storeData?.domain_name 
-      ? `https://${storeData.domain_name}.sokoby.com`
-      : '/boutique';
+    if (!storeData) return;
     
-    window.open(previewUrl, '_blank');
+    // Si domaine personnalisé configuré, utiliser celui-ci
+    if (storeData.is_custom_domain && storeData.domain_name) {
+      window.open(`https://${storeData.domain_name}`, '_blank');
+    } else {
+      // Sinon, créer un aperçu local basé sur l'ID de la boutique
+      const previewUrl = `/boutique/${storeData.id}`;
+      window.open(previewUrl, '_blank');
+    }
   };
 
   const handlePublishStore = async () => {
