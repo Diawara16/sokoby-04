@@ -280,7 +280,10 @@ export default function StoreEditor() {
             brandData={brandData}
             onDataChange={(newData) => {
               setBrandData({ ...brandData, ...newData });
-              setHasUnsavedChanges(true);
+              // Don't set unsaved changes for auto-saved items (colors, slogan, logo)
+              if (!newData.primary_color && !newData.secondary_color && !newData.slogan && !newData.logo_url) {
+                setHasUnsavedChanges(true);
+              }
             }}
           />
         </TabsContent>

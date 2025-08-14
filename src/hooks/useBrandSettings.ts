@@ -70,6 +70,9 @@ export const useBrandSettings = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
+      // First, get existing brand settings to preserve them
+      const existingSettings = await fetchBrandSettings();
+
       const fileExt = file.name.split('.').pop();
       const filePath = `${user.id}/${crypto.randomUUID()}.${fileExt}`;
 
@@ -83,6 +86,27 @@ export const useBrandSettings = () => {
         .from('brand_assets')
         .getPublicUrl(filePath);
 
+      // Update brand settings with new logo while preserving existing data
+      const updatedSettings = {
+        ...existingSettings,
+        logo_url: publicUrl,
+        updated_at: new Date().toISOString(),
+      };
+
+      const { error: updateError } = await supabase
+        .from('brand_settings')
+        .upsert({
+          user_id: user.id,
+          ...updatedSettings,
+        });
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "Succès",
+        description: "Logo téléchargé et sauvegardé automatiquement",
+      });
+
       return publicUrl;
     } catch (error) {
       console.error('Error uploading logo:', error);
@@ -95,10 +119,36 @@ export const useBrandSettings = () => {
     }
   };
 
+  const autoSave = async (settings: Partial<BrandSettings>) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+
+      // Get existing settings to merge
+      const existingSettings = await fetchBrandSettings();
+      
+      const { error } = await supabase
+        .from('brand_settings')
+        .upsert({
+          user_id: user.id,
+          ...existingSettings,
+          ...settings,
+          updated_at: new Date().toISOString(),
+        });
+
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.error('Error auto-saving brand settings:', error);
+      return false;
+    }
+  };
+
   return {
     isLoading,
     fetchBrandSettings,
     updateBrandSettings,
     uploadLogo,
+    autoSave,
   };
 };

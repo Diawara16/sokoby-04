@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useBrandSettings } from "@/hooks/useBrandSettings";
-import { Save, Upload, Palette, Type, Image } from "lucide-react";
+import { Save, Upload, Palette, Type, Image, Check } from "lucide-react";
 
 interface BrandData {
   primary_color?: string;
@@ -24,9 +24,59 @@ interface Props {
 export function StoreDesignSettings({ brandData, onDataChange }: Props) {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [autoSaving, setAutoSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  const { uploadLogo } = useBrandSettings();
+  const { uploadLogo, autoSave, fetchBrandSettings } = useBrandSettings();
+
+  // Auto-save avec debounce pour les couleurs et slogan
+  const debouncedAutoSave = useCallback(
+    debounce(async (data: Partial<BrandData>) => {
+      setAutoSaving(true);
+      const success = await autoSave(data);
+      if (success) {
+        setLastSaved(new Date());
+      }
+      setAutoSaving(false);
+    }, 1000),
+    [autoSave]
+  );
+
+  // Function debounce helper
+  function debounce<T extends (...args: any[]) => any>(
+    func: T,
+    wait: number
+  ): (...args: Parameters<T>) => void {
+    let timeout: NodeJS.Timeout;
+    return (...args: Parameters<T>) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), wait);
+    };
+  }
+
+  // Reload brand data from database
+  const reloadBrandData = async () => {
+    try {
+      const freshData = await fetchBrandSettings();
+      if (freshData) {
+        onDataChange(freshData);
+      }
+    } catch (error) {
+      console.error('Error reloading brand data:', error);
+    }
+  };
+
+  // Auto-save when colors or slogan change
+  useEffect(() => {
+    if (brandData.primary_color || brandData.secondary_color || brandData.slogan) {
+      debouncedAutoSave({
+        primary_color: brandData.primary_color,
+        secondary_color: brandData.secondary_color,
+        slogan: brandData.slogan,
+      });
+    }
+  }, [brandData.primary_color, brandData.secondary_color, brandData.slogan, debouncedAutoSave]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -93,11 +143,9 @@ export function StoreDesignSettings({ brandData, onDataChange }: Props) {
     try {
       const logoUrl = await uploadLogo(file);
       if (logoUrl) {
-        onDataChange({ logo_url: logoUrl });
-        toast({
-          title: "Logo téléchargé",
-          description: "Votre logo a été téléchargé avec succès",
-        });
+        // Reload all brand data to ensure consistency
+        await reloadBrandData();
+        setLastSaved(new Date());
       }
     } catch (error) {
       console.error('Error uploading logo:', error);
@@ -273,8 +321,23 @@ export function StoreDesignSettings({ brandData, onDataChange }: Props) {
         </CardContent>
       </Card>
 
-      {/* Bouton de sauvegarde */}
-      <div className="md:col-span-2">
+      {/* Indicateurs de sauvegarde et bouton */}
+      <div className="md:col-span-2 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          {autoSaving && (
+            <>
+              <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
+              <span>Sauvegarde automatique...</span>
+            </>
+          )}
+          {lastSaved && !autoSaving && (
+            <>
+              <Check className="h-4 w-4 text-green-500" />
+              <span>Sauvegardé à {lastSaved.toLocaleTimeString()}</span>
+            </>
+          )}
+        </div>
+        
         <Button onClick={handleSave} disabled={saving} className="w-full md:w-auto">
           <Save className="h-4 w-4 mr-2" />
           {saving ? "Sauvegarde..." : "Sauvegarder le design"}
