@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingCart, Heart } from "lucide-react";
+import { ProductPlaceholder } from "@/components/ui/product-placeholder";
 
 interface StoreData {
   id: string;
@@ -183,15 +184,19 @@ export default function StorePreview() {
               {products.map((product) => (
                 <Card key={product.id} className="group hover:shadow-lg transition-shadow">
                   <CardHeader className="p-0">
-                    <div className="aspect-square bg-muted rounded-t-lg flex items-center justify-center">
+                    <div className="aspect-square bg-muted rounded-t-lg overflow-hidden">
                       {product.image_url ? (
                         <img 
                           src={product.image_url} 
                           alt={product.name}
-                          className="w-full h-full object-cover rounded-t-lg"
+                          className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="text-muted-foreground text-4xl">📦</div>
+                        <ProductPlaceholder 
+                          productName={product.name}
+                          primaryColor={primaryColor}
+                          className="w-full h-full"
+                        />
                       )}
                     </div>
                   </CardHeader>
