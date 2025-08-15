@@ -11,7 +11,8 @@ import {
   Shield,
   Truck,
   Palette,
-  Bell
+  Bell,
+  Receipt
 } from "lucide-react";
 
 export const SettingsSidebar = () => {
@@ -42,6 +43,11 @@ export const SettingsSidebar = () => {
       label: "Paiements",
       href: "/parametres/paiements",
       icon: CreditCard,
+    },
+    {
+      label: "Abonnement & Facturation",
+      href: "/parametres/facturation",
+      icon: Receipt,
     },
     {
       label: "Expédition",
