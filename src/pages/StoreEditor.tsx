@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -51,15 +51,44 @@ export default function StoreEditor() {
   const [loading, setLoading] = useState(true);
   const [storeData, setStoreData] = useState<StoreData | null>(null);
   const [brandData, setBrandData] = useState<BrandData>({});
-  const [activeTab, setActiveTab] = useState("general");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Get initial tab from URL params or localStorage
+  const getInitialTab = () => {
+    const urlTab = searchParams.get('tab');
+    if (urlTab && ['general', 'design', 'products', 'payments', 'shipping', 'settings'].includes(urlTab)) {
+      return urlTab;
+    }
+    const savedTab = localStorage.getItem('storeEditor_activeTab');
+    return savedTab && ['general', 'design', 'products', 'payments', 'shipping', 'settings'].includes(savedTab) 
+      ? savedTab 
+      : 'general';
+  };
+  
+  const [activeTab, setActiveTab] = useState(getInitialTab());
+
+  // Update URL and localStorage when tab changes
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setSearchParams({ tab });
+    localStorage.setItem('storeEditor_activeTab', tab);
+  };
 
   useEffect(() => {
     loadStoreData();
   }, []);
+
+  // Update tab from URL changes
+  useEffect(() => {
+    const urlTab = searchParams.get('tab');
+    if (urlTab && urlTab !== activeTab) {
+      setActiveTab(urlTab);
+    }
+  }, [searchParams]);
 
   const loadStoreData = async () => {
     try {
@@ -237,7 +266,7 @@ export default function StoreEditor() {
       </div>
 
       {/* Onglets de configuration */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="general" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />

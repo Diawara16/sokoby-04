@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Plus, 
   Zap, 
@@ -14,6 +15,22 @@ import {
 import { T } from "@/components/translation/T";
 
 export const QuickActions = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleNavigation = (href: string, title: string) => {
+    try {
+      navigate(href);
+    } catch (error) {
+      console.error('Navigation error:', error);
+      toast({
+        title: "Erreur de navigation",
+        description: `Impossible d'accéder à ${title}. Veuillez réessayer.`,
+        variant: "destructive"
+      });
+    }
+  };
+
   const actions = [
     {
       title: "Créer une page",
@@ -40,7 +57,7 @@ export const QuickActions = () => {
       title: "Ajouter un produit",
       description: "Ajoutez un nouveau produit à votre catalogue",
       icon: <Plus className="h-5 w-5" />,
-      href: "/products/add",
+      href: "/boutique-editeur?tab=products",
       variant: "outline" as const
     },
     {
@@ -86,22 +103,22 @@ export const QuickActions = () => {
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {actions.map((action, index) => (
-            <Link key={index} to={action.href}>
-              <Button
-                variant={action.variant}
-                className="h-auto flex-col gap-2 p-4 w-full"
-              >
-                {action.icon}
-                <div className="text-center">
-                  <div className="font-medium text-xs">
-                    <T>{action.title}</T>
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                    <T>{action.description}</T>
-                  </div>
+            <Button
+              key={index}
+              variant={action.variant}
+              className="h-auto flex-col gap-2 p-4 w-full"
+              onClick={() => handleNavigation(action.href, action.title)}
+            >
+              {action.icon}
+              <div className="text-center">
+                <div className="font-medium text-xs">
+                  <T>{action.title}</T>
                 </div>
-              </Button>
-            </Link>
+                <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                  <T>{action.description}</T>
+                </div>
+              </div>
+            </Button>
           ))}
         </div>
       </CardContent>
