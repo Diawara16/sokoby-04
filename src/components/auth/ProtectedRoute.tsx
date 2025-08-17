@@ -52,20 +52,27 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           throw profileError;
         }
 
-        // Vérifier l'abonnement actif
-        const { data: subscriptions, error: subError } = await supabase
-          .from('subscriptions')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .eq('status', 'active')
-          .maybeSingle();
+        // Vérifier l'abonnement actif (ne pas échouer si la table est vide)
+        let hasActiveSubscription = false;
+        try {
+          const { data: subscriptions, error: subError } = await supabase
+            .from('subscriptions')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .eq('status', 'active')
+            .maybeSingle();
 
-        if (subError) {
-          console.error('Erreur lors de la vérification de l\'abonnement:', subError);
-          throw subError;
+          if (subError) {
+            console.warn('Avertissement lors de la vérification de l\'abonnement:', subError);
+            // Ne pas lancer d'erreur, continuer avec hasActiveSubscription = false
+          } else {
+            hasActiveSubscription = subscriptions !== null;
+          }
+        } catch (error) {
+          console.warn('Erreur non critique lors de la vérification de l\'abonnement:', error);
+          // Continuer sans abonnement actif vérifié
         }
-
-        const hasActiveSubscription = subscriptions !== null;
+        
         console.log("Abonnement actif:", hasActiveSubscription);
 
         // Si pas d'abonnement actif, vérifier la période d'essai
