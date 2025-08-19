@@ -27,6 +27,7 @@ import { StoreProductsManager } from "@/components/store/editor/StoreProductsMan
 import { StorePaymentSettings } from "@/components/store/editor/StorePaymentSettings";
 import { StoreShippingSettings } from "@/components/store/editor/StoreShippingSettings";
 import { StoreAdvancedSettings } from "@/components/store/editor/StoreAdvancedSettings";
+import { ThemeGallery } from "@/components/store/editor/ThemeGallery";
 
 interface StoreData {
   id: string;
@@ -305,6 +306,18 @@ export default function StoreEditor() {
         </TabsContent>
 
         <TabsContent value="design" className="space-y-6">
+          <ThemeGallery 
+            onThemeSelect={(theme) => {
+              setBrandData(prev => ({
+                ...prev,
+                primary_color: theme.config.colors.primary,
+                secondary_color: theme.config.colors.secondary
+              }));
+              setHasUnsavedChanges(true);
+            }}
+            selectedTheme={brandData.primary_color === '#000000' ? 'minimal' : undefined}
+          />
+          
           <StoreDesignSettings 
             brandData={brandData}
             onDataChange={(newData) => {

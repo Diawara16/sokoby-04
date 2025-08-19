@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { ProductPlaceholder } from "@/components/ui/product-placeholder";
 import { useToast } from "@/hooks/use-toast";
+import { RealCheckout } from "@/components/store/checkout/RealCheckout";
 
 interface StoreData {
   id: string;
@@ -54,7 +55,9 @@ export default function StorePreview() {
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [showCheckout, setShowCheckout] = useState(false);
+  const [isDemoCheckout, setIsDemoCheckout] = useState(false);
+  const [isRealCheckout, setIsRealCheckout] = useState(false);
+  const [demoOrderData, setDemoOrderData] = useState<any>(null);
   const [checkoutForm, setCheckoutForm] = useState({
     name: '',
     email: '',
@@ -156,19 +159,34 @@ export default function StorePreview() {
     return cart.reduce((count, item) => count + item.quantity, 0);
   };
 
-  const handleCheckout = () => {
-    setShowCheckout(true);
+  const handleDemoCheckout = () => {
+    setIsDemoCheckout(true);
     setIsCartOpen(false);
   };
 
-  const processCheckout = () => {
-    // Demo checkout - just show success
+  const handleRealCheckout = () => {
+    setIsRealCheckout(true);
+    setIsCartOpen(false);
+  };
+
+  const processDemoCheckout = () => {
+    const orderData = {
+      id: `demo-${Date.now()}`,
+      items: cart,
+      total: getCartTotal(),
+      customer: checkoutForm,
+      status: 'demo-completed',
+      createdAt: new Date().toISOString()
+    };
+    
+    setDemoOrderData(orderData);
+    
     toast({
-      title: "Commande confirmée !",
+      title: "Commande démo confirmée !",
       description: `Merci ${checkoutForm.name} ! Votre commande démo de ${getCartTotal().toFixed(2)}€ a été enregistrée.`,
     });
     setCart([]);
-    setShowCheckout(false);
+    setIsDemoCheckout(false);
     setCheckoutForm({ name: '', email: '', address: '', city: '', postal: '' });
   };
 
@@ -489,13 +507,23 @@ export default function StorePreview() {
                       {getCartTotal().toFixed(2)} €
                     </span>
                   </div>
-                  <Button 
-                    className="w-full font-semibold"
-                    style={{ backgroundColor: primaryColor }}
-                    onClick={handleCheckout}
-                  >
-                    Passer la commande
-                  </Button>
+                  <div className="space-y-2">
+                    <Button 
+                      size="lg" 
+                      className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                      onClick={handleRealCheckout}
+                    >
+                      Passer la commande
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      size="sm" 
+                      className="w-full"
+                      onClick={handleDemoCheckout}
+                    >
+                      Mode démo
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -503,14 +531,31 @@ export default function StorePreview() {
         </div>
       )}
 
-      {/* Checkout Modal */}
-      {showCheckout && (
+      {/* Real checkout flow */}
+      {isRealCheckout && (
+        <RealCheckout
+          cartItems={cart}
+          onBack={() => setIsRealCheckout(false)}
+          onSuccess={() => {
+            setCart([]);
+            setIsRealCheckout(false);
+            setIsCartOpen(false);
+            toast({
+              title: "Commande confirmée !",
+              description: "Votre commande a été traitée avec succès",
+            });
+          }}
+        />
+      )}
+
+      {/* Demo Checkout Modal */}
+      {isDemoCheckout && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowCheckout(false)}></div>
+          <div className="absolute inset-0 bg-black/50" onClick={() => setIsDemoCheckout(false)}></div>
           <div className="relative bg-white rounded-2xl p-8 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold">Finaliser la commande</h3>
-              <Button variant="ghost" size="sm" onClick={() => setShowCheckout(false)}>
+              <h3 className="text-xl font-bold">Commande démo</h3>
+              <Button variant="ghost" size="sm" onClick={() => setIsDemoCheckout(false)}>
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -580,7 +625,7 @@ export default function StorePreview() {
               <Button 
                 className="w-full font-semibold"
                 style={{ backgroundColor: primaryColor }}
-                onClick={processCheckout}
+                onClick={processDemoCheckout}
                 disabled={!checkoutForm.name || !checkoutForm.email}
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
