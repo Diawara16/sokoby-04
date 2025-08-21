@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -89,6 +90,16 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
               title: "Abonnement requis",
               description: "Votre période d'essai gratuit est terminée. Veuillez souscrire à un abonnement pour continuer.",
               variant: "destructive",
+              action: (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate("/parametres/facturation")}
+                  className="ml-2"
+                >
+                  Gérer l'abonnement
+                </Button>
+              ),
             });
             if (location.pathname !== "/gestion-compte") {
               navigate("/gestion-compte", { replace: true });
