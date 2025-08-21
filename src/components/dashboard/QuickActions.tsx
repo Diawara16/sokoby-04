@@ -104,7 +104,6 @@ export const QuickActions = () => {
   } : null;
 
   const allActions = cancelAction ? [...actions, cancelAction] : actions;
-  ];
 
   return (
     <Card>
