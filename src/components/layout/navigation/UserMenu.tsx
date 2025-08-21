@@ -12,12 +12,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, Settings, User, AlertTriangle } from "lucide-react";
+import { LogOut, Settings, User, AlertTriangle, XCircle } from "lucide-react";
+import { useSubscriptionManagement } from "@/hooks/useSubscriptionManagement";
 
 export function UserMenu() {
   const { isAuthenticated, session, profile } = useAuthAndProfile();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { subscription, cancelSubscription, isLoading } = useSubscriptionManagement();
 
   const handleLogout = async () => {
     try {
@@ -84,6 +86,12 @@ export function UserMenu() {
           <AlertTriangle className="mr-2 h-4 w-4" />
           <span>Gestion du compte</span>
         </DropdownMenuItem>
+        {subscription?.status === 'active' && (
+          <DropdownMenuItem onClick={cancelSubscription} disabled={isLoading} className="text-orange-600">
+            <XCircle className="mr-2 h-4 w-4" />
+            <span>{isLoading ? 'Chargement...' : 'Annuler abonnement'}</span>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="text-destructive">
           <LogOut className="mr-2 h-4 w-4" />

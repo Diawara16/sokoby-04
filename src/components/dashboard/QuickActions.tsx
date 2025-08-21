@@ -10,13 +10,16 @@ import {
   ShoppingBag,
   Puzzle,
   Users,
-  Settings
+  Settings,
+  XCircle
 } from "lucide-react";
 import { T } from "@/components/translation/T";
+import { useSubscriptionManagement } from "@/hooks/useSubscriptionManagement";
 
 export const QuickActions = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { subscription, cancelSubscription, isLoading } = useSubscriptionManagement();
 
   const handleNavigation = (href: string, title: string) => {
     try {
@@ -90,6 +93,19 @@ export const QuickActions = () => {
     }
   ];
 
+  // Add cancel subscription action if user has active subscription
+  const cancelAction = subscription?.status === 'active' ? {
+    title: "Annuler abonnement",
+    description: "Gérer ou annuler votre abonnement",
+    icon: <XCircle className="h-5 w-5" />,
+    href: "#",
+    variant: "destructive" as const,
+    action: cancelSubscription
+  } : null;
+
+  const allActions = cancelAction ? [...actions, cancelAction] : actions;
+  ];
+
   return (
     <Card>
       <CardHeader>
@@ -102,12 +118,19 @@ export const QuickActions = () => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {actions.map((action, index) => (
+          {allActions.map((action, index) => (
             <Button
               key={index}
               variant={action.variant}
               className="h-auto flex-col gap-2 p-4 w-full"
-              onClick={() => handleNavigation(action.href, action.title)}
+              onClick={() => {
+                if ('action' in action && action.action) {
+                  action.action();
+                } else {
+                  handleNavigation(action.href, action.title);
+                }
+              }}
+              disabled={isLoading}
             >
               {action.icon}
               <div className="text-center">

@@ -8,6 +8,10 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Separator } from "@/components/ui/separator";
 import { CalendarDays, CreditCard, AlertTriangle } from "lucide-react";
+import { useSubscriptionManagement } from "@/hooks/useSubscriptionManagement";
+import { InvoiceHistory } from "@/components/subscription/InvoiceHistory";
+import { ReportDoubleCharge } from "@/components/subscription/ReportDoubleCharge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Subscription {
   status: string;
@@ -24,30 +28,24 @@ interface PaymentHistory {
 }
 
 const BillingSettings = () => {
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const { 
+    subscription, 
+    invoices, 
+    cancelSubscription, 
+    checkForDuplicateSubscription, 
+    isLoading,
+    refreshData 
+  } = useSubscriptionManagement();
   const [paymentHistory, setPaymentHistory] = useState<PaymentHistory[]>([]);
+  const [hasDuplicateSubscription, setHasDuplicateSubscription] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const loadSubscriptionAndPayments = async () => {
+    const loadPaymentHistory = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Charger l'abonnement
-      const { data: subData, error: subError } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (subError) {
-        console.error('Error loading subscription:', subError);
-        return;
-      }
-
-      setSubscription(subData);
-
-      // Charger l'historique des paiements
+      // Charger l'historique des paiements (legacy)
       const { data: payments, error: payError } = await supabase
         .from('payment_history')
         .select('*')
@@ -63,29 +61,17 @@ const BillingSettings = () => {
       setPaymentHistory(payments || []);
     };
 
-    loadSubscriptionAndPayments();
-  }, []);
+    const checkDuplicates = async () => {
+      const hasDuplicates = await checkForDuplicateSubscription();
+      setHasDuplicateSubscription(hasDuplicates);
+    };
 
-  const handleManageSubscription = async () => {
-    try {
-      const { data, error } = await supabase.functions.invoke('create-billing-portal-session');
-      
-      if (error) {
-        throw error;
-      }
-      
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (error: any) {
-      console.error('Error accessing billing portal:', error);
-      toast({
-        title: "Erreur",
-        description: error.message || "Impossible d'accéder au portail de facturation. Veuillez contacter le support.",
-        variant: "destructive",
-      });
-    }
-  };
+    loadPaymentHistory();
+    checkDuplicates();
+    refreshData();
+  }, [checkForDuplicateSubscription, refreshData]);
+
+  const handleManageSubscription = cancelSubscription;
 
   const formatDate = (date: string) => {
     return format(new Date(date), 'dd MMMM yyyy', { locale: fr });
@@ -99,6 +85,18 @@ const BillingSettings = () => {
           Gérez votre abonnement, annulez votre compte ou consultez votre historique de paiement
         </p>
       </div>
+
+      {/* Duplicate Subscription Warning */}
+      {hasDuplicateSubscription && (
+        <Alert className="border-red-200 bg-red-50">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription className="text-red-800">
+            <span className="font-medium">Abonnements multiples détectés !</span> 
+            <br />
+            Vous avez plusieurs abonnements actifs. Contactez le support immédiatement pour éviter des charges supplémentaires.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Current Subscription */}
       <Card>
@@ -121,12 +119,18 @@ const BillingSettings = () => {
                 </div>
               )}
               <div className="space-y-2">
-                <Button onClick={handleManageSubscription} className="w-full">
-                  Gérer l'abonnement (Annuler, Modifier)
+                <Button onClick={handleManageSubscription} className="w-full" disabled={isLoading}>
+                  {isLoading ? 'Ouverture...' : 'Gérer l\'abonnement (Annuler, Modifier)'}
                 </Button>
                 <p className="text-xs text-muted-foreground text-center">
                   Vous serez redirigé vers Stripe pour gérer votre abonnement en toute sécurité
                 </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-sm text-blue-800 font-medium">💡 Annulation simple et immédiate</p>
+                  <p className="text-xs text-blue-700 mt-1">
+                    Votre annulation prend effet immédiatement. Aucun frais supplémentaire ne sera prélevé.
+                  </p>
+                </div>
               </div>
             </div>
           ) : (
@@ -140,6 +144,12 @@ const BillingSettings = () => {
         </CardContent>
       </Card>
 
+      {/* Report Double Charge */}
+      <ReportDoubleCharge />
+
+      {/* Invoice History */}
+      <InvoiceHistory invoices={invoices} />
+
       {/* Emergency Contact */}
       <Card className="border-orange-200 bg-orange-50">
         <CardHeader>
@@ -149,13 +159,19 @@ const BillingSettings = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2 text-sm text-orange-700">
+          <div className="space-y-3 text-sm text-orange-700">
             <p>Si vous rencontrez des problèmes pour annuler votre abonnement :</p>
             <ul className="list-disc list-inside space-y-1 ml-2">
+              <li>Le portail Stripe permet l'annulation immédiate (recommandé)</li>
               <li>Contactez le support Stripe directement</li>
               <li>Envoyez un email à notre équipe support</li>
-              <li>Le portail Stripe vous permet d'annuler immédiatement</li>
             </ul>
+            <div className="bg-orange-100 border border-orange-300 rounded p-3">
+              <p className="font-medium text-orange-800">🔒 Garantie de remboursement</p>
+              <p className="text-xs text-orange-700 mt-1">
+                Toute facturation erronée sera remboursée sous 24h. Aucune question posée.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
