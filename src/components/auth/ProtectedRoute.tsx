@@ -94,7 +94,29 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => navigate("/parametres/facturation")}
+                  onClick={async () => {
+                    try {
+                      const { data, error } = await supabase.functions.invoke('create-billing-portal-session');
+                      
+                      if (error) throw error;
+                      
+                      if (data?.url) {
+                        window.open(data.url, '_blank');
+                        toast({
+                          title: "Portail de facturation ouvert",
+                          description: "Vous pouvez maintenant gérer votre abonnement dans l'onglet ouvert.",
+                        });
+                      }
+                    } catch (error: any) {
+                      console.error("Erreur ouverture portail:", error);
+                      toast({
+                        title: "Erreur",
+                        description: "Impossible d'accéder au portail de facturation. Redirection vers les plans.",
+                        variant: "destructive",
+                      });
+                      navigate("/plan-tarifaire");
+                    }
+                  }}
                   className="ml-2"
                 >
                   Gérer l'abonnement
