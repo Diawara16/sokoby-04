@@ -3861,6 +3861,10 @@ export type Database = {
         Args: { name: string }
         Returns: string
       }
+      is_profile_public: {
+        Args: { user_uuid: string }
+        Returns: boolean
+      }
       update_flash_sales_status: {
         Args: Record<PropertyKey, never>
         Returns: undefined
