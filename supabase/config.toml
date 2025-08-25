@@ -25,12 +25,15 @@ uri = "https://zlwvggnzyfldswpgebij.supabase.co/functions/v1/send-reset-password
 enabled = true
 
 [functions.send-email]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-marketing-email]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-verification-email]
+verify_jwt = true
+
+[functions.stripe-webhook]
 verify_jwt = false
 
 [functions.send-reset-password-email]

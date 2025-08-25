@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom"
 import { supabase } from "@/lib/supabase"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import DOMPurify from "dompurify"
 
 interface BlogPost {
   title: string
@@ -64,7 +65,9 @@ const BlogPost = () => {
         </p>
         <div
           className="prose prose-lg"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ 
+            __html: DOMPurify.sanitize(post.content, { USE_PROFILES: { html: true } })
+          }}
         />
       </article>
     </div>
