@@ -3,14 +3,13 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { T } from "@/components/translation/T";
 import { MainNavigation } from "@/components/layout/navigation/MainNavigation";
+import { Logo } from "@/components/layout/navigation/Logo";
 
 export function Navigation() {
   return (
     <nav className="flex items-center justify-between p-4 bg-white shadow-sm">
       <div className="flex items-center space-x-8">
-        <Link to="/" className="text-xl font-bold text-primary-700">
-          Sokoby
-        </Link>
+        <Logo />
         
         <MainNavigation />
       </div>
