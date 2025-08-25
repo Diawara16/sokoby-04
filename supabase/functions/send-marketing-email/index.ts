@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.7";
 
@@ -64,7 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Récupérer la liste des clients selon les filtres de segment
-    const { data: customers, error: customersError } = await supabase
+    const { data: customers, error: customersError } = await supabaseClient
       .from("customer_details")
       .select("*")
       .eq("user_id", campaign.user_id);
@@ -97,7 +98,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Mettre à jour les statistiques
-    const { error: statsError } = await supabase
+    const { error: statsError } = await supabaseClient
       .from("email_campaign_stats")
       .insert({
         campaign_id: campaignId,
@@ -107,7 +108,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (statsError) throw statsError;
 
     // Mettre à jour le statut de la campagne
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseClient
       .from("email_campaigns")
       .update({
         status: "sent",
@@ -133,4 +134,6 @@ const handler = async (req: Request): Promise<Response> => {
       }
     );
   }
-});
+};
+
+serve(handler);
