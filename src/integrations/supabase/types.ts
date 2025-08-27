@@ -3861,6 +3861,15 @@ export type Database = {
         Args: { name: string }
         Returns: string
       }
+      get_store_brand_public: {
+        Args: { store_user_id: string }
+        Returns: {
+          logo_url: string
+          primary_color: string
+          secondary_color: string
+          slogan: string
+        }[]
+      }
       is_profile_public: {
         Args: { user_uuid: string }
         Returns: boolean

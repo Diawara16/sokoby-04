@@ -89,9 +89,7 @@ export default function StorePreview() {
       }
 
       const { data: brand, error: brandError } = await supabase
-        .from('brand_settings')
-        .select('*')
-        .eq('user_id', store.user_id)
+        .rpc('get_store_brand_public', { store_user_id: store.user_id })
         .maybeSingle();
 
       if (brandError) {
