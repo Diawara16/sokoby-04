@@ -45,6 +45,7 @@ import ProductMovements from "@/pages/products/ProductMovements";
 import GiftCards from "@/pages/products/GiftCards";
 import StoreEditor from "@/pages/StoreEditor";
 import StorePreview from "@/pages/boutique/StorePreview";
+import Applications from "@/pages/Applications";
 
 export function AppRoutes() {
   const location = useLocation();
@@ -209,6 +210,18 @@ export function AppRoutes() {
       <Route path="/produits/cartes-cadeaux" element={
         <ProtectedRoute>
           <GiftCards />
+        </ProtectedRoute>
+      } />
+      
+      {/* Applications route */}
+      <Route path="/applications" element={
+        <ProtectedRoute>
+          <Applications />
+        </ProtectedRoute>
+      } />
+      <Route path="/apps" element={
+        <ProtectedRoute>
+          <Applications />
         </ProtectedRoute>
       } />
       
