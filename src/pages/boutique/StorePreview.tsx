@@ -227,8 +227,14 @@ export default function StorePreview() {
                   src={brandData.logo_url} 
                   alt="Logo" 
                   className="h-10 w-10 rounded-lg object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    console.log('Store logo failed to load:', target.src);
+                    target.style.display = 'none';
+                  }}
                 />
-              ) : (
+              ) : null}
+              {(!brandData.logo_url || document.querySelector('img[style*="display: none"]')) && (
                 <div 
                   className="h-10 w-10 rounded-lg flex items-center justify-center text-white font-bold"
                   style={{ backgroundColor: primaryColor }}

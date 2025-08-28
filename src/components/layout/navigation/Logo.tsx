@@ -22,6 +22,7 @@ export function Logo() {
         height="56"
         onError={(e) => {
           const target = e.target as HTMLImageElement;
+          console.log('Logo image failed to load:', target.src);
           target.src = "/lovable-uploads/a23d77a2-5fb5-4b8d-b354-605dc6969483.png";
         }}
       />
