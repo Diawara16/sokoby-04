@@ -3,6 +3,7 @@ import { Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Settings from "@/pages/Settings";
 import StoreSettings from "@/pages/settings/StoreSettings";
+import DomainSettings from "@/pages/settings/DomainSettings";
 import UserSettings from "@/pages/settings/UserSettings";
 import PaymentSettings from "@/pages/settings/PaymentSettings";
 import BillingSettings from "@/pages/settings/BillingSettings";
@@ -15,7 +16,7 @@ export const SettingsRoutes = () => {
   return (
     <Route path="/parametres" element={<ProtectedRoute><Settings /></ProtectedRoute>}>
       <Route index element={<StoreSettings />} />
-      <Route path="domaine" element={<StoreSettings showDomainOnly />} />
+      <Route path="domaine" element={<DomainSettings />} />
       <Route path="dns" element={<DnsSettings />} />
       <Route path="utilisateurs" element={<UserSettings />} />
       <Route path="paiements" element={<PaymentSettings />} />

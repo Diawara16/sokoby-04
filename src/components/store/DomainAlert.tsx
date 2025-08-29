@@ -35,10 +35,10 @@ export const DomainAlert = ({ domainName }: DomainAlertProps) => {
       console.log("Réponse DNS complète:", data);
       
       const hasCorrectARecord = data.Answer?.some(
-        (record: any) => record.type === 1 && record.data === '76.76.21.21'
+        (record: any) => record.type === 1 && record.data === '185.158.133.1'
       );
 
-      console.log("Enregistrement A correct ?", hasCorrectARecord, "Valeur attendue: 76.76.21.21");
+      console.log("Enregistrement A correct ?", hasCorrectARecord, "Valeur attendue: 185.158.133.1");
 
       if (hasCorrectARecord) {
         console.log("Enregistrement A validé, mise à jour dans Supabase");
@@ -71,7 +71,7 @@ export const DomainAlert = ({ domainName }: DomainAlertProps) => {
         console.log("Configuration DNS incorrecte détectée");
         toast({
           title: "Configuration DNS incorrecte",
-          description: "Veuillez vérifier que l'enregistrement A pointe vers 76.76.21.21",
+          description: "Veuillez vérifier que l'enregistrement A pointe vers 185.158.133.1",
           variant: "destructive",
         });
       }
@@ -116,7 +116,7 @@ export const DomainAlert = ({ domainName }: DomainAlertProps) => {
             <div className="bg-muted p-4 rounded-md">
               <p><strong>Type:</strong> A</p>
               <p><strong>Nom:</strong> @</p>
-              <p><strong>Valeur:</strong> 76.76.21.21</p>
+              <p><strong>Valeur:</strong> 185.158.133.1</p>
               <p><strong>TTL:</strong> 3600</p>
             </div>
             <Button 

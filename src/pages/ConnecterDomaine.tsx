@@ -94,7 +94,7 @@ export default function ConnecterDomaine() {
               <div className="bg-gray-50 p-4 rounded-md">
                 <p><strong>Type :</strong> A</p>
                 <p><strong>Nom :</strong> @</p>
-                <p><strong>Valeur :</strong> 76.76.21.21</p>
+                <p><strong>Valeur :</strong> 185.158.133.1</p>
               </div>
             </div>
           </div>
