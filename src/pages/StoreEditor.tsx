@@ -255,7 +255,7 @@ export default function StoreEditor() {
               <Eye className="h-4 w-4 mr-2" />
               Aperçu
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => navigate('/parametres/domaine')}>
               <Globe className="h-4 w-4 mr-2" />
               Domaine
             </Button>
