@@ -11,6 +11,7 @@ import LocationSettings from "@/pages/settings/LocationSettings";
 import SecuritySettings from "@/pages/settings/SecuritySettings";
 import DnsSettings from "@/pages/settings/DnsSettings";
 import ShippingSettings from "@/pages/settings/ShippingSettings";
+import DesignSettings from "@/pages/settings/DesignSettings";
 
 export const SettingsRoutes = () => {
   return (
@@ -24,6 +25,7 @@ export const SettingsRoutes = () => {
       <Route path="expedition" element={<ShippingSettings />} />
       <Route path="geolocalisation" element={<LocationSettings />} />
       <Route path="securite" element={<SecuritySettings />} />
+      <Route path="apparence" element={<DesignSettings />} />
     </Route>
   );
 };
