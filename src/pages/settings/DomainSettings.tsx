@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 
 export default function DomainSettings() {
+  console.log("DomainSettings component is rendering");
   const [selectedDomain, setSelectedDomain] = useState("");
   const [domainName, setDomainName] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
@@ -108,10 +109,11 @@ export default function DomainSettings() {
     });
   };
 
+  console.log("About to render DomainSettings");
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6 bg-background min-h-screen">
       <div>
-        <h3 className="text-lg font-medium">Configuration du domaine</h3>
+        <h3 className="text-lg font-medium text-foreground">Configuration du domaine</h3>
         <p className="text-sm text-muted-foreground">
           Connectez un domaine existant ou obtenez un sous-domaine Sokoby.
         </p>
