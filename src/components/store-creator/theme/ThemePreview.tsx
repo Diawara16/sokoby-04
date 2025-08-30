@@ -17,31 +17,87 @@ export const ThemePreview = ({
   selectedTemplate,
 }: PreviewProps) => {
   const PreviewCard = () => (
-    <div 
-      className="p-4 rounded-lg shadow-lg"
-      style={{ backgroundColor: primaryColor }}
-    >
-      <h3 
-        className="text-xl font-bold mb-2"
-        style={{ color: accentColor }}
+    <div className="space-y-4">
+      {/* Header Preview */}
+      <div 
+        className="p-4 rounded-lg shadow-lg"
+        style={{ backgroundColor: primaryColor }}
       >
-        Aperçu du thème
-      </h3>
-      <p 
-        className="text-sm"
-        style={{ color: secondaryColor }}
+        <div className="flex items-center justify-between mb-4">
+          <h3 
+            className="text-xl font-bold"
+            style={{ color: accentColor }}
+          >
+            Ma Boutique
+          </h3>
+          <div className="flex gap-2">
+            <div 
+              className="w-8 h-8 rounded-full"
+              style={{ backgroundColor: accentColor, opacity: 0.3 }}
+            />
+            <div 
+              className="w-8 h-8 rounded-full"
+              style={{ backgroundColor: secondaryColor, opacity: 0.3 }}
+            />
+          </div>
+        </div>
+        <p 
+          className="text-sm mb-4"
+          style={{ color: secondaryColor, opacity: 0.9 }}
+        >
+          Bienvenue dans notre boutique en ligne
+        </p>
+        <Button 
+          className="px-6 py-2 rounded-md font-medium transition-all hover:shadow-md"
+          style={{ 
+            backgroundColor: accentColor,
+            color: primaryColor
+          }}
+        >
+          Découvrir
+        </Button>
+      </div>
+
+      {/* Product Card Preview */}
+      <div 
+        className="p-4 rounded-lg border"
+        style={{ backgroundColor: secondaryColor, borderColor: accentColor + '20' }}
       >
-        Visualisez en direct les changements de votre thème
-      </p>
-      <Button 
-        className="mt-4"
-        style={{ 
-          backgroundColor: secondaryColor,
-          color: primaryColor
-        }}
-      >
-        Bouton exemple
-      </Button>
+        <div 
+          className="w-full h-32 rounded-md mb-3"
+          style={{ backgroundColor: primaryColor, opacity: 0.1 }}
+        />
+        <h4 
+          className="font-semibold mb-2"
+          style={{ color: primaryColor }}
+        >
+          Produit Example
+        </h4>
+        <p 
+          className="text-sm mb-3"
+          style={{ color: primaryColor, opacity: 0.7 }}
+        >
+          Description du produit avec tous les détails importants
+        </p>
+        <div className="flex items-center justify-between">
+          <span 
+            className="font-bold text-lg"
+            style={{ color: accentColor }}
+          >
+            29,99 €
+          </span>
+          <Button 
+            size="sm"
+            className="px-4 py-1 rounded text-sm"
+            style={{ 
+              backgroundColor: primaryColor,
+              color: secondaryColor
+            }}
+          >
+            Ajouter
+          </Button>
+        </div>
+      </div>
     </div>
   );
 
