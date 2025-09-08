@@ -67,7 +67,18 @@ export const useSignUp = () => {
       
       // Gestion d'erreurs plus spécifique
       if (err.message?.includes("User already registered")) {
-        errorMessage = "Cette adresse email est déjà utilisée. Essayez de vous connecter.";
+        errorMessage = "Cette adresse email est déjà utilisée.";
+        setError(errorMessage);
+        toast({
+          title: "Compte existant",
+          description: "Cette adresse email est déjà associée à un compte. Redirection vers la connexion...",
+          variant: "default",
+        });
+        // Rediriger automatiquement vers la page de connexion après 2 secondes
+        setTimeout(() => {
+          navigate('/connexion');
+        }, 2000);
+        return null;
       } else if (err.message?.includes("Password should be at least")) {
         errorMessage = "Le mot de passe doit contenir au moins 6 caractères";
       } else if (err.message?.includes("Unable to validate email address")) {
