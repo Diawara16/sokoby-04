@@ -14,8 +14,11 @@ export const useSignIn = () => {
     setError(null);
 
     try {
+      // Normalize email
+      const normalizedEmail = email.trim().toLowerCase();
+      
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: normalizedEmail,
         password,
       });
 

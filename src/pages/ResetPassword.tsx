@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const ResetPassword = () => {
@@ -16,29 +16,37 @@ const ResetPassword = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const checkResetSession = async () => {
+    const handlePasswordReset = async () => {
       try {
-        // Récupérer la session actuelle pour vérifier si nous sommes en mode reset
-        const { data: { session }, error } = await supabase.auth.getSession();
+        // Check if we have a PKCE code in the URL
+        const code = searchParams.get('code');
         
-        if (error) {
-          console.error("Erreur lors de la vérification de la session:", error);
-          toast({
-            title: "Lien invalide",
-            description: "Ce lien de réinitialisation n'est pas valide ou a expiré.",
-            variant: "destructive",
-          });
-          navigate('/mot-de-passe-oublie');
-          return;
-        }
-
-        // Si pas de session, vérifier les paramètres d'URL pour les tokens
-        if (!session) {
-          const error = searchParams.get('error');
-          const errorDescription = searchParams.get('error_description');
+        if (code) {
+          // Exchange the code for a session
+          const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
           
           if (error) {
-            console.error("Erreur dans l'URL:", error, errorDescription);
+            console.error("Erreur lors de l'échange du code:", error);
+            toast({
+              title: "Lien invalide",
+              description: "Ce lien de réinitialisation n'est pas valide ou a expiré.",
+              variant: "destructive",
+            });
+            navigate('/mot-de-passe-oublie');
+            return;
+          }
+        } else {
+          // Check if we have a valid session for password reset
+          const { data: { session }, error } = await supabase.auth.getSession();
+          
+          if (error || !session) {
+            const urlError = searchParams.get('error');
+            const errorDescription = searchParams.get('error_description');
+            
+            if (urlError) {
+              console.error("Erreur dans l'URL:", urlError, errorDescription);
+            }
+            
             toast({
               title: "Lien invalide",
               description: errorDescription || "Ce lien de réinitialisation n'est pas valide ou a expiré.",
@@ -48,7 +56,7 @@ const ResetPassword = () => {
           }
         }
       } catch (error) {
-        console.error("Erreur lors de la vérification du reset:", error);
+        console.error("Erreur lors de la gestion du reset:", error);
         toast({
           title: "Erreur",
           description: "Une erreur est survenue lors de la vérification du lien.",
@@ -58,7 +66,7 @@ const ResetPassword = () => {
       }
     };
 
-    checkResetSession();
+    handlePasswordReset();
   }, [searchParams, navigate, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {

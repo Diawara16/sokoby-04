@@ -9,15 +9,6 @@ const Login = () => {
 
   useEffect(() => {
     let active = true;
-    const inPreview = isPreviewEnv();
-
-    if (inPreview) {
-      // In preview domains, never auto-login or redirect; always show login form
-      supabase.auth.signOut();
-      return () => {
-        active = false;
-      };
-    }
 
     const redirectToDestination = async () => {
       const { data: { session } } = await supabase.auth.getSession();

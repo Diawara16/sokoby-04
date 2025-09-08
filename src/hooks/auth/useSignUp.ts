@@ -15,12 +15,15 @@ export const useSignUp = () => {
       setIsLoading(true);
       setError(null);
 
-      console.log("Attempting to sign up user:", email);
+      // Normalize email
+      const normalizedEmail = email.trim().toLowerCase();
+      
+      console.log("Attempting to sign up user:", normalizedEmail);
       console.log("Using Supabase client for signup");
 
       // Inscription avec URL de redirection
       const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
+        email: normalizedEmail,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/tableau-de-bord`
