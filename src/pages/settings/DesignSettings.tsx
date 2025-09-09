@@ -6,7 +6,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Palette, Paintbrush, Layout, Type, Eye, Check, Settings, Save } from "lucide-react";
+import { Palette, Paintbrush, Layout, Type, Eye, Check, Settings, Save, Filter } from "lucide-react";
+import minimalPreview from "@/assets/theme-previews/minimal-preview.jpg";
+import boutiquePreview from "@/assets/theme-previews/boutique-preview.jpg";
+import techPreview from "@/assets/theme-previews/tech-preview.jpg";
+import naturePreview from "@/assets/theme-previews/nature-preview.jpg";
+import fashionPreview from "@/assets/theme-previews/fashion-preview.jpg";
+import sportsPreview from "@/assets/theme-previews/sports-preview.jpg";
+import creativePreview from "@/assets/theme-previews/creative-preview.jpg";
+import professionalPreview from "@/assets/theme-previews/professional-preview.jpg";
+import jewelryPreview from "@/assets/theme-previews/jewelry-preview.jpg";
+import homePreview from "@/assets/theme-previews/home-preview.jpg";
+import foodPreview from "@/assets/theme-previews/food-preview.jpg";
+import kidsPreview from "@/assets/theme-previews/kids-preview.jpg";
 import { ColorPicker } from "@/components/store-creator/theme/ColorPicker";
 import { TypographyPicker } from "@/components/store-creator/theme/TypographyPicker";
 import { LayoutPicker } from "@/components/store-creator/theme/LayoutPicker";
@@ -18,6 +30,7 @@ interface ThemeTemplate {
   description: string;
   category: string;
   is_premium: boolean;
+  preview_image: string;
   config: {
     colors: {
       primary: string;
@@ -47,6 +60,7 @@ export default function DesignSettings() {
   const [selectedTheme, setSelectedTheme] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const { toast } = useToast();
 
   // Advanced customization state
@@ -90,6 +104,7 @@ export default function DesignSettings() {
           description: 'Design épuré et moderne, parfait pour les boutiques élégantes',
           category: 'business',
           is_premium: false,
+          preview_image: minimalPreview,
           config: {
             colors: { primary: '#000000', secondary: '#f8f9fa', accent: '#6366f1' },
             fonts: { primary: 'Inter', headings: 'Inter' }
@@ -101,31 +116,22 @@ export default function DesignSettings() {
           description: 'Design chaleureux pour les boutiques artisanales',
           category: 'fashion',
           is_premium: false,
+          preview_image: boutiquePreview,
           config: {
             colors: { primary: '#8B4513', secondary: '#FFF8DC', accent: '#d97706' },
             fonts: { primary: 'Inter', headings: 'Playfair Display' }
           }
         },
         {
-          id: 'editorial',
-          name: 'Editorial',
-          description: 'Style magazine pour les marques de contenu',
-          category: 'media',
-          is_premium: true,
+          id: 'tech',
+          name: 'Tech',
+          description: 'Style moderne pour les boutiques technologiques',
+          category: 'technology',
+          is_premium: false,
+          preview_image: techPreview,
           config: {
-            colors: { primary: '#2c3e50', secondary: '#ecf0f1', accent: '#3498db' },
-            fonts: { primary: 'Georgia', headings: 'Playfair Display' }
-          }
-        },
-        {
-          id: 'bold',
-          name: 'Bold',
-          description: 'Design audacieux pour se démarquer',
-          category: 'creative',
-          is_premium: true,
-          config: {
-            colors: { primary: '#e74c3c', secondary: '#34495e', accent: '#f39c12' },
-            fonts: { primary: 'Inter', headings: 'Montserrat' }
+            colors: { primary: '#1e40af', secondary: '#1f2937', accent: '#3b82f6' },
+            fonts: { primary: 'Inter', headings: 'Inter' }
           }
         },
         {
@@ -134,9 +140,106 @@ export default function DesignSettings() {
           description: 'Inspiré par la nature, tons verts et organiques',
           category: 'organic',
           is_premium: false,
+          preview_image: naturePreview,
           config: {
             colors: { primary: '#27ae60', secondary: '#f1c40f', accent: '#2ecc71' },
             fonts: { primary: 'Inter', headings: 'Merriweather' }
+          }
+        },
+        {
+          id: 'fashion',
+          name: 'Fashion',
+          description: 'Élégant et sophistiqué pour les marques de mode',
+          category: 'fashion',
+          is_premium: false,
+          preview_image: fashionPreview,
+          config: {
+            colors: { primary: '#000000', secondary: '#ffffff', accent: '#dc2626' },
+            fonts: { primary: 'Inter', headings: 'Playfair Display' }
+          }
+        },
+        {
+          id: 'sports',
+          name: 'Sports',
+          description: 'Énergique et dynamique pour les boutiques sportives',
+          category: 'sports',
+          is_premium: false,
+          preview_image: sportsPreview,
+          config: {
+            colors: { primary: '#ea580c', secondary: '#1e40af', accent: '#facc15' },
+            fonts: { primary: 'Inter', headings: 'Montserrat' }
+          }
+        },
+        {
+          id: 'creative',
+          name: 'Creative',
+          description: 'Artistique et coloré pour les créateurs',
+          category: 'creative',
+          is_premium: false,
+          preview_image: creativePreview,
+          config: {
+            colors: { primary: '#8b5cf6', secondary: '#ec4899', accent: '#06b6d4' },
+            fonts: { primary: 'Inter', headings: 'Poppins' }
+          }
+        },
+        {
+          id: 'professional',
+          name: 'Professional',
+          description: 'Classique et professionnel pour les entreprises',
+          category: 'business',
+          is_premium: false,
+          preview_image: professionalPreview,
+          config: {
+            colors: { primary: '#1e40af', secondary: '#f59e0b', accent: '#374151' },
+            fonts: { primary: 'Inter', headings: 'Inter' }
+          }
+        },
+        {
+          id: 'jewelry',
+          name: 'Jewelry',
+          description: 'Luxueux et raffiné pour les bijouteries',
+          category: 'luxury',
+          is_premium: false,
+          preview_image: jewelryPreview,
+          config: {
+            colors: { primary: '#d4af37', secondary: '#1a1a1a', accent: '#ffd700' },
+            fonts: { primary: 'Inter', headings: 'Playfair Display' }
+          }
+        },
+        {
+          id: 'home',
+          name: 'Home & Decor',
+          description: 'Chaleureux et accueillant pour la décoration',
+          category: 'home',
+          is_premium: false,
+          preview_image: homePreview,
+          config: {
+            colors: { primary: '#8b7355', secondary: '#f5f5dc', accent: '#cd853f' },
+            fonts: { primary: 'Inter', headings: 'Merriweather' }
+          }
+        },
+        {
+          id: 'food',
+          name: 'Fresh Food',
+          description: 'Frais et appétissant pour l\'alimentation',
+          category: 'food',
+          is_premium: false,
+          preview_image: foodPreview,
+          config: {
+            colors: { primary: '#22c55e', secondary: '#ffffff', accent: '#16a34a' },
+            fonts: { primary: 'Inter', headings: 'Poppins' }
+          }
+        },
+        {
+          id: 'kids',
+          name: 'Kids & Toys',
+          description: 'Ludique et coloré pour les enfants',
+          category: 'kids',
+          is_premium: false,
+          preview_image: kidsPreview,
+          config: {
+            colors: { primary: '#ff6b35', secondary: '#4ecdc4', accent: '#ffe66d' },
+            fonts: { primary: 'Inter', headings: 'Poppins' }
           }
         }
       ];
@@ -244,67 +347,93 @@ export default function DesignSettings() {
 
         <TabsContent value="themes" className="space-y-6">
           <div>
-            <h4 className="text-base font-semibold mb-4">Galerie de thèmes</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {themes.map((theme) => (
+            <div className="flex items-center justify-between mb-6">
+              <h4 className="text-base font-semibold">Galerie de thèmes gratuits</h4>
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4" />
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="border rounded-md px-3 py-1 text-sm"
+                >
+                  <option value="all">Toutes les catégories</option>
+                  <option value="business">Business</option>
+                  <option value="fashion">Mode</option>
+                  <option value="technology">Technologie</option>
+                  <option value="organic">Nature & Bio</option>
+                  <option value="sports">Sport</option>
+                  <option value="creative">Créatif</option>
+                  <option value="luxury">Luxe</option>
+                  <option value="home">Maison & Déco</option>
+                  <option value="food">Alimentation</option>
+                  <option value="kids">Enfants</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {themes
+                .filter(theme => selectedCategory === "all" || theme.category === selectedCategory)
+                .filter(theme => !theme.is_premium)
+                .map((theme) => (
                 <Card 
                   key={theme.id} 
-                  className={`cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] ${
+                  className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] overflow-hidden ${
                     selectedTheme === theme.id ? 'ring-2 ring-primary shadow-lg' : ''
                   }`}
                 >
+                  {/* Preview Image */}
+                  <div className="relative aspect-video bg-muted">
+                    <img
+                      src={theme.preview_image}
+                      alt={`Preview of ${theme.name} theme`}
+                      className="w-full h-full object-cover"
+                    />
+                    {selectedTheme === theme.id && (
+                      <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1">
+                        <Check className="h-4 w-4" />
+                      </div>
+                    )}
+                  </div>
+                  
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-base flex items-center gap-2">
-                        <Paintbrush className="h-4 w-4" />
                         {theme.name}
-                        {selectedTheme === theme.id && (
-                          <Check className="h-4 w-4 text-primary" />
-                        )}
+                        <Badge variant="secondary" className="text-xs">
+                          Gratuit
+                        </Badge>
                       </CardTitle>
-                      {theme.is_premium && (
-                        <Badge variant="secondary">Premium</Badge>
-                      )}
                     </div>
-                    <CardDescription className="text-sm">
+                    <CardDescription className="text-sm line-clamp-2">
                       {theme.description}
                     </CardDescription>
                   </CardHeader>
                   
                   <CardContent className="pt-0">
-                    {/* Enhanced Theme Preview */}
-                    <div className="mb-4 p-4 rounded-lg border bg-gradient-to-br from-background to-muted/20">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="flex gap-1">
+                    {/* Color Palette */}
+                    <div className="mb-4">
+                      <div className="flex gap-1 mb-2">
+                        <div 
+                          className="w-4 h-4 rounded-full border border-border"
+                          style={{ backgroundColor: theme.config.colors.primary }}
+                          title="Couleur principale"
+                        />
+                        <div 
+                          className="w-4 h-4 rounded-full border border-border"
+                          style={{ backgroundColor: theme.config.colors.secondary }}
+                          title="Couleur secondaire"
+                        />
+                        {theme.config.colors.accent && (
                           <div 
-                            className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
-                            style={{ backgroundColor: theme.config.colors.primary }}
+                            className="w-4 h-4 rounded-full border border-border"
+                            style={{ backgroundColor: theme.config.colors.accent }}
+                            title="Couleur d'accent"
                           />
-                          <div 
-                            className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
-                            style={{ backgroundColor: theme.config.colors.secondary }}
-                          />
-                          {theme.config.colors.accent && (
-                            <div 
-                              className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
-                              style={{ backgroundColor: theme.config.colors.accent }}
-                            />
-                          )}
-                        </div>
+                        )}
                       </div>
-                      <div className="space-y-1">
-                        <div 
-                          className="text-sm font-medium"
-                          style={{ fontFamily: theme.config.fonts.headings }}
-                        >
-                          {theme.config.fonts.headings}
-                        </div>
-                        <div 
-                          className="text-xs text-muted-foreground"
-                          style={{ fontFamily: theme.config.fonts.primary }}
-                        >
-                          Corps: {theme.config.fonts.primary}
-                        </div>
+                      <div className="text-xs text-muted-foreground">
+                        {theme.config.fonts.headings}
                       </div>
                     </div>
 
@@ -313,13 +442,41 @@ export default function DesignSettings() {
                       size="sm"
                       onClick={() => handleThemeSelect(theme)}
                       className="w-full"
-                      disabled={theme.is_premium || saving}
+                      disabled={saving}
                     >
-                      {saving ? "Application..." : selectedTheme === theme.id ? "Appliqué" : "Utiliser ce thème"}
+                      {saving ? "Application..." : selectedTheme === theme.id ? "Thème actif" : "Utiliser ce thème"}
                     </Button>
                   </CardContent>
                 </Card>
               ))}
+            </div>
+            
+            {/* Premium Themes Section */}
+            <div className="mt-12">
+              <div className="flex items-center justify-between mb-6">
+                <h4 className="text-base font-semibold">Thèmes Premium</h4>
+                <Badge variant="outline">Bientôt disponible</Badge>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 opacity-60">
+                {themes
+                  .filter(theme => theme.is_premium)
+                  .slice(0, 4)
+                  .map((theme) => (
+                  <Card key={theme.id} className="relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/20 z-10 flex items-center justify-center">
+                      <Badge className="bg-white text-black">Bientôt</Badge>
+                    </div>
+                    <div className="aspect-video bg-muted">
+                      <div className="w-full h-full bg-gradient-to-br from-muted to-muted-foreground/20" />
+                    </div>
+                    <CardHeader>
+                      <CardTitle className="text-base">{theme.name}</CardTitle>
+                      <CardDescription className="text-sm">{theme.description}</CardDescription>
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
             </div>
           </div>
         </TabsContent>
