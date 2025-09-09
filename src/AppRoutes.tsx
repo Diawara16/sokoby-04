@@ -38,6 +38,7 @@ import GestionCompte from "@/pages/GestionCompte";
 import UpdatePassword from "@/pages/UpdatePassword";
 import Boutique from "@/pages/Boutique";
 import AddProduct from "@/pages/products/AddProduct";
+import ImportProducts from "@/pages/products/ImportProducts";
 import Products from "@/pages/Products";
 import ProductCatalog from "@/pages/products/ProductCatalog";
 import ProductStock from "@/pages/products/ProductStock";
@@ -183,6 +184,11 @@ export function AppRoutes() {
       <Route path="/products/add" element={
         <ProtectedRoute>
           <AddProduct />
+        </ProtectedRoute>
+      } />
+      <Route path="/products/import" element={
+        <ProtectedRoute>
+          <ImportProducts />
         </ProtectedRoute>
       } />
       

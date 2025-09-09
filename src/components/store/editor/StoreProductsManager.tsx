@@ -163,9 +163,11 @@ export function StoreProductsManager() {
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                <Upload className="h-4 w-4 mr-2" />
-                Importer
+              <Button asChild variant="outline" size="sm">
+                <Link to="/products/import">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Importer
+                </Link>
               </Button>
               <Button asChild size="sm">
                 <Link to="/products/add">
@@ -256,21 +258,25 @@ export function StoreProductsManager() {
 
       {/* Actions rapides */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
-          <CardContent className="p-6 text-center">
-            <Plus className="h-8 w-8 text-primary mx-auto mb-3" />
-            <h3 className="font-medium mb-1">Ajouter manuellement</h3>
-            <p className="text-sm text-muted-foreground">Créez un nouveau produit depuis zéro</p>
-          </CardContent>
-        </Card>
+        <Link to="/products/add">
+          <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+            <CardContent className="p-6 text-center">
+              <Plus className="h-8 w-8 text-primary mx-auto mb-3" />
+              <h3 className="font-medium mb-1">Ajouter manuellement</h3>
+              <p className="text-sm text-muted-foreground">Créez un nouveau produit depuis zéro</p>
+            </CardContent>
+          </Card>
+        </Link>
         
-        <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
-          <CardContent className="p-6 text-center">
-            <Upload className="h-8 w-8 text-primary mx-auto mb-3" />
-            <h3 className="font-medium mb-1">Importer un CSV</h3>
-            <p className="text-sm text-muted-foreground">Importez plusieurs produits en une fois</p>
-          </CardContent>
-        </Card>
+        <Link to="/products/import">
+          <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+            <CardContent className="p-6 text-center">
+              <Upload className="h-8 w-8 text-primary mx-auto mb-3" />
+              <h3 className="font-medium mb-1">Importer un produit</h3>
+              <p className="text-sm text-muted-foreground">Importez un produit rapidement</p>
+            </CardContent>
+          </Card>
+        </Link>
         
         <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
           <CardContent className="p-6 text-center">
