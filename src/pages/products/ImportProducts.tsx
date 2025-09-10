@@ -6,6 +6,8 @@ import { AppSidebar } from "@/components/AppSidebar";
 
 export default function ImportProducts() {
   const navigate = useNavigate();
+  
+  console.log('ImportProducts component rendering');
 
   const handleSuccess = () => {
     navigate('/boutique-editeur?tab=products');
@@ -27,6 +29,14 @@ export default function ImportProducts() {
             </Button>
             
             <h1 className="text-2xl font-bold mb-8">Importer des produits</h1>
+            
+            {/* Debugging info */}
+            <div className="mb-4 p-4 bg-muted rounded-lg">
+              <p className="text-sm text-muted-foreground">
+                Page d'importation des produits chargée avec succès
+              </p>
+            </div>
+            
             <ProductImportForm onSuccess={handleSuccess} />
           </div>
         </div>

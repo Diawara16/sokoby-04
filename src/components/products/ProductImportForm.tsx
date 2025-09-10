@@ -16,6 +16,7 @@ interface ProductImportFormProps {
 }
 
 export function ProductImportForm({ onSuccess }: ProductImportFormProps = {}) {
+  console.log('ProductImportForm rendering');
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<ProductFormData>({
@@ -65,6 +66,13 @@ export function ProductImportForm({ onSuccess }: ProductImportFormProps = {}) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      {/* Debugging info */}
+      <div className="mb-4 p-4 bg-muted rounded-lg">
+        <p className="text-sm text-muted-foreground">
+          Formulaire d'importation des produits - Tous les composants sont chargés
+        </p>
+      </div>
+      
       <Card className="p-6">
         <div className="space-y-6">
           <ProductNameField register={register} errors={errors} />
