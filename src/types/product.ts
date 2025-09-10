@@ -5,8 +5,8 @@ export interface Product {
   image?: string | null;
   description?: string | null;
   category?: string | null;
-  stock_quantity?: number;
-  is_active?: boolean;
+  stock?: number;
+  status?: string;
+  user_id?: string;
   created_at: string;
-  updated_at?: string;
 }

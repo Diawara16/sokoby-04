@@ -19,15 +19,14 @@ export function useProductImport() {
     }
     if (!storeData) throw new Error("Aucune boutique trouvée")
 
-    const { error } = await supabase.from("ai_generated_products").insert({
+    const { error } = await supabase.from("products").insert({
       user_id: user.id,
-      store_id: storeData.id,
       name: data.name,
       description: data.description,
       price: parseFloat(data.price),
-      supplier: data.supplier,
-      niche: data.niche,
-      status: 'pending'
+      category: data.niche,
+      status: 'active',
+      stock: 100
     })
 
     if (error) {

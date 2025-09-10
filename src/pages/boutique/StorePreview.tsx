@@ -21,6 +21,7 @@ import { RealCheckout } from "@/components/store/checkout/RealCheckout";
 
 interface StoreData {
   id: string;
+  user_id: string;
   store_name: string;
   store_description?: string;
   store_email?: string;
@@ -40,7 +41,10 @@ interface Product {
   name: string;
   description?: string;
   price: number;
-  image_url?: string;
+  image?: string;
+  category?: string;
+  stock?: number;
+  status?: string;
 }
 
 interface CartItem extends Product {
@@ -53,6 +57,10 @@ export default function StorePreview() {
   const [storeData, setStoreData] = useState<StoreData | null>(null);
   const [brandData, setBrandData] = useState<BrandData>({});
   const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'name' | 'price-asc' | 'price-desc'>('name');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isDemoCheckout, setIsDemoCheckout] = useState(false);
@@ -97,9 +105,10 @@ export default function StorePreview() {
       }
 
       const { data: productsData, error: productsError } = await supabase
-        .from('ai_generated_products')
+        .from('products')
         .select('*')
         .eq('user_id', store.user_id)
+        .eq('status', 'active')
         .limit(12);
 
       if (productsError) {
@@ -109,6 +118,7 @@ export default function StorePreview() {
       setStoreData(store);
       setBrandData(brand || {});
       setProducts(productsData || []);
+      setFilteredProducts(productsData || []);
 
     } catch (error) {
       console.error('Error loading store data:', error);
@@ -116,6 +126,42 @@ export default function StorePreview() {
       setLoading(false);
     }
   };
+
+  // Filter and sort products
+  useEffect(() => {
+    let filtered = [...products];
+    
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(product => 
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Apply category filter
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(product => product.category === selectedCategory);
+    }
+    
+    // Apply sorting
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'price-asc':
+          return a.price - b.price;
+        case 'price-desc':
+          return b.price - a.price;
+        case 'name':
+        default:
+          return a.name.localeCompare(b.name);
+      }
+    });
+    
+    setFilteredProducts(filtered);
+  }, [products, searchTerm, selectedCategory, sortBy]);
+
+  // Get unique categories
+  const categories = ['all', ...new Set(products.map(p => p.category).filter(Boolean))];
 
   const addToCart = (product: Product) => {
     setCart(prevCart => {
@@ -330,16 +376,58 @@ export default function StorePreview() {
             </p>
           </div>
 
-          {products.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {products.map((product) => (
+          {/* Filters & Search */}
+          <div className="flex flex-col md:flex-row gap-4 mb-8">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Rechercher un produit..."
+                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <select
+                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category === 'all' ? 'Toutes les catégories' : category}
+                  </option>
+                ))}
+              </select>
+              <select
+                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+              >
+                <option value="name">Nom A-Z</option>
+                <option value="price-asc">Prix croissant</option>
+                <option value="price-desc">Prix décroissant</option>
+              </select>
+            </div>
+          </div>
+
+          {filteredProducts.length > 0 ? (
+            <>
+              <div className="text-sm text-muted-foreground mb-4">
+                {filteredProducts.length} produit{filteredProducts.length > 1 ? 's' : ''} trouvé{filteredProducts.length > 1 ? 's' : ''}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {filteredProducts.map((product) => (
                 <div key={product.id} className="group">
                   <div className="bg-white rounded-2xl shadow-sm border hover:shadow-xl transition-all duration-300 overflow-hidden">
                     {/* Product Image */}
                     <div className="aspect-square bg-muted overflow-hidden">
-                      {product.image_url ? (
+                      {product.image ? (
                         <img 
-                          src={product.image_url} 
+                          src={product.image} 
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
@@ -397,14 +485,41 @@ export default function StorePreview() {
                   </div>
                 </div>
               ))}
+              </div>
+            </>
+          ) : products.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="text-6xl mb-6">🛍️</div>
+              <h3 className="text-2xl font-semibold mb-4">Aucun produit disponible</h3>
+              <p className="text-muted-foreground max-w-md mx-auto mb-6">
+                Cette boutique n'a pas encore de produits. Revenez bientôt pour découvrir notre catalogue !
+              </p>
+              {storeData?.user_id && (
+                <Button 
+                  variant="outline"
+                  onClick={() => window.open(`/products/import?storeId=${storeId}`, '_blank')}
+                >
+                  Ajouter des produits
+                </Button>
+              )}
             </div>
           ) : (
             <div className="text-center py-16">
-              <div className="text-6xl mb-6">🛍️</div>
-              <h3 className="text-2xl font-semibold mb-4">Bientôt disponible</h3>
-              <p className="text-muted-foreground max-w-md mx-auto">
-                Nos produits sont en cours de préparation. Revenez bientôt pour découvrir notre catalogue !
+              <div className="text-6xl mb-6">🔍</div>
+              <h3 className="text-2xl font-semibold mb-4">Aucun produit trouvé</h3>
+              <p className="text-muted-foreground max-w-md mx-auto mb-6">
+                Essayez de modifier vos critères de recherche ou filtres.
               </p>
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedCategory('all');
+                  setSortBy('name');
+                }}
+              >
+                Réinitialiser les filtres
+              </Button>
             </div>
           )}
         </div>
@@ -470,8 +585,8 @@ export default function StorePreview() {
                     {cart.map((item) => (
                       <div key={item.id} className="flex gap-4 p-4 border rounded-lg">
                         <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0">
-                          {item.image_url ? (
-                            <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                          {item.image ? (
+                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                           ) : (
                             <ProductPlaceholder productName={item.name} primaryColor={primaryColor} className="w-full h-full" />
                           )}
