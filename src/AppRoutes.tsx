@@ -47,6 +47,8 @@ import GiftCards from "@/pages/products/GiftCards";
 import StoreEditor from "@/pages/StoreEditor";
 import StorePreview from "@/pages/boutique/StorePreview";
 import Applications from "@/pages/Applications";
+import TermsOfService from "@/pages/legal/TermsOfService";
+import PrivacyPolicy from "@/pages/legal/PrivacyPolicy";
 
 export function AppRoutes() {
   const location = useLocation();
@@ -230,6 +232,10 @@ export function AppRoutes() {
           <Applications />
         </ProtectedRoute>
       } />
+      
+      {/* Legal pages */}
+      <Route path="/legal/terms" element={<TermsOfService />} />
+      <Route path="/legal/privacy" element={<PrivacyPolicy />} />
       
       {/* Catch-all route for dynamic landing pages */}
       <Route path="/:slug" element={<DynamicLanding />} />

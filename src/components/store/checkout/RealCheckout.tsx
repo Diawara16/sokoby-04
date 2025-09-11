@@ -398,7 +398,22 @@ export const RealCheckout = ({ cartItems, onBack, onSuccess }: RealCheckoutProps
               </Button>
 
               <p className="text-xs text-muted-foreground text-center mt-3">
-                En finalisant votre commande, vous acceptez nos conditions générales de vente
+                En finalisant votre commande, vous acceptez nos{' '}
+                <a 
+                  href="/legal/terms" 
+                  target="_blank" 
+                  className="underline hover:text-foreground"
+                >
+                  conditions générales de vente
+                </a>
+                {' '}et notre{' '}
+                <a 
+                  href="/legal/privacy" 
+                  target="_blank" 
+                  className="underline hover:text-foreground"
+                >
+                  politique de confidentialité
+                </a>
               </p>
             </CardContent>
           </Card>
