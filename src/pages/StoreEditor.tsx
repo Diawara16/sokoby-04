@@ -27,6 +27,12 @@ import { StoreProductsManager } from "@/components/store/editor/StoreProductsMan
 import { StorePaymentSettings } from "@/components/store/editor/StorePaymentSettings";
 import { StoreShippingSettings } from "@/components/store/editor/StoreShippingSettings";
 import { StoreAdvancedSettings } from "@/components/store/editor/StoreAdvancedSettings";
+import { StoreAboutSettings } from "@/components/store/editor/StoreAboutSettings";
+import { StoreTestimonialsManager } from "@/components/store/editor/StoreTestimonialsManager";
+import { StoreLanguageSettings } from "@/components/store/editor/StoreLanguageSettings";
+import { StoreBannerEditor } from "@/components/store/editor/StoreBannerEditor";
+import { StoreFooterManager } from "@/components/store/editor/StoreFooterManager";
+import { StorePoliciesEditor } from "@/components/store/editor/StorePoliciesEditor";
 import { ThemeGallery } from "@/components/store/editor/ThemeGallery";
 
 interface StoreData {
@@ -61,11 +67,12 @@ export default function StoreEditor() {
   // Get initial tab from URL params or localStorage
   const getInitialTab = () => {
     const urlTab = searchParams.get('tab');
-    if (urlTab && ['general', 'design', 'products', 'payments', 'shipping', 'settings'].includes(urlTab)) {
+    const validTabs = ['general', 'about', 'testimonials', 'languages', 'banner', 'footer', 'policies', 'design', 'products', 'payments', 'shipping', 'settings'];
+    if (urlTab && validTabs.includes(urlTab)) {
       return urlTab;
     }
     const savedTab = localStorage.getItem('storeEditor_activeTab');
-    return savedTab && ['general', 'design', 'products', 'payments', 'shipping', 'settings'].includes(savedTab) 
+    return savedTab && validTabs.includes(savedTab) 
       ? savedTab 
       : 'general';
   };
@@ -268,29 +275,47 @@ export default function StoreEditor() {
 
       {/* Onglets de configuration */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="general" className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-12 gap-1">
+          <TabsTrigger value="general" className="flex items-center gap-1 text-xs">
+            <Settings className="h-3 w-3" />
             Général
           </TabsTrigger>
-          <TabsTrigger value="design" className="flex items-center gap-2">
-            <Palette className="h-4 w-4" />
+          <TabsTrigger value="about" className="flex items-center gap-1 text-xs">
+            À propos
+          </TabsTrigger>
+          <TabsTrigger value="testimonials" className="flex items-center gap-1 text-xs">
+            Témoignages
+          </TabsTrigger>
+          <TabsTrigger value="languages" className="flex items-center gap-1 text-xs">
+            Langues
+          </TabsTrigger>
+          <TabsTrigger value="banner" className="flex items-center gap-1 text-xs">
+            Bannière
+          </TabsTrigger>
+          <TabsTrigger value="footer" className="flex items-center gap-1 text-xs">
+            Footer
+          </TabsTrigger>
+          <TabsTrigger value="policies" className="flex items-center gap-1 text-xs">
+            Sections
+          </TabsTrigger>
+          <TabsTrigger value="design" className="flex items-center gap-1 text-xs">
+            <Palette className="h-3 w-3" />
             Design
           </TabsTrigger>
-          <TabsTrigger value="products" className="flex items-center gap-2">
-            <Package className="h-4 w-4" />
+          <TabsTrigger value="products" className="flex items-center gap-1 text-xs">
+            <Package className="h-3 w-3" />
             Produits
           </TabsTrigger>
-          <TabsTrigger value="payments" className="flex items-center gap-2">
-            <CreditCard className="h-4 w-4" />
+          <TabsTrigger value="payments" className="flex items-center gap-1 text-xs">
+            <CreditCard className="h-3 w-3" />
             Paiements
           </TabsTrigger>
-          <TabsTrigger value="shipping" className="flex items-center gap-2">
-            <Truck className="h-4 w-4" />
+          <TabsTrigger value="shipping" className="flex items-center gap-1 text-xs">
+            <Truck className="h-3 w-3" />
             Livraison
           </TabsTrigger>
-          <TabsTrigger value="settings" className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
+          <TabsTrigger value="settings" className="flex items-center gap-1 text-xs">
+            <Settings className="h-3 w-3" />
             Paramètres
           </TabsTrigger>
         </TabsList>
@@ -303,6 +328,30 @@ export default function StoreEditor() {
               setHasUnsavedChanges(true);
             }}
           />
+        </TabsContent>
+
+        <TabsContent value="about" className="space-y-6">
+          <StoreAboutSettings />
+        </TabsContent>
+
+        <TabsContent value="testimonials" className="space-y-6">
+          <StoreTestimonialsManager />
+        </TabsContent>
+
+        <TabsContent value="languages" className="space-y-6">
+          <StoreLanguageSettings />
+        </TabsContent>
+
+        <TabsContent value="banner" className="space-y-6">
+          <StoreBannerEditor />
+        </TabsContent>
+
+        <TabsContent value="footer" className="space-y-6">
+          <StoreFooterManager />
+        </TabsContent>
+
+        <TabsContent value="policies" className="space-y-6">
+          <StorePoliciesEditor />
         </TabsContent>
 
         <TabsContent value="design" className="space-y-6">

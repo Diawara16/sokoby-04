@@ -1185,6 +1185,42 @@ export type Database = {
         }
         Relationships: []
       }
+      faqs: {
+        Row: {
+          answer: string
+          category: string | null
+          created_at: string
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          question: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          answer: string
+          category?: string | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          question: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          answer?: string
+          category?: string | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          question?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
@@ -1263,6 +1299,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      footer_links: {
+        Row: {
+          category: string | null
+          created_at: string
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          title: string
+          updated_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          title: string
+          updated_at?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          title?: string
+          updated_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       friend_invitations: {
         Row: {
@@ -3065,8 +3137,43 @@ export type Database = {
           },
         ]
       }
+      store_policies: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          policy_type: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          policy_type: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          policy_type?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       store_settings: {
         Row: {
+          about_text: string | null
+          banner_url: string | null
           category: string | null
           created_at: string
           default_currency: string | null
@@ -3075,6 +3182,7 @@ export type Database = {
           domain_name: string | null
           email_template_invoice: Json | null
           email_template_order: Json | null
+          enabled_languages: string[] | null
           gdpr_settings: Json | null
           id: string
           invoice_footer_text: string | null
@@ -3096,6 +3204,8 @@ export type Database = {
           vat_rate: number | null
         }
         Insert: {
+          about_text?: string | null
+          banner_url?: string | null
           category?: string | null
           created_at?: string
           default_currency?: string | null
@@ -3104,6 +3214,7 @@ export type Database = {
           domain_name?: string | null
           email_template_invoice?: Json | null
           email_template_order?: Json | null
+          enabled_languages?: string[] | null
           gdpr_settings?: Json | null
           id?: string
           invoice_footer_text?: string | null
@@ -3125,6 +3236,8 @@ export type Database = {
           vat_rate?: number | null
         }
         Update: {
+          about_text?: string | null
+          banner_url?: string | null
           category?: string | null
           created_at?: string
           default_currency?: string | null
@@ -3133,6 +3246,7 @@ export type Database = {
           domain_name?: string | null
           email_template_invoice?: Json | null
           email_template_order?: Json | null
+          enabled_languages?: string[] | null
           gdpr_settings?: Json | null
           id?: string
           invoice_footer_text?: string | null
@@ -3350,6 +3464,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      testimonials: {
+        Row: {
+          created_at: string
+          customer_name: string
+          customer_photo_url: string | null
+          id: string
+          is_featured: boolean | null
+          message: string
+          rating: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_name: string
+          customer_photo_url?: string | null
+          id?: string
+          is_featured?: boolean | null
+          message: string
+          rating: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string
+          customer_photo_url?: string | null
+          id?: string
+          is_featured?: boolean | null
+          message?: string
+          rating?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       theme_templates: {
         Row: {

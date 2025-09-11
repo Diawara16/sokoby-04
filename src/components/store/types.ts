@@ -9,6 +9,9 @@ export interface StoreSettings {
   timezone: string | null;
   default_currency: string | null;
   default_language: string | null;
+  about_text: string | null;
+  banner_url: string | null;
+  enabled_languages: string[] | null;
   vat_number: string | null;
   vat_rate: number | null;
   invoice_prefix: string | null;
