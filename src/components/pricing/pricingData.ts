@@ -96,7 +96,7 @@ export const getMonthlyPlans = (): PricingPlanData[] => [
 export const getAnnualPlans = (monthlyPlans: PricingPlanData[]): PricingPlanData[] =>
   monthlyPlans.map(plan => ({
     ...plan,
-    price: `${Math.floor(Number(plan.price) * 10)}`,
+    price: `${Math.floor(Number(plan.price) * 12 * 0.83)}`,
     period: "/an",
     description: `${plan.description} (2 mois gratuits)`,
   }));
