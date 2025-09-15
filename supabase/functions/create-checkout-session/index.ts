@@ -45,23 +45,30 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    const { planType, paymentMethod, couponCode } = await req.json();
-    logStep("Request data", { planType, paymentMethod, couponCode });
+    const { planType, paymentMethod, couponCode, billingPeriod = 'monthly' } = await req.json();
+    logStep("Request data", { planType, paymentMethod, couponCode, billingPeriod });
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     
-    // Price IDs for different plans
-    const PRICE_IDS = {
-      starter: 'price_1Qe7tDI7adlqeYfaKU02O1Wj',
-      pro: 'price_1Qe81sI7adlqeYfamEd7Ylpd',
-      enterprise: 'price_1Qe867I7adlqeYfaJqj2sbrv'
+    // Price IDs for different plans and billing periods
+    const MONTHLY_PRICE_IDS = {
+      starter: 'price_1QeLcHI7adlqeYfaY7vJHGkL',   // $11/month
+      pro: 'price_1QeLcII7adlqeYfaW8mXJBpE',       // $25/month  
+      enterprise: 'price_1QeLcJI7adlqeYfaKp9mNqWX'  // $97/month
+    };
+    
+    const ANNUAL_PRICE_IDS = {
+      starter: 'price_1Qe7tDI7adlqeYfaKU02O1Wj',   // Annual with discount
+      pro: 'price_1Qe81sI7adlqeYfamEd7Ylpd',       // Annual with discount
+      enterprise: 'price_1Qe867I7adlqeYfaJqj2sbrv'  // Annual with discount
     };
 
-    const priceId = PRICE_IDS[planType as keyof typeof PRICE_IDS];
+    const priceIds = billingPeriod === 'annual' ? ANNUAL_PRICE_IDS : MONTHLY_PRICE_IDS;
+    const priceId = priceIds[planType as keyof typeof priceIds];
     if (!priceId) {
-      throw new Error(`Plan type ${planType} not supported`);
+      throw new Error(`Plan type ${planType} with billing period ${billingPeriod} not supported`);
     }
-    logStep("Price ID found", { planType, priceId });
+    logStep("Price ID found", { planType, billingPeriod, priceId });
 
     // Check if customer already exists
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });

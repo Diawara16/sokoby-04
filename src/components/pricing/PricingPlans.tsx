@@ -8,7 +8,8 @@ interface PricingPlansProps {
   onSubscribe: (
     planType: 'starter' | 'pro' | 'enterprise',
     paymentMethod: 'card' | 'apple_pay' | 'google_pay',
-    couponCode?: string
+    couponCode?: string,
+    billingPeriod?: 'monthly' | 'annual'
   ) => void;
 }
 
@@ -26,7 +27,9 @@ export const PricingPlans = ({ currentLanguage, onSubscribe }: PricingPlansProps
           <PricingPlan
             key={plan.name}
             {...plan}
-            onSubscribe={onSubscribe}
+            onSubscribe={(planType, paymentMethod, couponCode) => 
+              onSubscribe(planType, paymentMethod, couponCode, isAnnual ? 'annual' : 'monthly')
+            }
             isAuthenticated={false}
             planType={plan.planType}
             onSelect={() => {}}

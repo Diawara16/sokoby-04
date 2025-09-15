@@ -16,7 +16,9 @@ const Pricing = () => {
 
       <PricingPlans 
         currentLanguage="fr"
-        onSubscribe={handleSubscribe}
+        onSubscribe={(planType, paymentMethod, couponCode, billingPeriod) => 
+          handleSubscribe(planType, paymentMethod, couponCode, billingPeriod)
+        }
       />
     </div>
   );

@@ -11,14 +11,14 @@ export const usePendingSubscription = () => {
       const pendingSubscription = localStorage.getItem('pendingSubscription');
       if (pendingSubscription) {
         try {
-          const { planType, paymentMethod, couponCode } = JSON.parse(pendingSubscription);
-          console.log('Resuming pending subscription:', { planType, paymentMethod, couponCode });
+          const { planType, paymentMethod, couponCode, billingPeriod } = JSON.parse(pendingSubscription);
+          console.log('Resuming pending subscription:', { planType, paymentMethod, couponCode, billingPeriod });
           
           // Nettoyer le localStorage
           localStorage.removeItem('pendingSubscription');
           
           // Reprendre le processus d'abonnement
-          handleSubscribe(planType, paymentMethod, couponCode);
+          handleSubscribe(planType, paymentMethod, couponCode, billingPeriod || 'monthly');
         } catch (error) {
           console.error('Error resuming pending subscription:', error);
           localStorage.removeItem('pendingSubscription');

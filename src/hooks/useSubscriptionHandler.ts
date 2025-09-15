@@ -7,16 +7,11 @@ export const useSubscriptionHandler = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const PRICE_IDS = {
-    starter: 'price_1Qe7tDI7adlqeYfaKU02O1Wj',
-    pro: 'price_1Qe81sI7adlqeYfamEd7Ylpd',
-    enterprise: 'price_1Qe867I7adlqeYfaJqj2sbrv'
-  };
-
   const handleSubscribe = async (
     planType: 'starter' | 'pro' | 'enterprise',
     paymentMethod: 'card' | 'apple_pay' | 'google_pay' | 'interac' = 'card',
-    couponCode?: string
+    couponCode?: string,
+    billingPeriod: 'monthly' | 'annual' = 'monthly'
   ) => {
     try {
       console.log('Starting subscription process:', { planType, paymentMethod, couponCode });
@@ -31,7 +26,7 @@ export const useSubscriptionHandler = () => {
       if (!session) {
         console.log('No session found, redirecting to login...');
         // Stocker le plan choisi pour après la connexion
-        localStorage.setItem('pendingSubscription', JSON.stringify({ planType, paymentMethod, couponCode }));
+        localStorage.setItem('pendingSubscription', JSON.stringify({ planType, paymentMethod, couponCode, billingPeriod }));
         toast({
           title: "Connexion requise",
           description: "Veuillez vous connecter pour continuer votre abonnement",
@@ -47,7 +42,8 @@ export const useSubscriptionHandler = () => {
         body: { 
           planType,
           paymentMethod: 'card', // Forcer 'card' pour l'instant
-          couponCode 
+          couponCode,
+          billingPeriod
         }
       });
 
