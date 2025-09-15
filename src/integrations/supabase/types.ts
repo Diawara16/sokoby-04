@@ -4020,6 +4020,18 @@ export type Database = {
           slogan: string
         }[]
       }
+      get_store_testimonials: {
+        Args: { store_user_id: string }
+        Returns: {
+          created_at: string
+          customer_name: string
+          customer_photo_url: string
+          id: string
+          is_featured: boolean
+          message: string
+          rating: number
+        }[]
+      }
       is_profile_public: {
         Args: { user_uuid: string }
         Returns: boolean
