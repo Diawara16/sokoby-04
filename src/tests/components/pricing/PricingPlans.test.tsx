@@ -13,9 +13,9 @@ describe('PricingPlans', () => {
   it('renders all pricing plans', () => {
     render(<PricingPlans currentLanguage="fr" onSubscribe={mockOnSubscribe} />);
     
-    expect(screen.getByText(/Starter/i)).toBeInTheDocument();
+    expect(screen.getByText(/Essentiel/i)).toBeInTheDocument();
     expect(screen.getByText(/Pro/i)).toBeInTheDocument();
-    expect(screen.getByText(/Enterprise/i)).toBeInTheDocument();
+    expect(screen.getByText(/Premium/i)).toBeInTheDocument();
   });
 
   it('calls onSubscribe with correct parameters when subscribing', () => {
@@ -34,8 +34,9 @@ describe('PricingPlans', () => {
   it('displays prices in correct format', () => {
     render(<PricingPlans currentLanguage="fr" onSubscribe={mockOnSubscribe} />);
     
-    const priceElements = screen.getAllByText(/€\/mois/i);
-    expect(priceElements.length).toBeGreaterThan(0);
+    expect(screen.getByText(/19/)).toBeInTheDocument();
+    expect(screen.getByText(/39/)).toBeInTheDocument();
+    expect(screen.getByText(/119/)).toBeInTheDocument();
   });
 
   it('shows features for each plan', () => {

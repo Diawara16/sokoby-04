@@ -52,15 +52,15 @@ serve(async (req) => {
     
     // Price IDs for different plans and billing periods
     const MONTHLY_PRICE_IDS = {
-      starter: 'price_1QeLcHI7adlqeYfaY7vJHGkL',   // $11/month
-      pro: 'price_1QeLcII7adlqeYfaW8mXJBpE',       // $25/month  
-      enterprise: 'price_1QeLcJI7adlqeYfaKp9mNqWX'  // $97/month
+      starter: 'price_NEW_MONTHLY_STARTER_19',   // €19/month - À CRÉER DANS STRIPE
+      pro: 'price_NEW_MONTHLY_PRO_39',          // €39/month - À CRÉER DANS STRIPE
+      enterprise: 'price_NEW_MONTHLY_PREMIUM_119'  // €119/month - À CRÉER DANS STRIPE
     };
     
     const ANNUAL_PRICE_IDS = {
-      starter: 'price_1Qe7tDI7adlqeYfaKU02O1Wj',   // Annual with discount
-      pro: 'price_1Qe81sI7adlqeYfamEd7Ylpd',       // Annual with discount
-      enterprise: 'price_1Qe867I7adlqeYfaJqj2sbrv'  // Annual with discount
+      starter: 'price_NEW_ANNUAL_STARTER_189',   // €189/year (€19*12*0.83) - À CRÉER DANS STRIPE
+      pro: 'price_NEW_ANNUAL_PRO_389',          // €389/year (€39*12*0.83) - À CRÉER DANS STRIPE
+      enterprise: 'price_NEW_ANNUAL_PREMIUM_1189'  // €1189/year (€119*12*0.83) - À CRÉER DANS STRIPE
     };
 
     const priceIds = billingPeriod === 'annual' ? ANNUAL_PRICE_IDS : MONTHLY_PRICE_IDS;
