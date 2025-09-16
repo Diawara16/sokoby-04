@@ -4,9 +4,9 @@ import { PricingPlanData } from "@/types/theme";
 export const pricingPlans: PricingPlanData[] = [
   {
     id: "basic",
-    name: "Basic",
+    name: "Essentiel",
     description: "Pour démarrer votre boutique en ligne",
-    price: 11,
+    price: 19,
     features: [
       "1 boutique en ligne",
       "Jusqu'à 20 produits",
@@ -25,7 +25,7 @@ export const pricingPlans: PricingPlanData[] = [
     id: "pro",
     name: "Pro",
     description: "Pour les entreprises en croissance",
-    price: 25,
+    price: 39,
     features: [
       "1 boutique en ligne",
       "Produits illimités",
@@ -47,9 +47,9 @@ export const pricingPlans: PricingPlanData[] = [
   },
   {
     id: "enterprise",
-    name: "Enterprise",
+    name: "Premium",
     description: "Pour les grandes entreprises",
-    price: 97,
+    price: 119,
     features: [
       "Boutiques illimitées",
       "Produits illimités",

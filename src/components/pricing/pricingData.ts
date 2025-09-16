@@ -17,8 +17,8 @@ export interface PricingPlanData {
 
 export const getMonthlyPlans = (): PricingPlanData[] => [
   {
-    name: "Basic",
-    price: "11",
+    name: "Essentiel",
+    price: "19",
     period: "/mois",
     description: "Pour démarrer votre boutique en ligne",
     planType: "starter",
@@ -38,7 +38,7 @@ export const getMonthlyPlans = (): PricingPlanData[] => [
   },
   {
     name: "Pro",
-    price: "25",
+    price: "39",
     period: "/mois",
     description: "Pour les entreprises en croissance",
     planType: "pro",
@@ -63,8 +63,8 @@ export const getMonthlyPlans = (): PricingPlanData[] => [
     trial: "Essai gratuit de 14 jours"
   },
   {
-    name: "Enterprise",
-    price: "97",
+    name: "Premium",
+    price: "119",
     period: "/mois",
     description: "Pour les grandes entreprises",
     planType: "enterprise",
