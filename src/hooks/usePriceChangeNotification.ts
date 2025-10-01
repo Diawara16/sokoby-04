@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { createClient } from '@supabase/supabase-js';
 import { useToast } from '@/hooks/use-toast';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 interface PriceChangeNotification {
   id: string;
@@ -24,7 +28,7 @@ export const usePriceChangeNotification = () => {
           return;
         }
 
-        const { data, error } = await supabase
+        const { data, error }: any = await supabase
           .from('notifications')
           .select('*')
           .eq('user_id', user.id)
@@ -64,7 +68,7 @@ export const usePriceChangeNotification = () => {
           table: 'notifications',
           filter: 'type=eq.price_change',
         },
-        async (payload) => {
+        async (payload: any) => {
           const { data: { user } } = await supabase.auth.getUser();
           if (user && payload.new.user_id === user.id) {
             setNotification(payload.new as PriceChangeNotification);
@@ -76,7 +80,7 @@ export const usePriceChangeNotification = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [toast]);
+  }, []);
 
   const markAsRead = async (notificationId: string) => {
     try {

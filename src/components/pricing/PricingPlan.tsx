@@ -38,10 +38,12 @@ export const PricingPlan = ({
   const [showPayment, setShowPayment] = useState(false);
   const [couponCode, setCouponCode] = useState("");
 
-  // Formatage du prix en USD
-  const formattedPrice = new Intl.NumberFormat('en-US', {
+  // Formatage du prix en EUR
+  const formattedPrice = new Intl.NumberFormat('fr-FR', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'EUR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(Number(price));
 
   return (

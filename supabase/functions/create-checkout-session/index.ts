@@ -50,17 +50,25 @@ serve(async (req) => {
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     
-    // Price IDs for different plans and billing periods
+    // ⚠️ IMPORTANT: Remplacez ces Price IDs par ceux créés dans votre Dashboard Stripe
+    // Phase 1: Prix en EUR uniquement (pour tous les utilisateurs)
+    // 
+    // Étapes pour créer les Price IDs dans Stripe:
+    // 1. Allez sur https://dashboard.stripe.com/products
+    // 2. Créez 3 produits: "Sokoby Essentiel", "Sokoby Pro", "Sokoby Premium"
+    // 3. Pour chaque produit, créez 2 prix (mensuel et annuel) en EUR
+    // 4. Copiez les Price IDs (format: price_xxxxxxxxxxxxx) et remplacez ci-dessous
+    
     const MONTHLY_PRICE_IDS = {
-      starter: 'price_NEW_MONTHLY_STARTER_19',   // €19/month - À CRÉER DANS STRIPE
-      pro: 'price_NEW_MONTHLY_PRO_39',          // €39/month - À CRÉER DANS STRIPE
-      enterprise: 'price_NEW_MONTHLY_PREMIUM_119'  // €119/month - À CRÉER DANS STRIPE
+      starter: 'price_MONTHLY_STARTER_EUR',      // À REMPLACER - Essentiel: €19/mois
+      pro: 'price_MONTHLY_PRO_EUR',              // À REMPLACER - Pro: €39/mois
+      enterprise: 'price_MONTHLY_PREMIUM_EUR'    // À REMPLACER - Premium: €119/mois
     };
     
     const ANNUAL_PRICE_IDS = {
-      starter: 'price_NEW_ANNUAL_STARTER_189',   // €189/year (€19*12*0.83) - À CRÉER DANS STRIPE
-      pro: 'price_NEW_ANNUAL_PRO_389',          // €389/year (€39*12*0.83) - À CRÉER DANS STRIPE
-      enterprise: 'price_NEW_ANNUAL_PREMIUM_1189'  // €1189/year (€119*12*0.83) - À CRÉER DANS STRIPE
+      starter: 'price_ANNUAL_STARTER_EUR',       // À REMPLACER - Essentiel: €189/an (€15.75/mois)
+      pro: 'price_ANNUAL_PRO_EUR',               // À REMPLACER - Pro: €389/an (€32.42/mois)
+      enterprise: 'price_ANNUAL_PREMIUM_EUR'     // À REMPLACER - Premium: €1189/an (€99.08/mois)
     };
 
     const priceIds = billingPeriod === 'annual' ? ANNUAL_PRICE_IDS : MONTHLY_PRICE_IDS;
