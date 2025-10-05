@@ -56,40 +56,39 @@ serve(async (req) => {
 
     console.log('Premium theme applied successfully');
 
-    // Get OpenAI API key
-    const openAiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAiKey) {
-      console.error('Missing OpenAI API key');
-      throw new Error('Missing OpenAI API key');
+    // Get Lovable AI API key
+    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+    if (!lovableApiKey) {
+      console.error('Missing Lovable API key');
+      throw new Error('Missing Lovable API key');
     }
 
-    // Use OpenAI to generate product ideas
-    console.log('Calling OpenAI API...');
-    const openAiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Use Lovable AI (Gemini 2.5 Flash) to generate product ideas
+    console.log('Calling Lovable AI API...');
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAiKey}`,
+        'Authorization': `Bearer ${lovableApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'google/gemini-2.5-flash',
         messages: [
           {
             role: 'system',
-            content: `You are a dropshipping expert. Generate 30 winning product ideas for a ${niche} store. For each product, provide the following format exactly: "Product Name | Description | Price". Price should be a number without currency symbol.`
+            content: `You are a dropshipping expert. Generate 30 winning product ideas for a ${niche} store. For each product, provide the following format exactly: "Product Name | Description | Price". Price should be a number without currency symbol (in euros).`
           }
         ],
-        temperature: 0.7,
       }),
     });
 
-    if (!openAiResponse.ok) {
-      const errorData = await openAiResponse.json();
-      console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+    if (!aiResponse.ok) {
+      const errorData = await aiResponse.json();
+      console.error('Lovable AI API error:', errorData);
+      throw new Error(`Lovable AI API error: ${errorData.error?.message || 'Unknown error'}`);
     }
 
-    const aiData = await openAiResponse.json();
+    const aiData = await aiResponse.json();
     console.log('OpenAI response received');
 
     // Parse the AI response and format products

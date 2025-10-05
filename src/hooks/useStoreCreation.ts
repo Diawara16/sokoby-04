@@ -263,7 +263,7 @@ export const useStoreCreation = () => {
   };
 
   const handleComplete = () => {
-    navigate('/tableau-de-bord');
+    navigate('/store-editor');
   };
 
   return {

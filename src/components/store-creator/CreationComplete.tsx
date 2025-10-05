@@ -41,7 +41,7 @@ export const CreationComplete = ({ storeUrl, productsCount, onComplete }: Creati
           onClick={onComplete}
           className="w-full sm:w-auto"
         >
-          Aller au tableau de bord
+          Gérer mes produits
         </Button>
       </Card>
     </div>
