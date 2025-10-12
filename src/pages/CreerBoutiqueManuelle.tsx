@@ -173,6 +173,12 @@ export default function CreerBoutiqueManuelle() {
           : "Votre boutique a été créée. Vous pouvez maintenant ajouter des produits.",
       });
 
+      // Informer l'utilisateur de l'URL de sa boutique
+      toast({
+        title: "Boutique accessible !",
+        description: `Votre boutique est accessible via : sokoby.com/${uniqueDomainName}`,
+      });
+      
       // Rediriger vers l'éditeur de boutique
       navigate('/store-editor');
       

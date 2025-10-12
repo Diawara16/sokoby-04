@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,6 +16,7 @@ interface LandingPageData {
 
 export const DynamicLanding = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [pageData, setPageData] = useState<LandingPageData | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -23,22 +24,26 @@ export const DynamicLanding = () => {
   useEffect(() => {
     const fetchLandingPage = async () => {
       try {
-        const { data: storeSettings } = await supabase
+        console.log('Recherche de boutique avec domain_name:', slug);
+        
+        const { data: storeSettings, error } = await supabase
           .from("store_settings")
           .select("*")
           .eq("domain_name", slug)
           .maybeSingle();
 
-        if (storeSettings) {
-          setPageData({
-            id: storeSettings.id,
-            title: storeSettings.store_name || "Boutique en ligne",
-            description: "Découvrez notre sélection de produits",
-            hero_image: "/placeholder.svg",
-            cta_text: "Découvrir",
-            store_id: storeSettings.id
-          });
+        if (error) {
+          console.error('Erreur lors de la recherche de boutique:', error);
         }
+
+        if (storeSettings) {
+          console.log('Boutique trouvée, redirection vers aperçu:', storeSettings.id);
+          // Rediriger vers la vraie page de boutique avec tous les produits
+          navigate(`/boutique-apercu/${storeSettings.id}`, { replace: true });
+          return;
+        }
+        
+        setPageData(null);
       } catch (error) {
         console.error("Erreur lors du chargement de la page:", error);
         toast({
@@ -53,8 +58,10 @@ export const DynamicLanding = () => {
 
     if (slug) {
       fetchLandingPage();
+    } else {
+      setLoading(false);
     }
-  }, [slug, toast]);
+  }, [slug, navigate, toast]);
 
   if (loading) {
     return (
