@@ -11,6 +11,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Store } from "lucide-react";
 import { Link } from "react-router-dom";
 
+// Fonction pour générer un nom de domaine unique
+async function generateUniqueDomainName(userId: string, storeName: string) {
+  const cleanName = storeName.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const randomSuffix = Math.random().toString(36).substring(2, 8);
+  return `${cleanName}-${randomSuffix}`;
+}
+
 export default function CreerBoutiqueManuelle() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -114,11 +121,16 @@ export default function CreerBoutiqueManuelle() {
         return;
       }
 
+      // Générer un nom de domaine unique
+      const uniqueDomainName = await generateUniqueDomainName(user.id, formData.storeName);
+      console.log("Nom de domaine généré:", uniqueDomainName);
+
       // Utiliser upsert pour les paramètres de boutique
       const { error: storeError } = await supabase
         .from('store_settings')
         .upsert({
           user_id: user.id,
+          domain_name: uniqueDomainName,
           store_name: formData.storeName,
           store_description: formData.description,
           category: formData.category || 'other',
