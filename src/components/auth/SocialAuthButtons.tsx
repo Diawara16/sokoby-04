@@ -36,19 +36,25 @@ export const SocialAuthButtons = () => {
   const handleGoogleSignup = async () => {
     try {
       console.log("Démarrage de l'authentification Google...");
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/onboarding`,
+          skipBrowserRedirect: false,
           queryParams: {
             access_type: 'offline',
-            prompt: 'consent',
+            prompt: 'select_account',
           }
         },
       });
 
-      if (await handleAuthResponse(error, 'Google')) {
-        console.log("Redirection Google réussie:", data);
+      if (error) {
+        console.error('Erreur d\'authentification Google:', error);
+        toast({
+          title: "Erreur de connexion",
+          description: "Une erreur est survenue lors de la connexion avec Google. Veuillez réessayer.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error("Erreur inattendue Google:", error);
