@@ -39,7 +39,7 @@ export const SocialAuthButtons = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/onboarding`,
+          redirectTo: `${window.location.origin}/connexion`,
           skipBrowserRedirect: false,
           queryParams: {
             access_type: 'offline',
@@ -73,7 +73,7 @@ export const SocialAuthButtons = () => {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          redirectTo: `${window.location.origin}/onboarding`,
+          redirectTo: `${window.location.origin}/connexion`,
           queryParams: {
             display: 'popup',
             auth_type: 'rerequest',
