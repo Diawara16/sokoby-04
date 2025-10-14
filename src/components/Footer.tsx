@@ -83,7 +83,7 @@ export const Footer = () => {
 
   const handleLanguageChange = (langCode: string) => {
     setCurrentLanguage(langCode);
-    localStorage.setItem('currentLanguage', langCode);
+    localStorage.setItem('language', langCode);
   };
 
   return (
