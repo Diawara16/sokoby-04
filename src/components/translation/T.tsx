@@ -18,18 +18,10 @@ export function T({
   skipTranslation = false,
   ...props 
 }: TProps) {
-  const { translatedText, isLoading } = useDeepLTranslation(children, {
+  const { translatedText } = useDeepLTranslation(children, {
     fallback,
     skipTranslation,
   });
-
-  if (isLoading) {
-    return (
-      <Component className={`${className} opacity-70`} {...props}>
-        {children}
-      </Component>
-    );
-  }
 
   return (
     <Component className={className} {...props}>
