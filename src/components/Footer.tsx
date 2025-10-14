@@ -1,6 +1,4 @@
 
-import { useState, useEffect } from "react";
-import { translations } from "@/translations";
 import { QuickLinks } from "./footer/QuickLinks";
 import { SocialLinks } from "./footer/SocialLinks";
 import { Newsletter } from "./footer/Newsletter";
@@ -77,9 +75,31 @@ const MobileApps = () => {
   );
 };
 
+const LanguageButtons = ({ languages, onLanguageChange }: { 
+  languages: Array<{ code: string; name: string }>;
+  onLanguageChange: (code: string) => void;
+}) => {
+  const { currentLanguage } = useLanguageContext();
+  
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      {languages.map((lang) => (
+        <button
+          key={lang.code}
+          onClick={() => onLanguageChange(lang.code)}
+          className={`text-left text-sm hover:text-red-400 transition-colors ${
+            currentLanguage === lang.code ? 'text-red-400 font-semibold' : 'text-gray-300'
+          }`}
+        >
+          {lang.name}
+        </button>
+      ))}
+    </div>
+  );
+};
+
 export const Footer = () => {
-  const { currentLanguage, setCurrentLanguage } = useLanguageContext();
-  const t = translations[currentLanguage as keyof typeof translations];
+  const { setCurrentLanguage } = useLanguageContext();
 
   const handleLanguageChange = (langCode: string) => {
     setCurrentLanguage(langCode);
@@ -118,8 +138,8 @@ export const Footer = () => {
             </ul>
           </div>
 
-          <SocialLinks t={t} />
-          <Newsletter t={t} />
+          <SocialLinks />
+          <Newsletter />
           <PaymentMethods />
           <MobileApps />
           
@@ -128,19 +148,7 @@ export const Footer = () => {
               <Globe className="h-4 w-4" />
               <T>Changer de langue</T>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              {languages.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => handleLanguageChange(lang.code)}
-                  className={`text-left text-sm hover:text-red-400 transition-colors ${
-                    currentLanguage === lang.code ? 'text-red-400 font-semibold' : 'text-gray-300'
-                  }`}
-                >
-                  {lang.name}
-                </button>
-              ))}
-            </div>
+            <LanguageButtons languages={languages} onLanguageChange={handleLanguageChange} />
           </div>
         </div>
         

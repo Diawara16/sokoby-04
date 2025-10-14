@@ -6,11 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { sendEmail } from "@/utils/email";
 import { T } from "@/components/translation/T";
 
-interface NewsletterProps {
-  t: any;
-}
-
-export const Newsletter = ({ t }: NewsletterProps) => {
+export const Newsletter = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();

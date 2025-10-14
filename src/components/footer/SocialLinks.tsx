@@ -2,11 +2,7 @@
 import { Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
 import { T } from "@/components/translation/T";
 
-interface SocialLinksProps {
-  t: any;
-}
-
-export const SocialLinks = ({ t }: SocialLinksProps) => {
+export const SocialLinks = () => {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold mb-4">
