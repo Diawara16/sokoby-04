@@ -84,7 +84,7 @@ export function ModelComparisonSection() {
             <CardContent className="space-y-6">
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600 mb-1">
-                  <T>À partir de 11$</T>
+                  <T>À partir de €19</T>
                 </div>
                 <div className="text-sm text-gray-600">
                   <T>Abonnement mensuel</T>
