@@ -339,7 +339,7 @@ export default function StorePreview() {
       {/* Hero Section */}
       <section 
         id="accueil"
-        className="relative py-20 text-white overflow-hidden"
+        className="relative py-12 md:py-16 lg:py-20 text-white overflow-hidden"
         style={{ 
           background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}dd 100%)` 
         }}
@@ -347,11 +347,11 @@ export default function StorePreview() {
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold font-display mb-6">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold font-display mb-6">
               Bienvenue chez {storeData.store_name}
             </h1>
             {storeData.store_description && (
-              <p className="text-xl md:text-2xl mb-8 text-white/90">
+              <p className="text-lg md:text-xl lg:text-2xl mb-8 text-white/90">
                 {storeData.store_description}
               </p>
             )}
