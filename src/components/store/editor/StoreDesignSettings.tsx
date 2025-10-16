@@ -146,6 +146,9 @@ export function StoreDesignSettings({ brandData, onDataChange }: Props) {
         // Reload all brand data to ensure consistency
         await reloadBrandData();
         setLastSaved(new Date());
+        
+        // Dispatch event to update logo across all components
+        window.dispatchEvent(new CustomEvent('logo-updated'));
       }
     } catch (error) {
       console.error('Error uploading logo:', error);

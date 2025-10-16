@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useBrandSettings } from '@/hooks/useBrandSettings';
 
 export const useDynamicLogo = () => {
@@ -6,20 +6,29 @@ export const useDynamicLogo = () => {
   const [loading, setLoading] = useState(true);
   const { fetchBrandSettings } = useBrandSettings();
 
-  useEffect(() => {
-    const loadLogo = async () => {
-      try {
-        const settings = await fetchBrandSettings();
-        setLogoUrl(settings?.logo_url || null);
-      } catch (error) {
-        console.error('Error loading logo:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadLogo();
+  const loadLogo = useCallback(async () => {
+    try {
+      setLoading(true);
+      const settings = await fetchBrandSettings();
+      setLogoUrl(settings?.logo_url || null);
+    } catch (error) {
+      console.error('Error loading logo:', error);
+    } finally {
+      setLoading(false);
+    }
   }, [fetchBrandSettings]);
 
-  return { logoUrl, loading };
+  useEffect(() => {
+    loadLogo();
+
+    // Listen for logo update events
+    const handleLogoUpdate = () => {
+      loadLogo();
+    };
+
+    window.addEventListener('logo-updated', handleLogoUpdate);
+    return () => window.removeEventListener('logo-updated', handleLogoUpdate);
+  }, [loadLogo]);
+
+  return { logoUrl, loading, refreshLogo: loadLogo };
 };
