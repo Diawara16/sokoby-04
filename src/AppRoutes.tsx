@@ -31,6 +31,16 @@ import PageEditor from "@/pages/PageEditor";
 import ZapierIntegration from "@/pages/ZapierIntegration";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DynamicLanding } from "@/components/landing/DynamicLanding";
+import StoreSettings from "@/pages/settings/StoreSettings";
+import DomainSettings from "@/pages/settings/DomainSettings";
+import UserSettings from "@/pages/settings/UserSettings";
+import PaymentSettings from "@/pages/settings/PaymentSettings";
+import BillingSettings from "@/pages/settings/BillingSettings";
+import LocationSettings from "@/pages/settings/LocationSettings";
+import SecuritySettings from "@/pages/settings/SecuritySettings";
+import DnsSettings from "@/pages/settings/DnsSettings";
+import ShippingSettings from "@/pages/settings/ShippingSettings";
+import DesignSettings from "@/pages/settings/DesignSettings";
 import TestSupabase from "@/pages/TestSupabase";
 import AuthTest from "@/pages/AuthTest";
 import Success from "@/pages/Success";
@@ -146,11 +156,18 @@ export function AppRoutes() {
           <Dashboard />
         </ProtectedRoute>
       } />
-      <Route path="/parametres" element={
-        <ProtectedRoute>
-          <Settings />
-        </ProtectedRoute>
-      } />
+      <Route path="/parametres" element={<ProtectedRoute><Settings /></ProtectedRoute>}>
+        <Route index element={<StoreSettings />} />
+        <Route path="domaine" element={<DomainSettings />} />
+        <Route path="dns" element={<DnsSettings />} />
+        <Route path="utilisateurs" element={<UserSettings />} />
+        <Route path="paiements" element={<PaymentSettings />} />
+        <Route path="facturation" element={<BillingSettings />} />
+        <Route path="expedition" element={<ShippingSettings />} />
+        <Route path="geolocalisation" element={<LocationSettings />} />
+        <Route path="securite" element={<SecuritySettings />} />
+        <Route path="apparence" element={<DesignSettings />} />
+      </Route>
       <Route path="/settings" element={
         <ProtectedRoute>
           <Settings />
