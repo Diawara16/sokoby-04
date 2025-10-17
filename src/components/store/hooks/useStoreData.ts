@@ -3,6 +3,12 @@ import { supabase } from "@/lib/supabase";
 import { StoreSettings } from "../types";
 import { useToast } from "@/hooks/use-toast";
 
+const generateDomainName = (userId: string): string => {
+  const timestamp = Date.now().toString(36);
+  const userPrefix = userId.substring(0, 8);
+  return `store-${userPrefix}-${timestamp}`;
+};
+
 export const useStoreData = () => {
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,13 +43,14 @@ export const useStoreData = () => {
 
       if (!existingSettings) {
         console.log("Création de nouveaux paramètres");
+        const generatedDomain = generateDomainName(user.id);
         const { data: newSettings, error: createError } = await supabase
           .from('store_settings')
           .insert([{
             user_id: user.id,
             store_name: 'Ma boutique',
             store_email: user.email,
-            domain_name: null,
+            domain_name: generatedDomain,
             is_custom_domain: false,
             store_phone: null,
             store_address: null
@@ -64,7 +71,27 @@ export const useStoreData = () => {
           description: "Les paramètres de votre boutique ont été créés avec succès",
         });
       } else {
-        setSettings(existingSettings as unknown as StoreSettings);
+        // If existing settings don't have a domain_name, generate one
+        if (!existingSettings.domain_name) {
+          const generatedDomain = generateDomainName(user.id);
+          const { data: updatedSettings, error: updateError } = await supabase
+            .from('store_settings')
+            .update({ domain_name: generatedDomain })
+            .eq('user_id', user.id)
+            .select()
+            .single();
+
+          if (updateError) {
+            console.error("Erreur lors de la mise à jour du domaine:", updateError);
+            // Continue with existing settings even if update fails
+            setSettings(existingSettings as unknown as StoreSettings);
+          } else {
+            console.log("Domaine généré et mis à jour:", generatedDomain);
+            setSettings(updatedSettings as unknown as StoreSettings);
+          }
+        } else {
+          setSettings(existingSettings as unknown as StoreSettings);
+        }
       }
     } catch (error) {
       console.error("Erreur lors du chargement des paramètres:", error);
