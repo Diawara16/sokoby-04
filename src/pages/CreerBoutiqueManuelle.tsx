@@ -160,9 +160,11 @@ export default function CreerBoutiqueManuelle() {
         .limit(1)
         .maybeSingle();
 
+      let brandSettings = null;
+
       // Only create brand settings if none exist (preserves logo_url, slogan, colors)
       if (!existingBrand) {
-        const { error: brandError } = await supabase
+        const { data: newBrand, error: brandError } = await supabase
           .from('brand_settings')
           .insert({
             user_id: user.id,
@@ -176,8 +178,10 @@ export default function CreerBoutiqueManuelle() {
           console.error('Error saving brand settings:', brandError);
         } else {
           console.log('Created new brand settings with form colors (logo_url can be added later)');
+          brandSettings = newBrand;
         }
       } else {
+        brandSettings = existingBrand;
         // Explicitly verify logo_url is preserved
         console.log('✓ Brand settings found - ALL fields preserved including logo_url:', {
           logo_url: existingBrand.logo_url || '(not set)',
@@ -188,12 +192,31 @@ export default function CreerBoutiqueManuelle() {
         
         if (!existingBrand.logo_url) {
           console.warn('⚠️ Brand settings exist but logo_url is not set. Upload a logo in Store Editor to persist it.');
+        } else {
+          console.log('✅ Logo URL confirmed for new store:', existingBrand.logo_url);
         }
       }
 
-      // Trigger logo refresh after store creation/update
-      window.dispatchEvent(new Event('logo-updated'));
-      console.log('✓ Logo refresh triggered after store operation');
+      // Explicitly fetch brand settings again to ensure latest data is available
+      const { data: finalBrandSettings } = await supabase
+        .from('brand_settings')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (finalBrandSettings?.logo_url) {
+        console.log('✅ Final verification: Logo URL ready for store:', finalBrandSettings.logo_url);
+      } else {
+        console.warn('⚠️ Final verification: No logo_url found in brand_settings');
+      }
+
+      // Trigger logo refresh with brand settings data
+      window.dispatchEvent(new CustomEvent('logo-updated', { 
+        detail: finalBrandSettings 
+      }));
+      console.log('✓ Logo refresh triggered after store operation with brand data');
 
       toast({
         title: isUpdating ? "Boutique mise à jour !" : "Boutique créée avec succès !",

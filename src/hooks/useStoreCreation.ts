@@ -200,6 +200,7 @@ export const useStoreCreation = () => {
 
       // Étape 5: Vérifier et appliquer le thème si nécessaire
       updateProgress(80, 'finalizing');
+      let brandSettings = null;
       try {
         // Check if brand settings already exist (including logo_url, colors, slogan)
         // Order by created_at to get the most recent record in case of duplicates
@@ -214,7 +215,7 @@ export const useStoreCreation = () => {
         // Only create default brand settings if none exist
         // This preserves existing logo_url, slogan, and colors across all stores
         if (!existingBrand) {
-          const { error: themeError } = await supabase
+          const { data: newBrand, error: themeError } = await supabase
             .from('brand_settings')
             .insert({
               user_id: user.id,
@@ -228,8 +229,10 @@ export const useStoreCreation = () => {
             console.warn("Erreur lors de l'application du thème:", themeError);
           } else {
             console.log("Created new brand settings with default theme (logo_url can be added later)");
+            brandSettings = newBrand;
           }
         } else {
+          brandSettings = existingBrand;
           // Explicitly verify that logo_url exists and is preserved
           console.log("✓ Brand settings found - ALL fields preserved for new store:", {
             logo_url: existingBrand.logo_url || '(not set)',
@@ -240,15 +243,34 @@ export const useStoreCreation = () => {
           
           if (!existingBrand.logo_url) {
             console.warn("⚠️ Brand settings exist but logo_url is not set. Upload a logo in Store Editor to persist it across all stores.");
+          } else {
+            console.log("✅ Logo URL confirmed for new store:", existingBrand.logo_url);
           }
         }
       } catch (themeError) {
         console.warn("Impossible d'appliquer le thème premium");
       }
 
-      // Trigger logo refresh after store creation
-      window.dispatchEvent(new Event('logo-updated'));
-      console.log('✓ Logo refresh triggered for new store');
+      // Explicitly fetch brand settings again to ensure latest data
+      const { data: finalBrandSettings } = await supabase
+        .from('brand_settings')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (finalBrandSettings?.logo_url) {
+        console.log('✅ Final verification: Logo URL ready for new store:', finalBrandSettings.logo_url);
+      } else {
+        console.warn('⚠️ Final verification: No logo_url found in brand_settings');
+      }
+
+      // Trigger logo refresh with brand settings data
+      window.dispatchEvent(new CustomEvent('logo-updated', { 
+        detail: finalBrandSettings 
+      }));
+      console.log('✓ Logo refresh triggered for new store with brand data');
 
       // Étape 6: Création de la notification
       try {
