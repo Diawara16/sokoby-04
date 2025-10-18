@@ -93,12 +93,14 @@ export const useBrandSettings = () => {
         updated_at: new Date().toISOString(),
       };
 
-      const { error: updateError } = await supabase
-        .from('brand_settings')
-        .upsert({
-          user_id: user.id,
-          ...updatedSettings,
-        });
+    const { error: updateError } = await supabase
+      .from('brand_settings')
+      .upsert({
+        user_id: user.id,
+        ...updatedSettings,
+      }, {
+        onConflict: 'user_id'
+      });
 
       if (updateError) throw updateError;
 
@@ -134,6 +136,8 @@ export const useBrandSettings = () => {
           ...existingSettings,
           ...settings,
           updated_at: new Date().toISOString(),
+        }, {
+          onConflict: 'user_id'
         });
 
       if (error) throw error;

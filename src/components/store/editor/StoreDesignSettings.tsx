@@ -101,6 +101,8 @@ export function StoreDesignSettings({ brandData, onDataChange }: Props) {
           logo_url: brandData.logo_url,
           slogan: brandData.slogan,
           updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
         });
 
       if (error) {
