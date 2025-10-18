@@ -198,21 +198,31 @@ export const useStoreCreation = () => {
         productsGenerated = true;
       }
 
-      // Étape 5: Application du thème premium
+      // Étape 5: Vérifier et appliquer le thème si nécessaire
       updateProgress(80, 'finalizing');
       try {
-        const { error: themeError } = await supabase
+        // Check if brand settings already exist
+        const { data: existingBrand } = await supabase
           .from('brand_settings')
-          .upsert({
-            user_id: user.id,
-            primary_color: '#8B5CF6',
-            secondary_color: '#D6BCFA',
-            updated_at: new Date().toISOString()
-          });
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-        if (themeError) {
-          console.warn("Erreur lors de l'application du thème:", themeError);
-          // Continuer même si le thème n'est pas appliqué
+        // Only create default brand settings if none exist
+        if (!existingBrand) {
+          const { error: themeError } = await supabase
+            .from('brand_settings')
+            .insert({
+              user_id: user.id,
+              primary_color: '#8B5CF6',
+              secondary_color: '#D6BCFA'
+            });
+
+          if (themeError) {
+            console.warn("Erreur lors de l'application du thème:", themeError);
+          }
+        } else {
+          console.log("Brand settings already exist, preserving them");
         }
       } catch (themeError) {
         console.warn("Impossible d'appliquer le thème premium");

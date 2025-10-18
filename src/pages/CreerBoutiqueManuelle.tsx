@@ -149,21 +149,28 @@ export default function CreerBoutiqueManuelle() {
         return;
       }
 
-      // Utiliser upsert pour les paramètres de marque
-      const { error: brandError } = await supabase
+      // Check if brand settings exist before updating
+      const { data: existingBrand } = await supabase
         .from('brand_settings')
-        .upsert({
-          user_id: user.id,
-          primary_color: formData.primaryColor,
-          secondary_color: formData.secondaryColor,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id'
-        });
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      if (brandError) {
-        console.error('Error saving brand settings:', brandError);
-        // Continuer même si l'erreur de marque échoue
+      // Only update colors if no existing brand settings (preserve logo and slogan)
+      if (!existingBrand) {
+        const { error: brandError } = await supabase
+          .from('brand_settings')
+          .insert({
+            user_id: user.id,
+            primary_color: formData.primaryColor,
+            secondary_color: formData.secondaryColor
+          });
+
+        if (brandError) {
+          console.error('Error saving brand settings:', brandError);
+        }
+      } else {
+        console.log('Brand settings already exist, preserving them');
       }
 
       toast({

@@ -39,22 +39,31 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
     console.log('Supabase client initialized');
 
-    // Appliquer le thème premium
-    const { error: themeError } = await supabase
+    // Check if brand settings already exist
+    const { data: existingBrand } = await supabase
       .from('brand_settings')
-      .upsert({
-        user_id: userId,
-        primary_color: '#8B5CF6',
-        secondary_color: '#D6BCFA',
-        updated_at: new Date().toISOString()
-      });
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
 
-    if (themeError) {
-      console.error('Error applying premium theme:', themeError);
-      throw themeError;
+    // Only apply premium theme if no existing brand settings (preserve logo, colors, slogan)
+    if (!existingBrand) {
+      const { error: themeError } = await supabase
+        .from('brand_settings')
+        .insert({
+          user_id: userId,
+          primary_color: '#8B5CF6',
+          secondary_color: '#D6BCFA'
+        });
+
+      if (themeError) {
+        console.error('Error applying premium theme:', themeError);
+        throw themeError;
+      }
+      console.log('Premium theme applied successfully');
+    } else {
+      console.log('Brand settings already exist, preserving them');
     }
-
-    console.log('Premium theme applied successfully');
 
     // Get Lovable AI API key
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
