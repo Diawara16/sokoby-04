@@ -86,21 +86,30 @@ export const useBrandSettings = () => {
         .from('brand_assets')
         .getPublicUrl(filePath);
 
-      // Update brand settings with new logo while preserving existing data
-      const updatedSettings = {
-        ...existingSettings,
-        logo_url: publicUrl,
-        updated_at: new Date().toISOString(),
-      };
-
-    const { error: updateError } = await supabase
-      .from('brand_settings')
-      .upsert({
-        user_id: user.id,
-        ...updatedSettings,
-      }, {
-        onConflict: 'user_id'
-      });
+    // Update brand settings with new logo while preserving existing data
+    let updateError;
+    
+    if (existingSettings?.id) {
+      // Update existing record
+      const { error } = await supabase
+        .from('brand_settings')
+        .update({
+          logo_url: publicUrl,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', existingSettings.id);
+      updateError = error;
+    } else {
+      // Insert new record
+      const { error } = await supabase
+        .from('brand_settings')
+        .insert({
+          user_id: user.id,
+          logo_url: publicUrl,
+          updated_at: new Date().toISOString(),
+        });
+      updateError = error;
+    }
 
       if (updateError) throw updateError;
 
@@ -129,16 +138,28 @@ export const useBrandSettings = () => {
       // Get existing settings to merge
       const existingSettings = await fetchBrandSettings();
       
-      const { error } = await supabase
-        .from('brand_settings')
-        .upsert({
-          user_id: user.id,
-          ...existingSettings,
-          ...settings,
-          updated_at: new Date().toISOString(),
-        }, {
-          onConflict: 'user_id'
-        });
+      let error;
+      if (existingSettings?.id) {
+        // Update existing record
+        const result = await supabase
+          .from('brand_settings')
+          .update({
+            ...settings,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', existingSettings.id);
+        error = result.error;
+      } else {
+        // Insert new record
+        const result = await supabase
+          .from('brand_settings')
+          .insert({
+            user_id: user.id,
+            ...settings,
+            updated_at: new Date().toISOString(),
+          });
+        error = result.error;
+      }
 
       if (error) throw error;
       return true;

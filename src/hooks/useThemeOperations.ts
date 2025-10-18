@@ -27,12 +27,10 @@ export const useThemeOperations = () => {
       } else {
         result = await supabase
           .from('brand_settings')
-          .upsert({
+          .insert({
             user_id: userId,
             primary_color: colors.primary,
             secondary_color: colors.secondary
-          }, {
-            onConflict: 'user_id'
           });
       }
 

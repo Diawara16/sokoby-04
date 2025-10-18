@@ -92,18 +92,37 @@ export function StoreDesignSettings({ brandData, onDataChange }: Props) {
         return;
       }
 
-      const { error } = await supabase
-        .from('brand_settings')
-        .upsert({
-          user_id: user.id,
-          primary_color: brandData.primary_color,
-          secondary_color: brandData.secondary_color,
-          logo_url: brandData.logo_url,
-          slogan: brandData.slogan,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id'
-        });
+      // Fetch existing settings to determine if we need to update or insert
+      const existingSettings = await fetchBrandSettings();
+      
+      let error;
+      if (existingSettings?.id) {
+        // Update existing record
+        const result = await supabase
+          .from('brand_settings')
+          .update({
+            primary_color: brandData.primary_color,
+            secondary_color: brandData.secondary_color,
+            logo_url: brandData.logo_url,
+            slogan: brandData.slogan,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingSettings.id);
+        error = result.error;
+      } else {
+        // Insert new record
+        const result = await supabase
+          .from('brand_settings')
+          .insert({
+            user_id: user.id,
+            primary_color: brandData.primary_color,
+            secondary_color: brandData.secondary_color,
+            logo_url: brandData.logo_url,
+            slogan: brandData.slogan,
+            updated_at: new Date().toISOString()
+          });
+        error = result.error;
+      }
 
       if (error) {
         console.error('Database error:', error);
