@@ -11,7 +11,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CookieConsent } from "@/components/CookieConsent";
 
 function App() {
-  console.log("App component rendering"); // Log pour débugger
+  console.log("App component rendering");
   const [paypalClientId, setPaypalClientId] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
