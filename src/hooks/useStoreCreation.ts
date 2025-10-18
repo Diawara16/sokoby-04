@@ -246,6 +246,10 @@ export const useStoreCreation = () => {
         console.warn("Impossible d'appliquer le thème premium");
       }
 
+      // Trigger logo refresh after store creation
+      window.dispatchEvent(new Event('logo-updated'));
+      console.log('✓ Logo refresh triggered for new store');
+
       // Étape 6: Création de la notification
       try {
         const { error: notificationError } = await supabase

@@ -191,6 +191,10 @@ export default function CreerBoutiqueManuelle() {
         }
       }
 
+      // Trigger logo refresh after store creation/update
+      window.dispatchEvent(new Event('logo-updated'));
+      console.log('✓ Logo refresh triggered after store operation');
+
       toast({
         title: isUpdating ? "Boutique mise à jour !" : "Boutique créée avec succès !",
         description: isUpdating 

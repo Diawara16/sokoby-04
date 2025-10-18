@@ -23,9 +23,12 @@ export const useBrandSettings = () => {
         .from('brand_settings')
         .select('*')
         .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       console.log('fetchBrandSettings result:', data);
+      console.log('Logo URL from brand_settings:', data?.logo_url || '(not set)');
       if (error) throw error;
       return data;
     } catch (error) {
