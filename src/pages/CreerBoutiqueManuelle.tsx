@@ -151,10 +151,13 @@ export default function CreerBoutiqueManuelle() {
 
       // Check if brand settings exist before updating
       // This ensures we don't overwrite existing logo_url, slogan, or colors
+      // Order by created_at to get the most recent record
       const { data: existingBrand } = await supabase
         .from('brand_settings')
         .select('*')
         .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       // Only create brand settings if none exist (preserves logo_url, slogan, colors)
@@ -163,22 +166,29 @@ export default function CreerBoutiqueManuelle() {
           .from('brand_settings')
           .insert({
             user_id: user.id,
-            primary_color: formData.primaryColor,
-            secondary_color: formData.secondaryColor
-          });
+            primary_color: formData.primaryColor || '#8B5CF6',
+            secondary_color: formData.secondaryColor || '#D6BCFA'
+          })
+          .select()
+          .single();
 
         if (brandError) {
           console.error('Error saving brand settings:', brandError);
         } else {
-          console.log('Created new brand settings with form colors');
+          console.log('Created new brand settings with form colors (logo_url can be added later)');
         }
       } else {
-        console.log('Brand settings already exist - preserving all fields including logo_url:', {
-          logo: existingBrand.logo_url,
-          primary: existingBrand.primary_color,
-          secondary: existingBrand.secondary_color,
-          slogan: existingBrand.slogan
+        // Explicitly verify logo_url is preserved
+        console.log('✓ Brand settings found - ALL fields preserved including logo_url:', {
+          logo_url: existingBrand.logo_url || '(not set)',
+          primary_color: existingBrand.primary_color,
+          secondary_color: existingBrand.secondary_color,
+          slogan: existingBrand.slogan || '(not set)'
         });
+        
+        if (!existingBrand.logo_url) {
+          console.warn('⚠️ Brand settings exist but logo_url is not set. Upload a logo in Store Editor to persist it.');
+        }
       }
 
       toast({

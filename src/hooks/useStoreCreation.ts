@@ -202,10 +202,13 @@ export const useStoreCreation = () => {
       updateProgress(80, 'finalizing');
       try {
         // Check if brand settings already exist (including logo_url, colors, slogan)
+        // Order by created_at to get the most recent record in case of duplicates
         const { data: existingBrand } = await supabase
           .from('brand_settings')
           .select('*')
           .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
           .maybeSingle();
 
         // Only create default brand settings if none exist
@@ -217,19 +220,27 @@ export const useStoreCreation = () => {
               user_id: user.id,
               primary_color: '#8B5CF6',
               secondary_color: '#D6BCFA'
-            });
+            })
+            .select()
+            .single();
 
           if (themeError) {
             console.warn("Erreur lors de l'application du thème:", themeError);
+          } else {
+            console.log("Created new brand settings with default theme (logo_url can be added later)");
           }
-          console.log("Created new brand settings with default theme");
         } else {
-          console.log("Brand settings already exist - preserving logo_url, colors, and slogan:", {
-            logo: existingBrand.logo_url,
-            primary: existingBrand.primary_color,
-            secondary: existingBrand.secondary_color,
-            slogan: existingBrand.slogan
+          // Explicitly verify that logo_url exists and is preserved
+          console.log("✓ Brand settings found - ALL fields preserved for new store:", {
+            logo_url: existingBrand.logo_url || '(not set)',
+            primary_color: existingBrand.primary_color,
+            secondary_color: existingBrand.secondary_color,
+            slogan: existingBrand.slogan || '(not set)'
           });
+          
+          if (!existingBrand.logo_url) {
+            console.warn("⚠️ Brand settings exist but logo_url is not set. Upload a logo in Store Editor to persist it across all stores.");
+          }
         }
       } catch (themeError) {
         console.warn("Impossible d'appliquer le thème premium");

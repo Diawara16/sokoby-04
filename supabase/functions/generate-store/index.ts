@@ -41,10 +41,13 @@ serve(async (req) => {
 
     // Check if brand settings already exist (including logo_url, colors, slogan)
     // This ensures all branding is preserved across stores
+    // Order by created_at to get the most recent record
     const { data: existingBrand } = await supabase
       .from('brand_settings')
       .select('*')
       .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle();
 
     // Only apply premium theme if no existing brand settings
@@ -56,20 +59,27 @@ serve(async (req) => {
           user_id: userId,
           primary_color: '#8B5CF6',
           secondary_color: '#D6BCFA'
-        });
+        })
+        .select()
+        .single();
 
       if (themeError) {
         console.error('Error applying premium theme:', themeError);
-        throw themeError;
+        throw new Error('Failed to apply premium theme');
       }
-      console.log('Premium theme applied successfully');
+      console.log('Premium theme applied successfully (logo_url can be added later)');
     } else {
-      console.log('Brand settings already exist - preserving all fields:', {
-        logo_url: existingBrand.logo_url,
+      // Explicitly verify logo_url is preserved across stores
+      console.log('✓ Brand settings found - ALL fields preserved for new store:', {
+        logo_url: existingBrand.logo_url || '(not set)',
         primary_color: existingBrand.primary_color,
         secondary_color: existingBrand.secondary_color,
-        slogan: existingBrand.slogan
+        slogan: existingBrand.slogan || '(not set)'
       });
+      
+      if (!existingBrand.logo_url) {
+        console.warn('⚠️ Brand settings exist but logo_url is not set. Upload a logo in Store Editor to persist it across all stores.');
+      }
     }
 
     // Get Lovable AI API key
