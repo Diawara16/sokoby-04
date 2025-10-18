@@ -143,6 +143,9 @@ export function StoreDesignSettings({ brandData, onDataChange }: Props) {
     try {
       const logoUrl = await uploadLogo(file);
       if (logoUrl) {
+        // Update parent component with new logo URL
+        onDataChange({ logo_url: logoUrl });
+        
         // Reload all brand data to ensure consistency
         await reloadBrandData();
         setLastSaved(new Date());
