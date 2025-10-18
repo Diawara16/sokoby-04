@@ -59,8 +59,14 @@ export function StoreDesignSettings({ brandData, onDataChange }: Props) {
   const reloadBrandData = async () => {
     try {
       const freshData = await fetchBrandSettings();
+      console.log('Reloaded brand data:', freshData);
       if (freshData) {
-        onDataChange(freshData);
+        onDataChange({
+          primary_color: freshData.primary_color || undefined,
+          secondary_color: freshData.secondary_color || undefined,
+          logo_url: freshData.logo_url || undefined,
+          slogan: freshData.slogan || undefined,
+        });
       }
     } catch (error) {
       console.error('Error reloading brand data:', error);
@@ -163,11 +169,10 @@ export function StoreDesignSettings({ brandData, onDataChange }: Props) {
     setUploading(true);
     try {
       const logoUrl = await uploadLogo(file);
+      console.log('Logo uploaded, URL:', logoUrl);
+      
       if (logoUrl) {
-        // Update parent component with new logo URL
-        onDataChange({ logo_url: logoUrl });
-        
-        // Reload all brand data to ensure consistency
+        // Reload all brand data to ensure consistency and update parent state
         await reloadBrandData();
         setLastSaved(new Date());
         

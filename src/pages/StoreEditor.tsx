@@ -132,6 +132,8 @@ export default function StoreEditor() {
         .eq('user_id', user.id)
         .maybeSingle();
 
+      console.log('Loaded brand settings:', brand);
+
       if (brandError) {
         console.error('Error loading brand:', brandError);
         // Continue même si les données de marque ne sont pas trouvées

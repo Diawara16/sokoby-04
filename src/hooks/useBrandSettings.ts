@@ -23,8 +23,9 @@ export const useBrandSettings = () => {
         .from('brand_settings')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
+      console.log('fetchBrandSettings result:', data);
       if (error) throw error;
       return data;
     } catch (error) {
@@ -86,6 +87,8 @@ export const useBrandSettings = () => {
         .from('brand_assets')
         .getPublicUrl(filePath);
 
+      console.log('Logo uploaded to storage, public URL:', publicUrl);
+
     // Update brand settings with new logo while preserving existing data
     let updateError;
     
@@ -111,7 +114,12 @@ export const useBrandSettings = () => {
       updateError = error;
     }
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Error updating brand settings with logo:', updateError);
+        throw updateError;
+      }
+
+      console.log('Brand settings updated with logo successfully');
 
       toast({
         title: "Succès",
