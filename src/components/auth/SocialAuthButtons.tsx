@@ -4,6 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { isPreviewEnv } from "@/utils/env";
 
 export const SocialAuthButtons = () => {
   const { toast } = useToast();
@@ -36,17 +37,30 @@ export const SocialAuthButtons = () => {
   const handleGoogleSignup = async () => {
     try {
       console.log("Démarrage de l'authentification Google...");
-      const { error } = await supabase.auth.signInWithOAuth({
+      
+      // In preview environment, open in new tab to avoid iframe restrictions
+      const inPreview = isPreviewEnv();
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/connexion`,
-          skipBrowserRedirect: false,
+          skipBrowserRedirect: inPreview,
           queryParams: {
             access_type: 'offline',
             prompt: 'select_account',
           }
         },
       });
+
+      // If in preview, manually open the auth URL in a new tab
+      if (inPreview && data?.url) {
+        window.open(data.url, '_blank', 'noopener,noreferrer');
+        toast({
+          title: "Authentification en cours",
+          description: "Une nouvelle fenêtre s'est ouverte pour l'authentification Google.",
+        });
+      }
 
       if (error) {
         console.error('Erreur d\'authentification Google:', error);
