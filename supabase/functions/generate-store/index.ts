@@ -39,14 +39,16 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
     console.log('Supabase client initialized');
 
-    // Check if brand settings already exist
+    // Check if brand settings already exist (including logo_url, colors, slogan)
+    // This ensures all branding is preserved across stores
     const { data: existingBrand } = await supabase
       .from('brand_settings')
       .select('*')
       .eq('user_id', userId)
       .maybeSingle();
 
-    // Only apply premium theme if no existing brand settings (preserve logo, colors, slogan)
+    // Only apply premium theme if no existing brand settings
+    // If brand settings exist, ALL fields are preserved (logo_url, colors, slogan)
     if (!existingBrand) {
       const { error: themeError } = await supabase
         .from('brand_settings')
@@ -62,7 +64,12 @@ serve(async (req) => {
       }
       console.log('Premium theme applied successfully');
     } else {
-      console.log('Brand settings already exist, preserving them');
+      console.log('Brand settings already exist - preserving all fields:', {
+        logo_url: existingBrand.logo_url,
+        primary_color: existingBrand.primary_color,
+        secondary_color: existingBrand.secondary_color,
+        slogan: existingBrand.slogan
+      });
     }
 
     // Get Lovable AI API key

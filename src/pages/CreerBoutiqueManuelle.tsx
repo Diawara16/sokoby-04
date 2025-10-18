@@ -150,13 +150,14 @@ export default function CreerBoutiqueManuelle() {
       }
 
       // Check if brand settings exist before updating
+      // This ensures we don't overwrite existing logo_url, slogan, or colors
       const { data: existingBrand } = await supabase
         .from('brand_settings')
         .select('*')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      // Only update colors if no existing brand settings (preserve logo and slogan)
+      // Only create brand settings if none exist (preserves logo_url, slogan, colors)
       if (!existingBrand) {
         const { error: brandError } = await supabase
           .from('brand_settings')
@@ -168,9 +169,16 @@ export default function CreerBoutiqueManuelle() {
 
         if (brandError) {
           console.error('Error saving brand settings:', brandError);
+        } else {
+          console.log('Created new brand settings with form colors');
         }
       } else {
-        console.log('Brand settings already exist, preserving them');
+        console.log('Brand settings already exist - preserving all fields including logo_url:', {
+          logo: existingBrand.logo_url,
+          primary: existingBrand.primary_color,
+          secondary: existingBrand.secondary_color,
+          slogan: existingBrand.slogan
+        });
       }
 
       toast({

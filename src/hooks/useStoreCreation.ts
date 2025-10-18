@@ -201,7 +201,7 @@ export const useStoreCreation = () => {
       // Étape 5: Vérifier et appliquer le thème si nécessaire
       updateProgress(80, 'finalizing');
       try {
-        // Check if brand settings already exist
+        // Check if brand settings already exist (including logo_url, colors, slogan)
         const { data: existingBrand } = await supabase
           .from('brand_settings')
           .select('*')
@@ -209,6 +209,7 @@ export const useStoreCreation = () => {
           .maybeSingle();
 
         // Only create default brand settings if none exist
+        // This preserves existing logo_url, slogan, and colors across all stores
         if (!existingBrand) {
           const { error: themeError } = await supabase
             .from('brand_settings')
@@ -221,8 +222,14 @@ export const useStoreCreation = () => {
           if (themeError) {
             console.warn("Erreur lors de l'application du thème:", themeError);
           }
+          console.log("Created new brand settings with default theme");
         } else {
-          console.log("Brand settings already exist, preserving them");
+          console.log("Brand settings already exist - preserving logo_url, colors, and slogan:", {
+            logo: existingBrand.logo_url,
+            primary: existingBrand.primary_color,
+            secondary: existingBrand.secondary_color,
+            slogan: existingBrand.slogan
+          });
         }
       } catch (themeError) {
         console.warn("Impossible d'appliquer le thème premium");
