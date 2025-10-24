@@ -32,7 +32,7 @@ export const StoreSuccessPopup = ({ open, onOpenChange, isAI = false }: StoreSuc
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {/* ✅ Reduced popup size & padding */}
-      <DialogContent className="sm:max-w-[350px] w-[90%] bg-white rounded-xl shadow-lg p-0 border-0 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[250px] w-[80%] bg-white rounded-xl shadow-lg p-0 border-0 max-h-[90vh] overflow-y-auto">
         <div className="p-5 text-center space-y-5">
           {/* Animated Icon */}
           <div className="flex justify-center">
@@ -42,7 +42,7 @@ export const StoreSuccessPopup = ({ open, onOpenChange, isAI = false }: StoreSuc
                 <div className="absolute inset-0 flex items-center justify-center text-2xl">⚙️</div>
               </div>
             ) : (
-              <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
                 <span className="text-3xl">✅</span>
               </div>
             )}
