@@ -19,13 +19,9 @@ interface StoreSettingsFormProps {
   onSave: () => void;
 }
 
-export const StoreSettingsForm = ({ 
-  settings, 
-  onFieldChange,
-  onSave 
-}: StoreSettingsFormProps) => {
+export const StoreSettingsForm = ({ settings, onFieldChange, onSave }: StoreSettingsFormProps) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Tabs defaultValue="general" className="space-y-4">
         <TabsList>
           <TabsTrigger value="general">Général</TabsTrigger>
@@ -45,7 +41,7 @@ export const StoreSettingsForm = ({
                 <Input
                   id="store_name"
                   value={settings.store_name}
-                  onChange={(e) => onFieldChange('store_name', e.target.value)}
+                  onChange={(e) => onFieldChange("store_name", e.target.value)}
                   placeholder="Ma boutique"
                 />
               </div>
@@ -53,8 +49,8 @@ export const StoreSettingsForm = ({
               <div>
                 <Label htmlFor="timezone">Fuseau horaire</Label>
                 <Select
-                  value={settings.timezone || 'Europe/Paris'}
-                  onValueChange={(value) => onFieldChange('timezone', value)}
+                  value={settings.timezone || "Europe/Paris"}
+                  onValueChange={(value) => onFieldChange("timezone", value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez un fuseau horaire" />
@@ -72,8 +68,8 @@ export const StoreSettingsForm = ({
               <div>
                 <Label htmlFor="default_currency">Devise par défaut</Label>
                 <Select
-                  value={settings.default_currency || 'EUR'}
-                  onValueChange={(value) => onFieldChange('default_currency', value)}
+                  value={settings.default_currency || "EUR"}
+                  onValueChange={(value) => onFieldChange("default_currency", value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez une devise" />
@@ -91,8 +87,8 @@ export const StoreSettingsForm = ({
               <div>
                 <Label htmlFor="default_language">Langue par défaut</Label>
                 <Select
-                  value={settings.default_language || 'fr'}
-                  onValueChange={(value) => onFieldChange('default_language', value)}
+                  value={settings.default_language || "fr"}
+                  onValueChange={(value) => onFieldChange("default_language", value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez une langue" />
@@ -114,9 +110,9 @@ export const StoreSettingsForm = ({
           <Card>
             <CardContent className="pt-6 space-y-4">
               <ContactFields
-                storeEmail={settings.store_email || ''}
-                storePhone={settings.store_phone || ''}
-                storeAddress={settings.store_address || ''}
+                storeEmail={settings.store_email || ""}
+                storePhone={settings.store_phone || ""}
+                storeAddress={settings.store_address || ""}
                 onChange={onFieldChange}
               />
             </CardContent>
@@ -127,11 +123,11 @@ export const StoreSettingsForm = ({
           <Card>
             <CardContent className="pt-6">
               <BillingFields
-                vatNumber={settings.vat_number || ''}
+                vatNumber={settings.vat_number || ""}
                 vatRate={settings.vat_rate || 20}
-                invoicePrefix={settings.invoice_prefix || ''}
-                invoiceFooter={settings.invoice_footer_text || ''}
-                invoiceLegalNotice={settings.invoice_legal_notice || ''}
+                invoicePrefix={settings.invoice_prefix || ""}
+                invoiceFooter={settings.invoice_footer_text || ""}
+                invoiceLegalNotice={settings.invoice_legal_notice || ""}
                 invoiceTemplate={settings.invoice_template || {}}
                 onChange={onFieldChange}
               />
@@ -143,12 +139,14 @@ export const StoreSettingsForm = ({
           <Card>
             <CardContent className="pt-6">
               <GDPRSettings
-                gdprSettings={settings.gdpr_settings || {
-                  cookie_consent_enabled: true,
-                  privacy_policy_url: null,
-                  cookie_duration_days: 30,
-                  data_retention_months: 24
-                }}
+                gdprSettings={
+                  settings.gdpr_settings || {
+                    cookie_consent_enabled: true,
+                    privacy_policy_url: null,
+                    cookie_duration_days: 30,
+                    data_retention_months: 24,
+                  }
+                }
                 onChange={onFieldChange}
               />
             </CardContent>
@@ -159,13 +157,15 @@ export const StoreSettingsForm = ({
           <Card>
             <CardContent className="pt-6">
               <DisplaySettings
-                displaySettings={settings.display_settings || {
-                  date_format: "dd/MM/yyyy",
-                  products_per_page: 12,
-                  show_out_of_stock: true,
-                  show_low_stock_warning: true,
-                  low_stock_threshold: 5
-                }}
+                displaySettings={
+                  settings.display_settings || {
+                    date_format: "dd/MM/yyyy",
+                    products_per_page: 12,
+                    show_out_of_stock: true,
+                    show_low_stock_warning: true,
+                    low_stock_threshold: 5,
+                  }
+                }
                 onChange={onFieldChange}
               />
             </CardContent>
@@ -176,13 +176,15 @@ export const StoreSettingsForm = ({
           <Card>
             <CardContent className="pt-6">
               <SocialMediaSettings
-                socialMedia={settings.social_media || {
-                  facebook: null,
-                  instagram: null,
-                  twitter: null,
-                  linkedin: null,
-                  youtube: null
-                }}
+                socialMedia={
+                  settings.social_media || {
+                    facebook: null,
+                    instagram: null,
+                    twitter: null,
+                    linkedin: null,
+                    youtube: null,
+                  }
+                }
                 onChange={onFieldChange}
               />
             </CardContent>
@@ -193,13 +195,15 @@ export const StoreSettingsForm = ({
           <Card>
             <CardContent className="pt-6">
               <NotificationSettings
-                notificationSettings={settings.notification_settings || {
-                  order_updates: true,
-                  stock_alerts: true,
-                  marketing_emails: true,
-                  security_alerts: true,
-                  newsletter: false
-                }}
+                notificationSettings={
+                  settings.notification_settings || {
+                    order_updates: true,
+                    stock_alerts: true,
+                    marketing_emails: true,
+                    security_alerts: true,
+                    newsletter: false,
+                  }
+                }
                 onChange={onFieldChange}
               />
             </CardContent>

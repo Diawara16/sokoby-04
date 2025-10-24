@@ -33,7 +33,7 @@ export const StoreSuccessPopup = ({ open, onOpenChange, isAI = false }: StoreSuc
     <Dialog open={open} onOpenChange={onOpenChange}>
       {/* ✅ Reduced popup size & padding */}
       <DialogContent className="sm:max-w-[250px] w-[80%] bg-white rounded-xl shadow-lg p-0 border-0 max-h-[90vh] overflow-y-auto">
-        <div className="p-5 text-center space-y-5">
+        <div className="p-5 text-center space-y-4">
           {/* Animated Icon */}
           <div className="flex justify-center">
             {isAI ? (
