@@ -1,10 +1,12 @@
 
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Bot, Wand2, Sparkles, ShoppingBag, Zap, TrendingUp } from "lucide-react";
+import { AIStoreDialog } from "@/components/store-creation/AIStoreDialog";
 
 export function AIStoreSection() {
+  const [aiDialogOpen, setAIDialogOpen] = useState(false);
   const features = [
     {
       icon: <Bot className="h-8 w-8 text-primary" />,
@@ -57,24 +59,35 @@ export function AIStoreSection() {
 
         <div className="text-center space-y-6">
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link to="/creer-boutique-ia">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg font-semibold">
-                <Wand2 className="h-5 w-5 mr-2" />
-                Créer ma boutique IA
-              </Button>
-            </Link>
-            <Link to="/boutique-ia">
-              <Button variant="outline" size="lg" className="px-8 py-4 text-lg font-semibold border-primary text-primary hover:bg-primary/5">
-                <ShoppingBag className="h-5 w-5 mr-2" />
-                Voir les boutiques IA
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg font-semibold"
+              onClick={() => setAIDialogOpen(true)}
+            >
+              <Wand2 className="h-5 w-5 mr-2" />
+              Créer ma boutique IA
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="px-8 py-4 text-lg font-semibold border-primary text-primary hover:bg-primary/5"
+              onClick={() => setAIDialogOpen(true)}
+            >
+              <ShoppingBag className="h-5 w-5 mr-2" />
+              Découvrir la boutique IA
+            </Button>
           </div>
           <p className="text-sm text-gray-500">
-            Essai gratuit • Aucune carte de crédit requise
+            Paiement sécurisé via Shopify Checkout
           </p>
         </div>
       </div>
+
+      <AIStoreDialog
+        open={aiDialogOpen}
+        onOpenChange={setAIDialogOpen}
+        onCheckout={() => {}}
+      />
     </section>
   );
 }
