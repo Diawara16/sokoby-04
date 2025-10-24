@@ -56,3 +56,6 @@ verify_jwt = true
 
 [functions.create-store]
 verify_jwt = false
+
+[functions.translate]
+verify_jwt = true

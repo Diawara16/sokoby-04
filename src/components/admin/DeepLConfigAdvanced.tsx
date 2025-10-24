@@ -12,51 +12,17 @@ import { Settings, Globe, Zap, BarChart3, RefreshCw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export function DeepLConfigAdvanced() {
-  const [apiKey, setApiKey] = useState('');
   const [isTestingTranslation, setIsTestingTranslation] = useState(false);
-  const [cacheStats, setCacheStats] = useState({ totalCached: 0, isConfigured: false });
+  const [cacheStats, setCacheStats] = useState({ totalCached: 0, isConfigured: true });
   const { isTranslationEnabled, setTranslationEnabled } = useLanguageContext();
   const { toast } = useToast();
 
   useEffect(() => {
     const stats = deepLService.getCacheStats();
     setCacheStats(stats);
-    
-    const savedKey = localStorage.getItem('deepl_api_key');
-    if (savedKey) {
-      setApiKey(savedKey);
-    }
   }, []);
 
-  const handleSaveApiKey = () => {
-    if (!apiKey.trim()) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez entrer une clé API valide.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    deepLService.setApiKey(apiKey);
-    setCacheStats(deepLService.getCacheStats());
-    
-    toast({
-      title: "Clé API sauvegardée",
-      description: "La clé DeepL a été configurée avec succès.",
-    });
-  };
-
   const handleTestTranslation = async () => {
-    if (!deepLService.isReady()) {
-      toast({
-        title: "Configuration requise",
-        description: "Veuillez d'abord configurer votre clé API DeepL.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsTestingTranslation(true);
     
     try {
@@ -77,7 +43,7 @@ export function DeepLConfigAdvanced() {
     } catch (error) {
       toast({
         title: "Erreur de test",
-        description: "La traduction de test a échoué. Vérifiez votre clé API.",
+        description: "La traduction de test a échoué. Vérifiez la configuration serveur.",
         variant: "destructive",
       });
     } finally {
@@ -121,32 +87,14 @@ export function DeepLConfigAdvanced() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="api-key">Clé API DeepL</Label>
-                <Input
-                  id="api-key"
-                  type="password"
-                  placeholder="Entrez votre clé API DeepL"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                />
-                <p className="text-xs text-gray-500">
-                  Obtenez votre clé API gratuite sur{' '}
-                  <a 
-                    href="https://www.deepl.com/pro-api" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    deepl.com/pro-api
-                  </a>
+                <Label>Configuration de la clé API</Label>
+                <p className="text-sm text-gray-600">
+                  La clé API DeepL est maintenant gérée de manière sécurisée côté serveur via les secrets Supabase.
+                  Contactez un administrateur pour modifier la clé API.
                 </p>
               </div>
 
               <div className="flex gap-2">
-                <Button onClick={handleSaveApiKey} disabled={!apiKey.trim()}>
-                  <Settings className="h-4 w-4 mr-2" />
-                  Sauvegarder
-                </Button>
                 <Button 
                   variant="outline" 
                   onClick={handleTestTranslation}

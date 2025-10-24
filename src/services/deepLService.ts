@@ -1,10 +1,4 @@
-
-interface DeepLResponse {
-  translations: Array<{
-    detected_source_language: string;
-    text: string;
-  }>;
-}
+import { supabase } from '@/integrations/supabase/client';
 
 interface TranslationCache {
   [key: string]: string;
@@ -17,26 +11,8 @@ interface TranslationOptions {
 }
 
 class DeepLService {
-  private apiKey: string = '';
   private cache: TranslationCache = {};
-  private baseUrl = 'https://api-free.deepl.com/v2';
-  private isConfigured = false;
-
-  constructor() {
-    this.loadApiKey();
-  }
-
-  private loadApiKey() {
-    const storedKey = localStorage.getItem('deepl_api_key');
-    this.apiKey = storedKey || '';
-    this.isConfigured = !!this.apiKey;
-  }
-
-  public setApiKey(key: string) {
-    this.apiKey = key;
-    this.isConfigured = !!key;
-    localStorage.setItem('deepl_api_key', key);
-  }
+  private isConfigured = true; // Always true now that key is server-side
 
   public isReady(): boolean {
     return this.isConfigured;
@@ -61,32 +37,20 @@ class DeepLService {
       return this.cache[cacheKey];
     }
 
-    if (!this.isConfigured) {
-      console.warn('DeepL API key not configured, returning fallback or original text');
-      return options.fallback || text;
-    }
-
     try {
-      const response = await fetch(`${this.baseUrl}/translate`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `DeepL-Auth-Key ${this.apiKey}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
+      const { data, error } = await supabase.functions.invoke('translate', {
+        body: {
+          text,
+          targetLang: this.mapLanguageCode(targetLang),
+          sourceLang: 'FR',
         },
-        body: new URLSearchParams({
-          text: text,
-          target_lang: this.mapLanguageCode(targetLang),
-          source_lang: 'FR',
-        }),
       });
 
-      if (!response.ok) {
-        throw new Error(`DeepL API error: ${response.status} - ${response.statusText}`);
+      if (error) {
+        throw error;
       }
 
-      const data: DeepLResponse = await response.json();
-      const translatedText = data.translations[0]?.text || text;
-
+      const translatedText = data?.translatedText || options.fallback || text;
       this.cache[cacheKey] = translatedText;
       return translatedText;
     } catch (error) {
@@ -132,7 +96,7 @@ class DeepLService {
   }
 
   async preloadCommonTranslations(texts: string[], targetLang: string) {
-    if (targetLang === 'fr' || !this.isConfigured) return;
+    if (targetLang === 'fr') return;
     
     const promises = texts.map(text => this.translate(text, targetLang));
     try {
@@ -151,6 +115,11 @@ class DeepLService {
       totalCached: Object.keys(this.cache).length,
       isConfigured: this.isConfigured,
     };
+  }
+
+  // Deprecated methods - no longer needed with server-side key
+  public setApiKey(_key: string) {
+    console.warn('setApiKey is deprecated - DeepL key is now managed server-side');
   }
 }
 

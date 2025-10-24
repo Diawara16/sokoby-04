@@ -1,8 +1,7 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
@@ -10,18 +9,8 @@ import { useLanguageContext } from "@/contexts/LanguageContext";
 import { Settings, Globe, Zap } from "lucide-react";
 
 export function DeepLConfig() {
-  const [apiKey, setApiKey] = useState('');
   const { isTranslationEnabled, setTranslationEnabled } = useLanguageContext();
   const { toast } = useToast();
-
-  const handleSaveApiKey = () => {
-    // En production, ceci devrait être sauvegardé dans Supabase secrets
-    localStorage.setItem('deepl_api_key', apiKey);
-    toast({
-      title: "Clé API sauvegardée",
-      description: "La clé DeepL a été configurée avec succès.",
-    });
-  };
 
   const handleTestTranslation = async () => {
     try {
@@ -64,32 +53,14 @@ export function DeepLConfig() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="api-key">Clé API DeepL</Label>
-            <Input
-              id="api-key"
-              type="password"
-              placeholder="Entrez votre clé API DeepL"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-            />
-            <p className="text-xs text-gray-500">
-              Obtenez votre clé API gratuite sur{' '}
-              <a 
-                href="https://www.deepl.com/pro-api" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                deepl.com/pro-api
-              </a>
+            <Label>Configuration de la clé API</Label>
+            <p className="text-sm text-gray-600">
+              La clé API DeepL est maintenant gérée de manière sécurisée côté serveur via les secrets Supabase.
+              Contactez un administrateur pour modifier la clé API.
             </p>
           </div>
 
           <div className="flex gap-2">
-            <Button onClick={handleSaveApiKey} disabled={!apiKey.trim()}>
-              <Settings className="h-4 w-4 mr-2" />
-              Sauvegarder la clé
-            </Button>
             <Button 
               variant="outline" 
               onClick={handleTestTranslation}
