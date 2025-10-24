@@ -920,7 +920,7 @@ export type Database = {
       delivery_routes: {
         Row: {
           created_at: string
-          estimated_delivery_time: unknown | null
+          estimated_delivery_time: unknown
           id: string
           optimization_score: number | null
           route_data: Json
@@ -930,7 +930,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          estimated_delivery_time?: unknown | null
+          estimated_delivery_time?: unknown
           id?: string
           optimization_score?: number | null
           route_data: Json
@@ -940,7 +940,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          estimated_delivery_time?: unknown | null
+          estimated_delivery_time?: unknown
           id?: string
           optimization_score?: number | null
           route_data?: Json
@@ -2146,7 +2146,7 @@ export type Database = {
           content_id: string
           content_type: string
           created_at: string
-          duration: unknown | null
+          duration: unknown
           expires_at: string | null
           id: string
           moderator_id: string
@@ -2158,7 +2158,7 @@ export type Database = {
           content_id: string
           content_type: string
           created_at?: string
-          duration?: unknown | null
+          duration?: unknown
           expires_at?: string | null
           id?: string
           moderator_id: string
@@ -2170,7 +2170,7 @@ export type Database = {
           content_id?: string
           content_type?: string
           created_at?: string
-          duration?: unknown | null
+          duration?: unknown
           expires_at?: string | null
           id?: string
           moderator_id?: string
@@ -3877,7 +3877,7 @@ export type Database = {
       user_sanctions: {
         Row: {
           created_at: string
-          duration: unknown | null
+          duration: unknown
           expires_at: string | null
           id: string
           is_active: boolean
@@ -3889,7 +3889,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          duration?: unknown | null
+          duration?: unknown
           expires_at?: string | null
           id?: string
           is_active?: boolean
@@ -3901,7 +3901,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          duration?: unknown | null
+          duration?: unknown
           expires_at?: string | null
           id?: string
           is_active?: boolean
@@ -3989,14 +3989,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      check_dns_records: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      check_subscriptions: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      check_dns_records: { Args: never; Returns: undefined }
+      check_subscriptions: { Args: never; Returns: undefined }
+      check_user_access: { Args: { user_uuid: string }; Returns: boolean }
       check_user_sanctions: {
         Args: { user_uuid: string }
         Returns: {
@@ -4007,10 +4002,7 @@ export type Database = {
           suspend_expires_at: string
         }[]
       }
-      get_secret: {
-        Args: { name: string }
-        Returns: string
-      }
+      get_secret: { Args: { name: string }; Returns: string }
       get_store_brand_public: {
         Args: { store_user_id: string }
         Returns: {
@@ -4032,18 +4024,9 @@ export type Database = {
           rating: number
         }[]
       }
-      is_profile_public: {
-        Args: { user_uuid: string }
-        Returns: boolean
-      }
-      update_flash_sales_status: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      use_ai_credit: {
-        Args: { user_uuid: string }
-        Returns: boolean
-      }
+      is_profile_public: { Args: { user_uuid: string }; Returns: boolean }
+      update_flash_sales_status: { Args: never; Returns: undefined }
+      use_ai_credit: { Args: { user_uuid: string }; Returns: boolean }
     }
     Enums: {
       marketplace_platform:

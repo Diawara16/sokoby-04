@@ -19,24 +19,42 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Received request:', req);
-    const { niche, storeId, userId } = await req.json() as StoreRequest;
-    console.log('Request data:', { niche, storeId, userId });
-
-    if (!niche || !storeId || !userId) {
-      console.error('Missing required fields:', { niche, storeId, userId });
-      throw new Error('Missing required fields');
+    // Extract and validate authenticated user
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
     if (!supabaseUrl || !supabaseKey) {
-      console.error('Missing Supabase configuration');
       throw new Error('Missing Supabase configuration');
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid authentication' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('Authenticated user:', user.id);
+    const { niche, storeId } = await req.json() as Omit<StoreRequest, 'userId'>;
+    const userId = user.id; // Use authenticated user ID only
+    console.log('Request data:', { niche, storeId, userId });
+
+    if (!niche || !storeId) {
+      console.error('Missing required fields:', { niche, storeId });
+      throw new Error('Missing required fields');
+    }
+
     console.log('Supabase client initialized');
 
     // Check if brand settings already exist (including logo_url, colors, slogan)
