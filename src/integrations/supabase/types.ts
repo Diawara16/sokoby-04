@@ -3874,6 +3874,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          granted_at: string | null
+          granted_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_sanctions: {
         Row: {
           created_at: string
@@ -4024,11 +4048,19 @@ export type Database = {
           rating: number
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       is_profile_public: { Args: { user_uuid: string }; Returns: boolean }
       update_flash_sales_status: { Args: never; Returns: undefined }
       use_ai_credit: { Args: { user_uuid: string }; Returns: boolean }
     }
     Enums: {
+      app_role: "user" | "moderator" | "admin"
       marketplace_platform:
         | "facebook"
         | "instagram"
@@ -4164,6 +4196,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["user", "moderator", "admin"],
       marketplace_platform: [
         "facebook",
         "instagram",
