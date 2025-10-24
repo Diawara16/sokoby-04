@@ -44,3 +44,12 @@ verify_jwt = true
 
 [functions.create-billing-portal-session]
 verify_jwt = true
+
+[functions.create-manual-store]
+verify_jwt = false
+
+[functions.init-store]
+verify_jwt = false
+
+[functions.create-store]
+verify_jwt = false

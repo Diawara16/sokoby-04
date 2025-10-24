@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Sparkles } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AIStoreDialogProps {
   open: boolean;
@@ -44,7 +45,20 @@ export const AIStoreDialog = ({ open, onOpenChange, onCheckout }: AIStoreDialogP
     setLoading(true);
 
     try {
-      // Save form data temporarily
+      // Save form data and get checkout URL
+      const { data, error } = await supabase.functions.invoke('init-store', {
+        body: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          niche: formData.niche,
+          plan: formData.plan === "80" ? "pro" : "starter"
+        }
+      });
+
+      if (error) throw error;
+
+      // Save to session storage for later retrieval
       sessionStorage.setItem('aiStoreData', JSON.stringify({
         name: formData.name,
         email: formData.email,
@@ -54,9 +68,9 @@ export const AIStoreDialog = ({ open, onOpenChange, onCheckout }: AIStoreDialogP
       }));
 
       // Redirect to Shopify checkout
-      const checkoutUrl = `/checkout?plan=${formData.plan}&email=${encodeURIComponent(formData.email)}`;
-      window.location.href = checkoutUrl;
+      window.location.href = data.checkoutUrl;
     } catch (error) {
+      console.error('Error initializing AI store:', error);
       toast({
         title: "Erreur",
         description: "Impossible de procéder au paiement. Veuillez réessayer.",

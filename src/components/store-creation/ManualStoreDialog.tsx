@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Upload } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ManualStoreDialogProps {
   open: boolean;
@@ -42,27 +43,25 @@ export const ManualStoreDialog = ({ open, onOpenChange, onSuccess }: ManualStore
     setLoading(true);
 
     try {
-      // TODO: Replace with actual API endpoint
-      const response = await fetch('/api/create-manual-store', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('create-manual-store', {
+        body: {
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
           niche: formData.niche
-        })
+        }
       });
 
-      if (response.ok) {
-        toast({
-          title: "✅ Boutique créée avec succès",
-          description: "Votre boutique gratuite est prête à être utilisée.",
-        });
-        onOpenChange(false);
-        onSuccess();
-      }
+      if (error) throw error;
+
+      toast({
+        title: "✅ Boutique créée avec succès",
+        description: "Votre boutique gratuite est prête à être utilisée.",
+      });
+      onOpenChange(false);
+      onSuccess();
     } catch (error) {
+      console.error('Error creating manual store:', error);
       toast({
         title: "Erreur",
         description: "Impossible de créer la boutique. Veuillez réessayer.",
