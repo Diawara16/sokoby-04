@@ -1,9 +1,7 @@
-
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Shield, Zap } from "lucide-react";
-import { Link } from "react-router-dom";
 import { T } from "@/components/translation/T";
+import { StoreCreationButtons } from "@/components/store-creation/StoreCreationButtons";
 
 export function CTASection() {
   return (
@@ -38,22 +36,8 @@ export function CTASection() {
           </div>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-4 mb-8">
-          <Link to="/pricing">
-            <Button 
-              size="lg" 
-              className="bg-white text-red-600 hover:bg-red-50 text-lg px-8 py-4 font-semibold"
-            >
-              🎯 <T>Créer ma boutique gratuitement</T>
-            </Button>
-          </Link>
-          <Button 
-            variant="outline" 
-            size="lg"
-            className="border-white text-white hover:bg-white hover:text-red-600 text-lg px-8 py-4"
-          >
-            📞 <T>Démo personnalisée</T>
-          </Button>
+        <div className="mb-8">
+          <StoreCreationButtons variant="cta" />
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
