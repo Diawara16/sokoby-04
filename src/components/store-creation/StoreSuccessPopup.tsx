@@ -37,7 +37,7 @@ export const StoreSuccessPopup = ({ open, onOpenChange, isAI = false }: StoreSuc
           {/* Animated Icon */}
           <div className="flex justify-center">
             {isAI ? (
-              <div className="relative w-14 h-14">
+              <div className="relative w-10 h-10">
                 <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
                 <div className="absolute inset-0 flex items-center justify-center text-2xl">⚙️</div>
               </div>
