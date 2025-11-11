@@ -1,5 +1,3 @@
-import axios from "axios";
-
 const clientId = import.meta.env.VITE_SHOPIFY_CLIENT_ID;
 const clientSecret = import.meta.env.VITE_SHOPIFY_SECRET;
 const redirectUri = import.meta.env.VITE_SHOPIFY_REDIRECT_URI;
@@ -14,11 +12,22 @@ export const getShopifyAuthUrl = (shop: string) => {
 export const exchangeShopifyToken = async (shop: string, code: string) => {
   const url = `https://${shop}/admin/oauth/access_token`;
 
-  const { data } = await axios.post(url, {
-    client_id: clientId,
-    client_secret: clientSecret,
-    code,
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      client_id: clientId,
+      client_secret: clientSecret,
+      code,
+    }),
   });
 
+  if (!response.ok) {
+    throw new Error("Failed to exchange Shopify token");
+  }
+
+  const data = await response.json();
   return data.access_token;
 };
