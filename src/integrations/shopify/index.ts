@@ -26,3 +26,13 @@ export {
   getShopifyAuthUrl,
   exchangeShopifyToken,
 } from "./shopifyAuth";
+
+// Service Layer (higher-level business operations)
+export {
+  shopifyService,
+  shopifyProductService,
+  shopifyOrderService,
+  shopifyInventoryService,
+  shopifyShopService,
+  ShopifyServiceError,
+} from "./shopifyService";
