@@ -15,18 +15,40 @@ serve(async (req) => {
     const url = new URL(req.url);
     const checkoutId = url.searchParams.get("checkoutId");
     const email = url.searchParams.get("email");
+    const userId = url.searchParams.get("userId");
 
-    console.log("Payment success received:", { checkoutId, email });
+    console.log("Payment success received:", { checkoutId, email, userId });
 
-    const store = {
-      id: Date.now(),
-      type: "ai",
-      email,
-      checkoutId,
-      createdAt: new Date().toISOString(),
-    };
+    if (!userId) {
+      throw new Error("User ID is required");
+    }
 
-    console.log("AI store created:", store);
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Missing Supabase configuration');
+    }
+
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Update store status to active
+    const { error: updateError } = await supabase
+      .from('store_settings')
+      .update({
+        status: 'active',
+        payment_status: 'paid',
+        checkout_id: checkoutId,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('user_id', userId);
+
+    if (updateError) {
+      console.error("Error updating store:", updateError);
+      throw updateError;
+    }
+
+    console.log("AI store activated successfully");
 
     // Redirect to dashboard with success parameter
     return new Response(null, {

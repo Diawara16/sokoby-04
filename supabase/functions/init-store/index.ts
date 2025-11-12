@@ -49,18 +49,43 @@ serve(async (req) => {
       );
     }
 
-    const { name, email, phone, niche, plan } = await req.json();
-    console.log("AI store initialization:", { name, email, phone, niche, plan, userId: user.id });
+    const { name, email, phone, niche, plan, shopifyShop } = await req.json();
+    console.log("AI store initialization:", { name, email, phone, niche, plan, shopifyShop, userId: user.id });
+
+    // Store initialization data temporarily
+    const { error: storeError } = await supabase
+      .from('store_settings')
+      .upsert({
+        id: user.id,
+        store_name: name,
+        niche: niche,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+
+    if (storeError) {
+      console.error("Error storing initialization data:", storeError);
+    }
 
     // Determine checkout URL based on plan
     const checkoutUrl = plan === "pro"
       ? "https://checkout.shopify.com/pro-plan-checkout-url"
       : "https://checkout.shopify.com/starter-plan-checkout-url";
 
-    console.log("Returning checkout URL:", checkoutUrl);
+    // Generate Shopify OAuth URL
+    const clientId = Deno.env.get('SHOPIFY_CLIENT_ID');
+    const redirectUri = Deno.env.get('SHOPIFY_REDIRECT_URI') || 'https://your-app.lovable.app/shopify/callback';
+    const scopes = "read_products,write_products,read_orders,write_orders";
+    
+    // Encode checkout URL in state parameter
+    const state = btoa(JSON.stringify({ checkoutUrl, userId: user.id, email }));
+    const shopifyAuthUrl = `https://${shopifyShop}/admin/oauth/authorize?client_id=${clientId}&scope=${scopes}&redirect_uri=${redirectUri}&state=${state}`;
+
+    console.log("Returning Shopify auth URL:", shopifyAuthUrl);
 
     return new Response(
-      JSON.stringify({ checkoutUrl }),
+      JSON.stringify({ shopifyAuthUrl, checkoutUrl }),
       {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

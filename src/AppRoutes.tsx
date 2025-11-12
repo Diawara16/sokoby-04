@@ -51,6 +51,7 @@ import Applications from "@/pages/Applications";
 import TermsOfService from "@/pages/legal/TermsOfService";
 import PrivacyPolicy from "@/pages/legal/PrivacyPolicy";
 import Contact from "@/pages/Contact";
+import ShopifyCallback from "@/pages/ShopifyCallback";
 
 export function AppRoutes() {
   const location = useLocation();
@@ -115,6 +116,7 @@ export function AppRoutes() {
       <Route path="/support" element={<Support />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/success" element={<Success />} />
+      <Route path="/shopify/callback" element={<ShopifyCallback />} />
       <Route path="/test-supabase" element={<TestSupabase />} />
       <Route path="/auth-test" element={<AuthTest />} />
       

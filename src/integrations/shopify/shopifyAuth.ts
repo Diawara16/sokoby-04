@@ -1,6 +1,6 @@
 const clientId = import.meta.env.VITE_SHOPIFY_CLIENT_ID;
 const clientSecret = import.meta.env.VITE_SHOPIFY_SECRET;
-const redirectUri = import.meta.env.VITE_SHOPIFY_REDIRECT_URI;
+const redirectUri = `${window.location.origin}/shopify/callback`;
 const scopes = "read_products,write_products,read_orders,write_orders";
 
 // 🔗 Generate Shopify OAuth URL
