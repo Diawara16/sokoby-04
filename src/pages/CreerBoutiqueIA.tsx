@@ -2,20 +2,24 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { CreationProgress } from "@/components/store-creator/CreationProgress";
-import { NicheSelector } from "@/components/store-creator/NicheSelector";
-import { useStoreCreation } from "@/hooks/useStoreCreation";
 import { useAuthAndProfile } from "@/hooks/useAuthAndProfile";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
+import { NicheSelector } from "@/components/store-creator/NicheSelector";
+import { supabase } from "@/integrations/supabase/client";
+import { getShopifyAuthUrl } from "@/integrations/shopify";
 
 const CreerBoutiqueIA = () => {
-  const { step, processStep, progress, error, storeUrl, handleNicheSelect, handleComplete } = useStoreCreation();
   const { isAuthenticated, isLoading: authLoading } = useAuthAndProfile();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedNiche, setSelectedNiche] = useState("");
+  const [selectedPlan, setSelectedPlan] = useState<'starter' | 'pro'>('starter');
+  const [shopifyConnected, setShopifyConnected] = useState(false);
+  const [shopifyDomain, setShopifyDomain] = useState("");
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   if (authLoading) {
     return (
@@ -48,14 +52,130 @@ const CreerBoutiqueIA = () => {
     );
   }
 
-  const handleNicheSelection = (niche: string) => {
-    setSelectedNiche(niche);
-    handleNicheSelect(niche);
+  const handleShopifyConnect = async () => {
+    if (!selectedNiche) {
+      toast({
+        title: "Sélectionnez une niche",
+        description: "Veuillez d'abord choisir le type de boutique",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsConnecting(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
+      // Prompt for Shopify domain
+      const domain = prompt("Entrez votre domaine Shopify (ex: votre-boutique.myshopify.com):");
+      if (!domain) {
+        setIsConnecting(false);
+        return;
+      }
+
+      const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/\/$/, '');
+      
+      // Save preliminary data before OAuth
+      await supabase.from('store_settings').upsert({
+        id: user.id,
+        store_name: selectedNiche,
+        niche: selectedNiche,
+        status: 'pending',
+        plan: selectedPlan,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+
+      // Redirect to Shopify OAuth
+      const authUrl = getShopifyAuthUrl(cleanDomain);
+      sessionStorage.setItem('shopify_flow_data', JSON.stringify({
+        niche: selectedNiche,
+        plan: selectedPlan,
+        shopDomain: cleanDomain
+      }));
+      
+      window.location.href = authUrl;
+    } catch (error) {
+      console.error("Shopify connection error:", error);
+      toast({
+        title: "Erreur de connexion",
+        description: error instanceof Error ? error.message : "Impossible de connecter Shopify",
+        variant: "destructive"
+      });
+      setIsConnecting(false);
+    }
   };
+
+  const handleStripeCheckout = async () => {
+    if (!shopifyConnected) {
+      toast({
+        title: "Connectez Shopify d'abord",
+        description: "Veuillez connecter votre boutique Shopify avant de procéder au paiement",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      // Save form data server-side
+      const { error: saveError } = await supabase.from('ai_store_orders').insert({
+        user_id: user.id,
+        niche: selectedNiche,
+        plan: selectedPlan,
+        shopify_domain: shopifyDomain,
+        status: 'pending_payment',
+        created_at: new Date().toISOString()
+      });
+
+      if (saveError) throw saveError;
+
+      // Create Stripe checkout session
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
+          planType: selectedPlan,
+          paymentMethod: 'card',
+          billingPeriod: 'monthly'
+        }
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast({
+        title: "Erreur de paiement",
+        description: error instanceof Error ? error.message : "Impossible de créer la session de paiement",
+        variant: "destructive"
+      });
+      setIsProcessing(false);
+    }
+  };
+
+  // Check if returning from Shopify OAuth
+  useState(() => {
+    const flowData = sessionStorage.getItem('shopify_flow_data');
+    if (flowData) {
+      const { niche, plan, shopDomain } = JSON.parse(flowData);
+      setSelectedNiche(niche);
+      setSelectedPlan(plan);
+      setShopifyDomain(shopDomain);
+      setShopifyConnected(true);
+      sessionStorage.removeItem('shopify_flow_data');
+    }
+  });
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Header with back button */}
         <div className="flex items-center gap-4 mb-8">
           <Button variant="ghost" size="sm" asChild>
@@ -66,80 +186,143 @@ const CreerBoutiqueIA = () => {
           </Button>
           <h1 className="text-3xl font-bold">Créer votre boutique IA</h1>
         </div>
-        
-        {step === 'niche' && (
-          <NicheSelector 
-            onSelectNiche={handleNicheSelection}
-            selectedNiche={selectedNiche}
-          />
-        )}
 
-        {step === 'progress' && (
-          <div className="max-w-2xl mx-auto">
-            <CreationProgress 
-              progress={progress}
-              processStep={processStep}
-              error={error}
-            />
-            <div className="text-center mt-6">
-              <p className="text-lg font-medium mb-2">
-                Création de votre boutique "{selectedNiche}" en cours...
-              </p>
-              <p className="text-gray-600">
-                Notre IA génère votre boutique et intègre les fournisseurs automatiquement.
-              </p>
+        {/* Store Creation Form */}
+        <div className="space-y-8">
+          {/* Step 1: Niche Selection */}
+          <div className="bg-card border rounded-lg p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
+                1
+              </div>
+              <h2 className="text-xl font-semibold">Choisissez votre type de boutique</h2>
             </div>
+            <NicheSelector 
+              onSelectNiche={setSelectedNiche}
+              selectedNiche={selectedNiche}
+            />
           </div>
-        )}
 
-        {step === 'complete' && (
-          <div className="max-w-2xl mx-auto">
-            <div className="space-y-6 text-center">
-              <div className="bg-green-50 text-green-800 p-8 rounded-lg">
-                <div className="text-6xl mb-4">🎉</div>
-                <h2 className="text-3xl font-bold mb-4">Félicitations !</h2>
-                <p className="text-lg mb-4">
-                  Votre boutique "{selectedNiche}" a été créée avec succès.
-                </p>
-                <div className="bg-white p-4 rounded-md text-sm text-gray-600 mb-6">
-                  <p className="font-medium mb-2">✅ Boutique générée automatiquement</p>
-                  <p className="font-medium mb-2">✅ Fournisseurs intégrés</p>
-                  <p className="font-medium mb-2">✅ Produits optimisés</p>
-                  <p className="font-medium">✅ SEO configuré</p>
+          {/* Step 2: Plan Selection */}
+          {selectedNiche && (
+            <div className="bg-card border rounded-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
+                  2
                 </div>
-                {storeUrl && (
-                  <p className="text-sm text-muted-foreground mb-6">
-                    Votre boutique est accessible à l'adresse : 
-                    <a 
-                      href={storeUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline ml-2 font-medium"
-                    >
-                      {storeUrl}
-                    </a>
-                  </p>
-                )}
-                <Button
-                  onClick={handleComplete}
-                  size="lg"
-                  className="bg-primary text-white px-8 py-3"
+                <h2 className="text-xl font-semibold">Choisissez votre plan *</h2>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <button
+                  onClick={() => setSelectedPlan('starter')}
+                  className={`p-6 rounded-lg border-2 transition-all text-left ${
+                    selectedPlan === 'starter'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50'
+                  }`}
                 >
-                  Gérer ma boutique
-                </Button>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-bold">Plan Starter</h3>
+                    {selectedPlan === 'starter' && (
+                      <Check className="w-5 h-5 text-primary" />
+                    )}
+                  </div>
+                  <p className="text-3xl font-bold text-primary mb-2">20€</p>
+                  <p className="text-sm text-muted-foreground">
+                    Boutique niche avec 30 produits ciblés
+                  </p>
+                </button>
+
+                <button
+                  onClick={() => setSelectedPlan('pro')}
+                  className={`p-6 rounded-lg border-2 transition-all text-left ${
+                    selectedPlan === 'pro'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-bold">Plan Pro</h3>
+                    {selectedPlan === 'pro' && (
+                      <Check className="w-5 h-5 text-primary" />
+                    )}
+                  </div>
+                  <p className="text-3xl font-bold text-primary mb-2">80€</p>
+                  <p className="text-sm text-muted-foreground">
+                    Boutique générale avec 100+ produits variés
+                  </p>
+                </button>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {error && (
-          <div className="max-w-2xl mx-auto mt-6">
-            <div className="bg-destructive/10 text-destructive p-4 rounded-md">
-              <p className="font-medium">Erreur lors de la création</p>
-              <p className="text-sm mt-1">{error}</p>
+          {/* Step 3: Shopify Connection */}
+          {selectedNiche && (
+            <div className="bg-card border rounded-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
+                  3
+                </div>
+                <h2 className="text-xl font-semibold">Connectez votre boutique Shopify</h2>
+              </div>
+              
+              {shopifyConnected ? (
+                <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
+                    <Check className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-green-800">Boutique connectée</p>
+                    <p className="text-sm text-green-600">{shopifyDomain}</p>
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  onClick={handleShopifyConnect}
+                  disabled={isConnecting || !selectedNiche}
+                  size="lg"
+                  className="w-full"
+                >
+                  <ShoppingBag className="w-5 h-5 mr-2" />
+                  {isConnecting ? "Connexion en cours..." : "Connecter ma boutique Shopify"}
+                </Button>
+              )}
+
+              <p className="text-sm text-muted-foreground mt-3">
+                Vous devez connecter votre boutique Shopify avant de procéder au paiement. 
+                Cela permet de configurer automatiquement votre boutique après paiement.
+              </p>
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Step 4: Payment */}
+          {selectedNiche && (
+            <div className="bg-card border rounded-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
+                  4
+                </div>
+                <h2 className="text-xl font-semibold">Procéder au paiement</h2>
+              </div>
+              
+              <Button
+                onClick={handleStripeCheckout}
+                disabled={!shopifyConnected || isProcessing}
+                size="lg"
+                className="w-full"
+              >
+                {isProcessing ? "Redirection vers Stripe..." : "Procéder au paiement (Stripe)"}
+              </Button>
+
+              {!shopifyConnected && (
+                <p className="text-sm text-amber-600 mt-3 flex items-center gap-2">
+                  <span className="text-lg">⚠️</span>
+                  Veuillez d'abord connecter votre boutique Shopify
+                </p>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
