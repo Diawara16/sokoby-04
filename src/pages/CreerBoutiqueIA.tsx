@@ -80,7 +80,7 @@ const CreerBoutiqueIA = () => {
       
       // Save preliminary data before OAuth
       await supabase.from('store_settings').upsert({
-        id: user.id,
+        user_id: user.id,
         store_name: selectedNiche,
         niche: selectedNiche,
         status: 'pending',
@@ -125,7 +125,7 @@ const CreerBoutiqueIA = () => {
       if (!user) throw new Error("Not authenticated");
 
       // Save form data server-side
-      const { error: saveError } = await supabase.from('ai_store_orders').insert({
+      const { error: saveError } = await supabase.from('ai_store_orders' as any).insert({
         user_id: user.id,
         niche: selectedNiche,
         plan: selectedPlan,
