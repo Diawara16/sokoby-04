@@ -271,10 +271,9 @@ const CreerBoutiqueIA = () => {
                   <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
                     <Check className="w-6 h-6 text-white" />
                   </div>
-                  <div>
-                    <p className="font-semibold text-green-800">Boutique connectée</p>
-                    <p className="text-sm text-green-600">{shopifyDomain}</p>
-                  </div>
+                  <p className="font-semibold text-green-800">
+                    Boutique connectée : {shopifyDomain}
+                  </p>
                 </div>
               ) : (
                 <Button
