@@ -229,7 +229,7 @@ const CreerBoutiqueIA = () => {
                   </div>
                   <p className="text-3xl font-bold text-primary mb-2">20€</p>
                   <p className="text-sm text-muted-foreground">
-                    Boutique niche avec 30 produits ciblés
+                    Basic AI shop with 10 products
                   </p>
                 </button>
 
@@ -249,76 +249,62 @@ const CreerBoutiqueIA = () => {
                   </div>
                   <p className="text-3xl font-bold text-primary mb-2">80€</p>
                   <p className="text-sm text-muted-foreground">
-                    Boutique générale avec 100+ produits variés
+                    Complete AI shop with 50 products + priority support
                   </p>
                 </button>
               </div>
             </div>
           )}
 
-          {/* Step 3: Shopify Connection */}
+          {/* Step 3: Shopify Connection & Payment */}
           {selectedNiche && (
             <div className="bg-card border rounded-lg p-6">
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
                   3
                 </div>
-                <h2 className="text-xl font-semibold">Connectez votre boutique Shopify</h2>
+                <h2 className="text-xl font-semibold">Connexion et paiement</h2>
               </div>
               
-              {shopifyConnected ? (
-                <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
-                    <Check className="w-6 h-6 text-white" />
-                  </div>
-                  <p className="font-semibold text-green-800">
-                    Boutique connectée : {shopifyDomain}
-                  </p>
-                </div>
-              ) : (
+              <div className="space-y-4">
+                {/* Shopify Connection Button */}
                 <Button
                   onClick={handleShopifyConnect}
                   disabled={isConnecting || !selectedNiche}
                   size="lg"
                   className="w-full"
+                  variant={shopifyConnected ? "secondary" : "default"}
                 >
                   <ShoppingBag className="w-5 h-5 mr-2" />
                   {isConnecting ? "Connexion en cours..." : "Connecter ma boutique Shopify"}
                 </Button>
-              )}
 
-              <p className="text-sm text-muted-foreground mt-3">
-                Vous devez connecter votre boutique Shopify avant de procéder au paiement. 
-                Cela permet de configurer automatiquement votre boutique après paiement.
-              </p>
-            </div>
-          )}
+                {/* Connected Badge */}
+                {shopifyConnected && shopifyDomain && (
+                  <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+                    <Check className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                      Boutique connectée : {shopifyDomain}
+                    </span>
+                  </div>
+                )}
 
-          {/* Step 4: Payment */}
-          {selectedNiche && (
-            <div className="bg-card border rounded-lg p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
-                  4
-                </div>
-                <h2 className="text-xl font-semibold">Procéder au paiement</h2>
+                {/* Stripe Payment Button */}
+                <Button
+                  onClick={handleStripeCheckout}
+                  disabled={!shopifyConnected || isProcessing}
+                  size="lg"
+                  className="w-full"
+                >
+                  {isProcessing ? "Redirection vers Stripe..." : "Procéder au paiement (Stripe)"}
+                </Button>
+
+                {!shopifyConnected && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Vous devez connecter votre boutique Shopify avant de procéder au paiement.
+                  </p>
+                )}
               </div>
-              
-              <Button
-                onClick={handleStripeCheckout}
-                disabled={!shopifyConnected || isProcessing}
-                size="lg"
-                className="w-full"
-              >
-                {isProcessing ? "Redirection vers Stripe..." : "Procéder au paiement (Stripe)"}
-              </Button>
-
-              {!shopifyConnected && (
-                <p className="text-sm text-amber-600 mt-3 flex items-center gap-2">
-                  <span className="text-lg">⚠️</span>
-                  Veuillez d'abord connecter votre boutique Shopify
-                </p>
-              )}
             </div>
           )}
         </div>
