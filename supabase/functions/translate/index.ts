@@ -13,31 +13,6 @@ serve(async (req) => {
   }
 
   try {
-    // Verify authentication
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      console.error('Missing Authorization header');
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: authHeader } } }
-    );
-
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-    if (userError || !user) {
-      console.error('Authentication failed:', userError);
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     const { text, targetLang, sourceLang = 'FR' } = await req.json();
 
     if (!text || !targetLang) {
@@ -58,7 +33,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Translating text for user ${user.id} to ${targetLang}`);
+    console.log(`Translating text to ${targetLang}`);
 
     const response = await fetch('https://api-free.deepl.com/v2/translate', {
       method: 'POST',
@@ -85,7 +60,7 @@ serve(async (req) => {
     const data = await response.json();
     const translatedText = data.translations?.[0]?.text || text;
 
-    console.log(`Translation successful for user ${user.id}`);
+    console.log('Translation successful');
 
     return new Response(
       JSON.stringify({ translatedText }),
