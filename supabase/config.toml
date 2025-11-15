@@ -58,4 +58,4 @@ verify_jwt = true
 verify_jwt = false
 
 [functions.translate]
-verify_jwt = true
+verify_jwt = false
