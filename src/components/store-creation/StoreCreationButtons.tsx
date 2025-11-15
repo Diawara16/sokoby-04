@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ManualStoreDialog } from "./ManualStoreDialog";
-import { AIStoreDialog } from "./AIStoreDialog";
 import { StoreSuccessPopup } from "./StoreSuccessPopup";
-import { Sparkles, Store } from "lucide-react";
+import { Store } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface StoreCreationButtonsProps {
   variant?: "hero" | "cta" | "card";
@@ -11,17 +11,12 @@ interface StoreCreationButtonsProps {
 
 export const StoreCreationButtons = ({ variant = "hero" }: StoreCreationButtonsProps) => {
   const [manualDialogOpen, setManualDialogOpen] = useState(false);
-  const [aiDialogOpen, setAIDialogOpen] = useState(false);
   const [successPopupOpen, setSuccessPopupOpen] = useState(false);
   const [isAIStore, setIsAIStore] = useState(false);
 
   const handleManualSuccess = () => {
     setIsAIStore(false);
     setSuccessPopupOpen(true);
-  };
-
-  const handleAICheckout = (plan: string) => {
-    // Will be handled by AIStoreDialog
   };
 
   if (variant === "card") {
@@ -42,13 +37,15 @@ export const StoreCreationButtons = ({ variant = "hero" }: StoreCreationButtonsP
 
           <Button
             className="w-full h-auto p-4 flex flex-col items-center gap-2"
-            onClick={() => setAIDialogOpen(true)}
+            asChild
           >
-            <Sparkles className="h-5 w-5" />
-            <div className="text-center">
-              <div className="font-medium">Création avec IA</div>
-              <div className="text-xs text-primary-foreground/80">Payant • Génération automatique</div>
-            </div>
+            <Link to="/creer-boutique-ia">
+              <Store className="h-5 w-5" />
+              <div className="text-center">
+                <div className="font-medium">Création avec IA</div>
+                <div className="text-xs text-primary-foreground/80">Payant • Génération automatique</div>
+              </div>
+            </Link>
           </Button>
         </div>
 
@@ -56,11 +53,6 @@ export const StoreCreationButtons = ({ variant = "hero" }: StoreCreationButtonsP
           open={manualDialogOpen}
           onOpenChange={setManualDialogOpen}
           onSuccess={handleManualSuccess}
-        />
-        <AIStoreDialog
-          open={aiDialogOpen}
-          onOpenChange={setAIDialogOpen}
-          onCheckout={handleAICheckout}
         />
         <StoreSuccessPopup
           open={successPopupOpen}
@@ -86,9 +78,11 @@ export const StoreCreationButtons = ({ variant = "hero" }: StoreCreationButtonsP
             size="lg"
             variant="outline"
             className="border-white text-white hover:bg-white hover:text-red-600 text-lg px-8 py-4"
-            onClick={() => setAIDialogOpen(true)}
+            asChild
           >
-            ✨ Boutique IA (Payant)
+            <Link to="/creer-boutique-ia">
+              ✨ Boutique IA (Payant)
+            </Link>
           </Button>
         </div>
 
@@ -96,11 +90,6 @@ export const StoreCreationButtons = ({ variant = "hero" }: StoreCreationButtonsP
           open={manualDialogOpen}
           onOpenChange={setManualDialogOpen}
           onSuccess={handleManualSuccess}
-        />
-        <AIStoreDialog
-          open={aiDialogOpen}
-          onOpenChange={setAIDialogOpen}
-          onCheckout={handleAICheckout}
         />
         <StoreSuccessPopup
           open={successPopupOpen}
@@ -125,9 +114,11 @@ export const StoreCreationButtons = ({ variant = "hero" }: StoreCreationButtonsP
         <Button
           size="lg"
           className="flex-1 bg-primary hover:bg-primary/90 text-white font-medium text-lg py-6"
-          onClick={() => setAIDialogOpen(true)}
+          asChild
         >
-          ✨ IA (Payant)
+          <Link to="/creer-boutique-ia">
+            ✨ IA (Payant)
+          </Link>
         </Button>
       </div>
 
@@ -135,11 +126,6 @@ export const StoreCreationButtons = ({ variant = "hero" }: StoreCreationButtonsP
         open={manualDialogOpen}
         onOpenChange={setManualDialogOpen}
         onSuccess={handleManualSuccess}
-      />
-      <AIStoreDialog
-        open={aiDialogOpen}
-        onOpenChange={setAIDialogOpen}
-        onCheckout={handleAICheckout}
       />
       <StoreSuccessPopup
         open={successPopupOpen}
