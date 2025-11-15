@@ -8,10 +8,8 @@ import { Link } from "react-router-dom";
 import { T } from "@/components/translation/T";
 import { TFeatureList } from "@/components/translation/TFeatureList";
 import { modelComparisonFeatures } from "@/data/translatable";
-import { AIStoreDialog } from "@/components/store-creation/AIStoreDialog";
 
 export function ModelComparisonSection() {
-  const [aiDialogOpen, setAIDialogOpen] = useState(false);
   return (
     <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
       <div className="container mx-auto px-4">
@@ -62,9 +60,11 @@ export function ModelComparisonSection() {
                 />
               </div>
 
-              <Button className="w-full" onClick={() => setAIDialogOpen(true)}>
-                <T>Découvrir la Boutique IA</T>
-                <ArrowRight className="h-4 w-4 ml-2" />
+              <Button className="w-full" asChild>
+                <Link to="/creer-boutique-ia">
+                  <T>Découvrir la Boutique IA</T>
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Link>
               </Button>
             </CardContent>
           </Card>
@@ -125,12 +125,6 @@ export function ModelComparisonSection() {
           </Button>
         </div>
       </div>
-
-      <AIStoreDialog
-        open={aiDialogOpen}
-        onOpenChange={setAIDialogOpen}
-        onCheckout={() => {}}
-      />
     </section>
   );
 }

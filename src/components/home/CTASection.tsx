@@ -3,10 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Shield, Zap, Sparkles } from "lucide-react";
 import { T } from "@/components/translation/T";
-import { AIStoreDialog } from "@/components/store-creation/AIStoreDialog";
 
 export function CTASection() {
-  const [aiDialogOpen, setAIDialogOpen] = useState(false);
 
   return (
     <section className="bg-gradient-to-r from-red-600 via-red-700 to-red-800 py-20 relative overflow-hidden">
@@ -41,14 +39,9 @@ export function CTASection() {
         </div>
 
         <div className="mb-8">
-          <Button 
-            size="lg"
-            className="bg-white text-red-600 hover:bg-red-50 text-lg px-8 py-6 font-semibold"
-            onClick={() => setAIDialogOpen(true)}
-          >
-            <Sparkles className="h-5 w-5 mr-2" />
-            <T>Créer ma boutique</T>
-          </Button>
+          <p className="text-white">
+            Section sous construction - Nouvelle interface à venir
+          </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -76,12 +69,6 @@ export function CTASection() {
           ✅ <T>Paiement sécurisé</T> • ✅ <T>Support 24/7 inclus</T> • ✅ <T>Boutique générée par IA</T>
         </p>
       </div>
-
-      <AIStoreDialog
-        open={aiDialogOpen}
-        onOpenChange={setAIDialogOpen}
-        onCheckout={() => {}}
-      />
     </section>
   );
 }
