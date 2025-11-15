@@ -53,9 +53,9 @@ const CreerBoutiqueIA = () => {
           <h1 className="text-3xl font-bold">Créer votre boutique IA</h1>
         </div>
 
-        {/* Form will be rebuilt here */}
+        {/* New form will be built here */}
         <div className="space-y-8">
-          <p className="text-muted-foreground">Form content will be added here.</p>
+          {/* Empty container ready for new Shopify + Stripe flow */}
         </div>
       </div>
     </div>
