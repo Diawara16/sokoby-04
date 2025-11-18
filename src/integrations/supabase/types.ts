@@ -3185,19 +3185,26 @@ export type Database = {
           enabled_languages: string[] | null
           gdpr_settings: Json | null
           id: string
+          initial_products_generated: boolean | null
           invoice_footer_text: string | null
           invoice_legal_notice: string | null
           invoice_prefix: string | null
           invoice_template: Json | null
           is_custom_domain: boolean | null
           notification_settings: Json | null
+          payment_status: string | null
           social_media: Json | null
           store_address: string | null
           store_description: string | null
           store_email: string | null
           store_name: string
           store_phone: string | null
+          store_type: string | null
+          stripe_checkout_session_id: string | null
+          stripe_payment_intent_id: string | null
           timezone: string | null
+          trial_end_date: string | null
+          trial_start_date: string | null
           updated_at: string
           user_id: string
           vat_number: string | null
@@ -3217,19 +3224,26 @@ export type Database = {
           enabled_languages?: string[] | null
           gdpr_settings?: Json | null
           id?: string
+          initial_products_generated?: boolean | null
           invoice_footer_text?: string | null
           invoice_legal_notice?: string | null
           invoice_prefix?: string | null
           invoice_template?: Json | null
           is_custom_domain?: boolean | null
           notification_settings?: Json | null
+          payment_status?: string | null
           social_media?: Json | null
           store_address?: string | null
           store_description?: string | null
           store_email?: string | null
           store_name: string
           store_phone?: string | null
+          store_type?: string | null
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
           timezone?: string | null
+          trial_end_date?: string | null
+          trial_start_date?: string | null
           updated_at?: string
           user_id: string
           vat_number?: string | null
@@ -3249,19 +3263,26 @@ export type Database = {
           enabled_languages?: string[] | null
           gdpr_settings?: Json | null
           id?: string
+          initial_products_generated?: boolean | null
           invoice_footer_text?: string | null
           invoice_legal_notice?: string | null
           invoice_prefix?: string | null
           invoice_template?: Json | null
           is_custom_domain?: boolean | null
           notification_settings?: Json | null
+          payment_status?: string | null
           social_media?: Json | null
           store_address?: string | null
           store_description?: string | null
           store_email?: string | null
           store_name?: string
           store_phone?: string | null
+          store_type?: string | null
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
           timezone?: string | null
+          trial_end_date?: string | null
+          trial_start_date?: string | null
           updated_at?: string
           user_id?: string
           vat_number?: string | null
