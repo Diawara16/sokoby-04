@@ -59,3 +59,12 @@ verify_jwt = false
 
 [functions.translate]
 verify_jwt = false
+
+[functions.create-store-checkout]
+verify_jwt = true
+
+[functions.stripe-webhook-store]
+verify_jwt = false
+
+[functions.generate-ai-store]
+verify_jwt = false
