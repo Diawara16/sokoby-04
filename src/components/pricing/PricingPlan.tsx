@@ -48,13 +48,13 @@ export const PricingPlan = ({
 
   return (
     <Card
-      className={`relative p-8 rounded-lg ${
+      className={`relative p-4 sm:p-6 md:p-8 rounded-lg ${
         isPopular ? 'border-2 border-primary shadow-lg' : 'border border-gray-200'
       }`}
     >
       {isPopular && (
         <Badge
-          className="absolute -top-3 left-1/2 transform -translate-x-1/2"
+          className="absolute -top-2 sm:-top-3 left-1/2 transform -translate-x-1/2 text-xs"
           variant="secondary"
         >
           Le plus populaire
@@ -62,21 +62,21 @@ export const PricingPlan = ({
       )}
 
       <div className="text-center">
-        <h3 className="text-2xl font-bold text-black mb-2">{name}</h3>
+        <h3 className="text-xl sm:text-2xl font-bold text-black mb-2">{name}</h3>
         <div className="flex justify-center items-baseline mb-2">
-          <span className="text-5xl font-extrabold text-black">{formattedPrice}</span>
-          {period && <span className="text-black ml-1">{period}</span>}
+          <span className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-black">{formattedPrice}</span>
+          {period && <span className="text-black ml-1 text-sm sm:text-base">{period}</span>}
         </div>
         {trial && (
-          <p className="text-sm text-gray-500 mb-4">{trial}</p>
+          <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">{trial}</p>
         )}
       </div>
 
-      <ul className="mt-8 space-y-4">
+      <ul className="mt-6 sm:mt-8 space-y-3 sm:space-y-4">
         {features.map((feature, index) => (
           <li key={index} className="flex items-start">
             <svg
-              className="h-6 w-6 text-green-500 mr-2"
+              className="h-5 w-5 sm:h-6 sm:w-6 text-green-500 mr-2 flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -88,7 +88,7 @@ export const PricingPlan = ({
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            <span className="text-gray-600">{feature}</span>
+            <span className="text-sm sm:text-base text-gray-600">{feature}</span>
           </li>
         ))}
       </ul>
@@ -107,7 +107,7 @@ export const PricingPlan = ({
         </>
       ) : (
         <Button
-          className={`w-full mt-8 ${isCurrentPlan ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+          className={`w-full mt-6 sm:mt-8 text-sm sm:text-base ${isCurrentPlan ? 'bg-gray-100 cursor-not-allowed' : ''}`}
           onClick={() => setShowPayment(true)}
           disabled={isCurrentPlan}
         >
