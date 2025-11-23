@@ -43,138 +43,121 @@ serve(async (req) => {
     logStep("User authenticated", { userId: user.id });
 
     const body = await req.json();
-    const { items, customerInfo, total, currency = 'EUR' } = body;
+    const { storeName, plan } = body;
 
-    if (!items || !customerInfo || !total) {
-      throw new Error("Missing required checkout data");
+    if (!storeName || !plan) {
+      throw new Error("Missing required data: storeName and plan");
     }
-    logStep("Request data validated", { itemCount: items.length, total });
+    logStep("Request data validated", { storeName, plan });
+
+    // Determine pricing based on plan
+    const planPrices = {
+      starter: { amount: 2000, name: 'Plan Starter - Boutique IA' }, // €20
+      pro: { amount: 8000, name: 'Plan Pro - Boutique IA' }, // €80
+    };
+
+    const planData = planPrices[plan as keyof typeof planPrices];
+    if (!planData) {
+      throw new Error("Invalid plan selected");
+    }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
-    // Check if customer exists in Stripe
-    const customers = await stripe.customers.list({ 
-      email: customerInfo.email, 
-      limit: 1 
-    });
-    
+    // Get or create Stripe customer for the user
+    const { data: profile } = await supabaseService
+      .from('profiles')
+      .select('email, full_name')
+      .eq('id', user.id)
+      .single();
+
     let customerId;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-      logStep("Existing Stripe customer found", { customerId });
-    } else {
-      // Create new customer
-      const customer = await stripe.customers.create({
-        email: customerInfo.email,
-        name: `${customerInfo.firstName} ${customerInfo.lastName}`,
-        phone: customerInfo.phone,
-        address: {
-          line1: customerInfo.address,
-          city: customerInfo.city,
-          postal_code: customerInfo.postalCode,
-          country: customerInfo.country === 'France' ? 'FR' : 'FR',
-        }
+    if (profile?.email) {
+      const customers = await stripe.customers.list({ 
+        email: profile.email, 
+        limit: 1 
       });
-      customerId = customer.id;
-      logStep("New Stripe customer created", { customerId });
+      
+      if (customers.data.length > 0) {
+        customerId = customers.data[0].id;
+        logStep("Existing Stripe customer found", { customerId });
+      } else {
+        const customer = await stripe.customers.create({
+          email: profile.email,
+          name: profile.full_name || 'Customer',
+          metadata: {
+            user_id: user.id,
+          }
+        });
+        customerId = customer.id;
+        logStep("New Stripe customer created", { customerId });
+      }
     }
 
-    // Create Stripe checkout session for one-time payment
+    // Create pending store record
+    const { data: storeData, error: storeError } = await supabaseService
+      .from('store_settings')
+      .insert({
+        user_id: user.id,
+        store_name: storeName,
+        store_type: 'ai',
+        payment_status: 'pending',
+        initial_products_generated: false,
+        domain_name: `${storeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${user.id.substring(0, 8)}.sokoby.com`,
+      })
+      .select()
+      .single();
+
+    if (storeError) {
+      logStep("Store creation error", { error: storeError });
+      throw new Error(`Failed to create store record: ${storeError.message}`);
+    }
+
+    logStep("Pending store record created", { storeId: storeData.id });
+
+    // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      line_items: items.map((item: any) => ({
+      line_items: [{
         price_data: {
-          currency: currency.toLowerCase(),
+          currency: 'eur',
           product_data: {
-            name: item.name,
+            name: planData.name,
+            description: `Création automatique de boutique avec ${plan === 'starter' ? '10' : '50'} produits générés par IA`,
           },
-          unit_amount: Math.round(item.price * 100), // Convert to cents
+          unit_amount: planData.amount,
         },
-        quantity: item.quantity,
-      })),
-      mode: "payment", // One-time payment
-      success_url: `${req.headers.get("origin")}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/checkout/canceled`,
+        quantity: 1,
+      }],
+      mode: "payment",
+      success_url: `${req.headers.get("origin")}/tableau-de-bord?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get("origin")}/creer-boutique-ia?payment=canceled`,
       payment_method_types: ['card'],
-      shipping_address_collection: {
-        allowed_countries: ['FR', 'BE', 'DE', 'ES', 'IT', 'NL'],
-      },
       metadata: {
-        user_id: user.id,
-        customer_email: customerInfo.email,
+        userId: user.id,
+        storeName: storeName,
+        plan: plan,
+        storeId: storeData.id,
       }
     });
 
     logStep("Stripe checkout session created", { sessionId: session.id, url: session.url });
 
-    // Create order record in database
-    const orderData = {
-      user_id: user.id,
-      store_id: user.id, // For now, using user_id as store_id
-      status: 'pending',
-      total_amount: total,
-      currency: currency,
-      customer_email: customerInfo.email,
-      customer_name: `${customerInfo.firstName} ${customerInfo.lastName}`,
-      customer_phone: customerInfo.phone || null,
-      shipping_address: {
-        address: customerInfo.address,
-        city: customerInfo.city,
-        postal_code: customerInfo.postalCode,
-        country: customerInfo.country,
-      },
-      billing_address: {
-        address: customerInfo.address,
-        city: customerInfo.city,
-        postal_code: customerInfo.postalCode,
-        country: customerInfo.country,
-      },
-      payment_method: 'stripe',
-      payment_status: 'pending',
-      stripe_session_id: session.id,
-      notes: customerInfo.notes || null,
-    };
+    // Update store with session ID
+    const { error: updateError } = await supabaseService
+      .from('store_settings')
+      .update({
+        stripe_checkout_session_id: session.id,
+      })
+      .eq('id', storeData.id);
 
-    const { data: order, error: orderError } = await supabaseService
-      .from('orders')
-      .insert(orderData)
-      .select()
-      .single();
-
-    if (orderError) {
-      logStep("Order creation error", { error: orderError });
-      throw new Error(`Failed to create order: ${orderError.message}`);
-    }
-
-    logStep("Order created in database", { orderId: order.id });
-
-    // Create order items
-    if (order && items.length > 0) {
-      const orderItems = items.map((item: any) => ({
-        order_id: order.id,
-        product_id: item.id || crypto.randomUUID(),
-        quantity: item.quantity,
-        price_at_time: item.price,
-        product_name: item.name,
-        product_image: item.image_url || null,
-      }));
-
-      const { error: itemsError } = await supabaseService
-        .from('order_items')
-        .insert(orderItems);
-
-      if (itemsError) {
-        logStep("Order items creation error", { error: itemsError });
-        // Don't fail the entire process if items fail to insert
-      } else {
-        logStep("Order items created", { itemCount: orderItems.length });
-      }
+    if (updateError) {
+      logStep("Store update error", { error: updateError });
     }
 
     return new Response(JSON.stringify({ 
       url: session.url,
       sessionId: session.id,
-      orderId: order.id
+      storeId: storeData.id
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
