@@ -120,16 +120,16 @@ const CreerBoutiqueIA = () => {
   if (!isAuthenticated) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto text-center space-y-6">
-          <h1 className="text-3xl font-bold mb-4">Connexion requise</h1>
-          <p className="text-muted-foreground mb-6">
+        <div className="max-w-2xl mx-auto text-center space-y-4 sm:space-y-6">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Connexion requise</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
             Vous devez être connecté pour créer votre boutique.
           </p>
-          <div className="space-x-4">
-            <Button asChild>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-center">
+            <Button asChild className="w-full sm:w-auto">
               <Link to="/login">Se connecter</Link>
             </Button>
-            <Button variant="outline" asChild>
+            <Button variant="outline" asChild className="w-full sm:w-auto">
               <Link to="/register">Créer un compte</Link>
             </Button>
           </div>
@@ -139,76 +139,76 @@ const CreerBoutiqueIA = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" size="sm" asChild>
+        <div className="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-8">
+          <Button variant="ghost" size="sm" asChild className="flex-shrink-0">
             <Link to="/tableau-de-bord">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Retour
+              <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Retour</span>
             </Link>
           </Button>
-          <h1 className="text-3xl font-bold">Créer votre boutique</h1>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold truncate">Créer votre boutique</h1>
         </div>
 
         {/* Store Name Input */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Nom de votre boutique</CardTitle>
-            <CardDescription>
+        <Card className="mb-4 sm:mb-8">
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-lg sm:text-xl">Nom de votre boutique</CardTitle>
+            <CardDescription className="text-sm">
               Choisissez un nom unique pour votre boutique en ligne
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-6 pt-0">
             <Input
               placeholder="Ma Boutique"
               value={storeName}
               onChange={(e) => setStoreName(e.target.value)}
-              className="max-w-md"
+              className="w-full"
             />
           </CardContent>
         </Card>
 
         {/* Options Grid */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Manual Store Option */}
           <Card className="relative overflow-hidden border-2 hover:border-primary/50 transition-colors">
-            <div className="absolute top-4 right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+            <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-green-500 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-full">
               GRATUIT
             </div>
-            <CardHeader>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <Store className="w-6 h-6 text-primary" />
+            <CardHeader className="p-4 sm:p-6">
+              <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                <div className="p-1.5 sm:p-2 bg-primary/10 rounded-lg flex-shrink-0">
+                  <Store className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
-                <CardTitle>Création Manuelle</CardTitle>
+                <CardTitle className="text-base sm:text-lg">Création Manuelle</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-xs sm:text-sm">
                 Créez votre boutique étape par étape avec notre interface intuitive
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <Check className="w-4 h-4 text-green-500" />
+            <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
+              <div className="space-y-1.5 sm:space-y-2">
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
                   <span>14 jours d'essai gratuit</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Check className="w-4 h-4 text-green-500" />
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
                   <span>Ajoutez vos produits manuellement</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Check className="w-4 h-4 text-green-500" />
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
                   <span>Personnalisez votre design</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Check className="w-4 h-4 text-green-500" />
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
                   <span>Configuration complète</span>
                 </div>
               </div>
               <Button 
-                className="w-full" 
+                className="w-full text-sm sm:text-base" 
                 onClick={handleCreateManualStore}
                 disabled={isLoading || !storeName.trim()}
               >
@@ -219,95 +219,95 @@ const CreerBoutiqueIA = () => {
 
           {/* AI Store Option */}
           <Card className="relative overflow-hidden border-2 hover:border-primary transition-colors">
-            <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
+            <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-primary text-primary-foreground text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-full">
               PAYANT
             </div>
-            <CardHeader>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
-                  <Sparkles className="w-6 h-6 text-white" />
+            <CardHeader className="p-4 sm:p-6">
+              <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                <div className="p-1.5 sm:p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex-shrink-0">
+                  <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <CardTitle>Création avec IA</CardTitle>
+                <CardTitle className="text-base sm:text-lg">Création avec IA</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-xs sm:text-sm">
                 Notre IA crée automatiquement votre boutique complète en quelques minutes
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6 pt-0">
               {/* Plan Selection */}
-              <div className="space-y-3">
-                <p className="text-sm font-medium">Choisissez votre plan :</p>
+              <div className="space-y-2 sm:space-y-3">
+                <p className="text-xs sm:text-sm font-medium">Choisissez votre plan :</p>
                 
                 <button
                   onClick={() => setSelectedPlan('starter')}
-                  className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                  className={`w-full text-left p-3 sm:p-4 rounded-lg border-2 transition-all ${
                     selectedPlan === 'starter' 
                       ? 'border-primary bg-primary/5' 
                       : 'border-border hover:border-primary/50'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold">Plan Starter</span>
-                    <span className="text-xl font-bold text-primary">20€</span>
+                  <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+                    <span className="text-sm sm:text-base font-bold">Plan Starter</span>
+                    <span className="text-lg sm:text-xl font-bold text-primary">20€</span>
                   </div>
-                  <ul className="space-y-1 text-sm text-muted-foreground">
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3 h-3" />
-                      10 produits générés par IA
+                  <ul className="space-y-0.5 sm:space-y-1 text-xs sm:text-sm text-muted-foreground">
+                    <li className="flex items-center gap-1.5 sm:gap-2">
+                      <Check className="w-3 h-3 flex-shrink-0" />
+                      <span>10 produits générés par IA</span>
                     </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3 h-3" />
-                      Design professionnel
+                    <li className="flex items-center gap-1.5 sm:gap-2">
+                      <Check className="w-3 h-3 flex-shrink-0" />
+                      <span>Design professionnel</span>
                     </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3 h-3" />
-                      Pages essentielles
+                    <li className="flex items-center gap-1.5 sm:gap-2">
+                      <Check className="w-3 h-3 flex-shrink-0" />
+                      <span>Pages essentielles</span>
                     </li>
                   </ul>
                 </button>
 
                 <button
                   onClick={() => setSelectedPlan('pro')}
-                  className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                  className={`w-full text-left p-3 sm:p-4 rounded-lg border-2 transition-all ${
                     selectedPlan === 'pro' 
                       ? 'border-primary bg-primary/5' 
                       : 'border-border hover:border-primary/50'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold">Plan Pro</span>
-                    <span className="text-xl font-bold text-primary">80€</span>
+                  <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+                    <span className="text-sm sm:text-base font-bold">Plan Pro</span>
+                    <span className="text-lg sm:text-xl font-bold text-primary">80€</span>
                   </div>
-                  <ul className="space-y-1 text-sm text-muted-foreground">
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3 h-3" />
-                      50 produits générés par IA
+                  <ul className="space-y-0.5 sm:space-y-1 text-xs sm:text-sm text-muted-foreground">
+                    <li className="flex items-center gap-1.5 sm:gap-2">
+                      <Check className="w-3 h-3 flex-shrink-0" />
+                      <span>50 produits générés par IA</span>
                     </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3 h-3" />
-                      Support prioritaire
+                    <li className="flex items-center gap-1.5 sm:gap-2">
+                      <Check className="w-3 h-3 flex-shrink-0" />
+                      <span>Support prioritaire</span>
                     </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3 h-3" />
-                      Optimisation SEO avancée
+                    <li className="flex items-center gap-1.5 sm:gap-2">
+                      <Check className="w-3 h-3 flex-shrink-0" />
+                      <span>Optimisation SEO avancée</span>
                     </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3 h-3" />
-                      Design premium
+                    <li className="flex items-center gap-1.5 sm:gap-2">
+                      <Check className="w-3 h-3 flex-shrink-0" />
+                      <span>Design premium</span>
                     </li>
                   </ul>
                 </button>
               </div>
 
               <Button 
-                className="w-full" 
+                className="w-full text-sm sm:text-base" 
                 onClick={handleCreateAIStore}
                 disabled={isLoading || !storeName.trim()}
               >
                 {isLoading ? "Redirection..." : "Procéder au paiement"}
               </Button>
 
-              <p className="text-xs text-center text-muted-foreground">
+              <p className="text-[10px] sm:text-xs text-center text-muted-foreground">
                 Paiement sécurisé avec Stripe
               </p>
             </CardContent>
