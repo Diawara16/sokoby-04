@@ -93,26 +93,61 @@ serve(async (req) => {
       }
     }
 
-    // Create pending store record
-    const { data: storeData, error: storeError } = await supabaseService
+    // Check for existing store
+    const { data: existingStore } = await supabaseService
       .from('store_settings')
-      .insert({
-        user_id: user.id,
-        store_name: storeName,
-        store_type: 'ai',
-        payment_status: 'pending',
-        initial_products_generated: false,
-        domain_name: `${storeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${user.id.substring(0, 8)}.sokoby.com`,
-      })
-      .select()
-      .single();
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
 
-    if (storeError) {
-      logStep("Store creation error", { error: storeError });
-      throw new Error(`Failed to create store record: ${storeError.message}`);
+    let storeData;
+
+    if (existingStore) {
+      // If store exists and is pending, update it
+      if (existingStore.payment_status === 'pending') {
+        logStep("Updating existing pending store", { storeId: existingStore.id });
+        const { data: updatedStore, error: updateError } = await supabaseService
+          .from('store_settings')
+          .update({
+            store_name: storeName,
+            domain_name: `${storeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${user.id.substring(0, 8)}.sokoby.com`,
+          })
+          .eq('id', existingStore.id)
+          .select()
+          .single();
+
+        if (updateError) {
+          logStep("Store update error", { error: updateError });
+          throw new Error(`Failed to update store record: ${updateError.message}`);
+        }
+        storeData = updatedStore;
+      } else {
+        // Store already exists and is not pending
+        throw new Error("Vous avez déjà une boutique active. Veuillez gérer votre boutique existante.");
+      }
+    } else {
+      // Create new pending store record
+      const { data: newStore, error: storeError } = await supabaseService
+        .from('store_settings')
+        .insert({
+          user_id: user.id,
+          store_name: storeName,
+          store_type: 'ai',
+          payment_status: 'pending',
+          initial_products_generated: false,
+          domain_name: `${storeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${user.id.substring(0, 8)}.sokoby.com`,
+        })
+        .select()
+        .single();
+
+      if (storeError) {
+        logStep("Store creation error", { error: storeError });
+        throw new Error(`Failed to create store record: ${storeError.message}`);
+      }
+
+      storeData = newStore;
+      logStep("Pending store record created", { storeId: storeData.id });
     }
-
-    logStep("Pending store record created", { storeId: storeData.id });
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
