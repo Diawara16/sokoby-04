@@ -107,31 +107,31 @@ export const Footer = () => {
   };
 
   return (
-    <footer className="w-full bg-gradient-to-br from-red-700 via-red-800 to-red-900 text-gray-100 py-12 mt-auto">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">
+    <footer className="w-full bg-gradient-to-br from-red-700 via-red-800 to-red-900 text-gray-100 py-8 sm:py-12 mt-auto">
+      <div className="container mx-auto px-3 sm:px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 sm:gap-8">
+          <div className="space-y-3 sm:space-y-4">
+            <h3 className="text-base sm:text-lg font-semibold">
               <T>Liens rapides</T>
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-1.5 sm:space-y-2 text-sm sm:text-base">
               <li>
-                <a href="/legal" className="text-gray-300 hover:text-white transition-colors">
+                <a href="/legal" className="text-sm sm:text-base text-gray-300 hover:text-white transition-colors">
                   <T>Mentions légales</T>
                 </a>
               </li>
               <li>
-                <a href="/accessibility" className="text-gray-300 hover:text-white transition-colors">
+                <a href="/accessibility" className="text-sm sm:text-base text-gray-300 hover:text-white transition-colors">
                   <T>Accessibilité</T>
                 </a>
               </li>
               <li>
-                <a href="/conditions" className="text-gray-300 hover:text-white transition-colors">
+                <a href="/conditions" className="text-sm sm:text-base text-gray-300 hover:text-white transition-colors">
                   <T>Conditions d'utilisation</T>
                 </a>
               </li>
               <li>
-                <a href="/support" className="text-gray-300 hover:text-white transition-colors">
+                <a href="/support" className="text-sm sm:text-base text-gray-300 hover:text-white transition-colors">
                   <T>Support</T>
                 </a>
               </li>
@@ -143,17 +143,17 @@ export const Footer = () => {
           <PaymentMethods />
           <MobileApps />
           
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center space-x-2">
               <Globe className="h-4 w-4" />
-              <T>Changer de langue</T>
+              <span className="text-sm sm:text-base"><T>Changer de langue</T></span>
             </div>
             <LanguageButtons languages={languages} onLanguageChange={handleLanguageChange} />
           </div>
         </div>
         
-        <div className="mt-8 pt-8 border-t border-red-600">
-          <div className="text-center text-sm">
+        <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-red-600">
+          <div className="text-center text-xs sm:text-sm">
             <p>&copy; {new Date().getFullYear()} Sokoby. <T>Tous droits réservés</T></p>
           </div>
         </div>

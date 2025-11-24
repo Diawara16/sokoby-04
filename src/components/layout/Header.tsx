@@ -27,24 +27,24 @@ export function Header() {
   ];
 
   return (
-    <header className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+    <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+      <div className="container mx-auto px-3 sm:px-4">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">S</span>
+          <Link to="/" className="flex items-center space-x-1.5 sm:space-x-2">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-red-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-bold text-xs sm:text-sm">S</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">Sokoby</span>
+            <span className="text-lg sm:text-xl font-bold text-gray-900">Sokoby</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center gap-2 font-medium transition-colors ${
+                className={`flex items-center gap-2 font-medium transition-colors text-sm xl:text-base ${
                   item.highlight 
                     ? "text-primary hover:text-primary/90" 
                     : "text-gray-600 hover:text-gray-900"
@@ -62,16 +62,16 @@ export function Header() {
           </nav>
 
           {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-3 xl:space-x-4">
             {isAuthenticated ? (
               <UserMenu />
             ) : (
               <>
                 <Link to="/connexion">
-                  <Button variant="ghost">Se connecter</Button>
+                  <Button variant="ghost" size="sm" className="text-sm">Se connecter</Button>
                 </Link>
                 <Link to="/essai-gratuit">
-                  <Button className="bg-red-600 hover:bg-red-700">
+                  <Button className="bg-red-600 hover:bg-red-700 text-sm" size="sm">
                     Essai gratuit
                   </Button>
                 </Link>
@@ -81,18 +81,18 @@ export function Header() {
 
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
+            <SheetTrigger asChild className="lg:hidden">
+              <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10">
+                <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-              <nav className="flex flex-col space-y-4 mt-6">
+            <SheetContent side="right" className="w-[280px] sm:w-[320px]">
+              <nav className="flex flex-col space-y-3 sm:space-y-4 mt-6">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`flex items-center gap-3 font-medium py-2 ${
+                    className={`flex items-center gap-3 font-medium py-2 text-sm sm:text-base ${
                       item.highlight 
                         ? "text-primary hover:text-primary/90" 
                         : "text-gray-600 hover:text-gray-900"
@@ -110,10 +110,10 @@ export function Header() {
                 ))}
                 
                 {/* Additional AI Store options in mobile */}
-                <div className="pt-4 border-t">
+                <div className="pt-3 sm:pt-4 border-t">
                   <Link
                     to="/creer-boutique-ia"
-                    className="flex items-center gap-3 text-primary hover:text-primary/90 font-semibold py-2"
+                    className="flex items-center gap-3 text-primary hover:text-primary/90 font-semibold py-2 text-sm sm:text-base"
                     onClick={() => setIsOpen(false)}
                   >
                     <Wand2 className="h-4 w-4" />
@@ -121,16 +121,16 @@ export function Header() {
                   </Link>
                 </div>
                 
-                <div className="flex flex-col space-y-2 pt-4 border-t">
+                <div className="flex flex-col space-y-2 pt-3 sm:pt-4 border-t">
                   {isAuthenticated ? (
                     <>
                       <Link to="/gestion-compte" onClick={() => setIsOpen(false)}>
-                        <Button variant="ghost" className="w-full justify-start">
+                        <Button variant="ghost" className="w-full justify-start text-sm">
                           Mon compte
                         </Button>
                       </Link>
                       <Link to="/tableau-de-bord" onClick={() => setIsOpen(false)}>
-                        <Button className="w-full bg-red-600 hover:bg-red-700">
+                        <Button className="w-full bg-red-600 hover:bg-red-700 text-sm">
                           Tableau de bord
                         </Button>
                       </Link>
@@ -138,12 +138,12 @@ export function Header() {
                   ) : (
                     <>
                       <Link to="/connexion" onClick={() => setIsOpen(false)}>
-                        <Button variant="ghost" className="w-full justify-start">
+                        <Button variant="ghost" className="w-full justify-start text-sm">
                           Se connecter
                         </Button>
                       </Link>
                       <Link to="/essai-gratuit" onClick={() => setIsOpen(false)}>
-                        <Button className="w-full bg-red-600 hover:bg-red-700">
+                        <Button className="w-full bg-red-600 hover:bg-red-700 text-sm">
                           Essai gratuit
                         </Button>
                       </Link>
