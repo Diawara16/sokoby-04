@@ -107,21 +107,21 @@ export const QuickActions = () => {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="text-lg sm:text-xl">
           <T>Actions rapides</T>
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sm">
           <T>Accédez rapidement aux fonctionnalités principales</T>
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <CardContent className="p-4 sm:p-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
           {allActions.map((action, index) => (
             <Button
               key={index}
               variant={action.variant}
-              className="h-auto flex-col gap-2 p-4 w-full"
+              className="h-auto flex-col gap-1.5 sm:gap-2 p-2 sm:p-3 md:p-4 w-full"
               onClick={() => {
                 if ('action' in action && action.action) {
                   action.action();
@@ -131,12 +131,12 @@ export const QuickActions = () => {
               }}
               disabled={isLoading}
             >
-              {action.icon}
+              <div className="h-4 w-4 sm:h-5 sm:w-5">{action.icon}</div>
               <div className="text-center">
-                <div className="font-medium text-xs">
+                <div className="font-medium text-[10px] sm:text-xs leading-tight">
                   <T>{action.title}</T>
                 </div>
-                <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                <div className="hidden sm:block text-[10px] sm:text-xs text-muted-foreground mt-1 line-clamp-2">
                   <T>{action.description}</T>
                 </div>
               </div>
