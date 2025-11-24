@@ -5,8 +5,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ActiveStoreCard } from "@/components/dashboard/ActiveStoreCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { MarketplaceIntegrationsCard } from "@/components/integrations/MarketplaceIntegrationsCard";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Dashboard() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const payment = searchParams.get('payment');
+  const sessionId = searchParams.get('session_id');
+
+  useEffect(() => {
+    // Redirect to success page if payment was successful
+    if (payment === 'success' && sessionId) {
+      navigate(`/success?session_id=${sessionId}`, { replace: true });
+    }
+  }, [payment, sessionId, navigate]);
   return (
     <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
       <Helmet>
