@@ -84,24 +84,29 @@ serve(async (req) => {
       throw new Error('Store not found');
     }
 
-    // Generate demo products
-    const demoProducts = getDemoProducts(plan, 'general');
-    
+    // Insert products into the regular products table (not ai_generated_products)
     const productsToInsert = demoProducts.map(product => ({
       ...product,
       user_id: userId,
-      store_id: store.id,
       created_at: new Date().toISOString(),
     }));
 
-    // Insert products
+    // Insert products into products table
     const { error: productsError } = await supabaseClient
-      .from('ai_generated_products')
+      .from('products')
       .insert(productsToInsert);
 
     if (productsError) {
       console.error('Error inserting products:', productsError);
-      throw productsError;
+      // Also try ai_generated_products table as fallback
+      const { error: aiProductsError } = await supabaseClient
+        .from('ai_generated_products')
+        .insert(productsToInsert.map(p => ({ ...p, store_id: store.id })));
+      
+      if (aiProductsError) {
+        console.error('Error inserting to ai_generated_products:', aiProductsError);
+        throw productsError;
+      }
     }
 
     // Update store to mark products as generated

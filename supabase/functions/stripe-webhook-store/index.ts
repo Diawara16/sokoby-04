@@ -53,14 +53,16 @@ serve(async (req) => {
         throw new Error('Missing metadata in checkout session');
       }
 
-      console.log('Payment successful for user:', userId, 'plan:', plan);
+      console.log('Payment successful for user:', userId, 'storeName:', storeName, 'plan:', plan);
 
-      // Update store payment status
+      // Update store payment status and set store_type to 'ai'
       const { error: updateError } = await supabaseClient
         .from('store_settings')
         .update({
           payment_status: 'completed',
+          store_type: 'ai',
           stripe_payment_intent_id: session.payment_intent as string,
+          updated_at: new Date().toISOString(),
         })
         .eq('stripe_checkout_session_id', session.id)
         .eq('user_id', userId);
@@ -70,20 +72,21 @@ serve(async (req) => {
         throw updateError;
       }
 
-      // Trigger AI store generation
-      const { error: functionError } = await supabaseClient.functions.invoke('generate-ai-store', {
+      // Trigger AI store generation (fire and forget - don't wait for completion)
+      supabaseClient.functions.invoke('generate-ai-store', {
         body: {
           userId,
           storeName,
           plan,
           sessionId: session.id,
         },
+      }).then(({ error: functionError }) => {
+        if (functionError) {
+          console.error('Error invoking generate-ai-store function:', functionError);
+        } else {
+          console.log('AI store generation triggered successfully');
+        }
       });
-
-      if (functionError) {
-        console.error('Error invoking generate-ai-store function:', functionError);
-        // Don't throw - payment is complete, we'll retry store generation
-      }
 
       // Create notification
       const { error: notifError } = await supabaseClient
