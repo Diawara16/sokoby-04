@@ -28,23 +28,15 @@ const CreerBoutiqueIA = () => {
 
     setIsLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Not authenticated');
 
-      const trialStartDate = new Date();
-      const trialEndDate = new Date();
-      trialEndDate.setDate(trialEndDate.getDate() + 14);
-
-      const { error } = await supabase
-        .from('store_settings')
-        .insert({
-          user_id: user.id,
-          store_name: storeName,
-          store_type: 'manual',
-          trial_start_date: trialStartDate.toISOString(),
-          trial_end_date: trialEndDate.toISOString(),
-          domain_name: `${storeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${user.id.substring(0, 8)}.sokoby.com`,
-        });
+      const { data, error } = await supabase.functions.invoke('create-manual-store', {
+        body: { storeName },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
 
       if (error) throw error;
 

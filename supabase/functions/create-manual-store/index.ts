@@ -49,18 +49,91 @@ serve(async (req) => {
       );
     }
 
-    const { name, email, phone, niche } = await req.json();
-    console.log("Manual store creation request:", { name, email, phone, niche, userId: user.id });
+    const { storeName } = await req.json();
+    
+    if (!storeName || storeName.trim() === '') {
+      return new Response(
+        JSON.stringify({ error: 'Store name is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    const newStore = {
-      id: Date.now(),
-      type: "manual",
-      name,
-      email,
-      phone,
-      niche,
-      createdAt: new Date().toISOString(),
-    };
+    console.log("Manual store creation request:", { storeName, userId: user.id });
+
+    // Check if user already has a store
+    const { data: existingStore } = await supabase
+      .from('store_settings')
+      .select('id, store_name, store_type')
+      .eq('user_id', user.id)
+      .single();
+
+    if (existingStore) {
+      console.log("User already has a store:", existingStore);
+      
+      // Update existing store if it's pending
+      if (existingStore.store_type === 'pending') {
+        const trialStartDate = new Date();
+        const trialEndDate = new Date();
+        trialEndDate.setDate(trialEndDate.getDate() + 14);
+        
+        const domainName = `${storeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${user.id.substring(0, 8)}.sokoby.com`;
+        
+        const { error: updateError } = await supabase
+          .from('store_settings')
+          .update({
+            store_name: storeName,
+            store_type: 'manual',
+            trial_start_date: trialStartDate.toISOString(),
+            trial_end_date: trialEndDate.toISOString(),
+            domain_name: domainName,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', user.id);
+
+        if (updateError) {
+          console.error("Error updating store:", updateError);
+          throw new Error('Failed to update store');
+        }
+
+        return new Response(
+          JSON.stringify({
+            message: "Store updated successfully",
+            storeId: existingStore.id,
+          }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      return new Response(
+        JSON.stringify({ error: 'You already have an active store' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Create new store
+    const trialStartDate = new Date();
+    const trialEndDate = new Date();
+    trialEndDate.setDate(trialEndDate.getDate() + 14);
+    
+    const domainName = `${storeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${user.id.substring(0, 8)}.sokoby.com`;
+
+    const { data: newStore, error: insertError } = await supabase
+      .from('store_settings')
+      .insert({
+        user_id: user.id,
+        store_name: storeName,
+        store_type: 'manual',
+        trial_start_date: trialStartDate.toISOString(),
+        trial_end_date: trialEndDate.toISOString(),
+        domain_name: domainName,
+      })
+      .select()
+      .single();
+
+    if (insertError) {
+      console.error("Error creating store:", insertError);
+      throw new Error('Failed to create store');
+    }
 
     console.log("Manual store created:", newStore);
 
@@ -69,10 +142,7 @@ serve(async (req) => {
         message: "Manual store created successfully",
         storeId: newStore.id,
       }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
     console.error("Error in create-manual-store:", error);
