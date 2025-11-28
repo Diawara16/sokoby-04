@@ -50,33 +50,27 @@ serve(async (req) => {
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     
-    // ⚠️ IMPORTANT: Remplacez ces Price IDs par ceux créés dans votre Dashboard Stripe
-    // Phase 1: Prix en EUR uniquement (pour tous les utilisateurs)
-    // 
-    // Étapes pour créer les Price IDs dans Stripe:
-    // 1. Allez sur https://dashboard.stripe.com/products
-    // 2. Créez 3 produits: "Sokoby Essentiel", "Sokoby Pro", "Sokoby Premium"
-    // 3. Pour chaque produit, créez 2 prix (mensuel et annuel) en EUR
-    // 4. Copiez les Price IDs (format: price_xxxxxxxxxxxxx) et remplacez ci-dessous
-    
-    const MONTHLY_PRICE_IDS = {
-      starter: 'price_MONTHLY_STARTER_EUR',      // À REMPLACER - Essentiel: €19/mois
-      pro: 'price_MONTHLY_PRO_EUR',              // À REMPLACER - Pro: €39/mois
-      enterprise: 'price_MONTHLY_PREMIUM_EUR'    // À REMPLACER - Premium: €119/mois
-    };
-    
-    const ANNUAL_PRICE_IDS = {
-      starter: 'price_ANNUAL_STARTER_EUR',       // À REMPLACER - Essentiel: €189/an (€15.75/mois)
-      pro: 'price_ANNUAL_PRO_EUR',               // À REMPLACER - Pro: €389/an (€32.42/mois)
-      enterprise: 'price_ANNUAL_PREMIUM_EUR'     // À REMPLACER - Premium: €1189/an (€99.08/mois)
+    // Define pricing based on plan and billing period
+    const planPrices = {
+      starter: {
+        monthly: { amount: 1900, name: 'Sokoby Essentiel - Mensuel' },
+        annual: { amount: 18900, name: 'Sokoby Essentiel - Annuel' }
+      },
+      pro: {
+        monthly: { amount: 3900, name: 'Sokoby Pro - Mensuel' },
+        annual: { amount: 38900, name: 'Sokoby Pro - Annuel' }
+      },
+      enterprise: {
+        monthly: { amount: 11900, name: 'Sokoby Premium - Mensuel' },
+        annual: { amount: 118900, name: 'Sokoby Premium - Annuel' }
+      }
     };
 
-    const priceIds = billingPeriod === 'annual' ? ANNUAL_PRICE_IDS : MONTHLY_PRICE_IDS;
-    const priceId = priceIds[planType as keyof typeof priceIds];
-    if (!priceId) {
+    const planData = planPrices[planType as keyof typeof planPrices]?.[billingPeriod as 'monthly' | 'annual'];
+    if (!planData) {
       throw new Error(`Plan type ${planType} with billing period ${billingPeriod} not supported`);
     }
-    logStep("Price ID found", { planType, billingPeriod, priceId });
+    logStep("Plan pricing determined", { planType, billingPeriod, amount: planData.amount });
 
     // Check if customer already exists
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
@@ -96,7 +90,17 @@ serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       line_items: [
         {
-          price: priceId,
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: planData.name,
+              description: `Abonnement ${planType === 'starter' ? 'Essentiel' : planType === 'pro' ? 'Pro' : 'Premium'}`,
+            },
+            unit_amount: planData.amount,
+            recurring: {
+              interval: billingPeriod === 'annual' ? 'year' : 'month',
+            },
+          },
           quantity: 1,
         },
       ],
@@ -104,9 +108,19 @@ serve(async (req) => {
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/`,
       subscription_data: {
-        trial_period_days: 14, // 14 jours d'essai gratuit
+        trial_period_days: 14,
+        metadata: {
+          user_id: user.id,
+          plan_type: planType,
+          billing_period: billingPeriod,
+        },
       },
       billing_address_collection: "required",
+      metadata: {
+        user_id: user.id,
+        plan_type: planType,
+        billing_period: billingPeriod,
+      },
     };
 
     // Only add customer_update if we have an existing customer
