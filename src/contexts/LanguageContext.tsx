@@ -49,7 +49,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const [isTranslationEnabled, setTranslationEnabled] = useState(() => {
     const saved = localStorage.getItem('translationEnabled');
-    return saved !== null ? JSON.parse(saved) : true;
+    return saved !== null ? JSON.parse(saved) : false; // Disabled by default until DEEPL_API_KEY is configured
   });
 
   const [isTranslationReady, setIsTranslationReady] = useState(false);
@@ -61,15 +61,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     // Vérifier si DeepL est configuré
     setIsTranslationReady(deepLService.isReady());
 
-    // Précharger les traductions communes si on change de langue
+    // Précharger les traductions communes seulement si activé
     if (isTranslationEnabled && currentLanguage !== 'fr' && deepLService.isReady()) {
-      deepLService.preloadCommonTranslations(COMMON_TEXTS, currentLanguage)
-        .then(() => {
-          console.log(`Traductions préchargées pour ${currentLanguage}`);
-        })
-        .catch((error) => {
-          console.error('Erreur lors du préchargement:', error);
-        });
+      // Non-blocking preload - don't wait for completion
+      deepLService.preloadCommonTranslations(COMMON_TEXTS, currentLanguage).catch(() => {
+        // Silently fail, translations will be loaded on-demand
+      });
     }
   }, [currentLanguage, isTranslationEnabled]);
 

@@ -12,10 +12,26 @@ interface TranslationOptions {
 
 class DeepLService {
   private cache: TranslationCache = {};
-  private isConfigured = true; // Always true now that key is server-side
+  private isConfigured = false; // Will be checked on first use
 
   public isReady(): boolean {
     return this.isConfigured;
+  }
+
+  private async checkConfiguration(): Promise<boolean> {
+    if (this.isConfigured) return true;
+    
+    try {
+      // Quick check to see if the translate function is available
+      const { error } = await supabase.functions.invoke('translate', {
+        body: { text: 'test', targetLang: 'EN' },
+      });
+      
+      this.isConfigured = !error || error.message !== 'Translation service not configured';
+      return this.isConfigured;
+    } catch {
+      return false;
+    }
   }
 
   private getCacheKey(text: string, targetLang: string, context?: string): string {
@@ -29,6 +45,12 @@ class DeepLService {
 
     if (!text?.trim()) {
       return text;
+    }
+
+    // Check if service is configured before attempting translation
+    const isConfigured = await this.checkConfiguration();
+    if (!isConfigured) {
+      return options.fallback || text;
     }
 
     const cacheKey = this.getCacheKey(text, targetLang, options.context);
