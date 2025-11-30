@@ -60,6 +60,41 @@ serve(async (req) => {
 
     console.log("Manual store creation request:", { storeName, userId: user.id });
 
+    // Ensure user profile exists with age_verified = true
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('age_verified')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (!profile) {
+      // Create profile if it doesn't exist
+      const { error: createProfileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          email: user.email,
+          age_verified: true,
+          trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+          last_login: new Date().toISOString()
+        });
+
+      if (createProfileError) {
+        console.error("Error creating profile:", createProfileError);
+        // Continue anyway - the profile might exist but query failed
+      }
+    } else if (!profile.age_verified) {
+      // Update existing profile to set age_verified = true
+      const { error: updateProfileError } = await supabase
+        .from('profiles')
+        .update({ age_verified: true })
+        .eq('id', user.id);
+
+      if (updateProfileError) {
+        console.error("Error updating profile:", updateProfileError);
+      }
+    }
+
     // Check if user already has a store
     const { data: existingStore } = await supabase
       .from('store_settings')

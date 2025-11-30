@@ -121,9 +121,31 @@ export default function CreerBoutiqueManuelle() {
         return;
       }
 
+      // Ensure age_verified is set for the user
+      const { error: profileUpdateError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          email: user.email,
+          age_verified: true,
+          last_login: new Date().toISOString()
+        }, {
+          onConflict: 'id',
+          ignoreDuplicates: false
+        });
+
+      if (profileUpdateError) {
+        console.error('Error updating profile:', profileUpdateError);
+      }
+
       // Générer un nom de domaine unique
       const uniqueDomainName = await generateUniqueDomainName(user.id, formData.storeName);
       console.log("Nom de domaine généré:", uniqueDomainName);
+
+      // Set trial dates for manual store
+      const trialStartDate = new Date();
+      const trialEndDate = new Date();
+      trialEndDate.setDate(trialEndDate.getDate() + 14);
 
       // Utiliser upsert pour les paramètres de boutique
       const { error: storeError } = await supabase
@@ -134,6 +156,10 @@ export default function CreerBoutiqueManuelle() {
           store_name: formData.storeName,
           store_description: formData.description,
           category: formData.category || 'other',
+          store_type: 'manual',
+          trial_start_date: trialStartDate.toISOString(),
+          trial_end_date: trialEndDate.toISOString(),
+          payment_status: 'trial',
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'user_id'
