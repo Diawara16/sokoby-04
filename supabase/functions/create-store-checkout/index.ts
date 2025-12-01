@@ -50,18 +50,86 @@ serve(async (req) => {
     }
     logStep("Request data validated", { storeName, plan });
 
-    // Determine pricing based on plan
-    const planPrices = {
-      starter: { amount: 2000, name: 'Plan Starter - Boutique IA' }, // €20
-      pro: { amount: 8000, name: 'Plan Pro - Boutique IA' }, // €80
+    const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
+
+    // Map plan to Stripe product ID
+    const planProductIds = {
+      starter: 'sokoby_ai_store_starter',
+      pro: 'sokoby_ai_store_pro',
     };
 
-    const planData = planPrices[plan as keyof typeof planPrices];
-    if (!planData) {
+    const productId = planProductIds[plan as keyof typeof planProductIds];
+    if (!productId) {
       throw new Error("Invalid plan selected");
     }
+    logStep("Plan validated", { plan, productId });
 
-    const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
+    // Get or create the Stripe products/prices
+    const existingProducts = await stripe.products.search({
+      query: `metadata['product_id']:'${productId}'`,
+      limit: 1,
+    });
+
+    let priceId;
+    if (existingProducts.data.length > 0) {
+      const product = existingProducts.data[0];
+      logStep("Found existing product", { productId: product.id });
+      
+      // Get the price for this product
+      const prices = await stripe.prices.list({
+        product: product.id,
+        active: true,
+        limit: 1,
+      });
+      
+      if (prices.data.length > 0) {
+        priceId = prices.data[0].id;
+        logStep("Found existing price", { priceId });
+      }
+    }
+
+    // If no price found, initialize products
+    if (!priceId) {
+      logStep("No existing price found, initializing Stripe products...");
+      
+      // Define product details
+      const productDetails = {
+        starter: {
+          name: 'Plan Starter – Création Boutique IA',
+          description: 'Création automatique de boutique avec 10 produits générés par IA, design professionnel, et pages essentielles.',
+          price: 2000,
+        },
+        pro: {
+          name: 'Plan Pro – Création Boutique IA',
+          description: 'Création automatique de boutique avec 50 produits générés par IA, optimisation SEO, support prioritaire, et design premium.',
+          price: 8000,
+        },
+      };
+
+      const details = productDetails[plan as keyof typeof productDetails];
+      
+      // Create product
+      const product = await stripe.products.create({
+        name: details.name,
+        description: details.description,
+        metadata: {
+          product_id: productId,
+        },
+      });
+      logStep("Created new product", { productId: product.id });
+
+      // Create price
+      const price = await stripe.prices.create({
+        product: product.id,
+        unit_amount: details.price,
+        currency: 'eur',
+        metadata: {
+          product_id: productId,
+        },
+      });
+      priceId = price.id;
+      logStep("Created new price", { priceId });
+    }
 
     // Get or create Stripe customer for the user
     const { data: profile } = await supabaseService
@@ -149,18 +217,11 @@ serve(async (req) => {
       logStep("Pending store record created", { storeId: storeData.id });
     }
 
-    // Create Stripe checkout session
+    // Create Stripe checkout session using the price ID
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [{
-        price_data: {
-          currency: 'eur',
-          product_data: {
-            name: planData.name,
-            description: `Création automatique de boutique avec ${plan === 'starter' ? '10' : '50'} produits générés par IA`,
-          },
-          unit_amount: planData.amount,
-        },
+        price: priceId,
         quantity: 1,
       }],
       mode: "payment",
