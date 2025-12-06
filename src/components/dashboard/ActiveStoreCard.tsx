@@ -42,13 +42,13 @@ export const ActiveStoreCard = () => {
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <Button asChild className="w-full sm:w-auto text-sm">
-                <Link to="/boutique">
-                  Accéder à la boutique
+                <Link to={`/dashboard/store/${store.id}`}>
+                  Gérer la boutique
                 </Link>
               </Button>
               <Button variant="outline" asChild className="w-full sm:w-auto text-sm">
-                <Link to="/parametres">
-                  Paramètres
+                <Link to="/boutique-editeur">
+                  Éditeur
                 </Link>
               </Button>
               {store.domain_name && (

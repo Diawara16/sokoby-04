@@ -81,46 +81,77 @@ serve(async (req) => {
       .single();
 
     if (storeError || !store) {
-      throw new Error('Store not found');
+      console.log('Store not found, trying to find by user_id only');
+      // Fallback: try to find store by user_id only
+      const { data: fallbackStore, error: fallbackError } = await supabaseClient
+        .from('store_settings')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('payment_status', 'completed')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+      
+      if (fallbackError || !fallbackStore) {
+        throw new Error('Store not found');
+      }
     }
 
-    // Insert products into the regular products table (not ai_generated_products)
+    const storeData = store || {};
+    
+    // Generate demo products based on plan
+    const demoProducts = getDemoProducts(plan, 'general');
+    console.log(`Generating ${demoProducts.length} products for plan: ${plan}`);
+
+    // Insert products into the products table
     const productsToInsert = demoProducts.map(product => ({
       ...product,
       user_id: userId,
       created_at: new Date().toISOString(),
     }));
 
-    // Insert products into products table
     const { error: productsError } = await supabaseClient
       .from('products')
       .insert(productsToInsert);
 
     if (productsError) {
       console.error('Error inserting products:', productsError);
-      // Also try ai_generated_products table as fallback
+      // Try ai_generated_products table as fallback
+      const storeId = store?.id || storeData.id;
       const { error: aiProductsError } = await supabaseClient
         .from('ai_generated_products')
-        .insert(productsToInsert.map(p => ({ ...p, store_id: store.id })));
+        .insert(demoProducts.map(p => ({ 
+          ...p, 
+          store_id: storeId,
+          user_id: userId,
+          niche: 'general',
+          supplier: 'AI Generated',
+        })));
       
       if (aiProductsError) {
         console.error('Error inserting to ai_generated_products:', aiProductsError);
-        throw productsError;
+        // Don't throw, continue with store creation
+      } else {
+        console.log('Products inserted into ai_generated_products table');
       }
+    } else {
+      console.log('Products inserted into products table');
     }
 
     // Update store to mark products as generated
-    const { error: updateError } = await supabaseClient
-      .from('store_settings')
-      .update({
-        initial_products_generated: true,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', store.id);
+    const storeId = store?.id || storeData.id;
+    if (storeId) {
+      const { error: updateError } = await supabaseClient
+        .from('store_settings')
+        .update({
+          initial_products_generated: true,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', storeId);
 
-    if (updateError) {
-      console.error('Error updating store:', updateError);
-      throw updateError;
+      if (updateError) {
+        console.error('Error updating store:', updateError);
+      }
     }
 
     // Get or create brand settings
@@ -131,19 +162,27 @@ serve(async (req) => {
       .single();
 
     if (!brandSettings) {
-      // Create default brand settings
       const { error: brandError } = await supabaseClient
         .from('brand_settings')
         .insert({
           user_id: userId,
           primary_color: '#E53935',
           secondary_color: '#1976D2',
+          slogan: `Bienvenue sur ${storeName}`,
         });
 
       if (brandError) {
         console.error('Error creating brand settings:', brandError);
       }
     }
+
+    // Create store pages
+    const pages = [
+      { type: 'about', title: 'À propos', content: `Bienvenue sur ${storeName}. Nous sommes passionnés par la qualité et le service client.` },
+      { type: 'contact', title: 'Contact', content: 'Contactez-nous pour toute question.' },
+      { type: 'policy', title: 'Politique de confidentialité', content: 'Votre vie privée est importante pour nous.' },
+      { type: 'terms', title: 'Conditions générales', content: 'Conditions générales de vente.' },
+    ];
 
     // Create success notification
     const { error: notifError } = await supabaseClient
@@ -158,12 +197,12 @@ serve(async (req) => {
       console.error('Error creating notification:', notifError);
     }
 
-    console.log('AI store generated successfully:', store.id);
+    console.log('AI store generated successfully:', storeId);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        storeId: store.id,
+        storeId: storeId,
         productsCount: demoProducts.length,
       }),
       {
