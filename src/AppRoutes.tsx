@@ -47,6 +47,7 @@ import ProductMovements from "@/pages/products/ProductMovements";
 import GiftCards from "@/pages/products/GiftCards";
 import StoreEditor from "@/pages/StoreEditor";
 import StorePreview from "@/pages/boutique/StorePreview";
+import StoreDashboard from "@/pages/StoreDashboard";
 import Applications from "@/pages/Applications";
 import TermsOfService from "@/pages/legal/TermsOfService";
 import PrivacyPolicy from "@/pages/legal/PrivacyPolicy";
@@ -179,6 +180,16 @@ export function AppRoutes() {
         </ProtectedRoute>
       } />
       <Route path="/boutique-apercu/:storeId" element={<StorePreview />} />
+      <Route path="/dashboard/store/:storeId" element={
+        <ProtectedRoute>
+          <StoreDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/dashboard/store" element={
+        <ProtectedRoute>
+          <StoreDashboard />
+        </ProtectedRoute>
+      } />
       <Route path="/store-editor" element={
         <ProtectedRoute>
           <StoreEditor />

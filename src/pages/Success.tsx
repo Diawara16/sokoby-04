@@ -199,10 +199,16 @@ const Success = () => {
           </Card>
 
           <div className="space-y-3 sm:space-y-4">
-            <Link to="/tableau-de-bord" className="block">
+            <Link to="/dashboard/store" className="block">
               <Button size="lg" className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6">
-                Accéder au tableau de bord
+                Gérer ma boutique
                 <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>
+            </Link>
+            
+            <Link to="/tableau-de-bord" className="block">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto text-base px-6 py-4">
+                Retour au tableau de bord
               </Button>
             </Link>
             
