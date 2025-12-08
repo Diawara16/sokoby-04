@@ -71,3 +71,6 @@ verify_jwt = false
 
 [functions.generate-ai-store]
 verify_jwt = false
+
+[functions.verify-and-generate-store]
+verify_jwt = true
