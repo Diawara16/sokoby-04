@@ -8,29 +8,29 @@ const corsHeaders = {
 
 // Demo products data
 const getDemoProducts = (plan: string, niche: string = 'general') => {
-  const productCount = plan === 'starter' ? 10 : 50;
+  const productCount = plan === 'pro' ? 50 : 10;
   const products = [];
   
   const niches: Record<string, any> = {
     fashion: {
-      names: ['T-Shirt Premium', 'Jeans Slim', 'Sneakers Classic', 'Veste en Cuir', 'Robe d\'Été'],
-      descriptions: ['Haute qualité', 'Coupe moderne', 'Confort optimal', 'Style intemporel', 'Design élégant'],
-      prices: [29.99, 79.99, 89.99, 199.99, 59.99],
+      names: ['T-Shirt Premium', 'Jeans Slim', 'Sneakers Classic', 'Veste en Cuir', 'Robe d\'Été', 'Pull Over', 'Short Casual', 'Chemise Élégante', 'Manteau Hiver', 'Accessoire Mode'],
+      descriptions: ['Haute qualité', 'Coupe moderne', 'Confort optimal', 'Style intemporel', 'Design élégant', 'Doux et chaud', 'Léger et confortable', 'Coupe ajustée', 'Protection hivernale', 'Touche finale parfaite'],
+      prices: [29.99, 79.99, 89.99, 199.99, 59.99, 49.99, 34.99, 54.99, 149.99, 24.99],
     },
     electronics: {
-      names: ['Écouteurs Sans Fil', 'Chargeur Rapide', 'Coque Protection', 'Câble USB-C', 'Support Téléphone'],
-      descriptions: ['Son HD', 'Charge ultra-rapide', 'Protection maximale', 'Compatible tous appareils', 'Rotation 360°'],
-      prices: [49.99, 24.99, 14.99, 9.99, 19.99],
+      names: ['Écouteurs Sans Fil', 'Chargeur Rapide', 'Coque Protection', 'Câble USB-C', 'Support Téléphone', 'Power Bank', 'Adaptateur Multi-Port', 'Webcam HD', 'Clavier Bluetooth', 'Souris Sans Fil'],
+      descriptions: ['Son HD', 'Charge ultra-rapide', 'Protection maximale', 'Compatible tous appareils', 'Rotation 360°', 'Grande capacité', 'Connectivité universelle', 'Qualité streaming', 'Frappe silencieuse', 'Précision optimale'],
+      prices: [49.99, 24.99, 14.99, 9.99, 19.99, 39.99, 29.99, 59.99, 44.99, 34.99],
     },
     beauty: {
-      names: ['Sérum Visage', 'Crème Hydratante', 'Masque Purifiant', 'Huile Essentielle', 'Gommage Doux'],
-      descriptions: ['Anti-âge', 'Peau éclatante', 'Nettoie en profondeur', '100% naturel', 'Exfoliation douce'],
-      prices: [34.99, 29.99, 19.99, 24.99, 16.99],
+      names: ['Sérum Visage', 'Crème Hydratante', 'Masque Purifiant', 'Huile Essentielle', 'Gommage Doux', 'Lotion Tonique', 'Baume Lèvres', 'Soin Nuit', 'Protection Solaire', 'Eau Florale'],
+      descriptions: ['Anti-âge', 'Peau éclatante', 'Nettoie en profondeur', '100% naturel', 'Exfoliation douce', 'Pores resserrés', 'Hydratation intense', 'Régénération cellulaire', 'SPF 50+', 'Fraîcheur naturelle'],
+      prices: [34.99, 29.99, 19.99, 24.99, 16.99, 22.99, 12.99, 44.99, 26.99, 18.99],
     },
     general: {
-      names: ['Produit Premium', 'Article Populaire', 'Best-Seller', 'Édition Limitée', 'Pack Découverte'],
-      descriptions: ['Qualité supérieure', 'Très apprécié', 'Le plus vendu', 'Collection exclusive', 'Essayez nos produits'],
-      prices: [39.99, 29.99, 49.99, 99.99, 59.99],
+      names: ['Produit Premium', 'Article Populaire', 'Best-Seller', 'Édition Limitée', 'Pack Découverte', 'Nouveauté', 'Classique Revisité', 'Série Spéciale', 'Collection Pro', 'Essentiel Quotidien'],
+      descriptions: ['Qualité supérieure', 'Très apprécié', 'Le plus vendu', 'Collection exclusive', 'Essayez nos produits', 'Dernière innovation', 'Un classique amélioré', 'Série exclusive', 'Pour professionnels', 'Indispensable'],
+      prices: [39.99, 29.99, 49.99, 99.99, 59.99, 44.99, 34.99, 79.99, 69.99, 24.99],
     },
   };
 
@@ -38,14 +38,15 @@ const getDemoProducts = (plan: string, niche: string = 'general') => {
   
   for (let i = 0; i < productCount; i++) {
     const idx = i % selectedNiche.names.length;
+    const version = Math.floor(i / selectedNiche.names.length);
     products.push({
-      name: `${selectedNiche.names[idx]} ${Math.floor(i / selectedNiche.names.length) > 0 ? `V${Math.floor(i / selectedNiche.names.length) + 1}` : ''}`.trim(),
+      name: version > 0 ? `${selectedNiche.names[idx]} V${version + 1}` : selectedNiche.names[idx],
       description: `${selectedNiche.descriptions[idx]}. Produit de haute qualité avec garantie satisfait ou remboursé.`,
-      price: selectedNiche.prices[idx],
+      price: selectedNiche.prices[idx] + (version * 5),
       category: niche,
-      stock_quantity: Math.floor(Math.random() * 100) + 20,
-      sku: `SKU-${Date.now()}-${i}`,
-      is_active: true,
+      stock: Math.floor(Math.random() * 100) + 20,
+      status: 'active',
+      image: `https://images.unsplash.com/photo-${1560472355 + i}?w=400&h=400&fit=crop`,
     });
   }
   
@@ -53,15 +54,20 @@ const getDemoProducts = (plan: string, niche: string = 'general') => {
 };
 
 serve(async (req) => {
+  console.log('[GENERATE-AI-STORE] Function called');
+  
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
     const { userId, storeName, plan, sessionId } = await req.json();
+    
+    console.log('[GENERATE-AI-STORE] Request data:', { userId, storeName, plan, sessionId });
 
     if (!userId || !storeName || !plan) {
-      throw new Error('Missing required fields');
+      console.error('[GENERATE-AI-STORE] Missing required fields');
+      throw new Error('Missing required fields: userId, storeName, plan');
     }
 
     const supabaseClient = createClient(
@@ -70,38 +76,62 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    console.log('Generating AI store for user:', userId, 'plan:', plan);
+    console.log('[GENERATE-AI-STORE] Generating AI store for user:', userId, 'plan:', plan);
 
-    // Get store record
-    const { data: store, error: storeError } = await supabaseClient
-      .from('store_settings')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('stripe_checkout_session_id', sessionId)
-      .single();
-
-    if (storeError || !store) {
-      console.log('Store not found, trying to find by user_id only');
-      // Fallback: try to find store by user_id only
-      const { data: fallbackStore, error: fallbackError } = await supabaseClient
+    // Find the store
+    let store;
+    
+    if (sessionId) {
+      const { data, error } = await supabaseClient
+        .from('store_settings')
+        .select('*')
+        .eq('stripe_checkout_session_id', sessionId)
+        .eq('user_id', userId)
+        .single();
+      
+      if (!error && data) {
+        store = data;
+        console.log('[GENERATE-AI-STORE] Found store by session ID:', store.id);
+      }
+    }
+    
+    if (!store) {
+      // Fallback: find the most recent store for this user
+      const { data, error } = await supabaseClient
         .from('store_settings')
         .select('*')
         .eq('user_id', userId)
-        .eq('payment_status', 'completed')
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
       
-      if (fallbackError || !fallbackStore) {
-        throw new Error('Store not found');
+      if (error || !data) {
+        console.error('[GENERATE-AI-STORE] Store not found:', error);
+        throw new Error('Store not found for user');
       }
+      store = data;
+      console.log('[GENERATE-AI-STORE] Found store by user ID:', store.id);
     }
 
-    const storeData = store || {};
-    
+    // Check if products are already generated
+    if (store.initial_products_generated) {
+      console.log('[GENERATE-AI-STORE] Products already generated for store:', store.id);
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          storeId: store.id,
+          message: 'Products already generated',
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      );
+    }
+
     // Generate demo products based on plan
     const demoProducts = getDemoProducts(plan, 'general');
-    console.log(`Generating ${demoProducts.length} products for plan: ${plan}`);
+    console.log(`[GENERATE-AI-STORE] Generating ${demoProducts.length} products for plan: ${plan}`);
 
     // Insert products into the products table
     const productsToInsert = demoProducts.map(product => ({
@@ -110,51 +140,57 @@ serve(async (req) => {
       created_at: new Date().toISOString(),
     }));
 
-    const { error: productsError } = await supabaseClient
+    const { data: insertedProducts, error: productsError } = await supabaseClient
       .from('products')
-      .insert(productsToInsert);
+      .insert(productsToInsert)
+      .select();
 
     if (productsError) {
-      console.error('Error inserting products:', productsError);
+      console.error('[GENERATE-AI-STORE] Error inserting to products table:', productsError);
+      
       // Try ai_generated_products table as fallback
-      const storeId = store?.id || storeData.id;
+      const aiProductsToInsert = demoProducts.map(p => ({ 
+        name: p.name,
+        description: p.description,
+        price: p.price,
+        image_url: p.image,
+        store_id: store.id,
+        user_id: userId,
+        niche: 'general',
+        supplier: 'AI Generated',
+        status: 'active',
+      }));
+      
       const { error: aiProductsError } = await supabaseClient
         .from('ai_generated_products')
-        .insert(demoProducts.map(p => ({ 
-          ...p, 
-          store_id: storeId,
-          user_id: userId,
-          niche: 'general',
-          supplier: 'AI Generated',
-        })));
+        .insert(aiProductsToInsert);
       
       if (aiProductsError) {
-        console.error('Error inserting to ai_generated_products:', aiProductsError);
-        // Don't throw, continue with store creation
+        console.error('[GENERATE-AI-STORE] Error inserting to ai_generated_products:', aiProductsError);
       } else {
-        console.log('Products inserted into ai_generated_products table');
+        console.log('[GENERATE-AI-STORE] Products inserted into ai_generated_products table');
       }
     } else {
-      console.log('Products inserted into products table');
+      console.log('[GENERATE-AI-STORE] Inserted', insertedProducts?.length || 0, 'products into products table');
     }
 
     // Update store to mark products as generated
-    const storeId = store?.id || storeData.id;
-    if (storeId) {
-      const { error: updateError } = await supabaseClient
-        .from('store_settings')
-        .update({
-          initial_products_generated: true,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', storeId);
+    const { error: updateError } = await supabaseClient
+      .from('store_settings')
+      .update({
+        initial_products_generated: true,
+        store_type: 'ai',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', store.id);
 
-      if (updateError) {
-        console.error('Error updating store:', updateError);
-      }
+    if (updateError) {
+      console.error('[GENERATE-AI-STORE] Error updating store:', updateError);
+    } else {
+      console.log('[GENERATE-AI-STORE] Store marked as products generated');
     }
 
-    // Get or create brand settings
+    // Ensure brand settings exist
     const { data: brandSettings } = await supabaseClient
       .from('brand_settings')
       .select('*')
@@ -162,6 +198,7 @@ serve(async (req) => {
       .single();
 
     if (!brandSettings) {
+      console.log('[GENERATE-AI-STORE] Creating brand settings');
       const { error: brandError } = await supabaseClient
         .from('brand_settings')
         .insert({
@@ -172,37 +209,29 @@ serve(async (req) => {
         });
 
       if (brandError) {
-        console.error('Error creating brand settings:', brandError);
+        console.error('[GENERATE-AI-STORE] Error creating brand settings:', brandError);
       }
     }
-
-    // Create store pages
-    const pages = [
-      { type: 'about', title: 'À propos', content: `Bienvenue sur ${storeName}. Nous sommes passionnés par la qualité et le service client.` },
-      { type: 'contact', title: 'Contact', content: 'Contactez-nous pour toute question.' },
-      { type: 'policy', title: 'Politique de confidentialité', content: 'Votre vie privée est importante pour nous.' },
-      { type: 'terms', title: 'Conditions générales', content: 'Conditions générales de vente.' },
-    ];
 
     // Create success notification
     const { error: notifError } = await supabaseClient
       .from('notifications')
       .insert({
         user_id: userId,
-        title: 'Boutique IA créée',
-        content: `Votre boutique "${storeName}" a été générée avec succès avec ${demoProducts.length} produits !`,
+        title: 'Boutique IA créée avec succès!',
+        content: `Votre boutique "${storeName}" a été générée avec ${demoProducts.length} produits. Vous pouvez maintenant la personnaliser.`,
       });
 
     if (notifError) {
-      console.error('Error creating notification:', notifError);
+      console.error('[GENERATE-AI-STORE] Error creating notification:', notifError);
     }
 
-    console.log('AI store generated successfully:', storeId);
+    console.log('[GENERATE-AI-STORE] AI store generated successfully:', store.id);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        storeId: storeId,
+        storeId: store.id,
         productsCount: demoProducts.length,
       }),
       {
@@ -211,7 +240,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('Error generating AI store:', error);
+    console.error('[GENERATE-AI-STORE] Error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {
