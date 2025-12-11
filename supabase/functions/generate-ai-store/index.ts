@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Demo products data
+// Demo products data generator
 const getDemoProducts = (plan: string, niche: string = 'general') => {
   const productCount = plan === 'pro' ? 50 : 10;
   const products = [];
@@ -54,49 +54,81 @@ const getDemoProducts = (plan: string, niche: string = 'general') => {
 };
 
 serve(async (req) => {
-  console.log('[GENERATE-AI-STORE] Function called');
+  const startTime = Date.now();
+  console.log('='.repeat(60));
+  console.log('[GENERATE-AI-STORE] START at:', new Date().toISOString());
+  console.log('[GENERATE-AI-STORE] Method:', req.method);
   
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    const { userId, storeName, plan, sessionId } = await req.json();
+    // Parse request body
+    const body = await req.text();
+    console.log('[GENERATE-AI-STORE] Raw body:', body);
     
-    console.log('[GENERATE-AI-STORE] Request data:', { userId, storeName, plan, sessionId });
+    let requestData;
+    try {
+      requestData = JSON.parse(body);
+    } catch (e) {
+      console.error('[GENERATE-AI-STORE] Failed to parse JSON body:', e.message);
+      throw new Error('Invalid JSON body');
+    }
+    
+    const { userId, storeName, plan, sessionId } = requestData;
+    
+    console.log('[GENERATE-AI-STORE] Request parameters:');
+    console.log('  - userId:', userId);
+    console.log('  - storeName:', storeName);
+    console.log('  - plan:', plan);
+    console.log('  - sessionId:', sessionId);
 
-    if (!userId || !storeName || !plan) {
-      console.error('[GENERATE-AI-STORE] Missing required fields');
-      throw new Error('Missing required fields: userId, storeName, plan');
+    if (!userId) {
+      console.error('[GENERATE-AI-STORE] Missing userId');
+      throw new Error('Missing required field: userId');
     }
 
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      { auth: { persistSession: false } }
-    );
-
-    console.log('[GENERATE-AI-STORE] Generating AI store for user:', userId, 'plan:', plan);
-
-    // Find the store
-    let store;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     
+    console.log('[GENERATE-AI-STORE] ENV CHECK:');
+    console.log('  - SUPABASE_URL:', supabaseUrl ? '✓ loaded' : '✗ MISSING');
+    console.log('  - SUPABASE_SERVICE_ROLE_KEY:', supabaseServiceKey ? '✓ loaded' : '✗ MISSING');
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error('Missing Supabase configuration');
+    }
+
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: { persistSession: false }
+    });
+
+    console.log('[GENERATE-AI-STORE] Finding store for user:', userId);
+
+    // Find the store - try multiple approaches
+    let store = null;
+    
+    // 1. Try by session ID first
     if (sessionId) {
+      console.log('[GENERATE-AI-STORE] Searching by session ID:', sessionId);
       const { data, error } = await supabaseClient
         .from('store_settings')
         .select('*')
         .eq('stripe_checkout_session_id', sessionId)
-        .eq('user_id', userId)
         .single();
       
       if (!error && data) {
         store = data;
-        console.log('[GENERATE-AI-STORE] Found store by session ID:', store.id);
+        console.log('[GENERATE-AI-STORE] ✓ Found store by session ID:', store.id);
+      } else {
+        console.log('[GENERATE-AI-STORE] Store not found by session ID:', error?.message);
       }
     }
     
+    // 2. Fallback: find by user ID (most recent)
     if (!store) {
-      // Fallback: find the most recent store for this user
+      console.log('[GENERATE-AI-STORE] Searching by user ID:', userId);
       const { data, error } = await supabaseClient
         .from('store_settings')
         .select('*')
@@ -105,48 +137,80 @@ serve(async (req) => {
         .limit(1)
         .single();
       
-      if (error || !data) {
-        console.error('[GENERATE-AI-STORE] Store not found:', error);
-        throw new Error('Store not found for user');
+      if (!error && data) {
+        store = data;
+        console.log('[GENERATE-AI-STORE] ✓ Found store by user ID:', store.id);
+      } else {
+        console.log('[GENERATE-AI-STORE] Store not found by user ID:', error?.message);
       }
-      store = data;
-      console.log('[GENERATE-AI-STORE] Found store by user ID:', store.id);
     }
 
-    // Check if products are already generated
+    // 3. Create store if not found
+    if (!store) {
+      console.log('[GENERATE-AI-STORE] No store found - creating new store');
+      const { data: newStore, error: createError } = await supabaseClient
+        .from('store_settings')
+        .insert({
+          user_id: userId,
+          store_name: storeName || 'Ma Boutique IA',
+          store_type: 'ai',
+          payment_status: 'completed',
+          stripe_checkout_session_id: sessionId,
+          initial_products_generated: false,
+        })
+        .select()
+        .single();
+
+      if (createError) {
+        console.error('[GENERATE-AI-STORE] ✗ Failed to create store:', createError);
+        throw new Error('Failed to create store: ' + createError.message);
+      }
+      
+      store = newStore;
+      console.log('[GENERATE-AI-STORE] ✓ Created new store:', store.id);
+    }
+
+    // Check idempotency - skip if already generated
     if (store.initial_products_generated) {
-      console.log('[GENERATE-AI-STORE] Products already generated for store:', store.id);
+      console.log('[GENERATE-AI-STORE] ✓ Products already generated - returning early');
       return new Response(
         JSON.stringify({ 
           success: true, 
           storeId: store.id,
           message: 'Products already generated',
+          alreadyGenerated: true,
         }),
-        {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200,
-        }
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
 
     // Generate demo products based on plan
-    const demoProducts = getDemoProducts(plan, 'general');
-    console.log(`[GENERATE-AI-STORE] Generating ${demoProducts.length} products for plan: ${plan}`);
+    const selectedPlan = plan || 'starter';
+    const demoProducts = getDemoProducts(selectedPlan, 'general');
+    console.log(`[GENERATE-AI-STORE] Generating ${demoProducts.length} products for plan: ${selectedPlan}`);
 
     // Insert products into the products table
     const productsToInsert = demoProducts.map(product => ({
-      ...product,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      category: product.category,
+      stock: product.stock,
+      status: product.status,
+      image: product.image,
       user_id: userId,
       created_at: new Date().toISOString(),
     }));
 
+    console.log('[GENERATE-AI-STORE] Inserting products into products table...');
     const { data: insertedProducts, error: productsError } = await supabaseClient
       .from('products')
       .insert(productsToInsert)
       .select();
 
     if (productsError) {
-      console.error('[GENERATE-AI-STORE] Error inserting to products table:', productsError);
+      console.error('[GENERATE-AI-STORE] ⚠ Error inserting to products table:', productsError.message);
+      console.log('[GENERATE-AI-STORE] Trying ai_generated_products table as fallback...');
       
       // Try ai_generated_products table as fallback
       const aiProductsToInsert = demoProducts.map(p => ({ 
@@ -161,36 +225,40 @@ serve(async (req) => {
         status: 'active',
       }));
       
-      const { error: aiProductsError } = await supabaseClient
+      const { data: aiProducts, error: aiProductsError } = await supabaseClient
         .from('ai_generated_products')
-        .insert(aiProductsToInsert);
+        .insert(aiProductsToInsert)
+        .select();
       
       if (aiProductsError) {
-        console.error('[GENERATE-AI-STORE] Error inserting to ai_generated_products:', aiProductsError);
+        console.error('[GENERATE-AI-STORE] ⚠ Error inserting to ai_generated_products:', aiProductsError.message);
       } else {
-        console.log('[GENERATE-AI-STORE] Products inserted into ai_generated_products table');
+        console.log('[GENERATE-AI-STORE] ✓ Inserted', aiProducts?.length || 0, 'products into ai_generated_products');
       }
     } else {
-      console.log('[GENERATE-AI-STORE] Inserted', insertedProducts?.length || 0, 'products into products table');
+      console.log('[GENERATE-AI-STORE] ✓ Inserted', insertedProducts?.length || 0, 'products into products table');
     }
 
     // Update store to mark products as generated
+    console.log('[GENERATE-AI-STORE] Updating store to mark products as generated...');
     const { error: updateError } = await supabaseClient
       .from('store_settings')
       .update({
         initial_products_generated: true,
         store_type: 'ai',
+        payment_status: 'completed',
         updated_at: new Date().toISOString(),
       })
       .eq('id', store.id);
 
     if (updateError) {
-      console.error('[GENERATE-AI-STORE] Error updating store:', updateError);
+      console.error('[GENERATE-AI-STORE] ⚠ Error updating store:', updateError.message);
     } else {
-      console.log('[GENERATE-AI-STORE] Store marked as products generated');
+      console.log('[GENERATE-AI-STORE] ✓ Store marked as products generated');
     }
 
     // Ensure brand settings exist
+    console.log('[GENERATE-AI-STORE] Checking brand settings...');
     const { data: brandSettings } = await supabaseClient
       .from('brand_settings')
       .select('*')
@@ -198,55 +266,62 @@ serve(async (req) => {
       .single();
 
     if (!brandSettings) {
-      console.log('[GENERATE-AI-STORE] Creating brand settings');
+      console.log('[GENERATE-AI-STORE] Creating brand settings...');
       const { error: brandError } = await supabaseClient
         .from('brand_settings')
         .insert({
           user_id: userId,
           primary_color: '#E53935',
           secondary_color: '#1976D2',
-          slogan: `Bienvenue sur ${storeName}`,
+          slogan: `Bienvenue sur ${storeName || 'Ma Boutique'}`,
         });
 
       if (brandError) {
-        console.error('[GENERATE-AI-STORE] Error creating brand settings:', brandError);
+        console.error('[GENERATE-AI-STORE] ⚠ Error creating brand settings:', brandError.message);
+      } else {
+        console.log('[GENERATE-AI-STORE] ✓ Brand settings created');
       }
+    } else {
+      console.log('[GENERATE-AI-STORE] ✓ Brand settings already exist');
     }
 
     // Create success notification
+    console.log('[GENERATE-AI-STORE] Creating success notification...');
     const { error: notifError } = await supabaseClient
       .from('notifications')
       .insert({
         user_id: userId,
         title: 'Boutique IA créée avec succès!',
-        content: `Votre boutique "${storeName}" a été générée avec ${demoProducts.length} produits. Vous pouvez maintenant la personnaliser.`,
+        content: `Votre boutique "${storeName || 'Ma Boutique'}" a été générée avec ${demoProducts.length} produits. Vous pouvez maintenant la personnaliser.`,
       });
 
     if (notifError) {
-      console.error('[GENERATE-AI-STORE] Error creating notification:', notifError);
+      console.error('[GENERATE-AI-STORE] ⚠ Error creating notification:', notifError.message);
+    } else {
+      console.log('[GENERATE-AI-STORE] ✓ Notification created');
     }
 
-    console.log('[GENERATE-AI-STORE] AI store generated successfully:', store.id);
+    const duration = Date.now() - startTime;
+    console.log('[GENERATE-AI-STORE] ✓ COMPLETE - Generation took', duration, 'ms');
+    console.log('='.repeat(60));
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         storeId: store.id,
         productsCount: demoProducts.length,
+        plan: selectedPlan,
       }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     );
+    
   } catch (error) {
-    console.error('[GENERATE-AI-STORE] Error:', error);
+    console.error('[GENERATE-AI-STORE] ✗ FATAL ERROR:', error.message);
+    console.error('[GENERATE-AI-STORE] Stack:', error.stack);
+    
     return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      }
+      JSON.stringify({ error: error.message, success: false }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
     );
   }
 });

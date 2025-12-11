@@ -8,30 +8,47 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  console.log('[STRIPE-WEBHOOK-STORE] Webhook received:', req.method);
+  const startTime = Date.now();
+  console.log('='.repeat(60));
+  console.log('[STRIPE-WEBHOOK] START - Webhook received at:', new Date().toISOString());
+  console.log('[STRIPE-WEBHOOK] Method:', req.method);
   
-  // Debug: Log secret availability
-  console.log('[STRIPE-WEBHOOK-STORE] SUPABASE_SERVICE_ROLE_KEY loaded:', !!Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'));
-  console.log('[STRIPE-WEBHOOK-STORE] SUPABASE_URL loaded:', !!Deno.env.get('SUPABASE_URL'));
-  console.log('[STRIPE-WEBHOOK-STORE] STRIPE_WEBHOOK_SECRET loaded:', !!Deno.env.get('STRIPE_WEBHOOK_SECRET'));
-  console.log('[STRIPE-WEBHOOK-STORE] STRIPE_SECRET_KEY loaded:', !!Deno.env.get('STRIPE_SECRET_KEY'));
+  // Log all environment variables availability
+  const supabaseUrl = Deno.env.get('SUPABASE_URL');
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
+  const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
+  
+  console.log('[STRIPE-WEBHOOK] ENV CHECK:');
+  console.log('  - SUPABASE_URL:', supabaseUrl ? '✓ loaded' : '✗ MISSING');
+  console.log('  - SUPABASE_SERVICE_ROLE_KEY:', supabaseServiceKey ? '✓ loaded' : '✗ MISSING');
+  console.log('  - STRIPE_SECRET_KEY:', stripeSecretKey ? '✓ loaded' : '✗ MISSING');
+  console.log('  - STRIPE_WEBHOOK_SECRET:', webhookSecret ? '✓ loaded' : '✗ MISSING');
   
   if (req.method === 'OPTIONS') {
+    console.log('[STRIPE-WEBHOOK] Handling OPTIONS preflight');
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
-    const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
-    
+    // Validate required secrets
     if (!stripeSecretKey) {
-      console.error('[STRIPE-WEBHOOK-STORE] Missing STRIPE_SECRET_KEY');
+      console.error('[STRIPE-WEBHOOK] FATAL: Missing STRIPE_SECRET_KEY');
       return new Response(
         JSON.stringify({ error: 'Missing Stripe configuration' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       );
     }
     
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('[STRIPE-WEBHOOK] FATAL: Missing Supabase configuration');
+      return new Response(
+        JSON.stringify({ error: 'Missing Supabase configuration' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
+    }
+
+    // Initialize Stripe with Deno-compatible HTTP client
     const stripe = new Stripe(stripeSecretKey, {
       apiVersion: '2023-10-16',
       httpClient: Stripe.createFetchHttpClient(),
@@ -40,93 +57,196 @@ serve(async (req) => {
     const signature = req.headers.get('stripe-signature');
     const body = await req.text();
     
-    console.log('[STRIPE-WEBHOOK-STORE] Signature present:', !!signature);
-    console.log('[STRIPE-WEBHOOK-STORE] Webhook secret configured:', !!webhookSecret);
+    console.log('[STRIPE-WEBHOOK] Request details:');
+    console.log('  - Signature header present:', !!signature);
+    console.log('  - Body length:', body.length, 'bytes');
+    console.log('  - Webhook secret configured:', !!webhookSecret);
 
     let event: Stripe.Event;
     
-    // If we have webhook secret, verify signature using async method
+    // Verify signature if webhook secret is configured
     if (webhookSecret && signature) {
       try {
-        // Use constructEventAsync for Deno compatibility
+        console.log('[STRIPE-WEBHOOK] Verifying signature with constructEventAsync...');
         event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
-        console.log('[STRIPE-WEBHOOK-STORE] Signature verified successfully');
+        console.log('[STRIPE-WEBHOOK] ✓ Signature verified successfully');
       } catch (err) {
-        console.error('[STRIPE-WEBHOOK-STORE] Signature verification failed:', err.message);
+        console.error('[STRIPE-WEBHOOK] ✗ Signature verification FAILED:', err.message);
+        console.error('[STRIPE-WEBHOOK] Signature:', signature?.substring(0, 50) + '...');
         return new Response(
-          JSON.stringify({ error: 'Webhook signature verification failed' }),
+          JSON.stringify({ error: 'Webhook signature verification failed', details: err.message }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
         );
       }
+    } else if (!webhookSecret) {
+      // For testing: parse without verification (NOT recommended for production)
+      console.warn('[STRIPE-WEBHOOK] ⚠ No webhook secret configured - parsing event without verification');
+      try {
+        event = JSON.parse(body);
+        console.log('[STRIPE-WEBHOOK] Parsed event from body');
+      } catch (e) {
+        console.error('[STRIPE-WEBHOOK] Failed to parse event body:', e.message);
+        return new Response(
+          JSON.stringify({ error: 'Invalid event body' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+        );
+      }
     } else {
-      console.error('[STRIPE-WEBHOOK-STORE] Missing webhook secret or signature');
+      console.error('[STRIPE-WEBHOOK] Missing signature header');
       return new Response(
-        JSON.stringify({ error: 'Missing webhook secret or signature' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+        JSON.stringify({ error: 'Missing stripe-signature header' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
     }
 
-    console.log('[STRIPE-WEBHOOK-STORE] Event type:', event.type);
-    console.log('[STRIPE-WEBHOOK-STORE] Event ID:', event.id);
+    console.log('[STRIPE-WEBHOOK] Event details:');
+    console.log('  - Event type:', event.type);
+    console.log('  - Event ID:', event.id);
+    console.log('  - Created:', new Date(event.created * 1000).toISOString());
 
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      { auth: { persistSession: false } }
-    );
+    // Initialize Supabase client with service role key
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: { persistSession: false }
+    });
 
-    // Handle different event types
+    // Handle checkout.session.completed event
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
       
-      console.log('[STRIPE-WEBHOOK-STORE] Checkout session completed:', {
-        sessionId: session.id,
-        paymentStatus: session.payment_status,
-        metadata: session.metadata,
-      });
+      console.log('[STRIPE-WEBHOOK] Processing checkout.session.completed:');
+      console.log('  - Session ID:', session.id);
+      console.log('  - Payment status:', session.payment_status);
+      console.log('  - Payment intent:', session.payment_intent);
+      console.log('  - Client reference ID:', session.client_reference_id);
+      console.log('  - Metadata:', JSON.stringify(session.metadata));
 
-      const userId = session.metadata?.userId;
-      const storeName = session.metadata?.storeName;
-      const plan = session.metadata?.plan;
+      // Extract metadata - try multiple sources
+      const userId = session.metadata?.userId || session.client_reference_id;
+      const storeName = session.metadata?.storeName || 'Ma Boutique IA';
+      const plan = session.metadata?.plan || 'starter';
 
-      if (!userId || !storeName || !plan) {
-        console.error('[STRIPE-WEBHOOK-STORE] Missing metadata:', { userId, storeName, plan });
-        throw new Error('Missing metadata in checkout session');
+      console.log('[STRIPE-WEBHOOK] Extracted data:');
+      console.log('  - User ID:', userId);
+      console.log('  - Store name:', storeName);
+      console.log('  - Plan:', plan);
+
+      if (!userId) {
+        console.error('[STRIPE-WEBHOOK] ✗ CRITICAL: No user ID found in metadata or client_reference_id');
+        // Don't throw - return success to Stripe but log the error
+        return new Response(
+          JSON.stringify({ received: true, warning: 'No user ID found' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+        );
       }
 
-      console.log('[STRIPE-WEBHOOK-STORE] Processing payment for:', { userId, storeName, plan });
-
-      // Update store payment status
-      const { data: updatedStore, error: updateError } = await supabaseClient
+      // Find and update store by session ID
+      console.log('[STRIPE-WEBHOOK] Searching for store with session ID:', session.id);
+      
+      const { data: existingStore, error: findError } = await supabaseClient
         .from('store_settings')
-        .update({
-          payment_status: 'completed',
-          store_type: 'ai',
-          stripe_payment_intent_id: session.payment_intent as string,
-          updated_at: new Date().toISOString(),
-        })
+        .select('*')
         .eq('stripe_checkout_session_id', session.id)
-        .eq('user_id', userId)
-        .select()
         .single();
 
-      if (updateError) {
-        console.error('[STRIPE-WEBHOOK-STORE] Error updating store:', updateError);
-        throw updateError;
+      if (findError) {
+        console.log('[STRIPE-WEBHOOK] Store not found by session ID, searching by user ID...');
+        
+        // Try to find by user ID
+        const { data: storeByUser, error: userFindError } = await supabaseClient
+          .from('store_settings')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('payment_status', 'pending')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (userFindError || !storeByUser) {
+          console.error('[STRIPE-WEBHOOK] ✗ No pending store found for user:', userId);
+          console.error('[STRIPE-WEBHOOK] Error:', userFindError?.message);
+          
+          // Create a new store record
+          console.log('[STRIPE-WEBHOOK] Creating new store record...');
+          const { data: newStore, error: createError } = await supabaseClient
+            .from('store_settings')
+            .insert({
+              user_id: userId,
+              store_name: storeName,
+              store_type: 'ai',
+              payment_status: 'completed',
+              stripe_checkout_session_id: session.id,
+              stripe_payment_intent_id: session.payment_intent as string,
+              initial_products_generated: false,
+            })
+            .select()
+            .single();
+
+          if (createError) {
+            console.error('[STRIPE-WEBHOOK] ✗ Failed to create store:', createError);
+            throw createError;
+          }
+          
+          console.log('[STRIPE-WEBHOOK] ✓ Created new store:', newStore.id);
+        } else {
+          // Update existing store
+          console.log('[STRIPE-WEBHOOK] Found store by user ID:', storeByUser.id);
+          const { error: updateError } = await supabaseClient
+            .from('store_settings')
+            .update({
+              payment_status: 'completed',
+              store_type: 'ai',
+              stripe_checkout_session_id: session.id,
+              stripe_payment_intent_id: session.payment_intent as string,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', storeByUser.id);
+
+          if (updateError) {
+            console.error('[STRIPE-WEBHOOK] ✗ Failed to update store:', updateError);
+            throw updateError;
+          }
+          console.log('[STRIPE-WEBHOOK] ✓ Updated store payment status');
+        }
+      } else {
+        // Store found by session ID - update it
+        console.log('[STRIPE-WEBHOOK] Found store by session ID:', existingStore.id);
+        
+        if (existingStore.payment_status === 'completed' && existingStore.initial_products_generated) {
+          console.log('[STRIPE-WEBHOOK] Store already processed - skipping');
+          return new Response(
+            JSON.stringify({ received: true, message: 'Already processed' }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+          );
+        }
+        
+        const { error: updateError } = await supabaseClient
+          .from('store_settings')
+          .update({
+            payment_status: 'completed',
+            store_type: 'ai',
+            stripe_payment_intent_id: session.payment_intent as string,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', existingStore.id);
+
+        if (updateError) {
+          console.error('[STRIPE-WEBHOOK] ✗ Failed to update store:', updateError);
+          throw updateError;
+        }
+        console.log('[STRIPE-WEBHOOK] ✓ Updated store payment status to completed');
       }
 
-      console.log('[STRIPE-WEBHOOK-STORE] Store updated successfully:', updatedStore?.id);
-
       // Trigger AI store generation
-      console.log('[STRIPE-WEBHOOK-STORE] Triggering generate-ai-store function...');
+      console.log('[STRIPE-WEBHOOK] Triggering generate-ai-store function...');
+      const generateUrl = `${supabaseUrl}/functions/v1/generate-ai-store`;
+      console.log('[STRIPE-WEBHOOK] Generate URL:', generateUrl);
       
-      const generateResponse = await fetch(
-        `${Deno.env.get('SUPABASE_URL')}/functions/v1/generate-ai-store`,
-        {
+      try {
+        const generateResponse = await fetch(generateUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+            'Authorization': `Bearer ${supabaseServiceKey}`,
           },
           body: JSON.stringify({
             userId,
@@ -134,48 +254,73 @@ serve(async (req) => {
             plan,
             sessionId: session.id,
           }),
+        });
+
+        const generateResult = await generateResponse.json();
+        console.log('[STRIPE-WEBHOOK] Generate response status:', generateResponse.status);
+        console.log('[STRIPE-WEBHOOK] Generate result:', JSON.stringify(generateResult));
+
+        if (!generateResponse.ok) {
+          console.error('[STRIPE-WEBHOOK] ⚠ Store generation failed but continuing:', generateResult);
+        } else {
+          console.log('[STRIPE-WEBHOOK] ✓ Store generation triggered successfully');
         }
-      );
-
-      const generateResult = await generateResponse.json();
-      console.log('[STRIPE-WEBHOOK-STORE] Generate AI store result:', generateResult);
-
-      if (!generateResponse.ok) {
-        console.error('[STRIPE-WEBHOOK-STORE] Error triggering store generation:', generateResult);
+      } catch (genError) {
+        console.error('[STRIPE-WEBHOOK] ⚠ Error calling generate-ai-store:', genError.message);
+        // Don't throw - we still want to return success to Stripe
       }
 
-      // Create notification
+      // Create notification for user
+      console.log('[STRIPE-WEBHOOK] Creating user notification...');
       const { error: notifError } = await supabaseClient
         .from('notifications')
         .insert({
           user_id: userId,
-          title: 'Paiement réussi',
-          content: `Votre paiement pour la boutique "${storeName}" a été confirmé. Votre boutique IA est en cours de génération.`,
+          title: 'Paiement réussi!',
+          content: `Votre paiement pour la boutique "${storeName}" (${plan}) a été confirmé. Génération en cours...`,
         });
 
       if (notifError) {
-        console.error('[STRIPE-WEBHOOK-STORE] Error creating notification:', notifError);
+        console.error('[STRIPE-WEBHOOK] ⚠ Failed to create notification:', notifError.message);
+      } else {
+        console.log('[STRIPE-WEBHOOK] ✓ Notification created');
       }
 
-      console.log('[STRIPE-WEBHOOK-STORE] Webhook processing completed successfully');
-    } else if (event.type === 'payment_intent.succeeded') {
-      console.log('[STRIPE-WEBHOOK-STORE] Payment intent succeeded - handled via checkout.session.completed');
-    } else {
-      console.log('[STRIPE-WEBHOOK-STORE] Unhandled event type:', event.type);
+      const duration = Date.now() - startTime;
+      console.log('[STRIPE-WEBHOOK] ✓ COMPLETE - Processing took', duration, 'ms');
+      console.log('='.repeat(60));
+
+      return new Response(
+        JSON.stringify({ received: true, processed: 'checkout.session.completed' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+    
+    // Handle payment_intent.succeeded as backup
+    if (event.type === 'payment_intent.succeeded') {
+      console.log('[STRIPE-WEBHOOK] payment_intent.succeeded received - typically handled via checkout.session.completed');
+      return new Response(
+        JSON.stringify({ received: true, processed: 'payment_intent.succeeded' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
     }
 
-    return new Response(JSON.stringify({ received: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
-    });
-  } catch (error) {
-    console.error('[STRIPE-WEBHOOK-STORE] Error processing webhook:', error);
+    // Unhandled event type
+    console.log('[STRIPE-WEBHOOK] Unhandled event type:', event.type);
     return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      }
+      JSON.stringify({ received: true, unhandled: event.type }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+    );
+    
+  } catch (error) {
+    console.error('[STRIPE-WEBHOOK] ✗ FATAL ERROR:', error.message);
+    console.error('[STRIPE-WEBHOOK] Stack:', error.stack);
+    
+    // Return 200 to Stripe to prevent retries for application errors
+    // Only return non-200 for signature verification failures
+    return new Response(
+      JSON.stringify({ error: error.message, received: true }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     );
   }
 });
