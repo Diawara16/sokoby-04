@@ -10,6 +10,12 @@ const corsHeaders = {
 serve(async (req) => {
   console.log('[STRIPE-WEBHOOK-STORE] Webhook received:', req.method);
   
+  // Debug: Log secret availability
+  console.log('[STRIPE-WEBHOOK-STORE] SUPABASE_SERVICE_ROLE_KEY loaded:', !!Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'));
+  console.log('[STRIPE-WEBHOOK-STORE] SUPABASE_URL loaded:', !!Deno.env.get('SUPABASE_URL'));
+  console.log('[STRIPE-WEBHOOK-STORE] STRIPE_WEBHOOK_SECRET loaded:', !!Deno.env.get('STRIPE_WEBHOOK_SECRET'));
+  console.log('[STRIPE-WEBHOOK-STORE] STRIPE_SECRET_KEY loaded:', !!Deno.env.get('STRIPE_SECRET_KEY'));
+  
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -20,11 +26,15 @@ serve(async (req) => {
     
     if (!stripeSecretKey) {
       console.error('[STRIPE-WEBHOOK-STORE] Missing STRIPE_SECRET_KEY');
-      throw new Error('Missing Stripe configuration');
+      return new Response(
+        JSON.stringify({ error: 'Missing Stripe configuration' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
     }
     
     const stripe = new Stripe(stripeSecretKey, {
       apiVersion: '2023-10-16',
+      httpClient: Stripe.createFetchHttpClient(),
     });
 
     const signature = req.headers.get('stripe-signature');
@@ -35,21 +45,25 @@ serve(async (req) => {
 
     let event: Stripe.Event;
     
-    // If we have webhook secret, verify signature
+    // If we have webhook secret, verify signature using async method
     if (webhookSecret && signature) {
       try {
-        event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+        // Use constructEventAsync for Deno compatibility
+        event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
         console.log('[STRIPE-WEBHOOK-STORE] Signature verified successfully');
       } catch (err) {
         console.error('[STRIPE-WEBHOOK-STORE] Signature verification failed:', err.message);
-        // Fall back to parsing the event without verification for debugging
-        event = JSON.parse(body);
-        console.log('[STRIPE-WEBHOOK-STORE] Parsed event without verification');
+        return new Response(
+          JSON.stringify({ error: 'Webhook signature verification failed' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+        );
       }
     } else {
-      // Parse event without verification (not recommended for production)
-      event = JSON.parse(body);
-      console.log('[STRIPE-WEBHOOK-STORE] Parsed event without signature verification');
+      console.error('[STRIPE-WEBHOOK-STORE] Missing webhook secret or signature');
+      return new Response(
+        JSON.stringify({ error: 'Missing webhook secret or signature' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
     }
 
     console.log('[STRIPE-WEBHOOK-STORE] Event type:', event.type);
