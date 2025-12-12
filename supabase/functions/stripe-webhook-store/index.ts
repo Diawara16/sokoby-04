@@ -270,6 +270,22 @@ serve(async (req) => {
         // Don't throw - we still want to return success to Stripe
       }
 
+      // Update user's plan in the "Stripe" table (case-sensitive table name)
+      console.log('[STRIPE-WEBHOOK] Updating Stripe table plan to:', plan);
+      const { error: stripeTableError } = await supabaseClient
+        .from('Stripe')
+        .update({ 
+          plan: plan,
+          trial_expired: true
+        })
+        .eq('id', userId);
+      
+      if (stripeTableError) {
+        console.error('[STRIPE-WEBHOOK] ⚠ Error updating Stripe table:', stripeTableError.message);
+      } else {
+        console.log('[STRIPE-WEBHOOK] ✓ Stripe table plan updated to:', plan);
+      }
+
       // Create notification for user
       console.log('[STRIPE-WEBHOOK] Creating user notification...');
       const { error: notifError } = await supabaseClient
