@@ -64,38 +64,33 @@ serve(async (req) => {
 
     let event: Stripe.Event;
     
-    // Verify signature if webhook secret is configured
-    if (webhookSecret && signature) {
-      try {
-        console.log('[STRIPE-WEBHOOK] Verifying signature with constructEventAsync...');
-        event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
-        console.log('[STRIPE-WEBHOOK] ✓ Signature verified successfully');
-      } catch (err) {
-        console.error('[STRIPE-WEBHOOK] ✗ Signature verification FAILED:', err.message);
-        console.error('[STRIPE-WEBHOOK] Signature:', signature?.substring(0, 50) + '...');
-        return new Response(
-          JSON.stringify({ error: 'Webhook signature verification failed', details: err.message }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
-        );
-      }
-    } else if (!webhookSecret) {
-      // For testing: parse without verification (NOT recommended for production)
-      console.warn('[STRIPE-WEBHOOK] ⚠ No webhook secret configured - parsing event without verification');
-      try {
-        event = JSON.parse(body);
-        console.log('[STRIPE-WEBHOOK] Parsed event from body');
-      } catch (e) {
-        console.error('[STRIPE-WEBHOOK] Failed to parse event body:', e.message);
-        return new Response(
-          JSON.stringify({ error: 'Invalid event body' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-        );
-      }
-    } else {
-      console.error('[STRIPE-WEBHOOK] Missing signature header');
+    // PRODUCTION MODE: Always verify signature with webhook secret
+    if (!webhookSecret) {
+      console.error('[STRIPE-WEBHOOK] FATAL: STRIPE_WEBHOOK_SECRET not configured - required for LIVE mode');
+      return new Response(
+        JSON.stringify({ error: 'Webhook secret not configured' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
+    }
+
+    if (!signature) {
+      console.error('[STRIPE-WEBHOOK] FATAL: Missing stripe-signature header');
       return new Response(
         JSON.stringify({ error: 'Missing stripe-signature header' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
+    try {
+      console.log('[STRIPE-WEBHOOK] Verifying signature with constructEventAsync...');
+      event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
+      console.log('[STRIPE-WEBHOOK] ✓ Signature verified successfully - LIVE payment confirmed');
+    } catch (err) {
+      console.error('[STRIPE-WEBHOOK] ✗ Signature verification FAILED:', err.message);
+      console.error('[STRIPE-WEBHOOK] Signature:', signature?.substring(0, 50) + '...');
+      return new Response(
+        JSON.stringify({ error: 'Webhook signature verification failed', details: err.message }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
       );
     }
 
@@ -103,6 +98,7 @@ serve(async (req) => {
     console.log('  - Event type:', event.type);
     console.log('  - Event ID:', event.id);
     console.log('  - Created:', new Date(event.created * 1000).toISOString());
+    console.log('  - Livemode:', event.livemode);
 
     // Initialize Supabase client with service role key
     const supabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
@@ -119,6 +115,16 @@ serve(async (req) => {
       console.log('  - Payment intent:', session.payment_intent);
       console.log('  - Client reference ID:', session.client_reference_id);
       console.log('  - Metadata:', JSON.stringify(session.metadata));
+      console.log('  - Livemode:', session.livemode);
+
+      // CRITICAL: Verify payment is actually completed
+      if (session.payment_status !== 'paid') {
+        console.error('[STRIPE-WEBHOOK] ✗ Payment not completed - status:', session.payment_status);
+        return new Response(
+          JSON.stringify({ received: true, warning: 'Payment not completed' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+        );
+      }
 
       // Extract metadata - try multiple sources
       const userId = session.metadata?.userId || session.client_reference_id;
@@ -132,7 +138,6 @@ serve(async (req) => {
 
       if (!userId) {
         console.error('[STRIPE-WEBHOOK] ✗ CRITICAL: No user ID found in metadata or client_reference_id');
-        // Don't throw - return success to Stripe but log the error
         return new Response(
           JSON.stringify({ received: true, warning: 'No user ID found' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
@@ -148,6 +153,8 @@ serve(async (req) => {
         .eq('stripe_checkout_session_id', session.id)
         .single();
 
+      let storeId: string;
+
       if (findError) {
         console.log('[STRIPE-WEBHOOK] Store not found by session ID, searching by user ID...');
         
@@ -156,17 +163,15 @@ serve(async (req) => {
           .from('store_settings')
           .select('*')
           .eq('user_id', userId)
-          .eq('payment_status', 'pending')
+          .in('payment_status', ['pending', 'processing'])
           .order('created_at', { ascending: false })
           .limit(1)
           .single();
 
         if (userFindError || !storeByUser) {
-          console.error('[STRIPE-WEBHOOK] ✗ No pending store found for user:', userId);
-          console.error('[STRIPE-WEBHOOK] Error:', userFindError?.message);
+          console.log('[STRIPE-WEBHOOK] No pending store found for user - creating new PRODUCTION store');
           
-          // Create a new store record
-          console.log('[STRIPE-WEBHOOK] Creating new store record...');
+          // Create a new PRODUCTION store record
           const { data: newStore, error: createError } = await supabaseClient
             .from('store_settings')
             .insert({
@@ -174,6 +179,8 @@ serve(async (req) => {
               store_name: storeName,
               store_type: 'ai',
               payment_status: 'completed',
+              store_status: 'processing',
+              is_production: false, // Will be set to true after products are generated
               stripe_checkout_session_id: session.id,
               stripe_payment_intent_id: session.payment_intent as string,
               initial_products_generated: false,
@@ -186,58 +193,64 @@ serve(async (req) => {
             throw createError;
           }
           
-          console.log('[STRIPE-WEBHOOK] ✓ Created new store:', newStore.id);
+          storeId = newStore.id;
+          console.log('[STRIPE-WEBHOOK] ✓ Created new PRODUCTION store:', storeId);
         } else {
-          // Update existing store
-          console.log('[STRIPE-WEBHOOK] Found store by user ID:', storeByUser.id);
+          storeId = storeByUser.id;
+          console.log('[STRIPE-WEBHOOK] Found store by user ID:', storeId);
+          
+          // Update existing store to PRODUCTION
           const { error: updateError } = await supabaseClient
             .from('store_settings')
             .update({
               payment_status: 'completed',
+              store_status: 'processing',
               store_type: 'ai',
               stripe_checkout_session_id: session.id,
               stripe_payment_intent_id: session.payment_intent as string,
               updated_at: new Date().toISOString(),
             })
-            .eq('id', storeByUser.id);
+            .eq('id', storeId);
 
           if (updateError) {
             console.error('[STRIPE-WEBHOOK] ✗ Failed to update store:', updateError);
             throw updateError;
           }
-          console.log('[STRIPE-WEBHOOK] ✓ Updated store payment status');
+          console.log('[STRIPE-WEBHOOK] ✓ Updated store to PROCESSING status');
         }
       } else {
-        // Store found by session ID - update it
-        console.log('[STRIPE-WEBHOOK] Found store by session ID:', existingStore.id);
+        storeId = existingStore.id;
+        console.log('[STRIPE-WEBHOOK] Found store by session ID:', storeId);
         
-        if (existingStore.payment_status === 'completed' && existingStore.initial_products_generated) {
-          console.log('[STRIPE-WEBHOOK] Store already processed - skipping');
+        if (existingStore.payment_status === 'completed' && existingStore.initial_products_generated && existingStore.is_production) {
+          console.log('[STRIPE-WEBHOOK] Store already PRODUCTION - skipping');
           return new Response(
             JSON.stringify({ received: true, message: 'Already processed' }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
           );
         }
         
+        // Update store to PRODUCTION processing
         const { error: updateError } = await supabaseClient
           .from('store_settings')
           .update({
             payment_status: 'completed',
+            store_status: 'processing',
             store_type: 'ai',
             stripe_payment_intent_id: session.payment_intent as string,
             updated_at: new Date().toISOString(),
           })
-          .eq('id', existingStore.id);
+          .eq('id', storeId);
 
         if (updateError) {
           console.error('[STRIPE-WEBHOOK] ✗ Failed to update store:', updateError);
           throw updateError;
         }
-        console.log('[STRIPE-WEBHOOK] ✓ Updated store payment status to completed');
+        console.log('[STRIPE-WEBHOOK] ✓ Updated store payment status to PROCESSING');
       }
 
-      // Trigger AI store generation
-      console.log('[STRIPE-WEBHOOK] Triggering generate-ai-store function...');
+      // Trigger AI store generation for PRODUCTION
+      console.log('[STRIPE-WEBHOOK] Triggering generate-ai-store function for PRODUCTION...');
       const generateUrl = `${supabaseUrl}/functions/v1/generate-ai-store`;
       console.log('[STRIPE-WEBHOOK] Generate URL:', generateUrl);
       
@@ -253,6 +266,8 @@ serve(async (req) => {
             storeName,
             plan,
             sessionId: session.id,
+            storeId,
+            isProduction: true, // CRITICAL: Flag for production mode
           }),
         });
 
@@ -263,7 +278,7 @@ serve(async (req) => {
         if (!generateResponse.ok) {
           console.error('[STRIPE-WEBHOOK] ⚠ Store generation failed but continuing:', generateResult);
         } else {
-          console.log('[STRIPE-WEBHOOK] ✓ Store generation triggered successfully');
+          console.log('[STRIPE-WEBHOOK] ✓ PRODUCTION store generation triggered successfully');
         }
       } catch (genError) {
         console.error('[STRIPE-WEBHOOK] ⚠ Error calling generate-ai-store:', genError.message);
@@ -292,8 +307,8 @@ serve(async (req) => {
         .from('notifications')
         .insert({
           user_id: userId,
-          title: 'Paiement réussi!',
-          content: `Votre paiement pour la boutique "${storeName}" (${plan}) a été confirmé. Génération en cours...`,
+          title: 'Paiement confirmé - Boutique LIVE!',
+          content: `Votre paiement pour la boutique "${storeName}" (${plan}) a été confirmé. Votre boutique de production est en cours de création...`,
         });
 
       if (notifError) {
@@ -303,11 +318,11 @@ serve(async (req) => {
       }
 
       const duration = Date.now() - startTime;
-      console.log('[STRIPE-WEBHOOK] ✓ COMPLETE - Processing took', duration, 'ms');
+      console.log('[STRIPE-WEBHOOK] ✓ COMPLETE - PRODUCTION processing took', duration, 'ms');
       console.log('='.repeat(60));
 
       return new Response(
-        JSON.stringify({ received: true, processed: 'checkout.session.completed' }),
+        JSON.stringify({ received: true, processed: 'checkout.session.completed', production: true }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }

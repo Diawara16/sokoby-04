@@ -18,13 +18,19 @@ serve(async (req) => {
   }
 
   try {
-    logStep("Function started");
+    logStep("Function started - PRODUCTION MODE");
     
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
-    logStep("Stripe key verified");
+    
+    // PRODUCTION: Verify we're using LIVE Stripe key (starts with sk_live_)
+    if (!stripeKey.startsWith('sk_live_')) {
+      logStep("⚠️ WARNING: Not using LIVE Stripe key");
+    } else {
+      logStep("✓ LIVE Stripe key verified");
+    }
 
-    // Create Supabase client with service role key to create orders
+    // Create Supabase client with service role key
     const supabaseService = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
@@ -52,10 +58,10 @@ serve(async (req) => {
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
-    // Map plan to Stripe product ID
+    // Map plan to Stripe product ID - PRODUCTION pricing
     const planProductIds = {
-      starter: 'sokoby_ai_store_starter',
-      pro: 'sokoby_ai_store_pro',
+      starter: 'sokoby_ai_store_starter_live',
+      pro: 'sokoby_ai_store_pro_live',
     };
 
     const productId = planProductIds[plan as keyof typeof planProductIds];
@@ -88,21 +94,21 @@ serve(async (req) => {
       }
     }
 
-    // If no price found, initialize products
+    // If no price found, initialize products - PRODUCTION pricing
     if (!priceId) {
-      logStep("No existing price found, initializing Stripe products...");
+      logStep("No existing price found, initializing LIVE Stripe products...");
       
-      // Define product details
+      // PRODUCTION product details with LIVE pricing
       const productDetails = {
         starter: {
-          name: 'Plan Starter – Création Boutique IA',
-          description: 'Création automatique de boutique avec 10 produits générés par IA, design professionnel, et pages essentielles.',
-          price: 2000,
+          name: 'Plan Starter – Boutique IA Production',
+          description: 'Création automatique de boutique LIVE avec 10 produits actifs, design professionnel, checkout fonctionnel.',
+          price: 2000, // 20€
         },
         pro: {
-          name: 'Plan Pro – Création Boutique IA',
-          description: 'Création automatique de boutique avec 50 produits générés par IA, optimisation SEO, support prioritaire, et design premium.',
-          price: 8000,
+          name: 'Plan Pro – Boutique IA Production',
+          description: 'Création automatique de boutique LIVE avec 50 produits actifs, optimisation SEO, support prioritaire, design premium.',
+          price: 8000, // 80€
         },
       };
 
@@ -114,9 +120,11 @@ serve(async (req) => {
         description: details.description,
         metadata: {
           product_id: productId,
+          type: 'ai_store',
+          mode: 'production',
         },
       });
-      logStep("Created new product", { productId: product.id });
+      logStep("Created new LIVE product", { productId: product.id });
 
       // Create price
       const price = await stripe.prices.create({
@@ -125,10 +133,11 @@ serve(async (req) => {
         currency: 'eur',
         metadata: {
           product_id: productId,
+          mode: 'production',
         },
       });
       priceId = price.id;
-      logStep("Created new price", { priceId });
+      logStep("Created new LIVE price", { priceId });
     }
 
     // Get or create Stripe customer for the user
@@ -161,7 +170,7 @@ serve(async (req) => {
       }
     }
 
-    // Check for existing store
+    // Check for existing store - prevent duplicate stores
     const { data: existingStore } = await supabaseService
       .from('store_settings')
       .select('*')
@@ -171,13 +180,19 @@ serve(async (req) => {
     let storeData;
 
     if (existingStore) {
-      // If store exists and is pending, update it
-      if (existingStore.payment_status === 'pending') {
+      // If store exists and is already production/active, reject
+      if (existingStore.is_production && existingStore.store_status === 'active') {
+        throw new Error("Vous avez déjà une boutique de production active. Veuillez gérer votre boutique existante.");
+      }
+      
+      // If store exists and is pending/processing, update it
+      if (existingStore.payment_status === 'pending' || existingStore.store_status === 'pending_payment') {
         logStep("Updating existing pending store", { storeId: existingStore.id });
         const { data: updatedStore, error: updateError } = await supabaseService
           .from('store_settings')
           .update({
             store_name: storeName,
+            store_status: 'pending_payment',
             domain_name: `${storeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${user.id.substring(0, 8)}.sokoby.com`,
           })
           .eq('id', existingStore.id)
@@ -190,8 +205,8 @@ serve(async (req) => {
         }
         storeData = updatedStore;
       } else {
-        // Store already exists and is not pending
-        throw new Error("Vous avez déjà une boutique active. Veuillez gérer votre boutique existante.");
+        // Store exists but in some other state - reject to prevent issues
+        throw new Error("Une boutique existe déjà. Veuillez contacter le support si vous rencontrez des problèmes.");
       }
     } else {
       // Create new pending store record
@@ -202,6 +217,8 @@ serve(async (req) => {
           store_name: storeName,
           store_type: 'ai',
           payment_status: 'pending',
+          store_status: 'pending_payment',
+          is_production: false, // Will be set to true after payment
           initial_products_generated: false,
           domain_name: `${storeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${user.id.substring(0, 8)}.sokoby.com`,
         })
@@ -217,7 +234,8 @@ serve(async (req) => {
       logStep("Pending store record created", { storeId: storeData.id });
     }
 
-    // Create Stripe checkout session using the price ID
+    // Create Stripe checkout session - PRODUCTION mode
+    const origin = req.headers.get("origin") || 'https://sokoby.com';
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [{
@@ -225,18 +243,24 @@ serve(async (req) => {
         quantity: 1,
       }],
       mode: "payment",
-      success_url: `${req.headers.get("origin")}/tableau-de-bord?payment=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/creer-boutique-ia?payment=canceled`,
+      // PRODUCTION: Redirect to success page with session_id for verification
+      success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/creer-boutique-ia?payment=canceled`,
       payment_method_types: ['card'],
       metadata: {
         userId: user.id,
         storeName: storeName,
         plan: plan,
         storeId: storeData.id,
-      }
+        mode: 'production',
+      },
+      // PRODUCTION: Enable billing address collection
+      billing_address_collection: 'required',
+      // PRODUCTION: Customer email
+      customer_email: !customerId ? (profile?.email || user.email) : undefined,
     });
 
-    logStep("Stripe checkout session created", { sessionId: session.id, url: session.url });
+    logStep("LIVE Stripe checkout session created", { sessionId: session.id, url: session.url });
 
     // Update store with session ID
     const { error: updateError } = await supabaseService
@@ -253,7 +277,8 @@ serve(async (req) => {
     return new Response(JSON.stringify({ 
       url: session.url,
       sessionId: session.id,
-      storeId: storeData.id
+      storeId: storeData.id,
+      mode: 'production'
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
