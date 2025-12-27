@@ -2680,6 +2680,7 @@ export type Database = {
           description: string | null
           id: string
           image: string | null
+          is_visible: boolean
           name: string
           price: number
           status: string | null
@@ -2692,6 +2693,7 @@ export type Database = {
           description?: string | null
           id?: string
           image?: string | null
+          is_visible?: boolean
           name: string
           price: number
           status?: string | null
@@ -2704,6 +2706,7 @@ export type Database = {
           description?: string | null
           id?: string
           image?: string | null
+          is_visible?: boolean
           name?: string
           price?: number
           status?: string | null
@@ -3191,14 +3194,17 @@ export type Database = {
           invoice_prefix: string | null
           invoice_template: Json | null
           is_custom_domain: boolean | null
+          is_production: boolean
           notification_settings: Json | null
           payment_status: string | null
+          production_activated_at: string | null
           social_media: Json | null
           store_address: string | null
           store_description: string | null
           store_email: string | null
           store_name: string
           store_phone: string | null
+          store_status: string
           store_type: string | null
           stripe_checkout_session_id: string | null
           stripe_payment_intent_id: string | null
@@ -3230,14 +3236,17 @@ export type Database = {
           invoice_prefix?: string | null
           invoice_template?: Json | null
           is_custom_domain?: boolean | null
+          is_production?: boolean
           notification_settings?: Json | null
           payment_status?: string | null
+          production_activated_at?: string | null
           social_media?: Json | null
           store_address?: string | null
           store_description?: string | null
           store_email?: string | null
           store_name: string
           store_phone?: string | null
+          store_status?: string
           store_type?: string | null
           stripe_checkout_session_id?: string | null
           stripe_payment_intent_id?: string | null
@@ -3269,14 +3278,17 @@ export type Database = {
           invoice_prefix?: string | null
           invoice_template?: Json | null
           is_custom_domain?: boolean | null
+          is_production?: boolean
           notification_settings?: Json | null
           payment_status?: string | null
+          production_activated_at?: string | null
           social_media?: Json | null
           store_address?: string | null
           store_description?: string | null
           store_email?: string | null
           store_name?: string
           store_phone?: string | null
+          store_status?: string
           store_type?: string | null
           stripe_checkout_session_id?: string | null
           stripe_payment_intent_id?: string | null
