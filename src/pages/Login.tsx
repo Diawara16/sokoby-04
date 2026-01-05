@@ -14,12 +14,8 @@ const Login = () => {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
       if (!active || !user) return;
-      const { data: existingStore } = await supabase
-        .from('store_settings')
-        .select('user_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      navigate(existingStore ? "/store-editor" : "/tableau-de-bord", { replace: true });
+      // Always redirect to live store dashboard
+      navigate("/tableau-de-bord", { replace: true });
     };
 
     // If already authenticated, redirect immediately
