@@ -13,34 +13,7 @@ async function generateUniqueDomainName(userId: string, nicheName: string) {
   return `${cleanNiche}-${randomSuffix}`;
 }
 
-// Produits de démonstration pour quand l'IA n'est pas disponible
-const getDemoProducts = (niche: string) => {
-  const demoProducts = {
-    'Fitness': [
-      { name: 'Bandes de résistance Pro', description: 'Set complet de bandes élastiques pour musculation', price: 29.99 },
-      { name: 'Tapis de yoga premium', description: 'Tapis antidérapant 6mm d\'épaisseur', price: 39.99 },
-      { name: 'Haltères ajustables', description: 'Paire d\'haltères 2-20kg modulables', price: 149.99 },
-      { name: 'Corde à sauter fitness', description: 'Corde avec compteur intégré', price: 19.99 },
-      { name: 'Kettlebell 12kg', description: 'Kettlebell en fonte avec revêtement', price: 49.99 }
-    ],
-    'Mode': [
-      { name: 'T-shirt vintage', description: 'T-shirt coton bio coupe vintage', price: 24.99 },
-      { name: 'Jean slim délavé', description: 'Jean coupe slim effet délavé', price: 79.99 },
-      { name: 'Sneakers tendance', description: 'Baskets urbaines design moderne', price: 89.99 },
-      { name: 'Veste bomber', description: 'Veste bomber unisexe style streetwear', price: 119.99 },
-      { name: 'Casquette snapback', description: 'Casquette ajustable brodée', price: 29.99 }
-    ],
-    'Electronics': [
-      { name: 'Écouteurs sans fil', description: 'Écouteurs Bluetooth haute qualité', price: 79.99 },
-      { name: 'Chargeur rapide USB-C', description: 'Chargeur 65W compatible tous appareils', price: 34.99 },
-      { name: 'Power bank 20000mAh', description: 'Batterie externe charge rapide', price: 49.99 },
-      { name: 'Câble USB-C renforcé', description: 'Câble 2m avec gaine métallique', price: 19.99 },
-      { name: 'Support téléphone bureau', description: 'Support ajustable multiangles', price: 24.99 }
-    ]
-  };
-  
-  return demoProducts[niche as keyof typeof demoProducts] || demoProducts['Electronics'];
-};
+// Demo products disabled - all stores are LIVE production stores with real products only
 
 export const useStoreCreation = () => {
   const [step, setStep] = useState<CreationStep>('niche');
@@ -145,57 +118,37 @@ export const useStoreCreation = () => {
 
       console.log("Paramètres de boutique configurés:", storeData);
 
-      // Étape 4: Génération des produits (avec fallback démo)
+      // Étape 4: Load real products only (no demo products for LIVE stores)
       updateProgress(60, 'products');
-      console.log("Génération des produits...");
+      console.log("Loading real products for LIVE store...");
       
       let productsGenerated = false;
       
-      try {
-        // Tentative avec l'IA OpenAI
-        console.log("Tentative de génération avec OpenAI...");
-        const { data, error } = await supabase.functions.invoke('generate-store', {
-          body: {
-            niche: nicheName,
-            storeId: storeData.id,
-            userId: user.id,
-          },
-        });
-
-        if (error) {
-          console.warn("Erreur OpenAI, passage en mode démo:", error);
-          throw new Error('OpenAI indisponible');
-        }
-
-        console.log("Produits générés par l'IA:", data);
+      // For LIVE stores, only load existing real products - no demo products
+      const { data: existingProducts, error: productsError } = await supabase
+        .from('products')
+        .select('id')
+        .eq('user_id', user.id)
+        .limit(1);
+      
+      if (!productsError && existingProducts && existingProducts.length > 0) {
+        console.log("Real products found for LIVE store");
         productsGenerated = true;
-        
-      } catch (aiError) {
-        console.log("IA indisponible, utilisation des produits de démonstration...");
-        
-        // Mode démonstration avec des produits prédéfinis
-        const demoProducts = getDemoProducts(nicheName);
-        const productsToInsert = demoProducts.map(product => ({
-          ...product,
-          niche: nicheName,
-          image_url: null,
-          user_id: user.id,
-          store_id: storeData.id,
-          supplier: 'Démonstration',
-          status: 'demo'
-        }));
-
-        const { error: demoError } = await supabase
+      } else {
+        // Check AI-generated products that are active
+        const { data: aiProducts, error: aiError } = await supabase
           .from('ai_generated_products')
-          .insert(productsToInsert);
-
-        if (demoError) {
-          console.error("Erreur lors de l'insertion des produits démo:", demoError);
-          throw new Error(`Erreur lors de la création des produits: ${demoError.message}`);
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .limit(1);
+        
+        if (!aiError && aiProducts && aiProducts.length > 0) {
+          console.log("Active AI-generated products found for LIVE store");
+          productsGenerated = true;
+        } else {
+          console.log("No products found - LIVE store requires real products to be added manually");
         }
-
-        console.log("Produits de démonstration ajoutés");
-        productsGenerated = true;
       }
 
       // Étape 5: Vérifier et appliquer le thème si nécessaire
