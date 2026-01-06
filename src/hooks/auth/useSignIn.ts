@@ -30,14 +30,23 @@ export const useSignIn = () => {
           description: "Vous êtes maintenant connecté.",
         });
 
-        // Redirect based on store existence
+        // Check for LIVE production store and redirect accordingly
         const { data: existingStore } = await supabase
           .from('store_settings')
-          .select('user_id')
+          .select('user_id, is_production')
           .eq('user_id', data.user.id)
           .maybeSingle();
 
-        navigate(existingStore ? "/store-editor" : "/tableau-de-bord");
+        if (existingStore?.is_production) {
+          // LIVE store: redirect to storefront
+          navigate("/boutique", { replace: true });
+        } else if (existingStore) {
+          // Store exists but not live: redirect to dashboard
+          navigate("/tableau-de-bord", { replace: true });
+        } else {
+          // No store: redirect to dashboard
+          navigate("/tableau-de-bord", { replace: true });
+        }
       }
     } catch (error: any) {
       console.error("Erreur de connexion:", error);

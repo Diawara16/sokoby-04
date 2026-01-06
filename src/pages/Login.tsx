@@ -14,8 +14,21 @@ const Login = () => {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
       if (!active || !user) return;
-      // Always redirect to live store dashboard
-      navigate("/tableau-de-bord", { replace: true });
+      
+      // Check for LIVE production store
+      const { data: existingStore } = await supabase
+        .from('store_settings')
+        .select('is_production')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (existingStore?.is_production) {
+        // LIVE store: redirect to storefront
+        navigate("/boutique", { replace: true });
+      } else {
+        // No live store: redirect to dashboard
+        navigate("/tableau-de-bord", { replace: true });
+      }
     };
 
     // If already authenticated, redirect immediately
