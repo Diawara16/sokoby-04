@@ -51,7 +51,8 @@ export default function Boutique() {
         .from('products')
         .select('*')
         .eq('user_id', user.id)
-        .eq('status', 'active');
+        .eq('status', 'active')
+        .eq('is_visible', true);
       
       if (error) {
         console.error('Error fetching products:', error);

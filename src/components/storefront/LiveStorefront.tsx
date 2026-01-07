@@ -50,17 +50,11 @@ export function LiveStorefront({ products, storeName, isLoading }: LiveStorefron
           <div className="text-center py-16 space-y-4">
             <ShoppingBag className="h-16 w-16 mx-auto text-muted-foreground" />
             <h2 className="text-xl font-semibold text-muted-foreground">
-              Aucun produit disponible
+              Aucun produit disponible pour le moment
             </h2>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Cette boutique n'a pas encore de produits. Revenez bientôt !
+              Revenez bientôt pour découvrir nos produits !
             </p>
-            <Link to="/tableau-de-bord">
-              <Button className="mt-4">
-                <Settings className="mr-2 h-4 w-4" />
-                Ajouter des produits
-              </Button>
-            </Link>
           </div>
         )}
       </main>
