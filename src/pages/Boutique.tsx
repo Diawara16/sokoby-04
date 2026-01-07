@@ -12,6 +12,8 @@ import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Product } from "@/types/product";
 import { AddProductDemo } from "@/components/products/AddProductDemo";
+import { LiveStorefront } from "@/components/storefront/LiveStorefront";
+import { useStoreMode } from "@/hooks/useStoreMode";
 
 export default function Boutique() {
   const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 1000]);
@@ -33,6 +35,8 @@ export default function Boutique() {
     checkUser();
   }, []);
 
+  const { isProduction, isLoading: isLoadingStoreMode, storeName } = useStoreMode(user?.id);
+
   const { data: products = [], isLoading, error } = useQuery<Product[]>({
     queryKey: ['products', user?.id],
     queryFn: async () => {
@@ -46,7 +50,8 @@ export default function Boutique() {
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .eq('status', 'active');
       
       if (error) {
         console.error('Error fetching products:', error);
@@ -68,21 +73,16 @@ export default function Boutique() {
     console.error('Query error:', error);
   }
 
-  if (isCheckingAuth) {
+  // Loading state
+  if (isCheckingAuth || isLoadingStoreMode) {
     return (
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full">
-          <AppSidebar />
-          <main className="flex-1 overflow-y-auto bg-background p-8">
-            <div className="flex justify-center items-center h-32">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          </main>
-        </div>
-      </SidebarProvider>
+      <div className="min-h-screen flex justify-center items-center bg-background">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
     );
   }
 
+  // Not logged in
   if (!user) {
     return (
       <SidebarProvider>
@@ -123,6 +123,18 @@ export default function Boutique() {
     );
   }
 
+  // LIVE PRODUCTION STORE: Show clean storefront without editor menus
+  if (isProduction) {
+    return (
+      <LiveStorefront 
+        products={products} 
+        storeName={storeName} 
+        isLoading={isLoading} 
+      />
+    );
+  }
+
+  // DEVELOPMENT/DEMO MODE: Show full editor with sidebar and demo options
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
