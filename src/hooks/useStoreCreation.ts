@@ -259,7 +259,8 @@ export const useStoreCreation = () => {
   };
 
   const handleComplete = () => {
-    navigate('/store-editor');
+    // LIVE stores: redirect directly to storefront, not editor
+    navigate('/boutique');
   };
 
   return {
