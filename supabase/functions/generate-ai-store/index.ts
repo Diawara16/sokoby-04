@@ -277,32 +277,8 @@ serve(async (req) => {
       .select();
 
     if (productsError) {
-      console.error('[GENERATE-AI-STORE] ⚠ Error inserting to products table:', productsError.message);
-      console.log('[GENERATE-AI-STORE] Trying ai_generated_products table as fallback...');
-      
-      // Try ai_generated_products table as fallback
-      const aiProductsToInsert = productionProducts.map(p => ({ 
-        name: p.name,
-        description: p.description,
-        price: p.price,
-        image_url: p.image,
-        store_id: store.id,
-        user_id: userId,
-        niche: 'general',
-        supplier: 'AI Generated',
-        status: 'active', // PRODUCTION: Active status
-      }));
-      
-      const { data: aiProducts, error: aiProductsError } = await supabaseClient
-        .from('ai_generated_products')
-        .insert(aiProductsToInsert)
-        .select();
-      
-      if (aiProductsError) {
-        console.error('[GENERATE-AI-STORE] ⚠ Error inserting to ai_generated_products:', aiProductsError.message);
-      } else {
-        console.log('[GENERATE-AI-STORE] ✓ Inserted', aiProducts?.length || 0, 'PRODUCTION products into ai_generated_products');
-      }
+      console.error('[GENERATE-AI-STORE] ✗ Error inserting to products table:', productsError.message);
+      throw new Error('Failed to insert products: ' + productsError.message);
     } else {
       console.log('[GENERATE-AI-STORE] ✓ Inserted', insertedProducts?.length || 0, 'PRODUCTION products into products table');
     }

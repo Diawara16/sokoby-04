@@ -45,8 +45,9 @@ export function StoreProductsManager() {
       
       if (!user) return;
 
+      // Query the products table (the source of truth for LIVE stores)
       const { data: products, error } = await supabase
-        .from('ai_generated_products')
+        .from('products')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
@@ -55,7 +56,17 @@ export function StoreProductsManager() {
         throw error;
       }
 
-      setProducts(products || []);
+      // Map products to expected shape
+      setProducts((products || []).map(p => ({
+        id: p.id,
+        name: p.name,
+        description: p.description || '',
+        price: p.price,
+        image_url: p.image,
+        status: p.status || 'active',
+        niche: p.category || 'general',
+        supplier: 'Manual',
+      })));
     } catch (error) {
       console.error('Error loading products:', error);
       toast({

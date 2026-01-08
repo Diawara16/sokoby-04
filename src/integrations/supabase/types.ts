@@ -2683,8 +2683,10 @@ export type Database = {
           is_visible: boolean
           name: string
           price: number
+          published: boolean
           status: string | null
           stock: number | null
+          store_id: string | null
           user_id: string | null
         }
         Insert: {
@@ -2696,8 +2698,10 @@ export type Database = {
           is_visible?: boolean
           name: string
           price: number
+          published?: boolean
           status?: string | null
           stock?: number | null
+          store_id?: string | null
           user_id?: string | null
         }
         Update: {
@@ -2709,11 +2713,21 @@ export type Database = {
           is_visible?: boolean
           name?: string
           price?: number
+          published?: boolean
           status?: string | null
           stock?: number | null
+          store_id?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "store_settings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {

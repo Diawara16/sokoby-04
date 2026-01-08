@@ -35,39 +35,60 @@ export default function Boutique() {
     checkUser();
   }, []);
 
-  const { isProduction, isLoading: isLoadingStoreMode, storeName } = useStoreMode(user?.id);
+  const { isProduction, isLoading: isLoadingStoreMode, storeName, storeId, storeOwnerId } = useStoreMode(user?.id);
 
   const { data: products = [], isLoading, error } = useQuery<Product[]>({
-    queryKey: ['products', user?.id],
+    queryKey: ['products', storeId, isProduction],
     queryFn: async () => {
-      console.log("Fetching products for current user...");
+      console.log("Fetching products for store...", { storeId, isProduction });
       
       if (!user) {
         console.log("No user found, returning empty array");
         return [];
       }
 
-      const { data, error } = await supabase
+      // For production stores, query by store_id for correct owner resolution
+      // This handles both direct owners and staff members
+      if (isProduction && storeId) {
+        console.log("Fetching LIVE store products by store_id:", storeId);
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('store_id', storeId)
+          .eq('status', 'active')
+          .eq('is_visible', true);
+        
+        if (error) {
+          console.error('Error fetching products:', error);
+          throw error;
+        }
+        
+        console.log("LIVE store products fetched:", data?.length || 0);
+        return data || [];
+      }
+
+      // For development/demo mode, query by user_id
+      const { data, error: queryError } = await supabase
         .from('products')
         .select('*')
         .eq('user_id', user.id)
         .eq('status', 'active')
         .eq('is_visible', true);
       
-      if (error) {
-        console.error('Error fetching products:', error);
+      if (queryError) {
+        console.error('Error fetching products:', queryError);
         toast({
           title: "Erreur",
           description: "Impossible de charger les produits. Veuillez réessayer.",
           variant: "destructive",
         });
-        throw error;
+        throw queryError;
       }
       
-      console.log("Products fetched for user:", data);
+      console.log("Products fetched for user:", data?.length || 0);
       return data || [];
     },
-    enabled: !!user
+    enabled: !!user && (!isProduction || !!storeId)
   });
 
   if (error) {

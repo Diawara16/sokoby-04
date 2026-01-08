@@ -8,7 +8,7 @@ export const PriceOptimizer = () => {
     queryKey: ['price-optimizations'],
     queryFn: async () => {
       const { data: products } = await supabase
-        .from('ai_generated_products')
+        .from('products')
         .select('price')
         .order('created_at', { ascending: false })
         .limit(10);

@@ -144,19 +144,21 @@ serve(async (req) => {
           name,
           description,
           price: parseFloat(price),
-          niche,
-          image_url: null,
+          category: niche,
+          stock: 0,
+          status: 'active',
+          is_visible: true,
+          image: null,
           user_id: userId,
           store_id: storeId,
-          supplier: 'AI Generated'
         };
       });
 
     console.log('Parsed product ideas:', productIdeas);
 
-    // Insert products into the database
+    // Insert products into the products table (LIVE-ready)
     const { error: productsError } = await supabase
-      .from('ai_generated_products')
+      .from('products')
       .insert(productIdeas);
 
     if (productsError) {
@@ -164,7 +166,7 @@ serve(async (req) => {
       throw productsError;
     }
 
-    console.log('Products inserted successfully');
+    console.log('Products inserted successfully into products table');
 
     // Créer une notification pour informer l'utilisateur
     const { error: notificationError } = await supabase

@@ -124,31 +124,20 @@ export const useStoreCreation = () => {
       
       let productsGenerated = false;
       
-      // For LIVE stores, only load existing real products - no demo products
+      // For LIVE stores, only load existing real products from products table
       const { data: existingProducts, error: productsError } = await supabase
         .from('products')
         .select('id')
         .eq('user_id', user.id)
+        .eq('status', 'active')
+        .eq('is_visible', true)
         .limit(1);
       
       if (!productsError && existingProducts && existingProducts.length > 0) {
         console.log("Real products found for LIVE store");
         productsGenerated = true;
       } else {
-        // Check AI-generated products that are active
-        const { data: aiProducts, error: aiError } = await supabase
-          .from('ai_generated_products')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('status', 'active')
-          .limit(1);
-        
-        if (!aiError && aiProducts && aiProducts.length > 0) {
-          console.log("Active AI-generated products found for LIVE store");
-          productsGenerated = true;
-        } else {
-          console.log("No products found - LIVE store requires real products to be added manually");
-        }
+        console.log("No products found - LIVE store requires real products to be added via dashboard");
       }
 
       // Étape 5: Vérifier et appliquer le thème si nécessaire
