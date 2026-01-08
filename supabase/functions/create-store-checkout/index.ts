@@ -170,7 +170,7 @@ serve(async (req) => {
       }
     }
 
-    // Check for existing store - prevent duplicate stores
+    // Check for existing store
     const { data: existingStore } = await supabaseService
       .from('store_settings')
       .select('*')
@@ -180,34 +180,31 @@ serve(async (req) => {
     let storeData;
 
     if (existingStore) {
-      // If store exists and is already production/active, reject
-      if (existingStore.is_production && existingStore.store_status === 'active') {
-        throw new Error("Vous avez déjà une boutique de production active. Veuillez gérer votre boutique existante.");
-      }
+      // Allow users with existing stores to proceed - update the existing store for payment
+      logStep("Found existing store, updating for new payment", { 
+        storeId: existingStore.id, 
+        currentStatus: existingStore.store_status,
+        isProduction: existingStore.is_production 
+      });
       
-      // If store exists and is pending/processing, update it
-      if (existingStore.payment_status === 'pending' || existingStore.store_status === 'pending_payment') {
-        logStep("Updating existing pending store", { storeId: existingStore.id });
-        const { data: updatedStore, error: updateError } = await supabaseService
-          .from('store_settings')
-          .update({
-            store_name: storeName,
-            store_status: 'pending_payment',
-            domain_name: `${storeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${user.id.substring(0, 8)}.sokoby.com`,
-          })
-          .eq('id', existingStore.id)
-          .select()
-          .single();
+      const { data: updatedStore, error: updateError } = await supabaseService
+        .from('store_settings')
+        .update({
+          store_name: storeName,
+          store_status: 'pending_payment',
+          payment_status: 'pending',
+          domain_name: `${storeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${user.id.substring(0, 8)}.sokoby.com`,
+        })
+        .eq('id', existingStore.id)
+        .select()
+        .single();
 
-        if (updateError) {
-          logStep("Store update error", { error: updateError });
-          throw new Error(`Failed to update store record: ${updateError.message}`);
-        }
-        storeData = updatedStore;
-      } else {
-        // Store exists but in some other state - reject to prevent issues
-        throw new Error("Une boutique existe déjà. Veuillez contacter le support si vous rencontrez des problèmes.");
+      if (updateError) {
+        logStep("Store update error", { error: updateError });
+        throw new Error(`Failed to update store record: ${updateError.message}`);
       }
+      storeData = updatedStore;
+      logStep("Existing store updated for payment", { storeId: storeData.id });
     } else {
       // Create new pending store record
       const { data: newStore, error: storeError } = await supabaseService
@@ -231,7 +228,7 @@ serve(async (req) => {
       }
 
       storeData = newStore;
-      logStep("Pending store record created", { storeId: storeData.id });
+      logStep("New pending store record created", { storeId: storeData.id });
     }
 
     // Create Stripe checkout session - PRODUCTION mode
