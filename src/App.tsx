@@ -1,4 +1,6 @@
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { Provider } from "react-redux";
+import { store } from "@/store";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
@@ -52,20 +54,22 @@ function App() {
   }
 
   return (
-    <LanguageProvider>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter basename="/">
-          <PayPalScriptProvider options={{ 
-            clientId: paypalClientId || "test",
-            currency: "EUR"
-          }}>
-            <AppRoutes />
-            <CookieConsent />
-            <Toaster />
-          </PayPalScriptProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </LanguageProvider>
+    <Provider store={store}>
+      <LanguageProvider>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter basename="/">
+            <PayPalScriptProvider options={{ 
+              clientId: paypalClientId || "test",
+              currency: "EUR"
+            }}>
+              <AppRoutes />
+              <CookieConsent />
+              <Toaster />
+            </PayPalScriptProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </LanguageProvider>
+    </Provider>
   );
 }
 
