@@ -256,7 +256,7 @@ serve(async (req) => {
     const productionProducts = getProductionProducts(selectedPlan, 'general');
     console.log(`[GENERATE-AI-STORE] Generating ${productionProducts.length} PRODUCTION products for plan: ${selectedPlan}`);
 
-    // Insert products into the products table - ACTIVE and VISIBLE
+    // Insert products into the products table - ACTIVE, VISIBLE, PUBLISHED with store_id
     const productsToInsert = productionProducts.map(product => ({
       name: product.name,
       description: product.description,
@@ -265,8 +265,10 @@ serve(async (req) => {
       stock: product.stock,
       status: 'active', // PRODUCTION: Active status
       is_visible: true, // PRODUCTION: Visible to customers
-      image: product.image,
+      published: true, // PRODUCTION: Published for storefront
+      image: product.image, // Always has image from generator
       user_id: userId,
+      store_id: store.id, // CRITICAL: Link to store for LIVE queries
       created_at: new Date().toISOString(),
     }));
 

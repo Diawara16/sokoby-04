@@ -135,20 +135,33 @@ serve(async (req) => {
     const aiData = await aiResponse.json();
     console.log('OpenAI response received');
 
-    // Parse the AI response and format products
+    // Parse the AI response and format products with placeholder images
     const productIdeas = aiData.choices[0].message.content.split('\n')
       .filter((line: string) => line.trim().length > 0)
-      .map((product: string) => {
+      .map((product: string, index: number) => {
         const [name, description, price] = product.split('|').map(s => s.trim());
+        // Generate deterministic placeholder image based on niche and index
+        const nicheImages: Record<string, string> = {
+          fashion: 'photo-1445205170230-053b83016050',
+          electronics: 'photo-1518770660439-4636190af475',
+          beauty: 'photo-1596462502278-27bfdc403348',
+          home: 'photo-1556909114-f6e7ad7d3136',
+          sports: 'photo-1461896836934- voices-of-liberty',
+          general: 'photo-1472851294608-062f824d29cc',
+        };
+        const baseImage = nicheImages[niche.toLowerCase()] || nicheImages.general;
+        const placeholderImage = `https://images.unsplash.com/${baseImage}?w=400&h=400&fit=crop&q=80&sig=${index}`;
+        
         return {
           name,
           description,
           price: parseFloat(price),
           category: niche,
-          stock: 0,
+          stock: 100,
           status: 'active',
           is_visible: true,
-          image: null,
+          published: true, // LIVE: Always published
+          image: placeholderImage, // LIVE: Never null
           user_id: userId,
           store_id: storeId,
         };
