@@ -1,12 +1,13 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { AppSidebar } from "@/components/AppSidebar";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { ProductFilters } from "@/components/products/ProductFilters";
 import { SupplierApps } from "@/components/products/SupplierApps";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -148,11 +149,13 @@ export default function Boutique() {
   // LIVE PRODUCTION STORE: Show clean storefront without editor menus
   if (isProduction) {
     return (
-      <LiveStorefront 
-        products={products} 
-        storeName={storeName} 
-        isLoading={isLoading} 
-      />
+      <ErrorBoundary>
+        <LiveStorefront 
+          products={products} 
+          storeName={storeName} 
+          isLoading={isLoading} 
+        />
+      </ErrorBoundary>
     );
   }
 
