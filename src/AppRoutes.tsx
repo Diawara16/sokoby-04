@@ -40,6 +40,7 @@ import UpdatePassword from "@/pages/UpdatePassword";
 import Boutique from "@/pages/Boutique";
 import AddProduct from "@/pages/products/AddProduct";
 import ImportProducts from "@/pages/products/ImportProducts";
+import ProductDetail from "@/pages/products/ProductDetail";
 import Products from "@/pages/Products";
 import ProductCatalog from "@/pages/products/ProductCatalog";
 import ProductStock from "@/pages/products/ProductStock";
@@ -205,6 +206,7 @@ export function AppRoutes() {
           <ImportProducts />
         </ProtectedRoute>
       } />
+      <Route path="/product/:id" element={<ProductDetail />} />
       
       {/* Product management routes */}
       <Route path="/produits" element={
