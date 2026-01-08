@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
 import { useAppState } from '@/hooks/useAppState';
 import { ProductCard } from './ProductCard';
-import { supabase } from '@/lib/supabase';
 import { Product } from '@/types/product';
 
 interface ProductGridProps {
