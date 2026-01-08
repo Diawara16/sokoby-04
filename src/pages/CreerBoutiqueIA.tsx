@@ -68,9 +68,9 @@ const CreerBoutiqueIA = () => {
       return;
     }
 
-    try {
-      setIsLoading(true);
+    setIsLoading(true);
 
+    try {
       // Check authentication
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       
@@ -81,8 +81,11 @@ const CreerBoutiqueIA = () => {
           variant: "destructive"
         });
         navigate('/auth');
+        setIsLoading(false);
         return;
       }
+
+      console.log('[CreerBoutiqueIA] Creating checkout session...', { storeName: storeName.trim(), plan: selectedPlan });
 
       // Call the create-store-checkout edge function
       const { data, error } = await supabase.functions.invoke('create-store-checkout', {
@@ -92,32 +95,44 @@ const CreerBoutiqueIA = () => {
         }
       });
 
+      console.log('[CreerBoutiqueIA] Edge function response:', { data, error });
+
       if (error) {
-        console.error('Checkout error:', error);
+        console.error('[CreerBoutiqueIA] Checkout error:', error);
         throw new Error(error.message || 'Erreur lors de la création de la session de paiement');
       }
 
       if (data?.error) {
+        console.error('[CreerBoutiqueIA] Data error:', data.error);
         throw new Error(data.error);
       }
 
       if (data?.url) {
-        // Redirect to Stripe checkout
-        window.location.href = data.url;
+        console.log('[CreerBoutiqueIA] Redirecting to Stripe:', data.url);
+        // Show toast before redirect
+        toast({
+          title: "Redirection vers Stripe",
+          description: "Vous allez être redirigé vers la page de paiement sécurisé...",
+        });
+        // Small delay to show toast, then redirect
+        setTimeout(() => {
+          window.location.href = data.url;
+        }, 500);
       } else {
+        console.error('[CreerBoutiqueIA] No URL in response:', data);
         throw new Error('URL de paiement non reçue');
       }
 
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error('[CreerBoutiqueIA] Payment error:', error);
+      setIsLoading(false);
       toast({
         title: "Erreur",
         description: error instanceof Error ? error.message : "Impossible de créer la session de paiement",
         variant: "destructive"
       });
-    } finally {
-      setIsLoading(false);
     }
+    // Note: Don't setIsLoading(false) on success - we're redirecting anyway
   };
 
   const selectedPlanData = plans.find(p => p.id === selectedPlan);
