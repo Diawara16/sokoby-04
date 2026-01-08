@@ -93,13 +93,17 @@ const StoreDashboard = () => {
         
         setStore(storeData);
 
-        // Fetch products
-        const { data: productsData } = await supabase
+        // Fetch products from products table (source of truth for LIVE stores)
+        const { data: productsData, error: productsError } = await supabase
           .from('products')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(20);
+        
+        if (productsError) {
+          console.error('Error fetching products:', productsError);
+        }
         
         if (productsData && productsData.length > 0) {
           setProducts(productsData.map(p => ({
@@ -108,27 +112,8 @@ const StoreDashboard = () => {
             description: p.description || '',
             price: p.price,
             image_url: p.image,
-            is_active: p.status === 'active',
+            is_active: p.status === 'active' && p.is_visible === true,
           })));
-        } else {
-          // Fallback to ai_generated_products
-          const { data: aiProducts } = await supabase
-            .from('ai_generated_products')
-            .select('*')
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: false })
-            .limit(20);
-          
-          if (aiProducts) {
-            setProducts(aiProducts.map(p => ({
-              id: p.id,
-              name: p.name,
-              description: p.description || '',
-              price: p.price,
-              image_url: p.image_url,
-              is_active: true,
-            })));
-          }
         }
 
         // Fetch brand settings

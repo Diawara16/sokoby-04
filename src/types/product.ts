@@ -8,5 +8,8 @@ export interface Product {
   stock?: number;
   status?: string;
   user_id?: string;
+  store_id?: string;
+  is_visible?: boolean;
+  published?: boolean;
   created_at: string;
 }

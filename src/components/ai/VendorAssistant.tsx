@@ -8,7 +8,7 @@ export const VendorAssistant = () => {
     queryKey: ['vendor-suggestions'],
     queryFn: async () => {
       const { data: products } = await supabase
-        .from('ai_generated_products')
+        .from('products')
         .select('name, price, description')
         .order('created_at', { ascending: false })
         .limit(5);
