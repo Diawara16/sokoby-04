@@ -1,4 +1,3 @@
-import { useAppState } from '@/hooks/useAppState';
 import { ProductCard } from './ProductCard';
 import { Product } from '@/types/product';
 
@@ -7,14 +6,8 @@ interface ProductGridProps {
 }
 
 export const ProductGrid = ({ products }: ProductGridProps) => {
-  const { loading, errors } = useAppState();
-
-  if (loading?.products) {
-    return <div>Chargement...</div>;
-  }
-
-  if (errors?.products) {
-    return <div>Erreur: {errors.products}</div>;
+  if (!products || products.length === 0) {
+    return null;
   }
 
   return (
