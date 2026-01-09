@@ -23,6 +23,7 @@ import { ColorPicker } from "@/components/store-creator/theme/ColorPicker";
 import { TypographyPicker } from "@/components/store-creator/theme/TypographyPicker";
 import { LayoutPicker } from "@/components/store-creator/theme/LayoutPicker";
 import { ThemePreview } from "@/components/store-creator/theme/ThemePreview";
+import { applyThemeToDOM } from "@/utils/themeUtils";
 
 interface ThemeTemplate {
   id: string;
@@ -294,9 +295,12 @@ export default function DesignSettings() {
 
       if (error) throw error;
 
+      // Immediately apply theme to DOM for instant visual feedback
+      applyThemeToDOM(theme.config.colors.primary, theme.config.colors.secondary);
+
       toast({
         title: "Thème appliqué",
-        description: `Le thème ${theme.name} a été appliqué avec succès`,
+        description: `Le thème ${theme.name} a été appliqué avec succès. Les changements sont visibles immédiatement sur votre boutique.`,
       });
     } catch (error) {
       console.error('Error applying theme:', error);

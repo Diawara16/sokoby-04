@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Palette, Check, Eye } from "lucide-react";
+import { applyThemeToDOM } from "@/utils/themeUtils";
 
 interface ThemeTemplate {
   id: string;
@@ -130,9 +131,12 @@ export const ThemeGallery = ({ onThemeSelect, selectedTheme }: ThemeGalleryProps
 
       if (error) throw error;
 
+      // Immediately apply theme to DOM for instant visual feedback
+      applyThemeToDOM(theme.config.colors.primary, theme.config.colors.secondary);
+
       toast({
         title: "Thème appliqué",
-        description: `Le thème ${theme.name} a été appliqué avec succès`,
+        description: `Le thème ${theme.name} a été appliqué avec succès. Les changements sont visibles immédiatement.`,
       });
     } catch (error) {
       console.error('Error applying theme:', error);
