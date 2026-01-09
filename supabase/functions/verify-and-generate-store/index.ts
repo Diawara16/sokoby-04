@@ -59,23 +59,31 @@ serve(async (req) => {
       auth: { persistSession: false }
     });
 
-    // Get user from auth header
+    // CRITICAL: Require authentication for this endpoint
     const authHeader = req.headers.get('Authorization');
     console.log('[VERIFY-AND-GENERATE] Auth header present:', !!authHeader);
     
-    let userId: string | null = null;
-    
-    if (authHeader) {
-      const token = authHeader.replace('Bearer ', '');
-      const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
-      
-      if (authError) {
-        console.error('[VERIFY-AND-GENERATE] Auth error:', authError.message);
-      } else if (user) {
-        userId = user.id;
-        console.log('[VERIFY-AND-GENERATE] ✓ Authenticated user:', userId);
-      }
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.error('[VERIFY-AND-GENERATE] ✗ No Authorization header');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - authentication required', success: false }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
     }
+    
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
+    
+    if (authError || !user) {
+      console.error('[VERIFY-AND-GENERATE] Auth error:', authError?.message);
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - invalid token', success: false }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+    
+    const userId = user.id;
+    console.log('[VERIFY-AND-GENERATE] ✓ Authenticated user:', userId);
 
     // CRITICAL: Verify payment with Stripe LIVE API
     console.log('[VERIFY-AND-GENERATE] Verifying Stripe LIVE session...');
@@ -123,18 +131,21 @@ serve(async (req) => {
     const niche = session.metadata?.niche || 'general'; // Get niche from payment metadata
     const storeIdFromMeta = session.metadata?.storeId;
     
-    // Use authenticated user if available, otherwise use session metadata
-    const finalUserId = userId || sessionUserId;
-    
-    console.log('[VERIFY-AND-GENERATE] Final user ID:', finalUserId);
+    // Use authenticated user (required)
+    console.log('[VERIFY-AND-GENERATE] Authenticated user ID:', userId);
+    console.log('[VERIFY-AND-GENERATE] Session metadata user ID:', sessionUserId);
     console.log('[VERIFY-AND-GENERATE] Store name:', storeName);
     console.log('[VERIFY-AND-GENERATE] Plan:', plan);
     console.log('[VERIFY-AND-GENERATE] Niche:', niche);
     console.log('[VERIFY-AND-GENERATE] Store ID from metadata:', storeIdFromMeta);
-
-    if (!finalUserId) {
-      console.error('[VERIFY-AND-GENERATE] No user ID available');
-      throw new Error('Impossible de déterminer l\'utilisateur. Veuillez vous reconnecter.');
+    
+    // Verify the session belongs to the authenticated user
+    if (sessionUserId && sessionUserId !== userId) {
+      console.error('[VERIFY-AND-GENERATE] ✗ Session user mismatch:', { sessionUserId, authenticatedUserId: userId });
+      return new Response(
+        JSON.stringify({ error: 'Session does not belong to authenticated user', success: false }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+      );
     }
 
     // Find existing store
@@ -175,7 +186,7 @@ serve(async (req) => {
       const { data, error } = await supabaseClient
         .from('store_settings')
         .select('*')
-        .eq('user_id', finalUserId)
+        .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
@@ -241,13 +252,14 @@ serve(async (req) => {
             'Authorization': `Bearer ${supabaseServiceKey}`,
           },
           body: JSON.stringify({
-            userId: finalUserId,
+            userId: userId,
             storeName,
             plan,
             niche, // Pass niche to generator
             sessionId,
             storeId: storeToProcess?.id,
             isProduction: true,
+            forceRegenerate: storeToProcess?.initial_products_generated === true, // Force purge if regenerating
           }),
         });
 

@@ -560,8 +560,9 @@ serve(async (req) => {
       console.log('[GENERATE-AI-STORE] ✓ Created new store:', store.id);
     }
 
-    // Check idempotency - skip if already fully generated and production
-    if (store.initial_products_generated && store.is_production) {
+    // Check idempotency - skip if already fully generated and production (but allow re-generation on upgrade)
+    const forceRegenerate = requestData.forceRegenerate === true;
+    if (store.initial_products_generated && store.is_production && !forceRegenerate) {
       console.log('[GENERATE-AI-STORE] ✓ Store is already PRODUCTION - returning early');
       return new Response(
         JSON.stringify({ 
@@ -583,6 +584,21 @@ serve(async (req) => {
     // Generate PRODUCTION products based on plan and niche
     const productionProducts = getProductionProducts(selectedPlan, selectedNiche, isPro);
     console.log(`[GENERATE-AI-STORE] Generating ${productionProducts.length} PRODUCTION ${selectedNiche} products for plan: ${selectedPlan}`);
+
+    // === PURGE OLD PRODUCTS BEFORE INSERTING NEW ONES ===
+    // This ensures upgrades and regenerations replace rather than accumulate products
+    console.log('[GENERATE-AI-STORE] Purging existing products for store:', store.id);
+    const { error: deleteError, count: deletedCount } = await supabaseClient
+      .from('products')
+      .delete()
+      .eq('store_id', store.id);
+
+    if (deleteError) {
+      console.error('[GENERATE-AI-STORE] ⚠ Error purging old products:', deleteError.message);
+      // Continue anyway - insert will work, we just might have duplicates
+    } else {
+      console.log('[GENERATE-AI-STORE] ✓ Purged', deletedCount || 0, 'old products');
+    }
 
     // Insert products into the products table - ACTIVE, VISIBLE, PUBLISHED with store_id
     const productsToInsert = productionProducts.map(product => ({

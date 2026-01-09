@@ -34,19 +34,22 @@ export function StoreThemeProvider({ children, userId, storeId }: StoreThemeProv
       
       // If we have a storeId but no userId, fetch the store owner
       if (storeId && !userId) {
-        const { data: storeData } = await supabase
+        console.log('🎨 Fetching store owner for storeId:', storeId);
+        const { data: storeData, error: storeError } = await supabase
           .from('store_settings')
           .select('user_id')
           .eq('id', storeId)
           .maybeSingle();
         
-        if (storeData?.user_id) {
+        if (storeError) {
+          console.error('Error fetching store owner:', storeError);
+        } else if (storeData?.user_id) {
           targetUserId = storeData.user_id;
         }
       }
       
       if (!targetUserId) {
-        console.log('No user ID available for theme fetch');
+        console.log('No user ID available for theme fetch, skipping');
         setIsLoading(false);
         return;
       }
@@ -67,8 +70,8 @@ export function StoreThemeProvider({ children, userId, storeId }: StoreThemeProv
         return;
       }
 
-      if (brandSettings) {
-        console.log('🎨 Brand settings found:', brandSettings);
+      if (brandSettings && brandSettings.primary_color && brandSettings.secondary_color) {
+        console.log('🎨 Brand settings found, applying theme:', brandSettings);
         
         const newColors = {
           primary: brandSettings.primary_color,
@@ -76,11 +79,10 @@ export function StoreThemeProvider({ children, userId, storeId }: StoreThemeProv
         };
         
         setColors(newColors);
-        if (newColors.primary && newColors.secondary) {
-          applyThemeToDOM(newColors.primary, newColors.secondary);
-        }
+        // Always apply to DOM when colors are found
+        applyThemeToDOM(newColors.primary, newColors.secondary);
       } else {
-        console.log('No brand settings found, using default theme');
+        console.log('No brand settings found or colors missing, using default theme');
       }
     } catch (err) {
       console.error('Error in fetchAndApplyTheme:', err);
@@ -96,37 +98,40 @@ export function StoreThemeProvider({ children, userId, storeId }: StoreThemeProv
 
   // Subscribe to realtime changes for instant theme updates
   useEffect(() => {
-    if (!userId) return;
+    // Need userId for subscription - if we only have storeId, the initial fetch handles it
+    const targetUserId = userId;
+    if (!targetUserId) return;
 
-    console.log('📡 Setting up realtime subscription for brand_settings');
+    console.log('📡 Setting up realtime subscription for brand_settings, user:', targetUserId);
     
     const channel = supabase
-      .channel('brand_settings_changes')
+      .channel(`brand_settings_changes_${targetUserId}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'brand_settings',
-          filter: `user_id=eq.${userId}`,
+          filter: `user_id=eq.${targetUserId}`,
         },
         (payload) => {
-          console.log('🔄 Brand settings changed:', payload);
+          console.log('🔄 Brand settings changed via realtime:', payload);
           const newData = payload.new as { primary_color?: string; secondary_color?: string };
           
-          if (newData) {
+          if (newData && newData.primary_color && newData.secondary_color) {
             const newColors = {
-              primary: newData.primary_color || null,
-              secondary: newData.secondary_color || null,
+              primary: newData.primary_color,
+              secondary: newData.secondary_color,
             };
             setColors(newColors);
-            if (newColors.primary && newColors.secondary) {
-              applyThemeToDOM(newColors.primary, newColors.secondary);
-            }
+            applyThemeToDOM(newColors.primary, newColors.secondary);
+            console.log('✅ Theme updated via realtime subscription');
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('📡 Realtime subscription status:', status);
+      });
 
     return () => {
       console.log('📡 Cleaning up realtime subscription');

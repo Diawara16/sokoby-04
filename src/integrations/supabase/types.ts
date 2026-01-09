@@ -3209,6 +3209,7 @@ export type Database = {
           invoice_template: Json | null
           is_custom_domain: boolean | null
           is_production: boolean
+          niche: string | null
           notification_settings: Json | null
           payment_status: string | null
           production_activated_at: string | null
@@ -3251,6 +3252,7 @@ export type Database = {
           invoice_template?: Json | null
           is_custom_domain?: boolean | null
           is_production?: boolean
+          niche?: string | null
           notification_settings?: Json | null
           payment_status?: string | null
           production_activated_at?: string | null
@@ -3293,6 +3295,7 @@ export type Database = {
           invoice_template?: Json | null
           is_custom_domain?: boolean | null
           is_production?: boolean
+          niche?: string | null
           notification_settings?: Json | null
           payment_status?: string | null
           production_activated_at?: string | null
