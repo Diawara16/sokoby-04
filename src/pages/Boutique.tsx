@@ -149,9 +149,10 @@ export default function Boutique() {
 
   // LIVE PRODUCTION STORE: Show clean storefront without editor menus
   // Wrap with StoreThemeProvider to apply brand colors from database
+  // Priority: storeOwnerId (the actual owner) > storeId for theme resolution
   if (isProduction) {
     return (
-      <StoreThemeProvider userId={storeOwnerId || user?.id} storeId={storeId || undefined}>
+      <StoreThemeProvider userId={storeOwnerId} storeId={storeId || undefined}>
         <ErrorBoundary>
           <LiveStorefront 
             products={products} 

@@ -130,11 +130,13 @@ serve(async (req) => {
       const userId = session.metadata?.userId || session.client_reference_id;
       const storeName = session.metadata?.storeName || 'Ma Boutique IA';
       const plan = session.metadata?.plan || 'starter';
+      const niche = session.metadata?.niche || 'general';  // Get niche from payment metadata
 
       console.log('[STRIPE-WEBHOOK] Extracted data:');
       console.log('  - User ID:', userId);
       console.log('  - Store name:', storeName);
       console.log('  - Plan:', plan);
+      console.log('  - Niche:', niche);
 
       if (!userId) {
         console.error('[STRIPE-WEBHOOK] ✗ CRITICAL: No user ID found in metadata or client_reference_id');
@@ -184,6 +186,7 @@ serve(async (req) => {
               stripe_checkout_session_id: session.id,
               stripe_payment_intent_id: session.payment_intent as string,
               initial_products_generated: false,
+              niche: niche,  // Store niche for product generation
             })
             .select()
             .single();
@@ -208,6 +211,7 @@ serve(async (req) => {
               store_type: 'ai',
               stripe_checkout_session_id: session.id,
               stripe_payment_intent_id: session.payment_intent as string,
+              niche: niche,  // Update niche for regeneration
               updated_at: new Date().toISOString(),
             })
             .eq('id', storeId);
@@ -265,9 +269,11 @@ serve(async (req) => {
             userId,
             storeName,
             plan,
+            niche,  // Pass niche to generator
             sessionId: session.id,
             storeId,
             isProduction: true, // CRITICAL: Flag for production mode
+            forceRegenerate: true, // Always force purge of old products on webhook
           }),
         });
 
