@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -86,6 +86,29 @@ const CreerBoutiqueIA = () => {
   const [storeName, setStoreName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Restore checkout data after login redirect
+  useEffect(() => {
+    const savedCheckoutData = sessionStorage.getItem('checkoutData');
+    if (savedCheckoutData) {
+      try {
+        const data = JSON.parse(savedCheckoutData);
+        console.log('[CreerBoutiqueIA] Restoring checkout data:', data);
+        if (data.storeName) setStoreName(data.storeName);
+        if (data.plan) setSelectedPlan(data.plan);
+        if (data.niche) setSelectedNiche(data.niche);
+        // Clear the saved data after restoring
+        sessionStorage.removeItem('checkoutData');
+        toast({
+          title: "Données restaurées",
+          description: "Vos choix ont été restaurés. Vous pouvez maintenant procéder au paiement.",
+        });
+      } catch (e) {
+        console.error('[CreerBoutiqueIA] Error parsing checkout data:', e);
+        sessionStorage.removeItem('checkoutData');
+      }
+    }
+  }, [toast]);
+
   const handleProceedToPayment = async () => {
     if (!storeName.trim()) {
       toast({
@@ -129,7 +152,7 @@ const CreerBoutiqueIA = () => {
           plan: selectedPlan,
           niche: selectedNiche
         }));
-        setTimeout(() => navigate('/auth'), 1000);
+        setTimeout(() => navigate('/login'), 1000);
         setIsLoading(false);
         return;
       }
@@ -164,7 +187,7 @@ const CreerBoutiqueIA = () => {
             variant: "destructive"
           });
           sessionStorage.setItem('redirectAfterLogin', '/creer-boutique-ia');
-          setTimeout(() => navigate('/auth'), 1500);
+          setTimeout(() => navigate('/login'), 1500);
           setIsLoading(false);
           return;
         }
@@ -181,7 +204,7 @@ const CreerBoutiqueIA = () => {
           variant: "destructive"
         });
         sessionStorage.setItem('redirectAfterLogin', '/creer-boutique-ia');
-        setTimeout(() => navigate('/auth'), 1500);
+        setTimeout(() => navigate('/login'), 1500);
         setIsLoading(false);
         return;
       }
