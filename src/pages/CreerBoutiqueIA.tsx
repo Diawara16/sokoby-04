@@ -108,16 +108,28 @@ const CreerBoutiqueIA = () => {
     setIsLoading(true);
 
     try {
-      // Check authentication
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      // Check authentication first - this helps with incognito/PC sessions
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (authError || !user) {
+      if (sessionError) {
+        console.error('[CreerBoutiqueIA] Session error:', sessionError);
+      }
+
+      if (!session) {
+        console.log('[CreerBoutiqueIA] No active session found');
         toast({
           title: "Connexion requise",
-          description: "Veuillez vous connecter pour créer une boutique",
+          description: "Veuillez vous connecter pour créer une boutique. Redirection vers la page de connexion...",
           variant: "destructive"
         });
-        navigate('/auth');
+        // Store intended action for post-login redirect
+        sessionStorage.setItem('redirectAfterLogin', '/creer-boutique-ia');
+        sessionStorage.setItem('checkoutData', JSON.stringify({
+          storeName: storeName.trim(),
+          plan: selectedPlan,
+          niche: selectedNiche
+        }));
+        setTimeout(() => navigate('/auth'), 1000);
         setIsLoading(false);
         return;
       }
@@ -125,7 +137,8 @@ const CreerBoutiqueIA = () => {
       console.log('[CreerBoutiqueIA] Creating checkout session...', { 
         storeName: storeName.trim(), 
         plan: selectedPlan,
-        niche: selectedNiche
+        niche: selectedNiche,
+        hasSession: !!session
       });
 
       // Call the create-store-checkout edge function with niche
@@ -139,14 +152,43 @@ const CreerBoutiqueIA = () => {
 
       console.log('[CreerBoutiqueIA] Edge function response:', { data, error });
 
+      // Handle authentication errors explicitly
       if (error) {
         console.error('[CreerBoutiqueIA] Checkout error:', error);
+        
+        // Check if it's an auth error (401/403)
+        if (error.message?.includes('401') || error.message?.includes('AUTH_REQUIRED') || error.message?.includes('SESSION_EXPIRED')) {
+          toast({
+            title: "Session expirée",
+            description: "Votre session a expiré. Veuillez vous reconnecter.",
+            variant: "destructive"
+          });
+          sessionStorage.setItem('redirectAfterLogin', '/creer-boutique-ia');
+          setTimeout(() => navigate('/auth'), 1500);
+          setIsLoading(false);
+          return;
+        }
+        
         throw new Error(error.message || 'Erreur lors de la création de la session de paiement');
+      }
+
+      // Handle data-level errors (auth required response)
+      if (data?.authRequired) {
+        console.log('[CreerBoutiqueIA] Auth required from edge function');
+        toast({
+          title: "Connexion requise",
+          description: data.message || "Veuillez vous connecter pour continuer.",
+          variant: "destructive"
+        });
+        sessionStorage.setItem('redirectAfterLogin', '/creer-boutique-ia');
+        setTimeout(() => navigate('/auth'), 1500);
+        setIsLoading(false);
+        return;
       }
 
       if (data?.error) {
         console.error('[CreerBoutiqueIA] Data error:', data.error);
-        throw new Error(data.error);
+        throw new Error(data.message || data.error);
       }
 
       if (data?.url) {
@@ -155,20 +197,22 @@ const CreerBoutiqueIA = () => {
           title: "Redirection vers Stripe",
           description: "Vous allez être redirigé vers la page de paiement sécurisé...",
         });
-        setTimeout(() => {
-          window.location.href = data.url;
-        }, 500);
+        // Use direct navigation for more reliable redirect
+        window.location.href = data.url;
       } else {
         console.error('[CreerBoutiqueIA] No URL in response:', data);
-        throw new Error('URL de paiement non reçue');
+        throw new Error('URL de paiement non reçue. Veuillez réessayer.');
       }
 
     } catch (error) {
       console.error('[CreerBoutiqueIA] Payment error:', error);
       setIsLoading(false);
+      
+      const errorMessage = error instanceof Error ? error.message : "Impossible de créer la session de paiement";
+      
       toast({
-        title: "Erreur",
-        description: error instanceof Error ? error.message : "Impossible de créer la session de paiement",
+        title: "Erreur de paiement",
+        description: errorMessage,
         variant: "destructive"
       });
     }
