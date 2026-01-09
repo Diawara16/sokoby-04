@@ -4,7 +4,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, accept",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
 const logStep = (step: string, details?: any) => {
@@ -37,15 +38,36 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
+    // CRITICAL: Validate authorization header with explicit 401 response
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("No authorization header provided");
+    if (!authHeader) {
+      logStep("Missing authorization header - returning 401");
+      return new Response(JSON.stringify({ 
+        error: "AUTH_REQUIRED",
+        message: "Connexion requise. Veuillez vous connecter pour continuer.",
+        authRequired: true
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401,
+      });
+    }
 
     const token = authHeader.replace("Bearer ", "");
     const { data: userData, error: userError } = await supabaseService.auth.getUser(token);
-    if (userError) throw new Error(`Authentication error: ${userError.message}`);
+    
+    if (userError || !userData.user) {
+      logStep("Invalid or expired session - returning 401", { error: userError?.message });
+      return new Response(JSON.stringify({ 
+        error: "SESSION_EXPIRED",
+        message: "Votre session a expiré. Veuillez vous reconnecter.",
+        authRequired: true
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401,
+      });
+    }
     
     const user = userData.user;
-    if (!user) throw new Error("User not authenticated");
     logStep("User authenticated", { userId: user.id });
 
     const body = await req.json();
