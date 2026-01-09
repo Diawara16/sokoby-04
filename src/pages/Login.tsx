@@ -2,7 +2,6 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { isPreviewEnv } from "@/utils/env";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,6 +13,15 @@ const Login = () => {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
       if (!active || !user) return;
+      
+      // Check for pending redirect after login (e.g., from checkout flow)
+      const redirectAfterLogin = sessionStorage.getItem('redirectAfterLogin');
+      if (redirectAfterLogin) {
+        console.log('[Login] Found redirectAfterLogin, navigating to:', redirectAfterLogin);
+        sessionStorage.removeItem('redirectAfterLogin');
+        navigate(redirectAfterLogin, { replace: true });
+        return;
+      }
       
       // Check for LIVE production store
       const { data: existingStore } = await supabase

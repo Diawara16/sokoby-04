@@ -30,6 +30,15 @@ export const useSignIn = () => {
           description: "Vous êtes maintenant connecté.",
         });
 
+        // Check for pending redirect after login (e.g., from checkout flow)
+        const redirectAfterLogin = sessionStorage.getItem('redirectAfterLogin');
+        if (redirectAfterLogin) {
+          console.log('[useSignIn] Found redirectAfterLogin, navigating to:', redirectAfterLogin);
+          sessionStorage.removeItem('redirectAfterLogin');
+          navigate(redirectAfterLogin, { replace: true });
+          return;
+        }
+
         // Check for LIVE production store and redirect accordingly
         const { data: existingStore } = await supabase
           .from('store_settings')
