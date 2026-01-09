@@ -15,6 +15,7 @@ import { Product } from "@/types/product";
 import { AddProductDemo } from "@/components/products/AddProductDemo";
 import { LiveStorefront } from "@/components/storefront/LiveStorefront";
 import { useStoreMode } from "@/hooks/useStoreMode";
+import { StoreThemeProvider } from "@/contexts/StoreThemeContext";
 
 export default function Boutique() {
   const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 1000]);
@@ -147,15 +148,18 @@ export default function Boutique() {
   }
 
   // LIVE PRODUCTION STORE: Show clean storefront without editor menus
+  // Wrap with StoreThemeProvider to apply brand colors from database
   if (isProduction) {
     return (
-      <ErrorBoundary>
-        <LiveStorefront 
-          products={products} 
-          storeName={storeName} 
-          isLoading={isLoading} 
-        />
-      </ErrorBoundary>
+      <StoreThemeProvider userId={storeOwnerId || user?.id} storeId={storeId || undefined}>
+        <ErrorBoundary>
+          <LiveStorefront 
+            products={products} 
+            storeName={storeName} 
+            isLoading={isLoading} 
+          />
+        </ErrorBoundary>
+      </StoreThemeProvider>
     );
   }
 

@@ -1,6 +1,7 @@
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import { ThemeColors } from "@/types/theme";
+import { applyThemeToDOM } from "@/utils/themeUtils";
 
 export const useThemeOperations = () => {
   const { toast } = useToast();
@@ -36,9 +37,12 @@ export const useThemeOperations = () => {
 
       if (result.error) throw result.error;
 
+      // Immediately apply theme to DOM for instant visual feedback
+      applyThemeToDOM(colors.primary, colors.secondary);
+
       toast({
         title: "Thème appliqué",
-        description: "Le thème a été appliqué avec succès",
+        description: "Le thème a été appliqué avec succès. Les changements sont visibles immédiatement.",
       });
     } catch (error) {
       console.error('Erreur lors de l\'application du thème:', error);
