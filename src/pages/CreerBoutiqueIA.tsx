@@ -14,7 +14,14 @@ import {
   Loader2,
   Shield,
   Wand2,
-  Star
+  Star,
+  Shirt,
+  Smartphone,
+  Sparkle,
+  Home,
+  Dumbbell,
+  Baby,
+  BookOpen
 } from "lucide-react";
 
 interface Plan {
@@ -23,17 +30,25 @@ interface Plan {
   price: number;
   productCount: number;
   features: string[];
+  badge?: string;
+}
+
+interface Niche {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  description: string;
 }
 
 const plans: Plan[] = [
   {
     id: 'starter',
-    name: 'Démarreur de plan',
+    name: 'Plan Starter',
     price: 20,
     productCount: 10,
     features: [
       '10 produits générés par IA',
-      'Professionnel du design',
+      'Design professionnel',
       'Pages essentielles'
     ]
   },
@@ -43,18 +58,31 @@ const plans: Plan[] = [
     price: 80,
     productCount: 50,
     features: [
-      '50 produits générés par IA',
+      '50 produits premium générés par IA',
+      'Images haute qualité exclusives',
       'Support prioritaire',
       'Optimisation SEO avancée',
-      'Prime de conception'
-    ]
+      'Design premium personnalisé'
+    ],
+    badge: 'RECOMMANDÉ'
   }
+];
+
+const niches: Niche[] = [
+  { id: 'fashion', name: 'Mode & Vêtements', icon: <Shirt className="h-5 w-5" />, description: 'Vêtements, accessoires, chaussures' },
+  { id: 'electronics', name: 'Électronique', icon: <Smartphone className="h-5 w-5" />, description: 'Gadgets, accessoires tech' },
+  { id: 'beauty', name: 'Beauté & Cosmétiques', icon: <Sparkle className="h-5 w-5" />, description: 'Soins, maquillage, parfums' },
+  { id: 'home', name: 'Maison & Déco', icon: <Home className="h-5 w-5" />, description: 'Décoration, mobilier, accessoires' },
+  { id: 'fitness', name: 'Sport & Fitness', icon: <Dumbbell className="h-5 w-5" />, description: 'Équipements, vêtements sport' },
+  { id: 'kids', name: 'Enfants & Bébés', icon: <Baby className="h-5 w-5" />, description: 'Jouets, vêtements, accessoires' },
+  { id: 'books', name: 'Livres & Papeterie', icon: <BookOpen className="h-5 w-5" />, description: 'Livres, fournitures, créatif' },
 ];
 
 const CreerBoutiqueIA = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedPlan, setSelectedPlan] = useState<'starter' | 'pro'>('starter');
+  const [selectedNiche, setSelectedNiche] = useState<string>('fashion');
   const [storeName, setStoreName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -63,6 +91,15 @@ const CreerBoutiqueIA = () => {
       toast({
         title: "Nom requis",
         description: "Veuillez entrer un nom pour votre boutique",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!selectedNiche) {
+      toast({
+        title: "Niche requise",
+        description: "Veuillez sélectionner une catégorie pour votre boutique",
         variant: "destructive"
       });
       return;
@@ -85,13 +122,18 @@ const CreerBoutiqueIA = () => {
         return;
       }
 
-      console.log('[CreerBoutiqueIA] Creating checkout session...', { storeName: storeName.trim(), plan: selectedPlan });
+      console.log('[CreerBoutiqueIA] Creating checkout session...', { 
+        storeName: storeName.trim(), 
+        plan: selectedPlan,
+        niche: selectedNiche
+      });
 
-      // Call the create-store-checkout edge function
+      // Call the create-store-checkout edge function with niche
       const { data, error } = await supabase.functions.invoke('create-store-checkout', {
         body: {
           storeName: storeName.trim(),
-          plan: selectedPlan
+          plan: selectedPlan,
+          niche: selectedNiche
         }
       });
 
@@ -109,12 +151,10 @@ const CreerBoutiqueIA = () => {
 
       if (data?.url) {
         console.log('[CreerBoutiqueIA] Redirecting to Stripe:', data.url);
-        // Show toast before redirect
         toast({
           title: "Redirection vers Stripe",
           description: "Vous allez être redirigé vers la page de paiement sécurisé...",
         });
-        // Small delay to show toast, then redirect
         setTimeout(() => {
           window.location.href = data.url;
         }, 500);
@@ -132,13 +172,13 @@ const CreerBoutiqueIA = () => {
         variant: "destructive"
       });
     }
-    // Note: Don't setIsLoading(false) on success - we're redirecting anyway
   };
 
   const selectedPlanData = plans.find(p => p.id === selectedPlan);
+  const selectedNicheData = niches.find(n => n.id === selectedNiche);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 py-8 max-w-5xl">
       {/* Header */}
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
@@ -151,78 +191,118 @@ const CreerBoutiqueIA = () => {
         <Badge variant="outline" className="bg-primary text-primary-foreground mb-4">
           PAYANT
         </Badge>
-        <h1 className="text-3xl font-bold mb-4">Création avec IA</h1>
+        <h1 className="text-3xl font-bold mb-4">Créez votre boutique IA</h1>
         <p className="text-muted-foreground">
-          Notre IA crée automatiquement votre boutique complète en quelques minutes
+          Notre IA crée automatiquement votre boutique complète avec des produits de qualité
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Left Column - Plan Selection */}
-        <div className="space-y-6">
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Choisissez votre plan :</h2>
-            
-            <div className="space-y-4">
-              {plans.map((plan) => (
-                <Card 
-                  key={plan.id}
-                  className={`cursor-pointer transition-all ${
-                    selectedPlan === plan.id 
-                      ? 'border-2 border-primary bg-primary/5' 
-                      : 'border hover:border-primary/50'
-                  }`}
-                  onClick={() => setSelectedPlan(plan.id)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          {selectedPlan === plan.id && (
-                            <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                              <Check className="h-3 w-3 text-primary-foreground" />
-                            </div>
-                          )}
-                          <h3 className="font-semibold text-lg">{plan.name}</h3>
+      <div className="grid lg:grid-cols-3 gap-8">
+        {/* Left Column - Niche Selection */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Niche Selection */}
+          <Card>
+            <CardHeader>
+              <CardTitle>1. Choisissez votre niche</CardTitle>
+              <CardDescription>
+                Sélectionnez la catégorie de produits pour votre boutique
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {niches.map((niche) => (
+                  <button
+                    key={niche.id}
+                    onClick={() => setSelectedNiche(niche.id)}
+                    className={`p-4 rounded-lg border text-left transition-all ${
+                      selectedNiche === niche.id
+                        ? 'border-2 border-primary bg-primary/5'
+                        : 'border hover:border-primary/50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      {selectedNiche === niche.id && (
+                        <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center">
+                          <Check className="h-2.5 w-2.5 text-primary-foreground" />
                         </div>
-                        <ul className="space-y-1">
-                          {plan.features.map((feature, idx) => (
-                            <li key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Check className="h-4 w-4 text-green-500" />
-                              {feature}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="text-2xl font-bold text-primary">
-                        {plan.price}€
-                      </div>
+                      )}
+                      <span className="text-primary">{niche.icon}</span>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
+                    <p className="font-medium text-sm">{niche.name}</p>
+                    <p className="text-xs text-muted-foreground">{niche.description}</p>
+                  </button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-        {/* Right Column - Store Name & Payment */}
-        <div className="space-y-6">
+          {/* Plan Selection */}
+          <Card>
+            <CardHeader>
+              <CardTitle>2. Choisissez votre plan</CardTitle>
+              <CardDescription>
+                Le Plan Pro inclut des produits premium et images exclusives
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-4">
+                {plans.map((plan) => (
+                  <div 
+                    key={plan.id}
+                    className={`relative cursor-pointer rounded-lg border p-4 transition-all ${
+                      selectedPlan === plan.id 
+                        ? 'border-2 border-primary bg-primary/5' 
+                        : 'border hover:border-primary/50'
+                    }`}
+                    onClick={() => setSelectedPlan(plan.id)}
+                  >
+                    {plan.badge && (
+                      <Badge className="absolute -top-2 right-2 bg-primary text-primary-foreground text-xs">
+                        {plan.badge}
+                      </Badge>
+                    )}
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center gap-2">
+                        {selectedPlan === plan.id && (
+                          <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                            <Check className="h-3 w-3 text-primary-foreground" />
+                          </div>
+                        )}
+                        <h3 className="font-semibold">{plan.name}</h3>
+                      </div>
+                      <span className="text-2xl font-bold text-primary">{plan.price}€</span>
+                    </div>
+                    <ul className="space-y-1">
+                      {plan.features.map((feature, idx) => (
+                        <li key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Store Name */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Wand2 className="h-5 w-5" />
-                Nommez votre boutique
+                3. Nommez votre boutique
               </CardTitle>
               <CardDescription>
-                Ce nom sera utilisé pour créer votre boutique IA
+                Ce nom apparaîtra sur votre boutique en ligne
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent>
               <div>
                 <Label htmlFor="storeName">Nom de la boutique</Label>
                 <Input
                   id="storeName"
-                  placeholder="Ma Boutique Mode"
+                  placeholder={`Ma Boutique ${selectedNicheData?.name || ''}`}
                   value={storeName}
                   onChange={(e) => setStoreName(e.target.value)}
                   className="mt-1"
@@ -230,61 +310,74 @@ const CreerBoutiqueIA = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
 
-          {/* Order Summary */}
-          <Card>
+        {/* Right Column - Summary & Payment */}
+        <div className="space-y-6">
+          <Card className="sticky top-4">
             <CardHeader>
               <CardTitle>Récapitulatif</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span>{selectedPlanData?.name}</span>
-                <span className="font-semibold">{selectedPlanData?.price}€</span>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Plan</span>
+                  <span className="font-medium">{selectedPlanData?.name}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Niche</span>
+                  <span className="font-medium">{selectedNicheData?.name}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Produits</span>
+                  <span className="font-medium">{selectedPlanData?.productCount} produits IA</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Star className="h-4 w-4" />
-                <span>{selectedPlanData?.productCount} produits générés par IA</span>
-              </div>
+              
               <hr />
+              
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Star className="h-4 w-4 text-yellow-500" />
+                <span>Images {selectedPlan === 'pro' ? 'premium exclusives' : 'professionnelles'}</span>
+              </div>
+              
+              <hr />
+              
               <div className="flex justify-between items-center text-lg font-bold">
                 <span>Total</span>
                 <span className="text-primary">{selectedPlanData?.price}€</span>
               </div>
+
+              <Button 
+                onClick={handleProceedToPayment}
+                className="w-full h-12 text-lg"
+                disabled={isLoading || !storeName.trim()}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                    Chargement...
+                  </>
+                ) : (
+                  <>
+                    Procéder au paiement
+                  </>
+                )}
+              </Button>
+
+              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <Shield className="h-4 w-4" />
+                <span>Paiement sécurisé via Stripe</span>
+              </div>
             </CardContent>
           </Card>
 
-          {/* Payment Button */}
-          <Button 
-            onClick={handleProceedToPayment}
-            className="w-full h-12 text-lg"
-            disabled={isLoading || !storeName.trim()}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                Chargement...
-              </>
-            ) : (
-              <>
-                Procéder au paiement
-              </>
-            )}
-          </Button>
-
-          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <Shield className="h-4 w-4" />
-            <span>Paiement sécurisé via Stripe</span>
+          <div className="text-center text-xs text-muted-foreground">
+            <p>
+              Après le paiement, votre boutique sera générée automatiquement avec des produits {selectedNicheData?.name.toLowerCase()} de qualité.
+            </p>
           </div>
         </div>
-      </div>
-
-      {/* Footer Info */}
-      <div className="mt-8 text-center text-sm text-muted-foreground">
-        <p>
-          Après le paiement, votre boutique sera générée automatiquement avec {selectedPlanData?.productCount} produits.
-          <br />
-          Vous pourrez ensuite modifier et personnaliser votre boutique à votre guise.
-        </p>
       </div>
     </div>
   );

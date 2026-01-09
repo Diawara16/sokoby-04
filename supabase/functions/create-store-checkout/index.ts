@@ -49,12 +49,17 @@ serve(async (req) => {
     logStep("User authenticated", { userId: user.id });
 
     const body = await req.json();
-    const { storeName, plan } = body;
+    const { storeName, plan, niche } = body;
 
     if (!storeName || !plan) {
       throw new Error("Missing required data: storeName and plan");
     }
-    logStep("Request data validated", { storeName, plan });
+    
+    // Validate niche - default to 'general' if not provided
+    const validNiches = ['fashion', 'electronics', 'beauty', 'home', 'fitness', 'kids', 'books', 'general'];
+    const selectedNiche = validNiches.includes(niche) ? niche : 'general';
+    
+    logStep("Request data validated", { storeName, plan, niche: selectedNiche });
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
@@ -107,7 +112,7 @@ serve(async (req) => {
         },
         pro: {
           name: 'Plan Pro – Boutique IA Production',
-          description: 'Création automatique de boutique LIVE avec 50 produits actifs, optimisation SEO, support prioritaire, design premium.',
+          description: 'Création automatique de boutique LIVE avec 50 produits premium, images exclusives, optimisation SEO, support prioritaire.',
           price: 8000, // 80€
         },
       };
@@ -193,6 +198,7 @@ serve(async (req) => {
           store_name: storeName,
           store_status: 'pending_payment',
           payment_status: 'pending',
+          niche: selectedNiche, // Store niche for product generation
           domain_name: `${storeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${user.id.substring(0, 8)}.sokoby.com`,
         })
         .eq('id', existingStore.id)
@@ -204,7 +210,7 @@ serve(async (req) => {
         throw new Error(`Failed to update store record: ${updateError.message}`);
       }
       storeData = updatedStore;
-      logStep("Existing store updated for payment", { storeId: storeData.id });
+      logStep("Existing store updated for payment", { storeId: storeData.id, niche: selectedNiche });
     } else {
       // Create new pending store record
       const { data: newStore, error: storeError } = await supabaseService
@@ -217,6 +223,7 @@ serve(async (req) => {
           store_status: 'pending_payment',
           is_production: false, // Will be set to true after payment
           initial_products_generated: false,
+          niche: selectedNiche, // Store niche for product generation
           domain_name: `${storeName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${user.id.substring(0, 8)}.sokoby.com`,
         })
         .select()
@@ -228,10 +235,10 @@ serve(async (req) => {
       }
 
       storeData = newStore;
-      logStep("New pending store record created", { storeId: storeData.id });
+      logStep("New pending store record created", { storeId: storeData.id, niche: selectedNiche });
     }
 
-    // Create Stripe checkout session - PRODUCTION mode
+    // Create Stripe checkout session - PRODUCTION mode with niche in metadata
     const origin = req.headers.get("origin") || 'https://sokoby.com';
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -248,6 +255,7 @@ serve(async (req) => {
         userId: user.id,
         storeName: storeName,
         plan: plan,
+        niche: selectedNiche, // Pass niche to store generation
         storeId: storeData.id,
         mode: 'production',
       },
@@ -257,7 +265,7 @@ serve(async (req) => {
       customer_email: !customerId ? (profile?.email || user.email) : undefined,
     });
 
-    logStep("LIVE Stripe checkout session created", { sessionId: session.id, url: session.url });
+    logStep("LIVE Stripe checkout session created", { sessionId: session.id, url: session.url, niche: selectedNiche });
 
     // Update store with session ID
     const { error: updateError } = await supabaseService
@@ -275,6 +283,7 @@ serve(async (req) => {
       url: session.url,
       sessionId: session.id,
       storeId: storeData.id,
+      niche: selectedNiche,
       mode: 'production'
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

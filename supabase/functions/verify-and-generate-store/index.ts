@@ -116,10 +116,11 @@ serve(async (req) => {
 
     console.log('[VERIFY-AND-GENERATE] ✓ LIVE Payment verified as PAID');
 
-    // Extract data from session
+    // Extract data from session - including niche
     const sessionUserId = session.metadata?.userId || session.client_reference_id;
     const storeName = session.metadata?.storeName || 'Ma Boutique IA';
     const plan = session.metadata?.plan || 'starter';
+    const niche = session.metadata?.niche || 'general'; // Get niche from payment metadata
     const storeIdFromMeta = session.metadata?.storeId;
     
     // Use authenticated user if available, otherwise use session metadata
@@ -128,6 +129,7 @@ serve(async (req) => {
     console.log('[VERIFY-AND-GENERATE] Final user ID:', finalUserId);
     console.log('[VERIFY-AND-GENERATE] Store name:', storeName);
     console.log('[VERIFY-AND-GENERATE] Plan:', plan);
+    console.log('[VERIFY-AND-GENERATE] Niche:', niche);
     console.log('[VERIFY-AND-GENERATE] Store ID from metadata:', storeIdFromMeta);
 
     if (!finalUserId) {
@@ -208,6 +210,7 @@ serve(async (req) => {
             payment_status: 'completed',
             store_status: 'processing',
             store_type: 'ai',
+            niche: niche, // Ensure niche is stored
             stripe_payment_intent_id: session.payment_intent as string,
             updated_at: new Date().toISOString(),
           })
@@ -221,11 +224,11 @@ serve(async (req) => {
       }
     }
 
-    // Trigger PRODUCTION store generation
+    // Trigger PRODUCTION store generation with niche
     const storeToProcess = store;
     
     if (!storeToProcess?.initial_products_generated || !storeToProcess?.is_production) {
-      console.log('[VERIFY-AND-GENERATE] Triggering PRODUCTION store generation...');
+      console.log('[VERIFY-AND-GENERATE] Triggering PRODUCTION store generation with niche:', niche);
       
       const generateUrl = `${supabaseUrl}/functions/v1/generate-ai-store`;
       console.log('[VERIFY-AND-GENERATE] Calling:', generateUrl);
@@ -241,6 +244,7 @@ serve(async (req) => {
             userId: finalUserId,
             storeName,
             plan,
+            niche, // Pass niche to generator
             sessionId,
             storeId: storeToProcess?.id,
             isProduction: true,
@@ -268,6 +272,7 @@ serve(async (req) => {
             storeId: generateResult.storeId,
             status: 'generated',
             productsCount: generateResult.productsCount,
+            niche: niche,
             isProduction: true,
             storeStatus: 'active',
           }),
