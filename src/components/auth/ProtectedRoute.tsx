@@ -53,31 +53,61 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           throw profileError;
         }
 
-        // Vérifier l'abonnement actif (ne pas échouer si la table est vide)
-        let hasActiveSubscription = false;
+        // Check if user has PAID status (one-time payment or subscription)
+        let hasPaidAccess = false;
+
+        // 1. Check subscriptions table (for subscription-based plans)
         try {
-          const { data: subscriptions, error: subError } = await supabase
+          const { data: subscriptions } = await supabase
             .from('subscriptions')
             .select('*')
             .eq('user_id', session.user.id)
             .eq('status', 'active')
             .maybeSingle();
-
-          if (subError) {
-            console.warn('Avertissement lors de la vérification de l\'abonnement:', subError);
-            // Ne pas lancer d'erreur, continuer avec hasActiveSubscription = false
-          } else {
-            hasActiveSubscription = subscriptions !== null;
-          }
+          if (subscriptions) hasPaidAccess = true;
         } catch (error) {
-          console.warn('Erreur non critique lors de la vérification de l\'abonnement:', error);
-          // Continuer sans abonnement actif vérifié
+          console.warn('Subscription check error (non-critical):', error);
         }
-        
-        console.log("Abonnement actif:", hasActiveSubscription);
 
-        // Si pas d'abonnement actif, vérifier la période d'essai
-        if (!hasActiveSubscription) {
+        // 2. Check store_settings for completed payment (one-time AI store payment)
+        if (!hasPaidAccess) {
+          try {
+            const { data: store } = await supabase
+              .from('store_settings')
+              .select('payment_status')
+              .eq('user_id', session.user.id)
+              .eq('payment_status', 'completed')
+              .maybeSingle();
+            if (store) {
+              hasPaidAccess = true;
+              console.log("Paid store found - payment_status: completed");
+            }
+          } catch (error) {
+            console.warn('Store payment check error (non-critical):', error);
+          }
+        }
+
+        // 3. Check Stripe table for paid plan
+        if (!hasPaidAccess) {
+          try {
+            const { data: stripeRecord } = await supabase
+              .from('Stripe')
+              .select('plan, trial_expired')
+              .eq('id', session.user.id)
+              .maybeSingle();
+            if (stripeRecord && stripeRecord.plan !== 'free') {
+              hasPaidAccess = true;
+              console.log("Paid plan found in Stripe table:", stripeRecord.plan);
+            }
+          } catch (error) {
+            console.warn('Stripe table check error (non-critical):', error);
+          }
+        }
+
+        console.log("Paid access:", hasPaidAccess);
+
+        // If user has paid, skip trial check entirely
+        if (!hasPaidAccess) {
           const trialEndsAt = profile?.trial_ends_at;
           const isTrialActive = trialEndsAt && new Date(trialEndsAt) > new Date();
           
@@ -85,7 +115,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           console.log("Date fin d'essai:", trialEndsAt);
 
           if (!isTrialActive) {
-            console.log("Période d'essai expirée ou inexistante");
+            console.log("Période d'essai expirée et aucun paiement détecté");
             toast({
               title: "Abonnement requis",
               description: "Votre période d'essai gratuit est terminée. Veuillez souscrire à un abonnement pour continuer.",
@@ -127,9 +157,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
               navigate("/gestion-compte", { replace: true });
               return;
             }
-            // Autoriser la page de gestion du compte sans abonnement actif
           } else {
-            // Afficher un message informatif sur la période d'essai restante
             const daysLeft = Math.ceil((new Date(trialEndsAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
             toast({
               title: "Période d'essai active",
