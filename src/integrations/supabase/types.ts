@@ -1986,6 +1986,42 @@ export type Database = {
         }
         Relationships: []
       }
+      master_products: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image: string | null
+          name: string
+          niche: string
+          price: number
+          supplier: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image?: string | null
+          name: string
+          niche: string
+          price?: number
+          supplier?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image?: string | null
+          name?: string
+          niche?: string
+          price?: number
+          supplier?: string | null
+        }
+        Relationships: []
+      }
       migration_data: {
         Row: {
           created_at: string
@@ -3316,6 +3352,33 @@ export type Database = {
           user_id?: string
           vat_number?: string | null
           vat_rate?: number | null
+        }
+        Relationships: []
+      }
+      stores: {
+        Row: {
+          created_at: string
+          id: string
+          niche: string
+          owner_id: string
+          store_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          niche: string
+          owner_id: string
+          store_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          niche?: string
+          owner_id?: string
+          store_name?: string
+          updated_at?: string
         }
         Relationships: []
       }
