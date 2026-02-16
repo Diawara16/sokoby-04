@@ -68,8 +68,9 @@ serve(async (req) => {
     const storeId = store.id;
     console.log('[generate-store] Store created:', storeId);
 
-    // --- 2. Fetch master products by niche ---
-    const { data: masterProducts, error: mpError } = await supabase
+    // --- 2. Fetch 24 random master products by niche ---
+    // Supabase JS doesn't support ORDER BY random(), so fetch all matching then shuffle
+    const { data: allMasterProducts, error: mpError } = await supabase
       .from('master_products')
       .select('name, description, price, image, category, supplier')
       .ilike('niche', niche);
@@ -79,7 +80,7 @@ serve(async (req) => {
       throw new Error('Failed to fetch master products');
     }
 
-    if (!masterProducts || masterProducts.length === 0) {
+    if (!allMasterProducts || allMasterProducts.length === 0) {
       console.warn('[generate-store] No master products found for niche:', niche);
       return new Response(
         JSON.stringify({ success: true, storeId, productsCount: 0, message: 'Store created but no master products found for this niche' }),
@@ -87,8 +88,14 @@ serve(async (req) => {
       );
     }
 
+    // Shuffle and pick up to 24
+    const shuffled = allMasterProducts.sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, 24);
+
+    console.log('[generate-store] Selected', selected.length, 'of', allMasterProducts.length, 'master products');
+
     // --- 3. Insert products into the products table ---
-    const productsToInsert = masterProducts.map((mp) => ({
+    const productsToInsert = selected.map((mp) => ({
       name: mp.name,
       description: mp.description,
       price: mp.price,
