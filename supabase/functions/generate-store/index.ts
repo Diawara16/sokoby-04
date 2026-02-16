@@ -72,7 +72,7 @@ serve(async (req) => {
     // Supabase JS doesn't support ORDER BY random(), so fetch all matching then shuffle
     const { data: allMasterProducts, error: mpError } = await supabase
       .from('master_products')
-      .select('name, description, price, image, category, supplier')
+      .select('name, description, price, compare_price, cost_price, images, sku, supplier_url, category, supplier')
       .ilike('niche', niche);
 
     if (mpError) {
@@ -99,12 +99,16 @@ serve(async (req) => {
       name: mp.name,
       description: mp.description,
       price: mp.price,
-      image: mp.image,
+      compare_price: mp.compare_price,
+      images: mp.images,
+      sku: mp.sku,
+      supplier_url: mp.supplier_url,
       category: mp.category,
       store_id: storeId,
       user_id: ownerId,
       stock: 100,
       status: 'active',
+      is_active: true,
       is_visible: true,
       published: true,
     }));
