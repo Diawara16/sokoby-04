@@ -2365,6 +2365,47 @@ export type Database = {
         }
         Relationships: []
       }
+      pages: {
+        Row: {
+          created_at: string
+          id: string
+          is_published: boolean | null
+          meta_description: string | null
+          slug: string
+          store_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_published?: boolean | null
+          meta_description?: string | null
+          slug: string
+          store_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_published?: boolean | null
+          meta_description?: string | null
+          slug?: string
+          store_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pages_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "store_settings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_history: {
         Row: {
           amount: number
@@ -2934,6 +2975,47 @@ export type Database = {
           },
         ]
       }
+      sections: {
+        Row: {
+          config: Json
+          created_at: string
+          display_order: number
+          id: string
+          is_visible: boolean | null
+          page_id: string
+          section_type: string
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_visible?: boolean | null
+          page_id: string
+          section_type: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_visible?: boolean | null
+          page_id?: string
+          section_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sections_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shipping_integrations: {
         Row: {
           api_key: string | null
@@ -3352,6 +3434,90 @@ export type Database = {
           user_id?: string
           vat_number?: string | null
           vat_rate?: number | null
+        }
+        Relationships: []
+      }
+      store_theme_assignments: {
+        Row: {
+          created_at: string
+          custom_overrides: Json | null
+          id: string
+          is_active: boolean | null
+          store_id: string
+          theme_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          custom_overrides?: Json | null
+          id?: string
+          is_active?: boolean | null
+          store_id: string
+          theme_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          custom_overrides?: Json | null
+          id?: string
+          is_active?: boolean | null
+          store_id?: string
+          theme_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_theme_assignments_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "store_settings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_theme_assignments_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "store_themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_themes: {
+        Row: {
+          color_palette: Json | null
+          created_at: string
+          description: string | null
+          id: string
+          is_default: boolean | null
+          layout_config: Json
+          name: string
+          preview_image_url: string | null
+          typography: Json | null
+          updated_at: string
+        }
+        Insert: {
+          color_palette?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          layout_config?: Json
+          name: string
+          preview_image_url?: string | null
+          typography?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          color_palette?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          layout_config?: Json
+          name?: string
+          preview_image_url?: string | null
+          typography?: Json | null
+          updated_at?: string
         }
         Relationships: []
       }
