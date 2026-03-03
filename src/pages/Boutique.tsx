@@ -157,7 +157,8 @@ export default function Boutique() {
           <LiveStorefront 
             products={products} 
             storeName={storeName} 
-            isLoading={isLoading} 
+            isLoading={isLoading}
+            storeId={storeId}
           />
         </ErrorBoundary>
       </StoreThemeProvider>
