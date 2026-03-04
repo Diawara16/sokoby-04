@@ -920,7 +920,7 @@ export type Database = {
       delivery_routes: {
         Row: {
           created_at: string
-          estimated_delivery_time: unknown
+          estimated_delivery_time: string | null
           id: string
           optimization_score: number | null
           route_data: Json
@@ -930,7 +930,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          estimated_delivery_time?: unknown
+          estimated_delivery_time?: string | null
           id?: string
           optimization_score?: number | null
           route_data: Json
@@ -940,7 +940,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          estimated_delivery_time?: unknown
+          estimated_delivery_time?: string | null
           id?: string
           optimization_score?: number | null
           route_data?: Json
@@ -2182,7 +2182,7 @@ export type Database = {
           content_id: string
           content_type: string
           created_at: string
-          duration: unknown
+          duration: string | null
           expires_at: string | null
           id: string
           moderator_id: string
@@ -2194,7 +2194,7 @@ export type Database = {
           content_id: string
           content_type: string
           created_at?: string
-          duration?: unknown
+          duration?: string | null
           expires_at?: string | null
           id?: string
           moderator_id: string
@@ -2206,7 +2206,7 @@ export type Database = {
           content_id?: string
           content_type?: string
           created_at?: string
-          duration?: unknown
+          duration?: string | null
           expires_at?: string | null
           id?: string
           moderator_id?: string
@@ -4207,7 +4207,7 @@ export type Database = {
       user_sanctions: {
         Row: {
           created_at: string
-          duration: unknown
+          duration: string | null
           expires_at: string | null
           id: string
           is_active: boolean
@@ -4219,7 +4219,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          duration?: unknown
+          duration?: string | null
           expires_at?: string | null
           id?: string
           is_active?: boolean
@@ -4231,7 +4231,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          duration?: unknown
+          duration?: string | null
           expires_at?: string | null
           id?: string
           is_active?: boolean
