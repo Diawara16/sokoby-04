@@ -4,4 +4,5 @@ export interface ProductFormData {
   price: string;
   supplier: string;
   niche: string;
+  imageUrl: string;
 }

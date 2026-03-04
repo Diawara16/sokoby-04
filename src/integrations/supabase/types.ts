@@ -920,7 +920,7 @@ export type Database = {
       delivery_routes: {
         Row: {
           created_at: string
-          estimated_delivery_time: unknown
+          estimated_delivery_time: string | null
           id: string
           optimization_score: number | null
           route_data: Json
@@ -930,7 +930,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          estimated_delivery_time?: unknown
+          estimated_delivery_time?: string | null
           id?: string
           optimization_score?: number | null
           route_data: Json
@@ -940,7 +940,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          estimated_delivery_time?: unknown
+          estimated_delivery_time?: string | null
           id?: string
           optimization_score?: number | null
           route_data?: Json
@@ -2182,7 +2182,7 @@ export type Database = {
           content_id: string
           content_type: string
           created_at: string
-          duration: unknown
+          duration: string | null
           expires_at: string | null
           id: string
           moderator_id: string
@@ -2194,7 +2194,7 @@ export type Database = {
           content_id: string
           content_type: string
           created_at?: string
-          duration?: unknown
+          duration?: string | null
           expires_at?: string | null
           id?: string
           moderator_id: string
@@ -2206,7 +2206,7 @@ export type Database = {
           content_id?: string
           content_type?: string
           created_at?: string
-          duration?: unknown
+          duration?: string | null
           expires_at?: string | null
           id?: string
           moderator_id?: string
@@ -2757,6 +2757,7 @@ export type Database = {
           description: string | null
           id: string
           image: string | null
+          images: string[] | null
           is_visible: boolean
           name: string
           price: number
@@ -2764,6 +2765,7 @@ export type Database = {
           status: string | null
           stock: number | null
           store_id: string | null
+          supplier_url: string | null
           user_id: string | null
         }
         Insert: {
@@ -2772,6 +2774,7 @@ export type Database = {
           description?: string | null
           id?: string
           image?: string | null
+          images?: string[] | null
           is_visible?: boolean
           name: string
           price: number
@@ -2779,6 +2782,7 @@ export type Database = {
           status?: string | null
           stock?: number | null
           store_id?: string | null
+          supplier_url?: string | null
           user_id?: string | null
         }
         Update: {
@@ -2787,6 +2791,7 @@ export type Database = {
           description?: string | null
           id?: string
           image?: string | null
+          images?: string[] | null
           is_visible?: boolean
           name?: string
           price?: number
@@ -2794,6 +2799,7 @@ export type Database = {
           status?: string | null
           stock?: number | null
           store_id?: string | null
+          supplier_url?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -4207,7 +4213,7 @@ export type Database = {
       user_sanctions: {
         Row: {
           created_at: string
-          duration: unknown
+          duration: string | null
           expires_at: string | null
           id: string
           is_active: boolean
@@ -4219,7 +4225,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          duration?: unknown
+          duration?: string | null
           expires_at?: string | null
           id?: string
           is_active?: boolean
@@ -4231,7 +4237,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          duration?: unknown
+          duration?: string | null
           expires_at?: string | null
           id?: string
           is_active?: boolean
