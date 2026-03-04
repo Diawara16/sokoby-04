@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { ProductNameField } from "./form/ProductNameField"
 import { ProductDescriptionField } from "./form/ProductDescriptionField"
 import { ProductPriceField } from "./form/ProductPriceField"
+import { ProductImageField } from "./form/ProductImageField"
 import { SupplierField } from "./form/SupplierField"
 import { NicheField } from "./form/NicheField"
 import { ProductFormData } from "./types"
@@ -16,7 +17,6 @@ interface ProductImportFormProps {
 }
 
 export function ProductImportForm({ onSuccess }: ProductImportFormProps = {}) {
-  console.log('ProductImportForm rendering');
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<ProductFormData>({
@@ -25,7 +25,8 @@ export function ProductImportForm({ onSuccess }: ProductImportFormProps = {}) {
       description: "",
       price: "",
       supplier: "",
-      niche: ""
+      niche: "",
+      imageUrl: "",
     }
   })
   const { importProduct } = useProductImport()
@@ -43,20 +44,13 @@ export function ProductImportForm({ onSuccess }: ProductImportFormProps = {}) {
     setIsLoading(true)
     try {
       await importProduct(data)
-      toast({
-        title: "Succès",
-        description: "Le produit a été importé avec succès",
-      })
-      
-      // Rediriger après succès
-      if (onSuccess) {
-        onSuccess();
-      }
+      toast({ title: "Succès", description: "Le produit a été ajouté avec succès" })
+      if (onSuccess) onSuccess();
     } catch (error) {
-      console.error("Erreur lors de l'import du produit:", error)
+      console.error("[ProductImportForm] Submit error:", error)
       toast({
         title: "Erreur",
-        description: error instanceof Error ? error.message : "Une erreur est survenue lors de l'import du produit",
+        description: error instanceof Error ? error.message : "Une erreur est survenue",
         variant: "destructive",
       })
     } finally {
@@ -66,18 +60,12 @@ export function ProductImportForm({ onSuccess }: ProductImportFormProps = {}) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-      {/* Debugging info */}
-      <div className="mb-4 p-4 bg-muted rounded-lg">
-        <p className="text-sm text-muted-foreground">
-          Formulaire d'importation des produits - Tous les composants sont chargés
-        </p>
-      </div>
-      
       <Card className="p-6">
         <div className="space-y-6">
           <ProductNameField register={register} errors={errors} />
           <ProductDescriptionField register={register} errors={errors} />
           <ProductPriceField register={register} errors={errors} />
+          <ProductImageField register={register} errors={errors} />
           <SupplierField 
             register={register} 
             errors={errors}
@@ -93,7 +81,7 @@ export function ProductImportForm({ onSuccess }: ProductImportFormProps = {}) {
 
       <div className="flex justify-end">
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Import en cours..." : "Importer le produit"}
+          {isLoading ? "Ajout en cours..." : "Ajouter le produit"}
         </Button>
       </div>
     </form>
