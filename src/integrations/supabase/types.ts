@@ -2757,6 +2757,7 @@ export type Database = {
           description: string | null
           id: string
           image: string | null
+          images: string[] | null
           is_visible: boolean
           name: string
           price: number
@@ -2764,6 +2765,7 @@ export type Database = {
           status: string | null
           stock: number | null
           store_id: string | null
+          supplier_url: string | null
           user_id: string | null
         }
         Insert: {
@@ -2772,6 +2774,7 @@ export type Database = {
           description?: string | null
           id?: string
           image?: string | null
+          images?: string[] | null
           is_visible?: boolean
           name: string
           price: number
@@ -2779,6 +2782,7 @@ export type Database = {
           status?: string | null
           stock?: number | null
           store_id?: string | null
+          supplier_url?: string | null
           user_id?: string | null
         }
         Update: {
@@ -2787,6 +2791,7 @@ export type Database = {
           description?: string | null
           id?: string
           image?: string | null
+          images?: string[] | null
           is_visible?: boolean
           name?: string
           price?: number
@@ -2794,6 +2799,7 @@ export type Database = {
           status?: string | null
           stock?: number | null
           store_id?: string | null
+          supplier_url?: string | null
           user_id?: string | null
         }
         Relationships: [
