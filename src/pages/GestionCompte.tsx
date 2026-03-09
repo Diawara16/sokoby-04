@@ -112,7 +112,12 @@ export default function GestionCompte() {
               <p className="font-medium">Email: {userEmail}</p>
             </div>
             
-            {profile?.trial_ends_at && (
+            {hasPaidAccess ? (
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Plan</span>
+                <Badge variant="default">Plan payant actif</Badge>
+              </div>
+            ) : profile?.trial_ends_at ? (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Période d'essai</span>
@@ -128,7 +133,7 @@ export default function GestionCompte() {
                   }
                 </p>
               </div>
-            )}
+            ) : null}
           </CardContent>
         </Card>
 
