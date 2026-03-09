@@ -16,6 +16,7 @@ export interface AccessResult {
  * ELSE → BLOCKED
  */
 export async function checkUserAccess(userId: string, userEmail?: string | null): Promise<AccessResult> {
+  console.log("SUPABASE URL:", (supabase as any).supabaseUrl);
   console.log("[AccessControl] Checking access for user:", userId, "email:", userEmail ?? "(none)");
 
   const email = userEmail?.trim().toLowerCase();
