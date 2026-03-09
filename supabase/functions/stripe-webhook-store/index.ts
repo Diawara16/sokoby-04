@@ -127,19 +127,35 @@ serve(async (req) => {
       }
 
       // Extract metadata - try multiple sources
-      const userId = session.metadata?.userId || session.client_reference_id;
+      let userId = session.metadata?.userId || session.client_reference_id;
       const storeName = session.metadata?.storeName || 'Ma Boutique IA';
       const plan = session.metadata?.plan || 'starter';
-      const niche = session.metadata?.niche || 'general';  // Get niche from payment metadata
+      const niche = session.metadata?.niche || 'general';
+      const customerEmail = session.customer_details?.email || session.customer_email;
 
       console.log('[STRIPE-WEBHOOK] Extracted data:');
       console.log('  - User ID:', userId);
+      console.log('  - Customer email:', customerEmail);
       console.log('  - Store name:', storeName);
       console.log('  - Plan:', plan);
       console.log('  - Niche:', niche);
 
+      // Fallback: find userId by email if not in metadata
+      if (!userId && customerEmail) {
+        console.log('[STRIPE-WEBHOOK] No userId in metadata, looking up by email:', customerEmail);
+        const { data: profileByEmail } = await supabaseClient
+          .from('profiles')
+          .select('id')
+          .eq('email', customerEmail)
+          .maybeSingle();
+        if (profileByEmail) {
+          userId = profileByEmail.id;
+          console.log('[STRIPE-WEBHOOK] ✓ Found userId by email:', userId);
+        }
+      }
+
       if (!userId) {
-        console.error('[STRIPE-WEBHOOK] ✗ CRITICAL: No user ID found in metadata or client_reference_id');
+        console.error('[STRIPE-WEBHOOK] ✗ CRITICAL: No user ID found in metadata, client_reference_id, or email lookup');
         return new Response(
           JSON.stringify({ received: true, warning: 'No user ID found' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
@@ -291,20 +307,34 @@ serve(async (req) => {
         // Don't throw - we still want to return success to Stripe
       }
 
-      // Update user's plan in the "Stripe" table (case-sensitive table name)
-      console.log('[STRIPE-WEBHOOK] Updating Stripe table plan to:', plan);
+      // Update user's plan in the "Stripe" table (case-sensitive table name) — use UPSERT
+      console.log('[STRIPE-WEBHOOK] Upserting Stripe table plan to:', plan);
       const { error: stripeTableError } = await supabaseClient
         .from('Stripe')
-        .update({ 
+        .upsert({ 
+          id: userId,
+          email: customerEmail || '',
           plan: plan,
           trial_expired: true
-        })
-        .eq('id', userId);
+        }, { onConflict: 'id' });
       
       if (stripeTableError) {
-        console.error('[STRIPE-WEBHOOK] ⚠ Error updating Stripe table:', stripeTableError.message);
+        console.error('[STRIPE-WEBHOOK] ⚠ Error upserting Stripe table:', stripeTableError.message);
       } else {
-        console.log('[STRIPE-WEBHOOK] ✓ Stripe table plan updated to:', plan);
+        console.log('[STRIPE-WEBHOOK] ✓ Stripe table plan upserted to:', plan);
+      }
+
+      // Also clear trial_ends_at in profiles so access control sees paid status
+      console.log('[STRIPE-WEBHOOK] Clearing trial_ends_at in profiles for userId:', userId);
+      const { error: profileUpdateError } = await supabaseClient
+        .from('profiles')
+        .update({ trial_ends_at: null })
+        .eq('id', userId);
+      
+      if (profileUpdateError) {
+        console.error('[STRIPE-WEBHOOK] ⚠ Error clearing trial_ends_at:', profileUpdateError.message);
+      } else {
+        console.log('[STRIPE-WEBHOOK] ✓ trial_ends_at cleared for paid user');
       }
 
       // Create notification for user
