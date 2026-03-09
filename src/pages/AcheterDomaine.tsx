@@ -1,171 +1,53 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { DomainChecker } from "@/components/store/DomainChecker";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { PaymentButtons } from "@/components/pricing/PaymentButtons";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ExternalLink } from "lucide-react";
 
 const AcheterDomaine = () => {
   const [domainName, setDomainName] = useState("");
-  const { toast } = useToast();
-  const [suggestedDomains, setSuggestedDomains] = useState<string[]>([]);
-  const [isProcessingPurchase, setIsProcessingPurchase] = useState(false);
-  const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
-  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
-
-  const generateSuggestedDomains = (baseDomain: string) => {
-    const baseName = baseDomain.split('.')[0];
-    return [
-      `${baseName}.sokoby.com`,
-      `${baseName}-shop.sokoby.com`,
-      `${baseName}-store.sokoby.com`,
-      `${baseName}-boutique.sokoby.com`,
-      `${baseName}-market.sokoby.com`,
-    ];
-  };
-
-  const handleDomainCheck = (domain: string) => {
-    if (domain) {
-      const suggestions = generateSuggestedDomains(domain);
-      setSuggestedDomains(suggestions);
-    } else {
-      setSuggestedDomains([]);
-    }
-  };
-
-  const handlePurchaseClick = (domain: string) => {
-    setSelectedDomain(domain);
-    setShowPaymentDialog(true);
-  };
-
-  const handleSubscribe = async (
-    planType: 'starter' | 'pro' | 'enterprise',
-    paymentMethod: 'card' | 'apple_pay' | 'google_pay',
-    couponCode?: string
-  ) => {
-    try {
-      setIsProcessingPurchase(true);
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour acheter un domaine",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Vérifier si le domaine n'est pas déjà pris
-      const { data: existingDomain } = await supabase
-        .from("store_settings")
-        .select("domain_name")
-        .eq("domain_name", selectedDomain)
-        .maybeSingle();
-
-      if (existingDomain) {
-        toast({
-          title: "Domaine non disponible",
-          description: "Ce domaine a déjà été réservé",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Mettre à jour les paramètres de la boutique avec le nouveau domaine
-      const { error: updateError } = await supabase
-        .from("store_settings")
-        .update({ 
-          domain_name: selectedDomain,
-          is_custom_domain: true 
-        })
-        .eq("user_id", user.id);
-
-      if (updateError) throw updateError;
-
-      toast({
-        title: "Succès !",
-        description: "Le domaine a été réservé pour votre boutique",
-      });
-
-      setShowPaymentDialog(false);
-
-    } catch (error) {
-      console.error("Erreur lors de l'achat du domaine:", error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de l'achat du domaine",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessingPurchase(false);
-    }
-  };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Acheter un sous-domaine</h1>
-      
+      <h1 className="text-3xl font-bold mb-6">Vérifier la disponibilité d'un domaine</h1>
+
       <Alert className="mb-6">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          Vous pouvez acheter un sous-domaine personnalisé sur sokoby.com (exemple: maboutique.sokoby.com)
+          L'achat de domaine se fait via un registrar externe (Namecheap, GoDaddy, Cloudflare).
+          Une fois acheté, connectez-le depuis la page <strong>Connecter un domaine</strong>.
         </AlertDescription>
       </Alert>
 
       <Card className="p-6 mb-6">
-        <DomainChecker 
-          value={domainName} 
-          onChange={(value) => {
-            setDomainName(value);
-            handleDomainCheck(value);
-          }}
-          onPurchase={handlePurchaseClick}
+        <DomainChecker
+          value={domainName}
+          onChange={setDomainName}
+          onPurchase={() => {}}
         />
       </Card>
 
-      {suggestedDomains.length > 0 && (
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Suggestions de sous-domaines</h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            {suggestedDomains.map((domain) => (
-              <div 
-                key={domain} 
-                className="flex items-center justify-between p-4 border rounded-lg"
-              >
-                <span className="font-medium">{domain}</span>
-                <Button 
-                  onClick={() => handlePurchaseClick(domain)}
-                  size="sm"
-                  disabled={isProcessingPurchase}
-                  variant="destructive"
-                >
-                  Acheter
-                </Button>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
-
-      <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Acheter le domaine {selectedDomain}</DialogTitle>
-          </DialogHeader>
-          <div className="mt-4">
-            <PaymentButtons
-              planType="starter"
-              onSubscribe={handleSubscribe}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
+      <Card className="p-6">
+        <h2 className="text-xl font-semibold mb-4">Comment obtenir un domaine ?</h2>
+        <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+          <li>Achetez votre domaine chez un registrar :</li>
+        </ol>
+        <div className="flex gap-4 mt-3 mb-4 flex-wrap">
+          <a href="https://www.namecheap.com/" target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1">
+            Namecheap <ExternalLink className="h-3 w-3" />
+          </a>
+          <a href="https://www.godaddy.com/" target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1">
+            GoDaddy <ExternalLink className="h-3 w-3" />
+          </a>
+          <a href="https://www.cloudflare.com/products/registrar/" target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1">
+            Cloudflare <ExternalLink className="h-3 w-3" />
+          </a>
+        </div>
+        <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground" start={2}>
+          <li>Configurez l'enregistrement A vers <strong>185.158.133.1</strong></li>
+          <li>Revenez sur Sokoby et connectez votre domaine</li>
+        </ol>
+      </Card>
     </div>
   );
 };
