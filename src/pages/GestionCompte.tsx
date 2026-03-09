@@ -78,13 +78,6 @@ export default function GestionCompte() {
                 <span className="text-sm font-medium">Plan</span>
                 <Badge variant="default">Abonnement actif</Badge>
               </div>
-            ) : accessLevel === "trial" ? (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Période d'essai</span>
-                  <Badge variant="secondary">{accessDaysLeft ?? 0} jours restants</Badge>
-                </div>
-              </div>
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
