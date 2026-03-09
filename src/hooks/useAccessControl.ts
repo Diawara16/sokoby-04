@@ -21,7 +21,7 @@ export async function checkUserAccess(userId: string, userEmail?: string | null)
   const email = userEmail?.trim().toLowerCase();
 
   // Build OR filter: user_id or owner_email
-  const orParts: string[] = [`user_id.eq.${userId}`, `owner_id.eq.${userId}`];
+  const orParts: string[] = [`user_id.eq.${userId}`];
   if (email) {
     orParts.push(`owner_email.eq.${email}`);
   }
