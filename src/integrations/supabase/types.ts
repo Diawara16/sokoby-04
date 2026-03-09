@@ -3535,28 +3535,49 @@ export type Database = {
       }
       stores: {
         Row: {
+          billing_status: string | null
           created_at: string
           id: string
           niche: string
+          owner_email: string | null
           owner_id: string
+          paid_at: string | null
+          plan: string
+          status: string
           store_name: string
+          trial_ends_at: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
+          billing_status?: string | null
           created_at?: string
           id?: string
           niche: string
+          owner_email?: string | null
           owner_id: string
+          paid_at?: string | null
+          plan?: string
+          status?: string
           store_name: string
+          trial_ends_at?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
+          billing_status?: string | null
           created_at?: string
           id?: string
           niche?: string
+          owner_email?: string | null
           owner_id?: string
+          paid_at?: string | null
+          plan?: string
+          status?: string
           store_name?: string
+          trial_ends_at?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }

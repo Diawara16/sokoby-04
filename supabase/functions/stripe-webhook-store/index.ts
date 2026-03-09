@@ -342,6 +342,29 @@ serve(async (req) => {
         console.log('[STRIPE-WEBHOOK] ✓ Stripe table plan upserted to:', plan);
       }
 
+      // === CRITICAL: Update stores table (single source of truth for access control) ===
+      console.log('[STRIPE-WEBHOOK] Upserting stores table with plan:', plan);
+      const { error: storesUpsertError } = await supabaseClient
+        .from('stores')
+        .upsert({
+          owner_id: userId,
+          user_id: userId,
+          store_name: storeName,
+          niche: niche,
+          plan: plan === 'starter' || plan === 'pro' || plan === 'enterprise' ? 'paid' : plan,
+          status: 'active',
+          billing_status: 'active',
+          trial_ends_at: null,
+          owner_email: customerEmail || null,
+          paid_at: new Date().toISOString(),
+        }, { onConflict: 'owner_id' });
+
+      if (storesUpsertError) {
+        console.error('[STRIPE-WEBHOOK] ⚠ Error upserting stores table:', storesUpsertError.message);
+      } else {
+        console.log('[STRIPE-WEBHOOK] ✓ stores table updated: plan=paid, status=active');
+      }
+
       // Also clear trial_ends_at in profiles so access control sees paid status
       console.log('[STRIPE-WEBHOOK] Clearing trial_ends_at in profiles for userId:', userId);
       const { error: profileUpdateError } = await supabaseClient

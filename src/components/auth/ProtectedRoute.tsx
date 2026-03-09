@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 import { checkUserAccess } from "@/hooks/useAccessControl";
 
 interface ProtectedRouteProps {
@@ -48,26 +48,8 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           toast({
             title: "Abonnement requis",
             description:
-              "Votre période d'essai gratuit est terminée. Veuillez souscrire à un abonnement pour continuer.",
+              "Créez votre boutique IA pour accéder au tableau de bord.",
             variant: "destructive",
-            action: (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={async () => {
-                  try {
-                    const { data, error } = await supabase.functions.invoke("create-billing-portal-session");
-                    if (error) throw error;
-                    if (data?.url) window.open(data.url, "_blank");
-                  } catch {
-                    navigate("/plan-tarifaire");
-                  }
-                }}
-                className="ml-2"
-              >
-                Gérer l'abonnement
-              </Button>
-            ),
           });
 
           if (location.pathname !== "/gestion-compte") {
