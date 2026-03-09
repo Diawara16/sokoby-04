@@ -289,11 +289,12 @@ serve(async (req) => {
 
     logStep("LIVE Stripe checkout session created", { sessionId: session.id, url: session.url, niche: selectedNiche });
 
-    // Update store with session ID
+    // Update store with session ID and Stripe customer ID
     const { error: updateError } = await supabaseService
       .from('store_settings')
       .update({
         stripe_checkout_session_id: session.id,
+        stripe_customer_id: customerId || null,
       })
       .eq('id', storeData.id);
 

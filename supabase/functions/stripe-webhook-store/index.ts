@@ -131,7 +131,9 @@ serve(async (req) => {
       const storeName = session.metadata?.storeName || 'Ma Boutique IA';
       const plan = session.metadata?.plan || 'starter';
       const niche = session.metadata?.niche || 'general';
+      const storeIdFromMeta = session.metadata?.storeId;
       const customerEmail = session.customer_details?.email || session.customer_email;
+      const stripeCustomerId = session.customer as string;
 
       console.log('[STRIPE-WEBHOOK] Extracted data:');
       console.log('  - User ID:', userId);
@@ -139,6 +141,8 @@ serve(async (req) => {
       console.log('  - Store name:', storeName);
       console.log('  - Plan:', plan);
       console.log('  - Niche:', niche);
+      console.log('  - Store ID from metadata:', storeIdFromMeta);
+      console.log('  - Stripe customer ID:', stripeCustomerId);
 
       // Fallback: find userId by email if not in metadata
       if (!userId && customerEmail) {
@@ -162,86 +166,69 @@ serve(async (req) => {
         );
       }
 
-      // Find and update store by session ID
-      console.log('[STRIPE-WEBHOOK] Searching for store with session ID:', session.id);
-      
-      const { data: existingStore, error: findError } = await supabaseClient
-        .from('store_settings')
-        .select('*')
-        .eq('stripe_checkout_session_id', session.id)
-        .single();
-
+      // === STORE LOOKUP PRIORITY ===
+      // 1. By storeId from metadata (most precise for multi-store users)
+      // 2. By stripe_customer_id on the store record
+      // 3. By stripe_checkout_session_id
+      // 4. Fallback: by user_id with pending payment status
+      let existingStore: any = null;
       let storeId: string;
 
-      if (findError) {
-        console.log('[STRIPE-WEBHOOK] Store not found by session ID, searching by user ID...');
-        
-        // Try to find by user ID
-        const { data: storeByUser, error: userFindError } = await supabaseClient
+      // 1. Try storeId from metadata
+      if (storeIdFromMeta) {
+        console.log('[STRIPE-WEBHOOK] Looking up store by metadata storeId:', storeIdFromMeta);
+        const { data } = await supabaseClient
+          .from('store_settings')
+          .select('*')
+          .eq('id', storeIdFromMeta)
+          .single();
+        if (data) existingStore = data;
+      }
+
+      // 2. Try stripe_customer_id
+      if (!existingStore && stripeCustomerId) {
+        console.log('[STRIPE-WEBHOOK] Looking up store by stripe_customer_id:', stripeCustomerId);
+        const { data } = await supabaseClient
+          .from('store_settings')
+          .select('*')
+          .eq('stripe_customer_id', stripeCustomerId)
+          .in('payment_status', ['pending', 'processing'])
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (data) existingStore = data;
+      }
+
+      // 3. Try session ID
+      if (!existingStore) {
+        console.log('[STRIPE-WEBHOOK] Looking up store by session ID:', session.id);
+        const { data } = await supabaseClient
+          .from('store_settings')
+          .select('*')
+          .eq('stripe_checkout_session_id', session.id)
+          .maybeSingle();
+        if (data) existingStore = data;
+      }
+
+      // 4. Fallback: by user_id with pending status
+      if (!existingStore) {
+        console.log('[STRIPE-WEBHOOK] Looking up store by user_id with pending status...');
+        const { data } = await supabaseClient
           .from('store_settings')
           .select('*')
           .eq('user_id', userId)
           .in('payment_status', ['pending', 'processing'])
           .order('created_at', { ascending: false })
           .limit(1)
-          .single();
+          .maybeSingle();
+        if (data) existingStore = data;
+      }
 
-        if (userFindError || !storeByUser) {
-          console.log('[STRIPE-WEBHOOK] No pending store found for user - creating new PRODUCTION store');
-          
-          // Create a new PRODUCTION store record
-          const { data: newStore, error: createError } = await supabaseClient
-            .from('store_settings')
-            .insert({
-              user_id: userId,
-              store_name: storeName,
-              store_type: 'ai',
-              payment_status: 'completed',
-              store_status: 'processing',
-              is_production: false, // Will be set to true after products are generated
-              stripe_checkout_session_id: session.id,
-              stripe_payment_intent_id: session.payment_intent as string,
-              initial_products_generated: false,
-              niche: niche,  // Store niche for product generation
-            })
-            .select()
-            .single();
-
-          if (createError) {
-            console.error('[STRIPE-WEBHOOK] ✗ Failed to create store:', createError);
-            throw createError;
-          }
-          
-          storeId = newStore.id;
-          console.log('[STRIPE-WEBHOOK] ✓ Created new PRODUCTION store:', storeId);
-        } else {
-          storeId = storeByUser.id;
-          console.log('[STRIPE-WEBHOOK] Found store by user ID:', storeId);
-          
-          // Update existing store to PRODUCTION
-          const { error: updateError } = await supabaseClient
-            .from('store_settings')
-            .update({
-              payment_status: 'completed',
-              store_status: 'processing',
-              store_type: 'ai',
-              stripe_checkout_session_id: session.id,
-              stripe_payment_intent_id: session.payment_intent as string,
-              niche: niche,  // Update niche for regeneration
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', storeId);
-
-          if (updateError) {
-            console.error('[STRIPE-WEBHOOK] ✗ Failed to update store:', updateError);
-            throw updateError;
-          }
-          console.log('[STRIPE-WEBHOOK] ✓ Updated store to PROCESSING status');
-        }
-      } else {
+      if (existingStore) {
         storeId = existingStore.id;
-        console.log('[STRIPE-WEBHOOK] Found store by session ID:', storeId);
-        
+        console.log('[STRIPE-WEBHOOK] ✓ Found store:', storeId);
+
+        // Skip if already fully processed
         if (existingStore.payment_status === 'completed' && existingStore.initial_products_generated && existingStore.is_production) {
           console.log('[STRIPE-WEBHOOK] Store already PRODUCTION - skipping');
           return new Response(
@@ -249,15 +236,18 @@ serve(async (req) => {
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
           );
         }
-        
-        // Update store to PRODUCTION processing
+
+        // Update store to completed + save stripe IDs
         const { error: updateError } = await supabaseClient
           .from('store_settings')
           .update({
             payment_status: 'completed',
             store_status: 'processing',
             store_type: 'ai',
+            stripe_checkout_session_id: session.id,
             stripe_payment_intent_id: session.payment_intent as string,
+            stripe_customer_id: stripeCustomerId || existingStore.stripe_customer_id,
+            niche: niche,
             updated_at: new Date().toISOString(),
           })
           .eq('id', storeId);
@@ -266,7 +256,35 @@ serve(async (req) => {
           console.error('[STRIPE-WEBHOOK] ✗ Failed to update store:', updateError);
           throw updateError;
         }
-        console.log('[STRIPE-WEBHOOK] ✓ Updated store payment status to PROCESSING');
+        console.log('[STRIPE-WEBHOOK] ✓ Updated store to PROCESSING status');
+      } else {
+        console.log('[STRIPE-WEBHOOK] No existing store found - creating new PRODUCTION store');
+
+        const { data: newStore, error: createError } = await supabaseClient
+          .from('store_settings')
+          .insert({
+            user_id: userId,
+            store_name: storeName,
+            store_type: 'ai',
+            payment_status: 'completed',
+            store_status: 'processing',
+            is_production: false,
+            stripe_checkout_session_id: session.id,
+            stripe_payment_intent_id: session.payment_intent as string,
+            stripe_customer_id: stripeCustomerId || null,
+            initial_products_generated: false,
+            niche: niche,
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('[STRIPE-WEBHOOK] ✗ Failed to create store:', createError);
+          throw createError;
+        }
+
+        storeId = newStore.id;
+        console.log('[STRIPE-WEBHOOK] ✓ Created new PRODUCTION store:', storeId);
       }
 
       // Trigger AI store generation for PRODUCTION
