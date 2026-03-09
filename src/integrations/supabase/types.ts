@@ -3346,7 +3346,9 @@ export type Database = {
           store_status: string
           store_type: string | null
           stripe_checkout_session_id: string | null
+          stripe_customer_id: string | null
           stripe_payment_intent_id: string | null
+          stripe_subscription_id: string | null
           timezone: string | null
           trial_end_date: string | null
           trial_start_date: string | null
@@ -3389,7 +3391,9 @@ export type Database = {
           store_status?: string
           store_type?: string | null
           stripe_checkout_session_id?: string | null
+          stripe_customer_id?: string | null
           stripe_payment_intent_id?: string | null
+          stripe_subscription_id?: string | null
           timezone?: string | null
           trial_end_date?: string | null
           trial_start_date?: string | null
@@ -3432,7 +3436,9 @@ export type Database = {
           store_status?: string
           store_type?: string | null
           stripe_checkout_session_id?: string | null
+          stripe_customer_id?: string | null
           stripe_payment_intent_id?: string | null
+          stripe_subscription_id?: string | null
           timezone?: string | null
           trial_end_date?: string | null
           trial_start_date?: string | null
