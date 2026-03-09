@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 export type AccessLevel = "paid" | "trial" | "blocked";
 
@@ -10,8 +10,8 @@ export interface AccessResult {
 
 /**
  * Checks user access level. Priority order:
- * 1. Stripe table plan !== 'free' → full access (primary source of truth after payment)
- * 2. store_settings.payment_status = 'completed' → full access (one-time payment)
+ * 1. Stripe table plan !== 'free' → full access
+ * 2. store_settings.payment_status = 'completed' → full access
  * 3. Active subscription → full access
  * 4. Trial not expired → trial access
  * 5. Otherwise → blocked
@@ -20,7 +20,7 @@ export async function checkUserAccess(userId: string): Promise<AccessResult> {
   console.log("[AccessControl] Checking access for user:", userId);
   let hasPaidAccess = false;
 
-  // 1. Check Stripe table plan (fastest — set by webhook on payment)
+  // 1. Check Stripe table plan
   try {
     const { data, error } = await supabase
       .from("Stripe")
@@ -37,12 +37,12 @@ export async function checkUserAccess(userId: string): Promise<AccessResult> {
     console.warn("[AccessControl] Stripe table check error:", e);
   }
 
-  // 2. Check store_settings.payment_status (one-time payment)
+  // 2. Check store_settings.payment_status
   if (!hasPaidAccess) {
     try {
       const { data, error } = await supabase
         .from("store_settings")
-        .select("id")
+        .select("id, payment_status")
         .eq("user_id", userId)
         .eq("payment_status", "completed")
         .maybeSingle();
@@ -57,7 +57,7 @@ export async function checkUserAccess(userId: string): Promise<AccessResult> {
     }
   }
 
-  // 3. Check subscriptions (recurring plans)
+  // 3. Check subscriptions
   if (!hasPaidAccess) {
     try {
       const { data, error } = await supabase
@@ -77,13 +77,13 @@ export async function checkUserAccess(userId: string): Promise<AccessResult> {
     }
   }
 
-  // Paid users are never blocked by trial expiration
+  // Paid users are never blocked
   if (hasPaidAccess) {
     console.log("[AccessControl] → Result: PAID access granted");
     return { level: "paid", hasPaidAccess: true };
   }
 
-  // 4. Check trial period (query both id and user_id for compatibility)
+  // 4. Check trial period
   try {
     let profile: { trial_ends_at: string | null } | null = null;
     const { data: p1, error: e1 } = await supabase
@@ -104,6 +104,8 @@ export async function checkUserAccess(userId: string): Promise<AccessResult> {
       if (e2) console.warn("[AccessControl] Trial query (id) error:", e2.message);
       profile = p2;
     }
+
+    console.log("[AccessControl] Trial data:", { trial_ends_at: profile?.trial_ends_at });
 
     const trialEndsAt = profile?.trial_ends_at;
     if (trialEndsAt && new Date(trialEndsAt) > new Date()) {
