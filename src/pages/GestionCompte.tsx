@@ -105,23 +105,28 @@ export default function GestionCompte() {
                 <span className="text-sm font-medium">Plan</span>
                 <Badge variant="default">Plan payant actif</Badge>
               </div>
-            ) : profile?.trial_ends_at ? (
+            ) : hasTrialAccess ? (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Période d'essai</span>
-                  <Badge variant={isTrialExpired ? "destructive" : "secondary"}>
-                    {isTrialExpired ? "Expiré" : `${daysRemaining} jours restants`}
-                  </Badge>
+                  <Badge variant="secondary">{daysRemaining} jours restants</Badge>
                 </div>
                 <Progress value={trialProgress} className="h-2" />
                 <p className="text-xs text-muted-foreground">
-                  {isTrialExpired 
-                    ? `Essai gratuit expiré le ${formatDate(profile.trial_ends_at)}`
-                    : `Se termine le ${formatDate(profile.trial_ends_at)}`
-                  }
+                  Il vous reste {daysRemaining} jour(s) d'essai gratuit.
                 </p>
               </div>
-            ) : null}
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Période d'essai</span>
+                  <Badge variant="destructive">Expiré</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Votre période d'essai est terminée.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 

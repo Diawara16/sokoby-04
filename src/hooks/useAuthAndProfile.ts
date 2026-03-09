@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
-import { checkUserAccess } from "@/hooks/useAccessControl";
+import { checkUserAccess, type AccessLevel } from "@/hooks/useAccessControl";
 import { linkAuthenticatedUserToStore } from "@/services/linkAuthenticatedUserToStore";
 
 interface Profile {
@@ -20,6 +20,8 @@ export const useAuthAndProfile = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [hasPaidAccess, setHasPaidAccess] = useState(false);
+  const [accessLevel, setAccessLevel] = useState<AccessLevel>("blocked");
+  const [accessDaysLeft, setAccessDaysLeft] = useState<number | undefined>(undefined);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -36,6 +38,8 @@ export const useAuthAndProfile = () => {
           setHasProfile(false);
           setProfile(null);
           setHasPaidAccess(false);
+          setAccessLevel("blocked");
+          setAccessDaysLeft(undefined);
           return;
         }
 
@@ -103,17 +107,18 @@ export const useAuthAndProfile = () => {
         const paid = access.level === "paid";
 
         setHasPaidAccess(paid);
+        setAccessLevel(access.level);
+        setAccessDaysLeft(access.daysLeft);
 
         // Clear stale in-memory trial state when plan is paid
-        if (paid && currentProfile?.trial_ends_at) {
-          setProfile({ ...currentProfile, trial_ends_at: null });
+        if (paid) {
+          setProfile((prev) => (prev ? { ...prev, trial_ends_at: null } : prev));
         }
 
         console.log("[useAuthAndProfile] Access summary:", {
           userId: session.user.id,
           email: session.user.email,
           accessLevel: access.level,
-          trial_ends_at: currentProfile?.trial_ends_at,
           hasPaidAccess: paid,
         });
       } catch (error) {
@@ -153,6 +158,8 @@ export const useAuthAndProfile = () => {
     session,
     profile,
     hasPaidAccess,
+    accessLevel,
+    accessDaysLeft,
   };
 };
 
