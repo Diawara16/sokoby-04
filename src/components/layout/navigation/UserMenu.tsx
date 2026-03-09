@@ -16,7 +16,7 @@ import { LogOut, Settings, User, AlertTriangle, XCircle } from "lucide-react";
 import { useSubscriptionManagement } from "@/hooks/useSubscriptionManagement";
 
 export function UserMenu() {
-  const { isAuthenticated, session, profile, hasPaidAccess } = useAuthAndProfile();
+  const { isAuthenticated, session, hasPaidAccess, accessLevel } = useAuthAndProfile();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { subscription, cancelSubscription, isLoading } = useSubscriptionManagement();
@@ -45,10 +45,8 @@ export function UserMenu() {
   const userEmail = session?.user?.email || "Utilisateur";
   const userInitials = userEmail.charAt(0).toUpperCase();
 
-  // Paid users never see trial expired
-  const isTrialExpired = hasPaidAccess ? false : (profile?.trial_ends_at 
-    ? new Date(profile.trial_ends_at) < new Date()
-    : false);
+  // Access state is now store-driven (stores.plan + stores.trial_ends_at)
+  const isTrialExpired = !hasPaidAccess && accessLevel === "blocked";
 
   return (
     <DropdownMenu>
