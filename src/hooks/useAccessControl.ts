@@ -58,7 +58,7 @@ const parseStoreSnapshot = (record: any, source: string): StoreSnapshot => {
 async function resolveStoreSnapshot(userId: string, userEmail?: string | null): Promise<StoreSnapshot | null> {
   const normalizedEmail = userEmail?.trim().toLowerCase();
 
-  const tryQuery = async (label: string, runner: () => Promise<{ data: any; error: any }>) => {
+  const tryQuery = async (label: string, runner: () => any) => {
     try {
       const { data, error } = await runner();
       if (error) {
