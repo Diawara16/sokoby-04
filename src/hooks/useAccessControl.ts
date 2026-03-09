@@ -10,80 +10,103 @@ export interface AccessResult {
 
 /**
  * Checks user access level. Priority order:
- * 1. Active subscription → full access
+ * 1. Stripe table plan !== 'free' → full access (primary source of truth after payment)
  * 2. store_settings.payment_status = 'completed' → full access (one-time payment)
- * 3. Stripe.plan !== 'free' → full access
+ * 3. Active subscription → full access
  * 4. Trial not expired → trial access
  * 5. Otherwise → blocked
  */
 export async function checkUserAccess(userId: string): Promise<AccessResult> {
+  console.log("[AccessControl] Checking access for user:", userId);
   let hasPaidAccess = false;
 
-  // 1. Check subscriptions (recurring plans)
+  // 1. Check Stripe table plan (fastest — set by webhook on payment)
   try {
-    const { data } = await supabase
-      .from("subscriptions")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("status", "active")
+    const { data, error } = await supabase
+      .from("Stripe")
+      .select("plan")
+      .eq("id", userId)
       .maybeSingle();
-    if (data) hasPaidAccess = true;
+    if (error) {
+      console.warn("[AccessControl] Stripe table query error:", error.message);
+    } else if (data && data.plan && data.plan !== "free") {
+      console.log("[AccessControl] ✓ Paid via Stripe table, plan:", data.plan);
+      hasPaidAccess = true;
+    }
   } catch (e) {
-    console.warn("[AccessControl] Subscription check error:", e);
+    console.warn("[AccessControl] Stripe table check error:", e);
   }
 
-  // 2. Check store_settings.payment_status (one-time payment — primary source of truth)
+  // 2. Check store_settings.payment_status (one-time payment)
   if (!hasPaidAccess) {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("store_settings")
         .select("id")
         .eq("user_id", userId)
         .eq("payment_status", "completed")
         .maybeSingle();
-      if (data) hasPaidAccess = true;
+      if (error) {
+        console.warn("[AccessControl] Store payment query error:", error.message);
+      } else if (data) {
+        console.log("[AccessControl] ✓ Paid via store_settings payment_status");
+        hasPaidAccess = true;
+      }
     } catch (e) {
       console.warn("[AccessControl] Store payment check error:", e);
     }
   }
 
-  // 3. Check Stripe table plan (future-proof for plan upgrades)
+  // 3. Check subscriptions (recurring plans)
   if (!hasPaidAccess) {
     try {
-      const { data } = await supabase
-        .from("Stripe")
-        .select("plan")
-        .eq("id", userId)
+      const { data, error } = await supabase
+        .from("subscriptions")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("status", "active")
         .maybeSingle();
-      if (data && data.plan !== "free") hasPaidAccess = true;
+      if (error) {
+        console.warn("[AccessControl] Subscription query error:", error.message);
+      } else if (data) {
+        console.log("[AccessControl] ✓ Paid via active subscription");
+        hasPaidAccess = true;
+      }
     } catch (e) {
-      console.warn("[AccessControl] Stripe table check error:", e);
+      console.warn("[AccessControl] Subscription check error:", e);
     }
   }
 
   // Paid users are never blocked by trial expiration
   if (hasPaidAccess) {
+    console.log("[AccessControl] → Result: PAID access granted");
     return { level: "paid", hasPaidAccess: true };
   }
 
   // 4. Check trial period
   try {
-    const { data: profile } = await supabase
+    const { data: profile, error } = await supabase
       .from("profiles")
       .select("trial_ends_at")
       .eq("id", userId)
       .maybeSingle();
 
-    const trialEndsAt = profile?.trial_ends_at;
-    if (trialEndsAt && new Date(trialEndsAt) > new Date()) {
-      const daysLeft = Math.ceil(
-        (new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-      );
-      return { level: "trial", daysLeft, hasPaidAccess: false };
+    if (error) {
+      console.warn("[AccessControl] Trial query error:", error.message);
+    } else {
+      const trialEndsAt = profile?.trial_ends_at;
+      if (trialEndsAt && new Date(trialEndsAt) > new Date()) {
+        const daysLeft = Math.ceil(
+          (new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+        );
+        console.log("[AccessControl] → Result: TRIAL access, days left:", daysLeft);
+        return { level: "trial", daysLeft, hasPaidAccess: false };
+      }
     }
   } catch (e) {
     console.warn("[AccessControl] Trial check error:", e);
   }
 
+  console.log("[AccessControl] → Result: BLOCKED (no paid access, trial expired or missing)");
   return { level: "blocked", hasPaidAccess: false };
 }

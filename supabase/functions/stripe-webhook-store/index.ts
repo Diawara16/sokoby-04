@@ -307,20 +307,34 @@ serve(async (req) => {
         // Don't throw - we still want to return success to Stripe
       }
 
-      // Update user's plan in the "Stripe" table (case-sensitive table name)
-      console.log('[STRIPE-WEBHOOK] Updating Stripe table plan to:', plan);
+      // Update user's plan in the "Stripe" table (case-sensitive table name) — use UPSERT
+      console.log('[STRIPE-WEBHOOK] Upserting Stripe table plan to:', plan);
       const { error: stripeTableError } = await supabaseClient
         .from('Stripe')
-        .update({ 
+        .upsert({ 
+          id: userId,
+          email: customerEmail || '',
           plan: plan,
           trial_expired: true
-        })
-        .eq('id', userId);
+        }, { onConflict: 'id' });
       
       if (stripeTableError) {
-        console.error('[STRIPE-WEBHOOK] ⚠ Error updating Stripe table:', stripeTableError.message);
+        console.error('[STRIPE-WEBHOOK] ⚠ Error upserting Stripe table:', stripeTableError.message);
       } else {
-        console.log('[STRIPE-WEBHOOK] ✓ Stripe table plan updated to:', plan);
+        console.log('[STRIPE-WEBHOOK] ✓ Stripe table plan upserted to:', plan);
+      }
+
+      // Also clear trial_ends_at in profiles so access control sees paid status
+      console.log('[STRIPE-WEBHOOK] Clearing trial_ends_at in profiles for userId:', userId);
+      const { error: profileUpdateError } = await supabaseClient
+        .from('profiles')
+        .update({ trial_ends_at: null })
+        .eq('id', userId);
+      
+      if (profileUpdateError) {
+        console.error('[STRIPE-WEBHOOK] ⚠ Error clearing trial_ends_at:', profileUpdateError.message);
+      } else {
+        console.log('[STRIPE-WEBHOOK] ✓ trial_ends_at cleared for paid user');
       }
 
       // Create notification for user
