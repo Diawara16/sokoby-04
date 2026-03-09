@@ -1,13 +1,8 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PricingPlans } from "@/components/pricing/PricingPlans";
-import { useSubscriptionHandler } from "@/hooks/useSubscriptionHandler";
 import { Link } from "react-router-dom";
 
 export function PricingSection() {
-  const { handleSubscribe } = useSubscriptionHandler();
-
   return (
     <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4">
@@ -19,34 +14,19 @@ export function PricingSection() {
             Choisissez le plan qui vous convient
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Commencez gratuitement, puis choisissez un plan qui évolue avec votre entreprise.
-            Tous nos plans incluent un essai gratuit de 14 jours.
+            Créez votre boutique IA et choisissez un plan adapté à vos besoins.
           </p>
         </div>
 
-        <div className="max-w-6xl mx-auto">
-          <PricingPlans 
-            currentLanguage="fr" 
-            onSubscribe={handleSubscribe}
-          />
-        </div>
-
-        <div className="text-center mt-12">
-          <p className="text-gray-600 mb-6">
-            Vous avez besoin de plus d'informations ou d'une solution personnalisée ?
+        <div className="text-center">
+          <Link to="/creer-boutique-ia">
+            <Button size="lg" className="bg-red-600 hover:bg-red-700 text-white">
+              Créer ma boutique IA
+            </Button>
+          </Link>
+          <p className="text-sm text-gray-500 mt-4">
+            Choisissez votre plan pendant la création de votre boutique
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/pricing">
-              <Button variant="outline" size="lg">
-                Voir tous les détails
-              </Button>
-            </Link>
-            <Link to="/contact">
-              <Button size="lg" className="bg-red-600 hover:bg-red-700">
-                Contactez-nous
-              </Button>
-            </Link>
-          </div>
         </div>
       </div>
     </section>
