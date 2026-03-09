@@ -105,17 +105,13 @@ export async function checkUserAccess(userId: string): Promise<AccessResult> {
       profile = p2;
     }
 
-    if (error) {
-      console.warn("[AccessControl] Trial query error:", error.message);
-    } else {
-      const trialEndsAt = profile?.trial_ends_at;
-      if (trialEndsAt && new Date(trialEndsAt) > new Date()) {
-        const daysLeft = Math.ceil(
-          (new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-        );
-        console.log("[AccessControl] → Result: TRIAL access, days left:", daysLeft);
-        return { level: "trial", daysLeft, hasPaidAccess: false };
-      }
+    const trialEndsAt = profile?.trial_ends_at;
+    if (trialEndsAt && new Date(trialEndsAt) > new Date()) {
+      const daysLeft = Math.ceil(
+        (new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+      );
+      console.log("[AccessControl] → Result: TRIAL access, days left:", daysLeft);
+      return { level: "trial", daysLeft, hasPaidAccess: false };
     }
   } catch (e) {
     console.warn("[AccessControl] Trial check error:", e);
