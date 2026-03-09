@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,10 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
 
         if (error) throw error;
 
@@ -34,20 +37,18 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           return;
         }
 
-        const access = await checkUserAccess(session.user.id);
+        const access = await checkUserAccess(session.user.id, session.user.email);
 
-        if (access.level === "paid") {
-          // Paid user — full access, no trial warning
-        } else if (access.level === "trial") {
+        if (access.level === "trial") {
           toast({
             title: "Période d'essai active",
             description: `Il vous reste ${access.daysLeft} jour(s) d'essai gratuit.`,
           });
-        } else {
-          // Blocked — trial expired, no payment
+        } else if (access.level === "blocked") {
           toast({
             title: "Abonnement requis",
-            description: "Votre période d'essai gratuit est terminée. Veuillez souscrire à un abonnement pour continuer.",
+            description:
+              "Votre période d'essai gratuit est terminée. Veuillez souscrire à un abonnement pour continuer.",
             variant: "destructive",
             action: (
               <Button
@@ -68,6 +69,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
               </Button>
             ),
           });
+
           if (location.pathname !== "/gestion-compte") {
             navigate("/gestion-compte", { replace: true });
             return;
@@ -90,7 +92,9 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
         setIsAuthenticated(false);
         navigate("/connexion");
@@ -110,3 +114,4 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   return isAuthenticated ? <>{children}</> : null;
 };
+
