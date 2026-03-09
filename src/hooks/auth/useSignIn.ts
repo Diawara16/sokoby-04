@@ -2,6 +2,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../use-toast";
+import { linkAuthenticatedUserToStore } from "@/services/linkAuthenticatedUserToStore";
 
 export const useSignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,9 +15,8 @@ export const useSignIn = () => {
     setError(null);
 
     try {
-      // Normalize email
       const normalizedEmail = email.trim().toLowerCase();
-      
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: normalizedEmail,
         password,
@@ -25,35 +25,35 @@ export const useSignIn = () => {
       if (error) throw error;
 
       if (data.user) {
+        // Fresh auth-link sync on login (signup + invite acceptance support)
+        try {
+          await linkAuthenticatedUserToStore(data.user.id, data.user.email ?? normalizedEmail);
+        } catch (linkError) {
+          console.warn("[useSignIn] Store linking warning:", linkError);
+        }
+
         toast({
           title: "Connexion réussie",
           description: "Vous êtes maintenant connecté.",
         });
 
-        // Check for pending redirect after login (e.g., from checkout flow)
-        const redirectAfterLogin = sessionStorage.getItem('redirectAfterLogin');
+        const redirectAfterLogin = sessionStorage.getItem("redirectAfterLogin");
         if (redirectAfterLogin) {
-          console.log('[useSignIn] Found redirectAfterLogin, navigating to:', redirectAfterLogin);
-          sessionStorage.removeItem('redirectAfterLogin');
+          console.log("[useSignIn] Found redirectAfterLogin, navigating to:", redirectAfterLogin);
+          sessionStorage.removeItem("redirectAfterLogin");
           navigate(redirectAfterLogin, { replace: true });
           return;
         }
 
-        // Check for LIVE production store and redirect accordingly
         const { data: existingStore } = await supabase
-          .from('store_settings')
-          .select('user_id, is_production')
-          .eq('user_id', data.user.id)
+          .from("store_settings")
+          .select("user_id, is_production")
+          .eq("user_id", data.user.id)
           .maybeSingle();
 
         if (existingStore?.is_production) {
-          // LIVE store: redirect to storefront
           navigate("/boutique", { replace: true });
-        } else if (existingStore) {
-          // Store exists but not live: redirect to dashboard
-          navigate("/tableau-de-bord", { replace: true });
         } else {
-          // No store: redirect to dashboard
           navigate("/tableau-de-bord", { replace: true });
         }
       }

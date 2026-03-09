@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
-import { isPreviewEnv } from "@/utils/env";
+import { checkUserAccess } from "@/hooks/useAccessControl";
+import { linkAuthenticatedUserToStore } from "@/services/linkAuthenticatedUserToStore";
 
 interface Profile {
   id: string;
@@ -24,115 +25,99 @@ export const useAuthAndProfile = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
         setSession(session);
         setIsAuthenticated(!!session);
-        
-        if (session) {
-          let { data: profile, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .maybeSingle();
-            
-          if (error) {
-            console.error('Error fetching profile:', error);
-          }
-          
-          // Si pas de profil, on le crée automatiquement
-          if (!profile && session.user) {
-            console.log('Creating missing profile for user:', session.user.email);
-            const trialEndsAt = new Date();
-            trialEndsAt.setDate(trialEndsAt.getDate() + 14);
 
-            const { error: insertError } = await supabase
-              .from('profiles')
-              .insert([{ 
-                id: session.user.id, 
-                email: session.user.email,
-                trial_ends_at: trialEndsAt.toISOString(),
-                features_usage: {},
-                last_login: new Date().toISOString()
-              }]);
-
-            if (insertError) {
-              console.error('Error creating profile:', insertError);
-              toast({
-                title: "Erreur",
-                description: "Impossible de créer votre profil",
-                variant: "destructive",
-              });
-              setHasProfile(false);
-              setProfile(null);
-            } else {
-              // Récupérer le profil créé
-              const { data: newProfile } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
-              
-              console.log('Profile created successfully:', newProfile);
-              setHasProfile(true);
-              setProfile(newProfile);
-              
-              toast({
-                title: "Bienvenue !",
-                description: "Votre profil a été créé avec 14 jours d'essai gratuit.",
-              });
-            }
-          } else {
-            console.log('Profile data:', profile);
-            setHasProfile(!!profile);
-            setProfile(profile);
-          }
-
-          // Check paid access from Stripe table (fresh query, no cache)
-          let paid = false;
-          try {
-            const { data: stripeData } = await supabase
-              .from('Stripe')
-              .select('plan')
-              .eq('id', session.user.id)
-              .maybeSingle();
-
-            if (stripeData && stripeData.plan && stripeData.plan !== 'free') {
-              paid = true;
-              console.log('[useAuthAndProfile] ✓ Paid via Stripe table, plan:', stripeData.plan);
-            }
-          } catch (e) {
-            console.warn('[useAuthAndProfile] Stripe table check error:', e);
-          }
-
-          // Also check store_settings payment_status
-          if (!paid) {
-            try {
-              const { data: storeData } = await supabase
-                .from('store_settings')
-                .select('id, payment_status')
-                .eq('user_id', session.user.id)
-                .eq('payment_status', 'completed')
-                .maybeSingle();
-
-              if (storeData) {
-                paid = true;
-                console.log('[useAuthAndProfile] ✓ Paid via store_settings payment_status');
-              }
-            } catch (e) {
-              console.warn('[useAuthAndProfile] Store check error:', e);
-            }
-          }
-
-          console.log('[useAuthAndProfile] Access summary:', {
-            plan: paid ? 'paid' : 'free',
-            trial_ends_at: profile?.trial_ends_at,
-            hasPaidAccess: paid,
-          });
-
-          setHasPaidAccess(paid);
+        if (!session) {
+          setHasProfile(false);
+          setProfile(null);
+          setHasPaidAccess(false);
+          return;
         }
+
+        // Fresh linkage pass on every login/session restore (no cache)
+        await linkAuthenticatedUserToStore(session.user.id, session.user.email);
+
+        let { data: currentProfile, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error("Error fetching profile:", error);
+        }
+
+        // Create missing profile automatically
+        if (!currentProfile) {
+          console.log("Creating missing profile for user:", session.user.email);
+          const trialEndsAt = new Date();
+          trialEndsAt.setDate(trialEndsAt.getDate() + 14);
+
+          const { error: insertError } = await supabase.from("profiles").insert([
+            {
+              id: session.user.id,
+              user_id: session.user.id,
+              email: session.user.email,
+              trial_ends_at: trialEndsAt.toISOString(),
+              features_usage: {},
+              last_login: new Date().toISOString(),
+            },
+          ]);
+
+          if (insertError) {
+            console.error("Error creating profile:", insertError);
+            toast({
+              title: "Erreur",
+              description: "Impossible de créer votre profil",
+              variant: "destructive",
+            });
+            setHasProfile(false);
+            setProfile(null);
+          } else {
+            const { data: newProfile } = await supabase
+              .from("profiles")
+              .select("*")
+              .eq("id", session.user.id)
+              .single();
+
+            currentProfile = newProfile;
+            setHasProfile(true);
+            setProfile(newProfile);
+
+            toast({
+              title: "Bienvenue !",
+              description: "Votre profil a été créé avec 14 jours d'essai gratuit.",
+            });
+          }
+        } else {
+          setHasProfile(true);
+          setProfile(currentProfile);
+        }
+
+        const access = await checkUserAccess(session.user.id, session.user.email);
+        const paid = access.level === "paid";
+
+        setHasPaidAccess(paid);
+
+        // Clear stale in-memory trial state when plan is paid
+        if (paid && currentProfile?.trial_ends_at) {
+          setProfile({ ...currentProfile, trial_ends_at: null });
+        }
+
+        console.log("[useAuthAndProfile] Access summary:", {
+          userId: session.user.id,
+          email: session.user.email,
+          accessLevel: access.level,
+          trial_ends_at: currentProfile?.trial_ends_at,
+          hasPaidAccess: paid,
+        });
       } catch (error) {
-        console.error('Error checking auth:', error);
+        console.error("Error checking auth:", error);
         toast({
           title: "Erreur",
           description: "Une erreur est survenue lors de la vérification de l'authentification",
@@ -142,15 +127,16 @@ export const useAuthAndProfile = () => {
         setIsLoading(false);
       }
     };
-    
+
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setIsAuthenticated(!!session);
       setSession(session);
-      
-      // Après un login réussi, on vérifie le profil
-      if (event === 'SIGNED_IN' && session) {
+
+      if (event === "SIGNED_IN" && session) {
         setTimeout(() => {
           checkAuth();
         }, 100);
@@ -169,3 +155,4 @@ export const useAuthAndProfile = () => {
     hasPaidAccess,
   };
 };
+

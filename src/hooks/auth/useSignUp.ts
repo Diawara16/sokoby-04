@@ -1,8 +1,8 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { linkAuthenticatedUserToStore } from "@/services/linkAuthenticatedUserToStore";
 
 export const useSignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,45 +15,44 @@ export const useSignUp = () => {
       setIsLoading(true);
       setError(null);
 
-      // Normalize email
       const normalizedEmail = email.trim().toLowerCase();
-      
-      console.log("Attempting to sign up user:", normalizedEmail);
-      console.log("Using Supabase client for signup");
 
-      // Inscription avec URL de redirection
+      console.log("Attempting to sign up user:", normalizedEmail);
+
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: normalizedEmail,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/tableau-de-bord`
-        }
+          emailRedirectTo: `${window.location.origin}/tableau-de-bord`,
+        },
       });
-
-      console.log("Supabase signup response:", { data, error: signUpError });
 
       if (signUpError) {
         console.error("Sign up error:", signUpError);
         throw signUpError;
       }
 
-      console.log("Sign up successful:", data);
-
-      // Message de succès
       if (data.user) {
-        console.log("User created successfully");
-        
-        // Avec auto-confirm activé, l'utilisateur est automatiquement connecté
+        console.log("Sign up successful:", data.user.id);
+
+        // Best-effort linking for pre-existing store/invite rows
+        try {
+          await linkAuthenticatedUserToStore(data.user.id, data.user.email ?? normalizedEmail);
+        } catch (linkError) {
+          console.warn("[useSignUp] Store linking warning:", linkError);
+        }
+
         if (data.user.email_confirmed_at || data.session) {
           toast({
             title: "Compte créé avec succès !",
             description: "Votre compte a été créé et vous êtes maintenant connecté.",
           });
-          navigate('/tableau-de-bord');
+          navigate("/tableau-de-bord");
         } else {
           toast({
             title: "Compte créé !",
-            description: "Un email de vérification a été envoyé à votre adresse. Veuillez cliquer sur le lien pour activer votre compte.",
+            description:
+              "Un email de vérification a été envoyé à votre adresse. Veuillez cliquer sur le lien pour activer votre compte.",
           });
         }
       }
@@ -61,11 +60,9 @@ export const useSignUp = () => {
       return data;
     } catch (err: any) {
       console.error("Error during sign up:", err);
-      console.error("Full error object:", err);
-      
+
       let errorMessage = "Une erreur est survenue lors de la création du compte";
-      
-      // Gestion d'erreurs plus spécifique
+
       if (err.message?.includes("User already registered")) {
         errorMessage = "Cette adresse email est déjà utilisée.";
         setError(errorMessage);
@@ -74,9 +71,8 @@ export const useSignUp = () => {
           description: "Cette adresse email est déjà associée à un compte. Redirection vers la connexion...",
           variant: "default",
         });
-        // Rediriger automatiquement vers la page de connexion après 2 secondes
         setTimeout(() => {
-          navigate('/connexion');
+          navigate("/connexion");
         }, 2000);
         return null;
       } else if (err.message?.includes("Password should be at least")) {
@@ -88,7 +84,7 @@ export const useSignUp = () => {
       } else if (err.message) {
         errorMessage = `Erreur: ${err.message}`;
       }
-      
+
       setError(errorMessage);
       toast({
         title: "Erreur lors de l'inscription",
@@ -103,3 +99,4 @@ export const useSignUp = () => {
 
   return { isLoading, error, handleSignUp };
 };
+
