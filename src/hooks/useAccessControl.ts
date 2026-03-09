@@ -28,15 +28,15 @@ export async function checkUserAccess(userId: string, userEmail?: string | null)
 
   try {
     const { data: store, error } = await (supabase.from("stores") as any)
-      .select("id, plan, status, billing_status, trial_ends_at")
+      .select("*")
       .or(orParts.join(","))
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
 
-    if (error) {
-      console.error("[AccessControl] Store query error:", error);
-    }
+    console.log("STORE RESULT:", store);
+    console.log("STORE QUERY ERROR:", error);
+    console.log("STORE QUERY OR FILTER:", orParts.join(","));
 
     if (store) {
       console.log("[AccessControl] Store found:", store);
