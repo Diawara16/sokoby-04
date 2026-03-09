@@ -10,11 +10,19 @@ import { Progress } from "@/components/ui/progress";
 import { AlertTriangle, Calendar, CreditCard, LogOut, Trash2, Clock } from "lucide-react";
 
 export default function GestionCompte() {
-  const { isAuthenticated, session, profile, hasPaidAccess } = useAuthAndProfile();
+  const { isAuthenticated, isLoading, session, hasPaidAccess, accessLevel, accessDaysLeft } = useAuthAndProfile();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background p-4 flex items-center justify-center">
+        <p className="text-muted-foreground">Chargement du compte...</p>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     navigate("/connexion");
@@ -22,17 +30,10 @@ export default function GestionCompte() {
   }
 
   const userEmail = session?.user?.email || "";
-  
-  // Paid users never see trial expired
-  const isTrialExpired = hasPaidAccess ? false : (profile?.trial_ends_at 
-    ? new Date(profile.trial_ends_at) < new Date()
-    : false);
-    
-  const daysRemaining = profile?.trial_ends_at 
-    ? Math.max(0, Math.floor((new Date(profile.trial_ends_at).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
-    : 0;
-
-  const trialProgress = ((14 - daysRemaining) / 14) * 100;
+  const isTrialExpired = accessLevel === "blocked";
+  const hasTrialAccess = accessLevel === "trial";
+  const daysRemaining = hasTrialAccess ? accessDaysLeft ?? 0 : 0;
+  const trialProgress = hasTrialAccess ? ((14 - daysRemaining) / 14) * 100 : 100;
 
   const handleLogout = async () => {
     try {
@@ -61,7 +62,7 @@ export default function GestionCompte() {
         title: "Déconnexion réussie",
         description: "Vous avez été déconnecté. Pour supprimer définitivement vos données, contactez le support.",
       });
-      
+
       navigate("/");
     } catch (error: any) {
       console.error("Error signing out:", error);
@@ -73,19 +74,6 @@ export default function GestionCompte() {
     } finally {
       setIsDeleting(false);
       setShowDeleteConfirm(false);
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('fr-FR', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      });
-    } catch {
-      return "Date invalide";
     }
   };
 
