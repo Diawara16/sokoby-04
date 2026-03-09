@@ -83,25 +83,35 @@ export async function checkUserAccess(userId: string): Promise<AccessResult> {
     return { level: "paid", hasPaidAccess: true };
   }
 
-  // 4. Check trial period
+  // 4. Check trial period (query both id and user_id for compatibility)
   try {
-    const { data: profile, error } = await supabase
+    let profile: { trial_ends_at: string | null } | null = null;
+    const { data: p1, error: e1 } = await supabase
       .from("profiles")
       .select("trial_ends_at")
-      .eq("id", userId)
+      .eq("user_id", userId)
       .maybeSingle();
+    if (e1) {
+      console.warn("[AccessControl] Trial query (user_id) error:", e1.message);
+    }
+    profile = p1;
+    if (!profile) {
+      const { data: p2, error: e2 } = await supabase
+        .from("profiles")
+        .select("trial_ends_at")
+        .eq("id", userId)
+        .maybeSingle();
+      if (e2) console.warn("[AccessControl] Trial query (id) error:", e2.message);
+      profile = p2;
+    }
 
-    if (error) {
-      console.warn("[AccessControl] Trial query error:", error.message);
-    } else {
-      const trialEndsAt = profile?.trial_ends_at;
-      if (trialEndsAt && new Date(trialEndsAt) > new Date()) {
-        const daysLeft = Math.ceil(
-          (new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-        );
-        console.log("[AccessControl] → Result: TRIAL access, days left:", daysLeft);
-        return { level: "trial", daysLeft, hasPaidAccess: false };
-      }
+    const trialEndsAt = profile?.trial_ends_at;
+    if (trialEndsAt && new Date(trialEndsAt) > new Date()) {
+      const daysLeft = Math.ceil(
+        (new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+      );
+      console.log("[AccessControl] → Result: TRIAL access, days left:", daysLeft);
+      return { level: "trial", daysLeft, hasPaidAccess: false };
     }
   } catch (e) {
     console.warn("[AccessControl] Trial check error:", e);
