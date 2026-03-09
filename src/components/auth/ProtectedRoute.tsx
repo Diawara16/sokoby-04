@@ -39,12 +39,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
         const access = await checkUserAccess(session.user.id, session.user.email);
 
-        if (access.level === "trial") {
-          toast({
-            title: "Période d'essai active",
-            description: `Il vous reste ${access.daysLeft} jour(s) d'essai gratuit.`,
-          });
-        } else if (access.level === "blocked") {
+        if (access.level === "blocked") {
           toast({
             title: "Abonnement requis",
             description:
