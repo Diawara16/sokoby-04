@@ -16,7 +16,7 @@ import { LogOut, Settings, User, AlertTriangle, XCircle } from "lucide-react";
 import { useSubscriptionManagement } from "@/hooks/useSubscriptionManagement";
 
 export function UserMenu() {
-  const { isAuthenticated, session, profile } = useAuthAndProfile();
+  const { isAuthenticated, session, profile, hasPaidAccess } = useAuthAndProfile();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { subscription, cancelSubscription, isLoading } = useSubscriptionManagement();
@@ -45,10 +45,10 @@ export function UserMenu() {
   const userEmail = session?.user?.email || "Utilisateur";
   const userInitials = userEmail.charAt(0).toUpperCase();
 
-  // Check if trial is expired
-  const isTrialExpired = profile?.trial_ends_at 
+  // Paid users never see trial expired
+  const isTrialExpired = hasPaidAccess ? false : (profile?.trial_ends_at 
     ? new Date(profile.trial_ends_at) < new Date()
-    : false;
+    : false);
 
   return (
     <DropdownMenu>

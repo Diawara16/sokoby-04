@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { AlertTriangle, Calendar, CreditCard, LogOut, Trash2, Clock } from "lucide-react";
 
 export default function GestionCompte() {
-  const { isAuthenticated, session, profile } = useAuthAndProfile();
+  const { isAuthenticated, session, profile, hasPaidAccess } = useAuthAndProfile();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -23,10 +23,10 @@ export default function GestionCompte() {
 
   const userEmail = session?.user?.email || "";
   
-  // Check trial status
-  const isTrialExpired = profile?.trial_ends_at 
+  // Paid users never see trial expired
+  const isTrialExpired = hasPaidAccess ? false : (profile?.trial_ends_at 
     ? new Date(profile.trial_ends_at) < new Date()
-    : false;
+    : false);
     
   const daysRemaining = profile?.trial_ends_at 
     ? Math.max(0, Math.floor((new Date(profile.trial_ends_at).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
@@ -112,7 +112,12 @@ export default function GestionCompte() {
               <p className="font-medium">Email: {userEmail}</p>
             </div>
             
-            {profile?.trial_ends_at && (
+            {hasPaidAccess ? (
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Plan</span>
+                <Badge variant="default">Plan payant actif</Badge>
+              </div>
+            ) : profile?.trial_ends_at ? (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Période d'essai</span>
@@ -128,7 +133,7 @@ export default function GestionCompte() {
                   }
                 </p>
               </div>
-            )}
+            ) : null}
           </CardContent>
         </Card>
 

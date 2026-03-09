@@ -18,6 +18,7 @@ export const useAuthAndProfile = () => {
   const [hasProfile, setHasProfile] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [hasPaidAccess, setHasPaidAccess] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -85,6 +86,50 @@ export const useAuthAndProfile = () => {
             setHasProfile(!!profile);
             setProfile(profile);
           }
+
+          // Check paid access from Stripe table (fresh query, no cache)
+          let paid = false;
+          try {
+            const { data: stripeData } = await supabase
+              .from('Stripe')
+              .select('plan')
+              .eq('id', session.user.id)
+              .maybeSingle();
+
+            if (stripeData && stripeData.plan && stripeData.plan !== 'free') {
+              paid = true;
+              console.log('[useAuthAndProfile] ✓ Paid via Stripe table, plan:', stripeData.plan);
+            }
+          } catch (e) {
+            console.warn('[useAuthAndProfile] Stripe table check error:', e);
+          }
+
+          // Also check store_settings payment_status
+          if (!paid) {
+            try {
+              const { data: storeData } = await supabase
+                .from('store_settings')
+                .select('id, payment_status')
+                .eq('user_id', session.user.id)
+                .eq('payment_status', 'completed')
+                .maybeSingle();
+
+              if (storeData) {
+                paid = true;
+                console.log('[useAuthAndProfile] ✓ Paid via store_settings payment_status');
+              }
+            } catch (e) {
+              console.warn('[useAuthAndProfile] Store check error:', e);
+            }
+          }
+
+          console.log('[useAuthAndProfile] Access summary:', {
+            plan: paid ? 'paid' : 'free',
+            trial_ends_at: profile?.trial_ends_at,
+            hasPaidAccess: paid,
+          });
+
+          setHasPaidAccess(paid);
         }
       } catch (error) {
         console.error('Error checking auth:', error);
@@ -120,6 +165,7 @@ export const useAuthAndProfile = () => {
     isLoading,
     hasProfile,
     session,
-    profile
+    profile,
+    hasPaidAccess,
   };
 };
