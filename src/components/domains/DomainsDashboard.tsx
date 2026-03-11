@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, Link2, ShoppingCart } from "lucide-react";
@@ -6,6 +7,12 @@ import { ConnectDomainTab } from "./ConnectDomainTab";
 import { BuyDomainTab } from "./BuyDomainTab";
 
 export const DomainsDashboard = () => {
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleDomainAdded = () => {
+    setRefreshKey((k) => k + 1);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -39,7 +46,7 @@ export const DomainsDashboard = () => {
               <CardDescription>Tous les domaines connectés à votre boutique</CardDescription>
             </CardHeader>
             <CardContent>
-              <MyDomainsTab />
+              <MyDomainsTab refreshKey={refreshKey} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -51,7 +58,7 @@ export const DomainsDashboard = () => {
               <CardDescription>Ajoutez un domaine existant en configurant vos enregistrements DNS</CardDescription>
             </CardHeader>
             <CardContent>
-              <ConnectDomainTab />
+              <ConnectDomainTab onDomainAdded={handleDomainAdded} />
             </CardContent>
           </Card>
         </TabsContent>

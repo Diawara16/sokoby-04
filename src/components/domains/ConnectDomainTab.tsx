@@ -6,11 +6,17 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Loader2, AlertTriangle, RefreshCw, Copy, Globe } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
-export const ConnectDomainTab = () => {
+interface ConnectDomainTabProps {
+  onDomainAdded?: () => void;
+}
+
+export const ConnectDomainTab = ({ onDomainAdded }: ConnectDomainTabProps) => {
   const [domainName, setDomainName] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [domainId, setDomainId] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState<"success" | "error" | null>(null);
   const { toast } = useToast();
@@ -20,44 +26,83 @@ export const ConnectDomainTab = () => {
     toast({ title: "Copié !", description: text });
   };
 
-  const handleSubmit = () => {
+  const getStoreId = async (userId: string): Promise<string | null> => {
+    const { data } = await supabase
+      .from("stores")
+      .select("id")
+      .eq("owner_id", userId)
+      .limit(1)
+      .maybeSingle();
+    return data?.id ?? null;
+  };
+
+  const handleSubmit = async () => {
     if (!domainName.trim()) return;
-    setSubmitted(true);
-    setVerificationStatus(null);
+    setIsSubmitting(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "Erreur", description: "Vous devez être connecté.", variant: "destructive" });
+        return;
+      }
+
+      const storeId = await getStoreId(user.id);
+
+      const { data, error } = await supabase.from("domains").insert({
+        domain_name: domainName.trim().toLowerCase(),
+        user_id: user.id,
+        store_id: storeId,
+        domain_type: "external",
+        status: "pending",
+        ssl_status: "pending",
+        is_primary: false,
+      }).select("id").single();
+
+      if (error) throw error;
+
+      setDomainId(data.id);
+      setSubmitted(true);
+      setVerificationStatus(null);
+      onDomainAdded?.();
+      toast({ title: "Domaine ajouté", description: "Configurez maintenant vos enregistrements DNS." });
+    } catch (error: any) {
+      console.error("Insert error:", error);
+      toast({ title: "Erreur", description: error.message || "Impossible d'ajouter le domaine.", variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleVerify = async () => {
+    if (!domainId) return;
     setIsVerifying(true);
     setVerificationStatus(null);
 
     try {
+      // Set status to verifying
+      await supabase.from("domains")
+        .update({ status: "verifying", updated_at: new Date().toISOString() })
+        .eq("id", domainId);
+
       const response = await fetch(`https://dns.google/resolve?name=${domainName}&type=A`);
       const data = await response.json();
       const pointsToSokoby = data.Answer?.some(
         (record: any) => record.type === 1 && record.data === "185.158.133.1"
       );
 
+      const newStatus = pointsToSokoby ? "active" : "pending";
+      await supabase.from("domains")
+        .update({ status: newStatus, ssl_status: pointsToSokoby ? "active" : "pending", updated_at: new Date().toISOString() })
+        .eq("id", domainId);
+
       if (pointsToSokoby) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        // Insert into domains table
-        const { error } = await supabase.from("domains").insert({
-          domain_name: domainName,
-          user_id: user.id,
-          domain_type: "custom",
-          status: "active",
-          ssl_status: "pending",
-          is_primary: false,
-        });
-
-        if (error) throw error;
-
         setVerificationStatus("success");
-        toast({ title: "Domaine connecté", description: "Votre domaine a été vérifié et ajouté avec succès." });
+        toast({ title: "Domaine vérifié", description: "Votre domaine pointe correctement vers Sokoby." });
       } else {
         setVerificationStatus("error");
       }
+      onDomainAdded?.();
     } catch (error) {
       console.error("Verification error:", error);
       setVerificationStatus("error");
@@ -65,6 +110,13 @@ export const ConnectDomainTab = () => {
     } finally {
       setIsVerifying(false);
     }
+  };
+
+  const handleReset = () => {
+    setSubmitted(false);
+    setVerificationStatus(null);
+    setDomainName("");
+    setDomainId(null);
   };
 
   return (
@@ -78,11 +130,12 @@ export const ConnectDomainTab = () => {
               placeholder="ex: maboutique.com"
               value={domainName}
               onChange={(e) => setDomainName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
             />
           </div>
-          <Button onClick={handleSubmit} disabled={!domainName.trim()} className="w-full">
-            <Globe className="mr-2 h-4 w-4" />
-            Configurer ce domaine
+          <Button onClick={handleSubmit} disabled={!domainName.trim() || isSubmitting} className="w-full">
+            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Globe className="mr-2 h-4 w-4" />}
+            {isSubmitting ? "Ajout en cours..." : "Configurer ce domaine"}
           </Button>
         </div>
       ) : (
@@ -90,7 +143,7 @@ export const ConnectDomainTab = () => {
           <Alert className="bg-blue-50 border-blue-200">
             <Globe className="h-4 w-4 text-blue-600" />
             <AlertDescription className="text-blue-800">
-              Configurez les enregistrements DNS ci-dessous chez votre registrar pour <strong>{domainName}</strong>, puis cliquez sur "Vérifier le domaine".
+              Configurez les enregistrements DNS ci-dessous chez votre registrar pour <strong>{domainName}</strong>, puis cliquez sur « Vérifier le domaine ».
             </AlertDescription>
           </Alert>
 
@@ -177,8 +230,8 @@ export const ConnectDomainTab = () => {
               {isVerifying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
               {isVerifying ? "Vérification..." : "Vérifier le domaine"}
             </Button>
-            <Button variant="outline" onClick={() => { setSubmitted(false); setVerificationStatus(null); }}>
-              Annuler
+            <Button variant="outline" onClick={handleReset}>
+              Ajouter un autre domaine
             </Button>
           </div>
         </div>
