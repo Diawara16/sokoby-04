@@ -71,7 +71,7 @@ export const AIPricing = () => {
           Notre IA génère automatiquement votre boutique complète avec tous les produits, 
           descriptions et optimisations nécessaires.
         </p>
-        <CurrencySwitcher />
+        
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
