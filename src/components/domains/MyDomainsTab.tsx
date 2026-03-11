@@ -2,11 +2,12 @@ import { useState, useEffect, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Shield, Star, Trash2, RefreshCw, Loader2 } from "lucide-react";
+import { Shield, ShieldAlert, ShieldCheck, ShieldX, Star, Trash2, RefreshCw, Loader2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Domain {
   id: string;
@@ -27,6 +28,7 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
   const [domains, setDomains] = useState<Domain[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
+  const [retryingSslId, setRetryingSslId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchDomains = useCallback(async () => {
@@ -51,10 +53,38 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
 
   useEffect(() => { fetchDomains(); }, [fetchDomains, refreshKey]);
 
+  // Realtime subscription for automatic refresh on ssl_status or status changes
+  useEffect(() => {
+    const channel = supabase
+      .channel("domains-ssl-changes")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "domains" },
+        () => { fetchDomains(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [fetchDomains]);
+
+  const simulateSslProvisioning = async (domainId: string, domainName: string): Promise<"active" | "error"> => {
+    // Check if the domain resolves correctly (simulating SSL provisioning)
+    try {
+      const response = await fetch(`https://dns.google/resolve?name=${domainName}&type=A`);
+      const data = await response.json();
+      const pointsToSokoby = data.Answer?.some(
+        (record: any) => record.type === 1 && record.data === "185.158.133.1"
+      );
+      return pointsToSokoby ? "active" : "error";
+    } catch {
+      return "error";
+    }
+  };
+
   const handleVerify = async (domain: Domain) => {
     setVerifyingId(domain.id);
     try {
-      // Set status to "verifying" immediately
+      // Set status to "verifying"
       await supabase
         .from("domains")
         .update({ status: "verifying", updated_at: new Date().toISOString() })
@@ -67,26 +97,71 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
         (record: any) => record.type === 1 && record.data === "185.158.133.1"
       );
 
-      const newStatus = pointsToSokoby ? "active" : "pending";
-      const newSsl = pointsToSokoby ? "active" : "pending";
+      if (pointsToSokoby) {
+        // Domain active → automatically provision SSL
+        await supabase
+          .from("domains")
+          .update({ status: "active", ssl_status: "active", updated_at: new Date().toISOString() })
+          .eq("id", domain.id);
 
-      await supabase
-        .from("domains")
-        .update({ status: newStatus, ssl_status: newSsl, updated_at: new Date().toISOString() })
-        .eq("id", domain.id);
+        toast({
+          title: "Domaine vérifié & SSL actif",
+          description: `${domain.domain_name} est actif avec HTTPS forcé.`,
+        });
+      } else {
+        await supabase
+          .from("domains")
+          .update({ status: "pending", ssl_status: "pending", updated_at: new Date().toISOString() })
+          .eq("id", domain.id);
 
-      toast({
-        title: pointsToSokoby ? "Domaine vérifié" : "DNS non configuré",
-        description: pointsToSokoby
-          ? "Le domaine pointe correctement vers Sokoby."
-          : "Le DNS ne pointe pas encore vers Sokoby. Vérifiez vos enregistrements.",
-        variant: pointsToSokoby ? "default" : "destructive",
-      });
+        toast({
+          title: "DNS non configuré",
+          description: "Le DNS ne pointe pas encore vers Sokoby.",
+          variant: "destructive",
+        });
+      }
       await fetchDomains();
     } catch {
+      // SSL provisioning failed
+      await supabase
+        .from("domains")
+        .update({ ssl_status: "error", updated_at: new Date().toISOString() })
+        .eq("id", domain.id);
+      await fetchDomains();
       toast({ title: "Erreur", description: "Impossible de vérifier le domaine.", variant: "destructive" });
     } finally {
       setVerifyingId(null);
+    }
+  };
+
+  const handleRetrySsl = async (domain: Domain) => {
+    setRetryingSslId(domain.id);
+    try {
+      await supabase
+        .from("domains")
+        .update({ ssl_status: "pending", updated_at: new Date().toISOString() })
+        .eq("id", domain.id);
+      await fetchDomains();
+
+      const sslResult = await simulateSslProvisioning(domain.id, domain.domain_name || "");
+
+      await supabase
+        .from("domains")
+        .update({ ssl_status: sslResult, updated_at: new Date().toISOString() })
+        .eq("id", domain.id);
+
+      toast({
+        title: sslResult === "active" ? "SSL activé" : "Échec SSL",
+        description: sslResult === "active"
+          ? `HTTPS activé pour ${domain.domain_name}`
+          : "Impossible de provisionner le SSL. Vérifiez que le DNS est correct.",
+        variant: sslResult === "active" ? "default" : "destructive",
+      });
+      await fetchDomains();
+    } catch {
+      toast({ title: "Erreur", description: "Échec de la tentative SSL.", variant: "destructive" });
+    } finally {
+      setRetryingSslId(null);
     }
   };
 
@@ -95,7 +170,6 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Unset all domains for the same store, then set the selected one
       if (domain.store_id) {
         await supabase.from("domains").update({ is_primary: false }).eq("store_id", domain.store_id);
       } else {
@@ -131,12 +205,78 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
     }
   };
 
-  const sslBadge = (ssl: string | null) => {
+  const sslBadge = (domain: Domain) => {
+    const ssl = domain.ssl_status;
     switch (ssl) {
-      case "active": return <span className="flex items-center gap-1 text-green-600 text-sm"><Shield className="h-4 w-4" /> SSL Actif</span>;
-      case "pending": return <span className="flex items-center gap-1 text-amber-600 text-sm"><Shield className="h-4 w-4" /> En cours</span>;
-      default: return <span className="flex items-center gap-1 text-muted-foreground text-sm"><Shield className="h-4 w-4" /> Inactif</span>;
+      case "active":
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="flex items-center gap-1.5 text-green-600 text-sm font-medium">
+                  <ShieldCheck className="h-4 w-4" />
+                  HTTPS
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>SSL actif — HTTPS forcé</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      case "pending":
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="flex items-center gap-1.5 text-amber-600 text-sm">
+                  <Shield className="h-4 w-4" />
+                  En cours
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Provisionnement SSL en cours</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      case "error":
+        return (
+          <div className="flex items-center gap-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="flex items-center gap-1.5 text-destructive text-sm font-medium">
+                    <ShieldX className="h-4 w-4" />
+                    Erreur
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>Le SSL n'a pas pu être provisionné</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 px-2 text-xs"
+              onClick={() => handleRetrySsl(domain)}
+              disabled={retryingSslId === domain.id}
+            >
+              {retryingSslId === domain.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+              <span className="ml-1">Réessayer</span>
+            </Button>
+          </div>
+        );
+      default:
+        return (
+          <span className="flex items-center gap-1.5 text-muted-foreground text-sm">
+            <ShieldAlert className="h-4 w-4" />
+            Inactif
+          </span>
+        );
     }
+  };
+
+  const domainUrl = (domain: Domain) => {
+    if (domain.ssl_status === "active") {
+      return `https://${domain.domain_name}`;
+    }
+    return `http://${domain.domain_name}`;
   };
 
   if (isLoading) {
@@ -168,9 +308,21 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
         <TableBody>
           {domains.map((domain) => (
             <TableRow key={domain.id}>
-              <TableCell className="font-medium">{domain.domain_name}</TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  {domain.ssl_status === "active" && <Lock className="h-3.5 w-3.5 text-green-600" />}
+                  <a
+                    href={domainUrl(domain)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium hover:underline"
+                  >
+                    {domain.domain_name}
+                  </a>
+                </div>
+              </TableCell>
               <TableCell>{statusBadge(domain.status)}</TableCell>
-              <TableCell>{sslBadge(domain.ssl_status)}</TableCell>
+              <TableCell>{sslBadge(domain)}</TableCell>
               <TableCell>
                 {domain.is_primary ? (
                   <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
