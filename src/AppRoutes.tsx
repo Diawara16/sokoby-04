@@ -218,6 +218,7 @@ export function AppRoutes() {
         </ProtectedRoute>
       } />
       <Route path="/product/:id" element={<ProductDetail />} />
+      <Route path="/products/:id" element={<ProductDetail />} />
       
       {/* Product management routes */}
       <Route path="/produits" element={

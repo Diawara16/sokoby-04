@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { StoreSEO } from "@/components/seo/StoreSEO";
+import { ProductJsonLd } from "@/components/seo/ProductJsonLd";
+import { getProductCanonicalUrl } from "@/lib/seo-utils";
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -14,13 +17,19 @@ export default function ProductDetail() {
     queryKey: ['product', id],
     queryFn: async () => {
       if (!id) throw new Error("Product ID is required");
-      
-      const { data, error } = await supabase
+
+      // Try finding by slug first, then by UUID
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+      const query = supabase
         .from('products')
         .select('*')
-        .eq('id', id)
         .single();
-      
+
+      const { data, error } = isUuid
+        ? await supabase.from('products').select('*').eq('id', id).single()
+        : await supabase.from('products').select('*').eq('slug', id).single();
+
       if (error) throw error;
       return data;
     },
@@ -58,12 +67,33 @@ export default function ProductDetail() {
   }
 
   const imageUrl = product.image || 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800&h=600&fit=crop&q=80';
+  const canonicalUrl = product.slug ? getProductCanonicalUrl(product.slug) : undefined;
 
   return (
     <div className="min-h-screen bg-background">
+      <StoreSEO
+        title={product.seo_title || product.name}
+        description={product.seo_description || product.description || `Achetez ${product.name}`}
+        ogImage={imageUrl}
+        canonicalUrl={canonicalUrl}
+        productName={product.name}
+        productPrice={product.price}
+        productImage={imageUrl}
+        productAvailability={(product.stock ?? 0) > 0}
+        type="product"
+      />
+      <ProductJsonLd
+        name={product.name}
+        description={product.description || undefined}
+        image={imageUrl}
+        price={product.price}
+        availability={(product.stock ?? 0) > 0}
+        url={canonicalUrl || window.location.href}
+      />
+
       <div className="container mx-auto px-4 py-8">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           onClick={() => navigate(-1)}
           className="mb-6"
         >
@@ -72,19 +102,18 @@ export default function ProductDetail() {
         </Button>
 
         <div className="grid md:grid-cols-2 gap-8">
-          {/* Product Image */}
           <div className="rounded-lg overflow-hidden bg-muted">
-            <img 
-              src={imageUrl} 
+            <img
+              src={imageUrl}
               alt={product.name}
               className="w-full h-96 object-cover"
+              loading="lazy"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800&h=600&fit=crop&q=80';
               }}
             />
           </div>
 
-          {/* Product Info */}
           <div className="space-y-6">
             <div>
               <h1 className="text-3xl font-bold text-foreground">{product.name}</h1>
@@ -105,16 +134,16 @@ export default function ProductDetail() {
 
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>Stock:</span>
-              <span className={product.stock > 0 ? "text-green-600" : "text-red-600"}>
-                {product.stock > 0 ? `${product.stock} disponible(s)` : "Rupture de stock"}
+              <span className={(product.stock ?? 0) > 0 ? "text-green-600" : "text-red-600"}>
+                {(product.stock ?? 0) > 0 ? `${product.stock} disponible(s)` : "Rupture de stock"}
               </span>
             </div>
 
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="w-full"
               onClick={handleAddToCart}
-              disabled={product.stock <= 0}
+              disabled={(product.stock ?? 0) <= 0}
             >
               <ShoppingCart className="mr-2 h-5 w-5" />
               Ajouter au panier

@@ -2920,6 +2920,9 @@ export type Database = {
           name: string
           price: number
           published: boolean
+          seo_description: string | null
+          seo_title: string | null
+          slug: string | null
           status: string | null
           stock: number | null
           store_id: string | null
@@ -2937,6 +2940,9 @@ export type Database = {
           name: string
           price: number
           published?: boolean
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string | null
           status?: string | null
           stock?: number | null
           store_id?: string | null
@@ -2954,6 +2960,9 @@ export type Database = {
           name?: string
           price?: number
           published?: boolean
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string | null
           status?: string | null
           stock?: number | null
           store_id?: string | null
@@ -3506,8 +3515,11 @@ export type Database = {
           is_production: boolean
           niche: string | null
           notification_settings: Json | null
+          og_image_url: string | null
           payment_status: string | null
           production_activated_at: string | null
+          seo_description: string | null
+          seo_title: string | null
           social_media: Json | null
           store_address: string | null
           store_description: string | null
@@ -3551,8 +3563,11 @@ export type Database = {
           is_production?: boolean
           niche?: string | null
           notification_settings?: Json | null
+          og_image_url?: string | null
           payment_status?: string | null
           production_activated_at?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           social_media?: Json | null
           store_address?: string | null
           store_description?: string | null
@@ -3596,8 +3611,11 @@ export type Database = {
           is_production?: boolean
           niche?: string | null
           notification_settings?: Json | null
+          og_image_url?: string | null
           payment_status?: string | null
           production_activated_at?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           social_media?: Json | null
           store_address?: string | null
           store_description?: string | null
