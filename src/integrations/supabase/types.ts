@@ -390,6 +390,27 @@ export type Database = {
           },
         ]
       }
+      carts: {
+        Row: {
+          created_at: string | null
+          customer_email: string | null
+          id: string
+          store_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_email?: string | null
+          id?: string
+          store_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_email?: string | null
+          id?: string
+          store_id?: string | null
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           admin_id: string | null
@@ -986,6 +1007,85 @@ export type Database = {
         }
         Relationships: []
       }
+      domain_dns_records: {
+        Row: {
+          domain_id: string | null
+          host: string | null
+          id: string
+          record_type: string | null
+          ttl: number | null
+          value: string | null
+          verified: boolean | null
+        }
+        Insert: {
+          domain_id?: string | null
+          host?: string | null
+          id?: string
+          record_type?: string | null
+          ttl?: number | null
+          value?: string | null
+          verified?: boolean | null
+        }
+        Update: {
+          domain_id?: string | null
+          host?: string | null
+          id?: string
+          record_type?: string | null
+          ttl?: number | null
+          value?: string | null
+          verified?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "domain_dns_records_domain_id_fkey"
+            columns: ["domain_id"]
+            isOneToOne: false
+            referencedRelation: "domains"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      domain_orders: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          currency: string | null
+          domain_id: string | null
+          id: string
+          order_status: string | null
+          payment_status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          currency?: string | null
+          domain_id?: string | null
+          id?: string
+          order_status?: string | null
+          payment_status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          currency?: string | null
+          domain_id?: string | null
+          id?: string
+          order_status?: string | null
+          payment_status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "domain_orders_domain_id_fkey"
+            columns: ["domain_id"]
+            isOneToOne: false
+            referencedRelation: "domains"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       domain_verifications: {
         Row: {
           created_at: string
@@ -1015,6 +1115,53 @@ export type Database = {
           verified_at?: string | null
         }
         Relationships: []
+      }
+      domains: {
+        Row: {
+          created_at: string | null
+          domain_name: string | null
+          domain_type: string | null
+          id: string
+          is_primary: boolean | null
+          ssl_status: string | null
+          status: string | null
+          store_id: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          domain_name?: string | null
+          domain_type?: string | null
+          id?: string
+          is_primary?: boolean | null
+          ssl_status?: string | null
+          status?: string | null
+          store_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          domain_name?: string | null
+          domain_type?: string | null
+          id?: string
+          is_primary?: boolean | null
+          ssl_status?: string | null
+          status?: string | null
+          store_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "domains_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       email_campaign_stats: {
         Row: {
@@ -2330,6 +2477,7 @@ export type Database = {
           shipping_address: Json | null
           shipping_carrier: string | null
           status: string
+          store_id: string | null
           total_amount: number
           tracking_number: string | null
           updated_at: string
@@ -2344,6 +2492,7 @@ export type Database = {
           shipping_address?: Json | null
           shipping_carrier?: string | null
           status?: string
+          store_id?: string | null
           total_amount: number
           tracking_number?: string | null
           updated_at?: string
@@ -2358,12 +2507,21 @@ export type Database = {
           shipping_address?: Json | null
           shipping_carrier?: string | null
           status?: string
+          store_id?: string | null
           total_amount?: number
           tracking_number?: string | null
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_store_fk"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pages: {
         Row: {
@@ -2802,15 +2960,7 @@ export type Database = {
           supplier_url?: string | null
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "products_store_id_fkey"
-            columns: ["store_id"]
-            isOneToOne: false
-            referencedRelation: "store_settings"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -3278,6 +3428,27 @@ export type Database = {
           },
         ]
       }
+      store_domains: {
+        Row: {
+          domain: string | null
+          id: string
+          store_id: string | null
+          verified: boolean | null
+        }
+        Insert: {
+          domain?: string | null
+          id?: string
+          store_id?: string | null
+          verified?: boolean | null
+        }
+        Update: {
+          domain?: string | null
+          id?: string
+          store_id?: string | null
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
       store_policies: {
         Row: {
           content: string
@@ -3655,6 +3826,33 @@ export type Database = {
           },
         ]
       }
+      stripe: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          customer_email: string | null
+          id: string
+          payment_intent: string | null
+          status: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          customer_email?: string | null
+          id?: string
+          payment_intent?: string | null
+          status?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          customer_email?: string | null
+          id?: string
+          payment_intent?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       Stripe: {
         Row: {
           created_at: string | null
@@ -3679,6 +3877,27 @@ export type Database = {
           plan?: string
           trial_expired?: boolean
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      stripe_webhook: {
+        Row: {
+          created_at: string | null
+          event_type: string | null
+          id: string
+          payload: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_type?: string | null
+          id?: string
+          payload?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string | null
+          id?: string
+          payload?: Json | null
         }
         Relationships: []
       }
@@ -4364,6 +4583,10 @@ export type Database = {
           is_suspended: boolean
           suspend_expires_at: string
         }[]
+      }
+      check_user_store_access: {
+        Args: { user_email: string }
+        Returns: boolean
       }
       get_secret: { Args: { name: string }; Returns: string }
       get_store_brand_public: {
