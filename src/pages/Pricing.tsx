@@ -1,7 +1,7 @@
 
 import { PricingPlans } from "@/components/pricing/PricingPlans";
 import { useSubscriptionHandler } from "@/hooks/useSubscriptionHandler";
-import { CurrencySwitcher } from "@/components/pricing/CurrencySwitcher";
+
 
 const Pricing = () => {
   const { handleSubscribe } = useSubscriptionHandler();
