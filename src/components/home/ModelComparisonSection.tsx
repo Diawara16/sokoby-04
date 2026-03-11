@@ -8,7 +8,7 @@ import { T } from "@/components/translation/T";
 import { TFeatureList } from "@/components/translation/TFeatureList";
 import { modelComparisonFeatures } from "@/data/translatable";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { CurrencySwitcher } from "@/components/pricing/CurrencySwitcher";
+
 
 export function ModelComparisonSection() {
   const { symbol } = useCurrency();
@@ -23,7 +23,7 @@ export function ModelComparisonSection() {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4">
             <T>Choisissez l'approche qui convient le mieux à vos besoins et à votre style</T>
           </p>
-          <CurrencySwitcher />
+          
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">

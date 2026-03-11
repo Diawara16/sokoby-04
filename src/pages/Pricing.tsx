@@ -1,7 +1,7 @@
 
 import { PricingPlans } from "@/components/pricing/PricingPlans";
 import { useSubscriptionHandler } from "@/hooks/useSubscriptionHandler";
-import { CurrencySwitcher } from "@/components/pricing/CurrencySwitcher";
+
 
 const Pricing = () => {
   const { handleSubscribe } = useSubscriptionHandler();
@@ -13,7 +13,7 @@ const Pricing = () => {
         <p className="text-gray-600 max-w-2xl mx-auto mb-4">
           Choisissez le plan qui correspond le mieux à vos besoins. Tous nos plans incluent une période d'essai gratuite de 14 jours.
         </p>
-        <CurrencySwitcher />
+        
       </div>
 
       <PricingPlans 

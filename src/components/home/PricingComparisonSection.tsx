@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { CurrencySwitcher } from "@/components/pricing/CurrencySwitcher";
+
 
 export const PricingComparisonSection = () => {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export const PricingComparisonSection = () => {
           <p className="text-xl text-gray-600 mb-4">
             Découvrez combien vous pouvez économiser en passant à Sokoby
           </p>
-          <CurrencySwitcher />
+          
         </div>
 
         <div className="max-w-6xl mx-auto">

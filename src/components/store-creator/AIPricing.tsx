@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Sparkles, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { CurrencySwitcher } from "@/components/pricing/CurrencySwitcher";
+
 
 interface PricingPlan {
   name: string;
@@ -71,7 +71,7 @@ export const AIPricing = () => {
           Notre IA génère automatiquement votre boutique complète avec tous les produits, 
           descriptions et optimisations nécessaires.
         </p>
-        <CurrencySwitcher />
+        
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
