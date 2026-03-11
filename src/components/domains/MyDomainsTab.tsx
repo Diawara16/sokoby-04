@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CheckCircle2, XCircle, Shield, Star, Trash2, RefreshCw, Loader2 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { Shield, Star, Trash2, RefreshCw, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -16,15 +16,20 @@ interface Domain {
   is_primary: boolean | null;
   created_at: string | null;
   domain_type: string | null;
+  store_id: string | null;
 }
 
-export const MyDomainsTab = () => {
+interface MyDomainsTabProps {
+  refreshKey?: number;
+}
+
+export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
   const [domains, setDomains] = useState<Domain[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const fetchDomains = async () => {
+  const fetchDomains = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -42,13 +47,20 @@ export const MyDomainsTab = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  useEffect(() => { fetchDomains(); }, []);
+  useEffect(() => { fetchDomains(); }, [fetchDomains, refreshKey]);
 
   const handleVerify = async (domain: Domain) => {
     setVerifyingId(domain.id);
     try {
+      // Set status to "verifying" immediately
+      await supabase
+        .from("domains")
+        .update({ status: "verifying", updated_at: new Date().toISOString() })
+        .eq("id", domain.id);
+      await fetchDomains();
+
       const response = await fetch(`https://dns.google/resolve?name=${domain.domain_name}&type=A`);
       const data = await response.json();
       const pointsToSokoby = data.Answer?.some(
@@ -70,7 +82,7 @@ export const MyDomainsTab = () => {
           : "Le DNS ne pointe pas encore vers Sokoby. Vérifiez vos enregistrements.",
         variant: pointsToSokoby ? "default" : "destructive",
       });
-      fetchDomains();
+      await fetchDomains();
     } catch {
       toast({ title: "Erreur", description: "Impossible de vérifier le domaine.", variant: "destructive" });
     } finally {
@@ -78,16 +90,21 @@ export const MyDomainsTab = () => {
     }
   };
 
-  const handleSetPrimary = async (domainId: string) => {
+  const handleSetPrimary = async (domain: Domain) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      await supabase.from("domains").update({ is_primary: false }).eq("user_id", user.id);
-      await supabase.from("domains").update({ is_primary: true }).eq("id", domainId);
+      // Unset all domains for the same store, then set the selected one
+      if (domain.store_id) {
+        await supabase.from("domains").update({ is_primary: false }).eq("store_id", domain.store_id);
+      } else {
+        await supabase.from("domains").update({ is_primary: false }).eq("user_id", user.id);
+      }
+      await supabase.from("domains").update({ is_primary: true }).eq("id", domain.id);
 
       toast({ title: "Domaine principal mis à jour" });
-      fetchDomains();
+      await fetchDomains();
     } catch {
       toast({ title: "Erreur", variant: "destructive" });
     }
@@ -95,17 +112,19 @@ export const MyDomainsTab = () => {
 
   const handleRemove = async (domainId: string) => {
     try {
-      await supabase.from("domains").delete().eq("id", domainId);
+      const { error } = await supabase.from("domains").delete().eq("id", domainId);
+      if (error) throw error;
       toast({ title: "Domaine supprimé" });
-      fetchDomains();
+      await fetchDomains();
     } catch {
-      toast({ title: "Erreur", variant: "destructive" });
+      toast({ title: "Erreur", description: "Impossible de supprimer le domaine.", variant: "destructive" });
     }
   };
 
   const statusBadge = (status: string | null) => {
     switch (status) {
       case "active": return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Actif</Badge>;
+      case "verifying": return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Vérification</Badge>;
       case "pending": return <Badge variant="secondary">En attente</Badge>;
       case "failed": return <Badge variant="destructive">Échoué</Badge>;
       default: return <Badge variant="outline">Inconnu</Badge>;
@@ -128,7 +147,7 @@ export const MyDomainsTab = () => {
     return (
       <div className="text-center py-12 space-y-2">
         <p className="text-muted-foreground">Aucun domaine connecté pour le moment.</p>
-        <p className="text-sm text-muted-foreground">Utilisez l'onglet "Connecter un domaine" pour commencer.</p>
+        <p className="text-sm text-muted-foreground">Utilisez l'onglet « Connecter » pour commencer.</p>
       </div>
     );
   }
@@ -169,15 +188,16 @@ export const MyDomainsTab = () => {
                     size="sm"
                     onClick={() => handleVerify(domain)}
                     disabled={verifyingId === domain.id}
+                    title="Vérifier le DNS"
                   >
                     {verifyingId === domain.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
                   </Button>
                   {!domain.is_primary && (
-                    <Button variant="outline" size="sm" onClick={() => handleSetPrimary(domain.id)}>
+                    <Button variant="outline" size="sm" onClick={() => handleSetPrimary(domain)} title="Définir comme principal">
                       <Star className="h-4 w-4" />
                     </Button>
                   )}
-                  <Button variant="outline" size="sm" onClick={() => handleRemove(domain.id)} className="text-destructive hover:text-destructive">
+                  <Button variant="outline" size="sm" onClick={() => handleRemove(domain.id)} className="text-destructive hover:text-destructive" title="Supprimer">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
