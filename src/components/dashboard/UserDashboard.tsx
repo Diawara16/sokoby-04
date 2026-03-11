@@ -12,6 +12,7 @@ import { BehaviorAnalytics } from "../analytics/BehaviorAnalytics";
 import { SocialPlatformIntegration } from "../integrations/SocialPlatformIntegration";
 import { MarketplaceList } from "../marketplace/MarketplaceList";
 import { StoreCreationCard } from "./StoreCreationCard";
+import { DomainsDashboard } from "../domains/DomainsDashboard";
 import { useLoyaltyPoints } from "@/hooks/useLoyaltyPoints";
 import { useTrackBehavior } from "@/hooks/useTrackBehavior";
 import { useEffect } from "react";
