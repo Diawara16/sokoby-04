@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryConfig } from "@/hooks/useQueryConfig";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { CookieConsent } from "@/components/CookieConsent";
 
 function App() {
