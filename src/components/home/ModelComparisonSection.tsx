@@ -8,7 +8,7 @@ import { T } from "@/components/translation/T";
 import { TFeatureList } from "@/components/translation/TFeatureList";
 import { modelComparisonFeatures } from "@/data/translatable";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { CurrencySwitcher } from "@/components/pricing/CurrencySwitcher";
+
 
 export function ModelComparisonSection() {
   const { symbol } = useCurrency();
