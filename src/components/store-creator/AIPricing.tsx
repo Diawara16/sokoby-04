@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Sparkles, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { CurrencySwitcher } from "@/components/pricing/CurrencySwitcher";
+
 
 interface PricingPlan {
   name: string;
