@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryConfig } from "@/hooks/useQueryConfig";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { CookieConsent } from "@/components/CookieConsent";
 
 function App() {
@@ -56,18 +57,20 @@ function App() {
   return (
     <Provider store={store}>
       <LanguageProvider>
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter basename="/">
-            <PayPalScriptProvider options={{ 
-              clientId: paypalClientId || "test",
-              currency: "EUR"
-            }}>
-              <AppRoutes />
-              <CookieConsent />
-              <Toaster />
-            </PayPalScriptProvider>
-          </BrowserRouter>
-        </QueryClientProvider>
+        <CurrencyProvider>
+          <QueryClientProvider client={queryClient}>
+            <BrowserRouter basename="/">
+              <PayPalScriptProvider options={{ 
+                clientId: paypalClientId || "test",
+                currency: "EUR"
+              }}>
+                <AppRoutes />
+                <CookieConsent />
+                <Toaster />
+              </PayPalScriptProvider>
+            </BrowserRouter>
+          </QueryClientProvider>
+        </CurrencyProvider>
       </LanguageProvider>
     </Provider>
   );

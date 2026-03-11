@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Sparkles, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { CurrencySwitcher } from "@/components/pricing/CurrencySwitcher";
 
 interface PricingPlan {
   name: string;
@@ -57,6 +59,8 @@ const pricingPlans: PricingPlan[] = [
 ];
 
 export const AIPricing = () => {
+  const { formatPrice } = useCurrency();
+
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
@@ -67,6 +71,7 @@ export const AIPricing = () => {
           Notre IA génère automatiquement votre boutique complète avec tous les produits, 
           descriptions et optimisations nécessaires.
         </p>
+        <CurrencySwitcher />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -92,8 +97,7 @@ export const AIPricing = () => {
                 </div>
                 <div className="space-y-1">
                   <div className="text-4xl font-bold text-primary">
-                    ${plan.price}
-                    <span className="text-lg text-gray-600 font-normal"> USD</span>
+                    {formatPrice(plan.price)}
                   </div>
                   <p className="text-sm text-gray-500">
                     {plan.productCount} produits générés

@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CouponSection } from "./CouponSection";
 import { PaymentButtons } from "./PaymentButtons";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface PricingPlanProps {
   name: string;
@@ -38,13 +39,9 @@ export const PricingPlan = ({
   const [showPayment, setShowPayment] = useState(false);
   const [couponCode, setCouponCode] = useState("");
 
-  // Formatage du prix en EUR
-  const formattedPrice = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(Number(price));
+  const { formatPrice } = useCurrency();
+
+  const formattedPrice = formatPrice(Number(price));
 
   return (
     <Card
