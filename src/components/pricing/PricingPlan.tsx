@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CouponSection } from "./CouponSection";
 import { PaymentButtons } from "./PaymentButtons";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface PricingPlanProps {
   name: string;
