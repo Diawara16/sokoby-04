@@ -1,6 +1,7 @@
 
 import { InfoIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface ApplicationCardPriceProps {
   price?: {
@@ -10,14 +11,9 @@ interface ApplicationCardPriceProps {
 }
 
 export function ApplicationCardPrice({ price }: ApplicationCardPriceProps) {
-  if (!price) return null;
+  const { formatPrice } = useCurrency();
 
-  const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
-  };
+  if (!price) return null;
 
   return (
     <div className="space-y-1">

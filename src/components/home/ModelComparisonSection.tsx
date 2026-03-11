@@ -1,5 +1,4 @@
 
-import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,8 +7,12 @@ import { Link } from "react-router-dom";
 import { T } from "@/components/translation/T";
 import { TFeatureList } from "@/components/translation/TFeatureList";
 import { modelComparisonFeatures } from "@/data/translatable";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { CurrencySwitcher } from "@/components/pricing/CurrencySwitcher";
 
 export function ModelComparisonSection() {
+  const { symbol } = useCurrency();
+
   return (
     <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
       <div className="container mx-auto px-4">
@@ -17,9 +20,10 @@ export function ModelComparisonSection() {
           <h2 className="text-4xl font-bold mb-4">
             <T>Deux façons de créer votre boutique</T>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4">
             <T>Choisissez l'approche qui convient le mieux à vos besoins et à votre style</T>
           </p>
+          <CurrencySwitcher />
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">
@@ -44,7 +48,7 @@ export function ModelComparisonSection() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-1">$20 - $80</div>
+                <div className="text-3xl font-bold text-primary mb-1">{symbol}20 – {symbol}80</div>
                 <div className="text-sm text-gray-600">
                   <T>Frais unique de génération</T>
                 </div>
@@ -85,7 +89,7 @@ export function ModelComparisonSection() {
             <CardContent className="space-y-6">
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600 mb-1">
-                  <T>À partir de €19</T>
+                  <T>À partir de {symbol}19</T>
                 </div>
                 <div className="text-sm text-gray-600">
                   <T>Abonnement mensuel</T>

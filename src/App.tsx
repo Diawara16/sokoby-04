@@ -57,18 +57,20 @@ function App() {
   return (
     <Provider store={store}>
       <LanguageProvider>
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter basename="/">
-            <PayPalScriptProvider options={{ 
-              clientId: paypalClientId || "test",
-              currency: "EUR"
-            }}>
-              <AppRoutes />
-              <CookieConsent />
-              <Toaster />
-            </PayPalScriptProvider>
-          </BrowserRouter>
-        </QueryClientProvider>
+        <CurrencyProvider>
+          <QueryClientProvider client={queryClient}>
+            <BrowserRouter basename="/">
+              <PayPalScriptProvider options={{ 
+                clientId: paypalClientId || "test",
+                currency: "EUR"
+              }}>
+                <AppRoutes />
+                <CookieConsent />
+                <Toaster />
+              </PayPalScriptProvider>
+            </BrowserRouter>
+          </QueryClientProvider>
+        </CurrencyProvider>
       </LanguageProvider>
     </Provider>
   );

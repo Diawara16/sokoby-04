@@ -3,62 +3,39 @@ import { CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-
-const comparisonData = [
-  {
-    feature: "Frais mensuels",
-    sokoby: "€29/mois",
-    shopifyTotal: "€79/mois"
-  },
-  {
-    feature: "Apps essentielles",
-    sokoby: "Incluses",
-    shopifyTotal: "€120/mois"
-  },
-  {
-    feature: "Frais de transaction",
-    sokoby: "0%",
-    shopifyTotal: "2.4% + 0.30€"
-  },
-  {
-    feature: "Support prioritaire",
-    sokoby: "Inclus",
-    shopifyTotal: "€99/mois"
-  },
-  {
-    feature: "Domaine personnalisé",
-    sokoby: "Inclus",
-    shopifyTotal: "€14/an"
-  },
-  {
-    feature: "Thèmes premium",
-    sokoby: "Inclus",
-    shopifyTotal: "€180 one-time"
-  }
-];
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { CurrencySwitcher } from "@/components/pricing/CurrencySwitcher";
 
 export const PricingComparisonSection = () => {
   const navigate = useNavigate();
+  const { symbol } = useCurrency();
 
-  const handleMigrationClick = () => {
-    navigate('/migration-shopify');
-  };
+  const comparisonData = [
+    { feature: "Frais mensuels", sokoby: `${symbol}29/mois`, shopifyTotal: `${symbol}79/mois` },
+    { feature: "Apps essentielles", sokoby: "Incluses", shopifyTotal: `${symbol}120/mois` },
+    { feature: "Frais de transaction", sokoby: "0%", shopifyTotal: `2.4% + ${symbol}0.30` },
+    { feature: "Support prioritaire", sokoby: "Inclus", shopifyTotal: `${symbol}99/mois` },
+    { feature: "Domaine personnalisé", sokoby: "Inclus", shopifyTotal: `${symbol}14/an` },
+    { feature: "Thèmes premium", sokoby: "Inclus", shopifyTotal: `${symbol}180` },
+  ];
+
+  const handleMigrationClick = () => navigate('/migration-shopify');
 
   return (
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">
-            Sokoby vs Shopify: The real cost
+            Sokoby vs Shopify: Le vrai coût
           </h2>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-gray-600 mb-4">
             Découvrez combien vous pouvez économiser en passant à Sokoby
           </p>
+          <CurrencySwitcher />
         </div>
 
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8 mb-12">
-            {/* Sokoby Column */}
             <Card className="border-2 border-red-500 relative">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <span className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-medium">
@@ -67,7 +44,7 @@ export const PricingComparisonSection = () => {
               </div>
               <CardHeader className="text-center pb-4">
                 <CardTitle className="text-2xl text-red-600">Sokoby</CardTitle>
-                <div className="text-4xl font-bold">€29<span className="text-xl text-gray-600">/mois</span></div>
+                <div className="text-4xl font-bold">{symbol}29<span className="text-xl text-gray-600">/mois</span></div>
                 <CardDescription>Tout inclus, transparent</CardDescription>
               </CardHeader>
               <CardContent>
@@ -85,11 +62,10 @@ export const PricingComparisonSection = () => {
               </CardContent>
             </Card>
 
-            {/* Shopify Total Column */}
             <Card>
               <CardHeader className="text-center pb-4">
                 <CardTitle className="text-2xl">Shopify - Total</CardTitle>
-                <div className="text-4xl font-bold text-red-600">€365<span className="text-xl text-gray-600">/mois</span></div>
+                <div className="text-4xl font-bold text-red-600">{symbol}365<span className="text-xl text-gray-600">/mois</span></div>
                 <CardDescription>Avec apps et frais cachés</CardDescription>
               </CardHeader>
               <CardContent>
@@ -108,11 +84,10 @@ export const PricingComparisonSection = () => {
             </Card>
           </div>
 
-          {/* Savings Highlight */}
           <div className="text-center bg-gradient-to-r from-green-500 to-emerald-600 text-white p-8 rounded-2xl mb-8">
-            <h3 className="text-3xl font-bold mb-2">Ready to save $4,380 a year?</h3>
+            <h3 className="text-3xl font-bold mb-2">Économisez {symbol}4 380 par an !</h3>
             <p className="text-xl mb-6">
-              Migrez de Shopify vers Sokoby et économisez €365/mois
+              Migrez de Shopify vers Sokoby et économisez {symbol}365/mois
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
@@ -133,7 +108,6 @@ export const PricingComparisonSection = () => {
             </div>
           </div>
 
-          {/* Migration Benefits */}
           <div className="bg-white p-6 rounded-xl border">
             <h4 className="text-xl font-bold mb-4 text-center">Migration 100% gratuite et sécurisée</h4>
             <div className="grid md:grid-cols-3 gap-6">
