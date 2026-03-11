@@ -70,6 +70,8 @@ export const UserDashboard = () => {
 
       <StoreCreationCard />
 
+      <DomainsDashboard />
+
       <div className="space-y-4">
         <h2 className="text-2xl font-bold">Marketplaces Locales</h2>
         <MarketplaceList />
