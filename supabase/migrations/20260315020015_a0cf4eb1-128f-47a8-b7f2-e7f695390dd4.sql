@@ -1,0 +1,1 @@
+ALTER TABLE public.store_videos ADD COLUMN IF NOT EXISTS thumbnail_url text;
