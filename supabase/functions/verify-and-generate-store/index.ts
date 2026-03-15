@@ -273,6 +273,45 @@ serve(async (req) => {
         }
         
         console.log('[VERIFY-AND-GENERATE] ✓ PRODUCTION store generation completed');
+
+        // Queue background video generation
+        const finalStoreId = generateResult.storeId;
+        if (finalStoreId) {
+          console.log('[VERIFY-AND-GENERATE] Queuing background video generation for store:', finalStoreId);
+          try {
+            // Insert pending video record
+            const { error: videoError } = await supabaseClient
+              .from('store_videos')
+              .insert({
+                store_id: finalStoreId,
+                video_type: 'marketing',
+                video_url: '',
+                status: 'pending',
+              });
+            if (videoError) {
+              console.error('[VERIFY-AND-GENERATE] ⚠ Failed to insert store_videos row:', videoError.message);
+            } else {
+              console.log('[VERIFY-AND-GENERATE] ✓ store_videos row inserted');
+            }
+
+            // Insert background job
+            const { error: jobError } = await supabaseClient
+              .from('background_jobs')
+              .insert({
+                job_type: 'generate_store_video',
+                payload: { store_id: finalStoreId },
+                status: 'pending',
+              });
+            if (jobError) {
+              console.error('[VERIFY-AND-GENERATE] ⚠ Failed to insert background_job:', jobError.message);
+            } else {
+              console.log('[VERIFY-AND-GENERATE] ✓ background_jobs row inserted');
+            }
+          } catch (bgErr) {
+            // Non-blocking: don't fail store creation if video queuing fails
+            console.error('[VERIFY-AND-GENERATE] ⚠ Video queuing error (non-blocking):', bgErr.message);
+          }
+        }
         
         const duration = Date.now() - startTime;
         console.log('[VERIFY-AND-GENERATE] ✓ COMPLETE - PRODUCTION processing took', duration, 'ms');
@@ -281,7 +320,7 @@ serve(async (req) => {
         return new Response(
           JSON.stringify({ 
             success: true, 
-            storeId: generateResult.storeId,
+            storeId: finalStoreId,
             status: 'generated',
             productsCount: generateResult.productsCount,
             niche: niche,
