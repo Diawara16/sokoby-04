@@ -2472,7 +2472,9 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          notification_type: string | null
           read: boolean | null
+          store_id: string | null
           title: string
           user_id: string
         }
@@ -2480,7 +2482,9 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          notification_type?: string | null
           read?: boolean | null
+          store_id?: string | null
           title: string
           user_id: string
         }
@@ -2488,11 +2492,21 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          notification_type?: string | null
           read?: boolean | null
+          store_id?: string | null
           title?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notifications_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "store_settings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       order_items: {
         Row: {
