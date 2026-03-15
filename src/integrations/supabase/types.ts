@@ -3791,6 +3791,44 @@ export type Database = {
         }
         Relationships: []
       }
+      store_videos: {
+        Row: {
+          created_at: string
+          id: string
+          status: string
+          store_id: string
+          updated_at: string
+          video_type: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          status?: string
+          store_id: string
+          updated_at?: string
+          video_type: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          status?: string
+          store_id?: string
+          updated_at?: string
+          video_type?: string
+          video_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_videos_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stores: {
         Row: {
           billing_status: string | null
