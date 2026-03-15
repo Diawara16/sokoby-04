@@ -48,6 +48,9 @@ verify_jwt = true
 [functions.generate-store]
 verify_jwt = true
 
+[functions.process-video-jobs]
+verify_jwt = false
+
 [functions.create-manual-store]
 verify_jwt = true
 
