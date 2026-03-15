@@ -109,6 +109,42 @@ export type Database = {
           },
         ]
       }
+      ai_generation_logs: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          input_data: Json | null
+          output_data: Json | null
+          status: string | null
+          store_id: string | null
+          task_type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          input_data?: Json | null
+          output_data?: Json | null
+          status?: string | null
+          store_id?: string | null
+          task_type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          input_data?: Json | null
+          output_data?: Json | null
+          status?: string | null
+          store_id?: string | null
+          task_type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       ai_recommendations: {
         Row: {
           created_at: string
@@ -181,6 +217,39 @@ export type Database = {
           status?: string
           user_id?: string
           walmart_settings?: Json | null
+        }
+        Relationships: []
+      }
+      background_jobs: {
+        Row: {
+          attempts: number | null
+          created_at: string | null
+          id: string
+          job_type: string
+          max_attempts: number | null
+          payload: Json | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          attempts?: number | null
+          created_at?: string | null
+          id?: string
+          job_type: string
+          max_attempts?: number | null
+          payload?: Json | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          attempts?: number | null
+          created_at?: string | null
+          id?: string
+          job_type?: string
+          max_attempts?: number | null
+          payload?: Json | null
+          status?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
