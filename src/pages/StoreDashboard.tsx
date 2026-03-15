@@ -263,7 +263,7 @@ const StoreDashboard = () => {
 
       {/* Main Tabs */}
       <Tabs defaultValue="products" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5 h-auto">
+        <TabsList className="grid w-full grid-cols-6 h-auto">
           <TabsTrigger value="products" className="text-xs sm:text-sm py-2">
             <Package className="h-4 w-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Produits</span>
@@ -271,6 +271,10 @@ const StoreDashboard = () => {
           <TabsTrigger value="preview" className="text-xs sm:text-sm py-2">
             <Store className="h-4 w-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Aperçu</span>
+          </TabsTrigger>
+          <TabsTrigger value="videos" className="text-xs sm:text-sm py-2">
+            <Video className="h-4 w-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Vidéos</span>
           </TabsTrigger>
           <TabsTrigger value="theme" className="text-xs sm:text-sm py-2">
             <Palette className="h-4 w-4 mr-1 sm:mr-2" />
