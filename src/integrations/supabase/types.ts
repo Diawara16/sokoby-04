@@ -1963,6 +1963,33 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_content: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          platform: string | null
+          product_id: string | null
+          store_id: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          platform?: string | null
+          product_id?: string | null
+          store_id?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          platform?: string | null
+          product_id?: string | null
+          store_id?: string | null
+        }
+        Relationships: []
+      }
       marketplace_configurations: {
         Row: {
           api_credentials: Json | null
@@ -3811,6 +3838,7 @@ export type Database = {
           id: string
           status: string
           store_id: string
+          thumbnail_url: string | null
           updated_at: string
           video_type: string
           video_url: string
@@ -3820,6 +3848,7 @@ export type Database = {
           id?: string
           status?: string
           store_id: string
+          thumbnail_url?: string | null
           updated_at?: string
           video_type: string
           video_url: string
@@ -3829,6 +3858,7 @@ export type Database = {
           id?: string
           status?: string
           store_id?: string
+          thumbnail_url?: string | null
           updated_at?: string
           video_type?: string
           video_url?: string
