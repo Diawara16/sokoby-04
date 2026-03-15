@@ -1,32 +1,47 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Notification } from "@/types/notifications";
 import { useToast } from "@/hooks/use-toast";
 
-export function useNotifications() {
+interface UseNotificationsOptions {
+  storeId?: string;
+}
+
+export function useNotifications(options?: UseNotificationsOptions) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  
-  // Créer une instance Audio pour le son de notification
+
   const notificationSound = new Audio("/notification.mp3");
 
+  const fetchNotifications = useCallback(async () => {
+    setLoading(true);
+    let query = supabase
+      .from("notifications")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (options?.storeId) {
+      query = query.eq("store_id", options.storeId);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("Erreur lors de la récupération des notifications:", error);
+      setLoading(false);
+      return;
+    }
+
+    const mapped = (data || []) as unknown as Notification[];
+    setNotifications(mapped);
+    setUnreadCount(mapped.filter((n) => !n.read).length);
+    setLoading(false);
+  }, [options?.storeId]);
+
   useEffect(() => {
-    const fetchNotifications = async () => {
-      const { data, error } = await supabase
-        .from("notifications")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Erreur lors de la récupération des notifications:", error);
-        return;
-      }
-
-      setNotifications(data);
-      setUnreadCount(data.filter((n: Notification) => !n.read).length);
-    };
-
     fetchNotifications();
 
     const channel = supabase
@@ -39,32 +54,21 @@ export function useNotifications() {
           table: "notifications",
         },
         (payload) => {
-          console.log("Nouvelle notification reçue:", payload);
-          const newNotification = payload.new as Notification;
+          const newNotification = payload.new as unknown as Notification;
+
+          // If filtering by store, skip notifications for other stores
+          if (options?.storeId && newNotification.store_id !== options.storeId) {
+            return;
+          }
+
           setNotifications((prev) => [newNotification, ...prev]);
           setUnreadCount((prev) => prev + 1);
-          
-          // Vérifier si c'est une notification de commande
+
           const isOrderNotification = newNotification.title.toLowerCase().includes('commande');
-          console.log("Est-ce une notification de commande ?", isOrderNotification);
-          
           if (isOrderNotification) {
-            console.log("Tentative de lecture du son de notification...");
-            notificationSound.play()
-              .then(() => {
-                console.log("Son de notification joué avec succès");
-              })
-              .catch(error => {
-                console.error("Erreur lors de la lecture du son:", error);
-                console.log("État de l'audio:", {
-                  readyState: notificationSound.readyState,
-                  paused: notificationSound.paused,
-                  src: notificationSound.src,
-                  error: notificationSound.error
-                });
-              });
+            notificationSound.play().catch(() => {});
           }
-          
+
           toast({
             title: newNotification.title,
             description: newNotification.content,
@@ -76,7 +80,7 @@ export function useNotifications() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [fetchNotifications]);
 
   const markAsRead = async (notificationId: string) => {
     const { error } = await supabase
@@ -97,9 +101,30 @@ export function useNotifications() {
     setUnreadCount((prev) => Math.max(0, prev - 1));
   };
 
+  const markAllAsRead = async () => {
+    const unreadIds = notifications.filter((n) => !n.read).map((n) => n.id);
+    if (unreadIds.length === 0) return;
+
+    const { error } = await supabase
+      .from("notifications")
+      .update({ read: true })
+      .in("id", unreadIds);
+
+    if (error) {
+      console.error("Erreur lors du marquage comme lu:", error);
+      return;
+    }
+
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    setUnreadCount(0);
+  };
+
   return {
     notifications,
     unreadCount,
+    loading,
     markAsRead,
+    markAllAsRead,
+    refetch: fetchNotifications,
   };
 }

@@ -18,9 +18,11 @@ import {
   Loader2,
   ShoppingCart,
   BarChart3,
-  Globe
+  Globe,
+  Bell
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { StoreNotificationsPanel } from "@/components/notifications/StoreNotificationsPanel";
 
 interface StoreData {
   id: string;
@@ -259,7 +261,7 @@ const StoreDashboard = () => {
 
       {/* Main Tabs */}
       <Tabs defaultValue="products" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4 h-auto">
+        <TabsList className="grid w-full grid-cols-5 h-auto">
           <TabsTrigger value="products" className="text-xs sm:text-sm py-2">
             <Package className="h-4 w-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Produits</span>
@@ -271,6 +273,10 @@ const StoreDashboard = () => {
           <TabsTrigger value="theme" className="text-xs sm:text-sm py-2">
             <Palette className="h-4 w-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Thème</span>
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="text-xs sm:text-sm py-2">
+            <Bell className="h-4 w-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Notifs</span>
           </TabsTrigger>
           <TabsTrigger value="settings" className="text-xs sm:text-sm py-2">
             <Settings className="h-4 w-4 mr-1 sm:mr-2" />
@@ -481,6 +487,11 @@ const StoreDashboard = () => {
               </Button>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Notifications Tab */}
+        <TabsContent value="notifications">
+          <StoreNotificationsPanel storeId={store.id} />
         </TabsContent>
 
         {/* Settings Tab */}
