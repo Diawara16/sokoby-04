@@ -19,10 +19,12 @@ import {
   ShoppingCart,
   BarChart3,
   Globe,
-  Bell
+  Bell,
+  Video
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { StoreNotificationsPanel } from "@/components/notifications/StoreNotificationsPanel";
+import { StoreVideosPanel } from "@/components/store/StoreVideosPanel";
 
 interface StoreData {
   id: string;
