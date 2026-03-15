@@ -489,6 +489,11 @@ const StoreDashboard = () => {
           </Card>
         </TabsContent>
 
+        {/* Notifications Tab */}
+        <TabsContent value="notifications">
+          <StoreNotificationsPanel storeId={store.id} />
+        </TabsContent>
+
         {/* Settings Tab */}
         <TabsContent value="settings">
           <Card>
