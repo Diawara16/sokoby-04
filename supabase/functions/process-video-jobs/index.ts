@@ -7,8 +7,121 @@ const corsHeaders = {
 };
 
 /**
+ * Collects store assets (logo, products) for video generation.
+ */
+async function collectStoreAssets(supabase: ReturnType<typeof createClient>, storeId: string) {
+  const [storeResult, productsResult] = await Promise.all([
+    supabase
+      .from('store_settings')
+      .select('store_name, logo_url, niche')
+      .eq('id', storeId)
+      .single(),
+    supabase
+      .from('ai_generated_products')
+      .select('name, description, image_url')
+      .eq('store_id', storeId)
+      .limit(6),
+  ]);
+
+  if (storeResult.error || !storeResult.data) {
+    throw new Error(`Store not found: ${storeId}`);
+  }
+
+  return {
+    store: storeResult.data,
+    products: productsResult.data || [],
+  };
+}
+
+/**
+ * Builds the video generation payload from store assets.
+ * This payload structure is the contract for any future video API integration.
+ */
+function buildVideoPayload(store: { store_name: string; logo_url: string | null; niche: string }, products: { name: string; description: string | null; image_url: string | null }[]) {
+  return {
+    storeName: store.store_name,
+    logoUrl: store.logo_url,
+    niche: store.niche,
+    products: products.map((p) => ({
+      title: p.name,
+      description: p.description,
+      imageUrl: p.image_url,
+    })),
+    marketingText: `Découvrez ${store.store_name} – Les meilleurs produits au meilleur prix!`,
+    callToAction: 'Achetez maintenant!',
+    durationTarget: 10, // seconds (5-15 range)
+  };
+}
+
+/**
+ * Simulates video generation. Replace this function with a real API call later.
+ * The interface is stable: input payload → output { videoUrl, thumbnailUrl }.
+ */
+async function generateVideo(_payload: ReturnType<typeof buildVideoPayload>): Promise<{ videoUrl: string; thumbnailUrl: string }> {
+  // TODO: Replace with actual video generation API call
+  // Example: const result = await fetch('https://video-api.example.com/generate', { ... });
+  return {
+    videoUrl: 'https://storage.sokoby.com/sample-video.mp4',
+    thumbnailUrl: 'https://storage.sokoby.com/sample-thumbnail.jpg',
+  };
+}
+
+/**
+ * Processes a single video generation job.
+ */
+async function processJob(supabase: ReturnType<typeof createClient>, job: { id: string; payload: { store_id?: string } | null }) {
+  const jobId = job.id;
+  const storeId = job.payload?.store_id;
+
+  console.log(`[PROCESS-VIDEO-JOBS] Processing job ${jobId}, store_id=${storeId}`);
+
+  // 1. Mark as processing
+  await supabase
+    .from('background_jobs')
+    .update({ status: 'processing', updated_at: new Date().toISOString() })
+    .eq('id', jobId);
+
+  if (!storeId) throw new Error('Missing store_id in job payload');
+
+  // 2. Collect store assets
+  const { store, products } = await collectStoreAssets(supabase, storeId);
+  console.log(`[PROCESS-VIDEO-JOBS] Store: ${store.store_name}, ${products.length} products`);
+
+  // 3. Build payload
+  const videoPayload = buildVideoPayload(store, products);
+  console.log('[PROCESS-VIDEO-JOBS] Video payload prepared:', JSON.stringify(videoPayload).slice(0, 300));
+
+  // 4. Generate video (currently simulated)
+  const { videoUrl, thumbnailUrl } = await generateVideo(videoPayload);
+
+  // 5. Update store_videos row
+  const { error: videoUpdateError } = await supabase
+    .from('store_videos')
+    .update({
+      video_url: videoUrl,
+      thumbnail_url: thumbnailUrl,
+      status: 'ready',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('store_id', storeId)
+    .eq('status', 'pending');
+
+  if (videoUpdateError) {
+    console.error('[PROCESS-VIDEO-JOBS] Failed to update store_videos:', videoUpdateError.message);
+  }
+
+  // 6. Mark job as completed
+  await supabase
+    .from('background_jobs')
+    .update({ status: 'completed', updated_at: new Date().toISOString() })
+    .eq('id', jobId);
+
+  console.log(`[PROCESS-VIDEO-JOBS] ✓ Job ${jobId} completed.`);
+  return storeId;
+}
+
+/**
  * Background worker: processes pending "generate_store_video" jobs.
- * Currently uses a placeholder video URL; swap in a real video API later.
  */
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -23,7 +136,7 @@ serve(async (req) => {
 
   console.log('[PROCESS-VIDEO-JOBS] Starting job scan...');
 
-  // 1. Fetch pending jobs
+  // Fetch pending jobs
   const { data: jobs, error: fetchError } = await supabase
     .from('background_jobs')
     .select('*')
@@ -42,7 +155,7 @@ serve(async (req) => {
 
   if (!jobs || jobs.length === 0) {
     console.log('[PROCESS-VIDEO-JOBS] No pending jobs found.');
-    return new Response(JSON.stringify({ processed: 0 }), {
+    return new Response(JSON.stringify({ processed: 0, failed: 0 }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
@@ -53,96 +166,18 @@ serve(async (req) => {
   let failed = 0;
 
   for (const job of jobs) {
-    const jobId = job.id;
-    const payload = job.payload as { store_id?: string } | null;
-    const storeId = payload?.store_id;
-
-    console.log(`[PROCESS-VIDEO-JOBS] Processing job ${jobId}, store_id=${storeId}`);
-
-    // 2. Mark as processing
-    await supabase
-      .from('background_jobs')
-      .update({ status: 'processing', updated_at: new Date().toISOString() })
-      .eq('id', jobId);
-
+    const storeId = (job.payload as { store_id?: string } | null)?.store_id;
     try {
-      if (!storeId) throw new Error('Missing store_id in job payload');
-
-      // 3. Collect store assets
-      const [storeResult, productsResult] = await Promise.all([
-        supabase
-          .from('store_settings')
-          .select('store_name, logo_url, niche')
-          .eq('id', storeId)
-          .single(),
-        supabase
-          .from('ai_generated_products')
-          .select('name, description, image_url')
-          .eq('store_id', storeId)
-          .limit(6),
-      ]);
-
-      const store = storeResult.data;
-      const products = productsResult.data || [];
-
-      if (!store) throw new Error(`Store not found: ${storeId}`);
-
-      console.log(`[PROCESS-VIDEO-JOBS] Store: ${store.store_name}, ${products.length} products`);
-
-      // 4. Prepare video generation payload (for future API integration)
-      const videoPayload = {
-        storeName: store.store_name,
-        logoUrl: store.logo_url,
-        niche: store.niche,
-        products: products.map((p) => ({
-          title: p.name,
-          description: p.description,
-          imageUrl: p.image_url,
-        })),
-        marketingText: `Découvrez ${store.store_name} – Les meilleurs produits au meilleur prix!`,
-        callToAction: 'Achetez maintenant!',
-        durationTarget: 10, // seconds (5-15 range)
-      };
-
-      console.log('[PROCESS-VIDEO-JOBS] Video payload prepared:', JSON.stringify(videoPayload).slice(0, 300));
-
-      // 5. Simulate video generation (placeholder – replace with real API later)
-      // TODO: Replace this block with an actual video generation API call
-      // e.g. const videoUrl = await generateVideoWithAPI(videoPayload);
-      const placeholderVideoUrl = 'https://storage.sokoby.com/sample-video.mp4';
-
-      // 6. Update store_videos row
-      const { error: videoUpdateError } = await supabase
-        .from('store_videos')
-        .update({
-          video_url: placeholderVideoUrl,
-          status: 'ready',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('store_id', storeId)
-        .eq('status', 'pending');
-
-      if (videoUpdateError) {
-        console.error('[PROCESS-VIDEO-JOBS] Failed to update store_videos:', videoUpdateError.message);
-      }
-
-      // 7. Mark job as completed
-      await supabase
-        .from('background_jobs')
-        .update({ status: 'completed', updated_at: new Date().toISOString() })
-        .eq('id', jobId);
-
-      console.log(`[PROCESS-VIDEO-JOBS] ✓ Job ${jobId} completed.`);
+      await processJob(supabase, { id: job.id, payload: job.payload as { store_id?: string } | null });
       processed++;
     } catch (err) {
-      console.error(`[PROCESS-VIDEO-JOBS] ✗ Job ${jobId} failed:`, err.message);
+      console.error(`[PROCESS-VIDEO-JOBS] ✗ Job ${job.id} failed:`, err.message);
 
       await supabase
         .from('background_jobs')
         .update({ status: 'failed', updated_at: new Date().toISOString() })
-        .eq('id', jobId);
+        .eq('id', job.id);
 
-      // Also mark the store_videos row as failed
       if (storeId) {
         await supabase
           .from('store_videos')
