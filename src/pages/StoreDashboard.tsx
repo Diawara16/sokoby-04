@@ -424,6 +424,11 @@ const StoreDashboard = () => {
           </Card>
         </TabsContent>
 
+        {/* Videos Tab */}
+        <TabsContent value="videos">
+          <StoreVideosPanel storeId={store.id} />
+        </TabsContent>
+
         {/* Theme Tab */}
         <TabsContent value="theme">
           <Card>
