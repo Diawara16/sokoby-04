@@ -18,9 +18,11 @@ import {
   Loader2,
   ShoppingCart,
   BarChart3,
-  Globe
+  Globe,
+  Bell
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { StoreNotificationsPanel } from "@/components/notifications/StoreNotificationsPanel";
 
 interface StoreData {
   id: string;
