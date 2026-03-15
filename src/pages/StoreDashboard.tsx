@@ -19,10 +19,12 @@ import {
   ShoppingCart,
   BarChart3,
   Globe,
-  Bell
+  Bell,
+  Video
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { StoreNotificationsPanel } from "@/components/notifications/StoreNotificationsPanel";
+import { StoreVideosPanel } from "@/components/store/StoreVideosPanel";
 
 interface StoreData {
   id: string;
@@ -261,7 +263,7 @@ const StoreDashboard = () => {
 
       {/* Main Tabs */}
       <Tabs defaultValue="products" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5 h-auto">
+        <TabsList className="grid w-full grid-cols-6 h-auto">
           <TabsTrigger value="products" className="text-xs sm:text-sm py-2">
             <Package className="h-4 w-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Produits</span>
@@ -269,6 +271,10 @@ const StoreDashboard = () => {
           <TabsTrigger value="preview" className="text-xs sm:text-sm py-2">
             <Store className="h-4 w-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Aperçu</span>
+          </TabsTrigger>
+          <TabsTrigger value="videos" className="text-xs sm:text-sm py-2">
+            <Video className="h-4 w-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Vidéos</span>
           </TabsTrigger>
           <TabsTrigger value="theme" className="text-xs sm:text-sm py-2">
             <Palette className="h-4 w-4 mr-1 sm:mr-2" />
@@ -416,6 +422,11 @@ const StoreDashboard = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Videos Tab */}
+        <TabsContent value="videos">
+          <StoreVideosPanel storeId={store.id} />
         </TabsContent>
 
         {/* Theme Tab */}
