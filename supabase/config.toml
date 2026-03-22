@@ -77,3 +77,6 @@ verify_jwt = false
 
 [functions.verify-and-generate-store]
 verify_jwt = true
+
+[functions.generate-video]
+verify_jwt = false
