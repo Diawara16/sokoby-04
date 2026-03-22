@@ -32,6 +32,14 @@ async function collectStoreAssets(supabase: ReturnType<typeof createClient>, sto
   };
 }
 
+function validateProducts(products: { name: string; description: string | null; image_url: string | null }[]) {
+  const withImages = products.filter((p) => p.image_url);
+  if (withImages.length === 0) {
+    throw new Error('NO_PRODUCT_IMAGES');
+  }
+  return withImages;
+}
+
 function buildCreatomatePayload(
   templateId: string,
   store: { store_name: string; logo_url: string | null; niche: string },
@@ -85,7 +93,6 @@ async function generateVideoWithCreatomate(
     throw new Error('Creatomate returned empty response');
   }
 
-  // Poll for completion if status is not finished
   if (render.status && render.status !== 'succeeded') {
     const finalRender = await pollRenderStatus(apiKey, render.id);
     return {
@@ -122,7 +129,48 @@ async function pollRenderStatus(apiKey: string, renderId: string, maxAttempts = 
   throw new Error('Creatomate render timed out');
 }
 
-async function processJob(supabase: ReturnType<typeof createClient>, job: { id: string; payload: { store_id?: string } | null }, apiKey: string, templateId: string) {
+async function uploadToStorage(
+  supabase: ReturnType<typeof createClient>,
+  sourceUrl: string,
+  storeId: string,
+  filename: string
+): Promise<string> {
+  console.log(`[PROCESS-VIDEO-JOBS] Downloading ${filename} from Creatomate...`);
+  const res = await fetch(sourceUrl);
+  if (!res.ok) {
+    throw new Error(`Failed to download file: ${res.status}`);
+  }
+
+  const blob = await res.blob();
+  const contentType = res.headers.get('content-type') || 'video/mp4';
+  const filePath = `${storeId}/${filename}`;
+
+  console.log(`[PROCESS-VIDEO-JOBS] Uploading ${filePath} to store-videos bucket (${blob.size} bytes)...`);
+
+  const { error } = await supabase.storage
+    .from('store-videos')
+    .upload(filePath, blob, {
+      contentType,
+      upsert: true,
+    });
+
+  if (error) {
+    throw new Error(`Storage upload failed: ${error.message}`);
+  }
+
+  const { data: publicUrlData } = supabase.storage
+    .from('store-videos')
+    .getPublicUrl(filePath);
+
+  return publicUrlData.publicUrl;
+}
+
+async function processJob(
+  supabase: ReturnType<typeof createClient>,
+  job: { id: string; payload: { store_id?: string } | null },
+  apiKey: string,
+  templateId: string
+) {
   const jobId = job.id;
   const storeId = job.payload?.store_id;
 
@@ -138,13 +186,30 @@ async function processJob(supabase: ReturnType<typeof createClient>, job: { id: 
   const { store, products } = await collectStoreAssets(supabase, storeId);
   console.log(`[PROCESS-VIDEO-JOBS] Store: ${store.store_name}, ${products.length} products`);
 
-  const { videoUrl, thumbnailUrl } = await generateVideoWithCreatomate(apiKey, templateId, store, products);
+  // Validate that we have at least one product with an image
+  const validProducts = validateProducts(products);
+  console.log(`[PROCESS-VIDEO-JOBS] ${validProducts.length} products with images`);
+
+  // Generate video via Creatomate
+  const { videoUrl: creatomateVideoUrl, thumbnailUrl: creatomateThumbnailUrl } =
+    await generateVideoWithCreatomate(apiKey, templateId, store, validProducts);
+
+  // Upload video and thumbnail to Supabase Storage
+  const timestamp = Date.now();
+  const [storedVideoUrl, storedThumbnailUrl] = await Promise.all([
+    uploadToStorage(supabase, creatomateVideoUrl, storeId, `video_${timestamp}.mp4`),
+    creatomateThumbnailUrl !== creatomateVideoUrl
+      ? uploadToStorage(supabase, creatomateThumbnailUrl, storeId, `thumb_${timestamp}.jpg`)
+      : Promise.resolve(creatomateVideoUrl),
+  ]);
+
+  console.log(`[PROCESS-VIDEO-JOBS] Stored video: ${storedVideoUrl}`);
 
   const { error: videoUpdateError } = await supabase
     .from('store_videos')
     .update({
-      video_url: videoUrl,
-      thumbnail_url: thumbnailUrl,
+      video_url: storedVideoUrl,
+      thumbnail_url: storedThumbnailUrl,
       status: 'ready',
       updated_at: new Date().toISOString(),
     })
@@ -183,7 +248,6 @@ serve(async (req) => {
     });
   }
 
-  // Template ID from request body or env
   let templateId = Deno.env.get('CREATOMATE_TEMPLATE_ID') || '';
   try {
     const body = await req.json().catch(() => ({}));
@@ -230,7 +294,8 @@ serve(async (req) => {
       await processJob(supabase, { id: job.id, payload: job.payload as { store_id?: string } | null }, creatomateApiKey, templateId);
       processed++;
     } catch (err) {
-      console.error(`[PROCESS-VIDEO-JOBS] ✗ Job ${job.id} failed:`, err.message);
+      const errorMsg = err.message || 'unknown error';
+      console.error(`[PROCESS-VIDEO-JOBS] ✗ Job ${job.id} failed:`, errorMsg);
       await supabase.from('background_jobs').update({ status: 'failed', updated_at: new Date().toISOString() }).eq('id', job.id);
       if (storeId) {
         await supabase.from('store_videos').update({ status: 'failed', updated_at: new Date().toISOString() }).eq('store_id', storeId).eq('status', 'pending');
