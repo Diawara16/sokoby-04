@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Product } from "@/types/product";
 import { SectionRenderer } from "./sections/SectionRenderer";
 import { useStorefrontEngine } from "@/hooks/useStorefrontEngine";
+import { StoreVideoPlayer } from "./StoreVideoPlayer";
 
 interface LiveStorefrontProps {
   products: Product[];
@@ -38,6 +39,8 @@ export function LiveStorefront({ products, storeName, isLoading, storeId }: Live
 
       {/* Main Content */}
       <main>
+        {storeId && <StoreVideoPlayer storeId={storeId} />}
+
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>

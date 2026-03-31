@@ -3841,7 +3841,7 @@ export type Database = {
           thumbnail_url: string | null
           updated_at: string
           video_type: string
-          video_url: string
+          video_url: string | null
         }
         Insert: {
           created_at?: string
@@ -3851,7 +3851,7 @@ export type Database = {
           thumbnail_url?: string | null
           updated_at?: string
           video_type: string
-          video_url: string
+          video_url?: string | null
         }
         Update: {
           created_at?: string
@@ -3861,7 +3861,7 @@ export type Database = {
           thumbnail_url?: string | null
           updated_at?: string
           video_type?: string
-          video_url?: string
+          video_url?: string | null
         }
         Relationships: [
           {
