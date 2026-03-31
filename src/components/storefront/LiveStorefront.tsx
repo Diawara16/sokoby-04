@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Product } from "@/types/product";
 import { SectionRenderer } from "./sections/SectionRenderer";
 import { useStorefrontEngine } from "@/hooks/useStorefrontEngine";
+import { StoreVideoPlayer } from "./StoreVideoPlayer";
 
 interface LiveStorefrontProps {
   products: Product[];
