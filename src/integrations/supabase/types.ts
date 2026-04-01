@@ -3878,6 +3878,8 @@ export type Database = {
           billing_status: string | null
           created_at: string
           id: string
+          logo: string | null
+          logo_url: string | null
           niche: string
           owner_email: string | null
           owner_id: string
@@ -3893,6 +3895,8 @@ export type Database = {
           billing_status?: string | null
           created_at?: string
           id?: string
+          logo?: string | null
+          logo_url?: string | null
           niche: string
           owner_email?: string | null
           owner_id: string
@@ -3908,6 +3912,8 @@ export type Database = {
           billing_status?: string | null
           created_at?: string
           id?: string
+          logo?: string | null
+          logo_url?: string | null
           niche?: string
           owner_email?: string | null
           owner_id?: string
