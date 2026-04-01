@@ -26,12 +26,14 @@ export function useStoreMode(userId: string | undefined): StoreMode {
       try {
         // First check if user is the direct store owner
         let { data, error } = await supabase
-          .from('store_settings')
-          .select('id, is_production, store_name, user_id')
-          .eq('user_id', userId)
+          .from('stores')
+          .select('id, store_name, owner_id, status')
+          .eq('owner_id', userId)
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle();
+
+        console.log("STORE MODE (stores.owner_id):", data);
 
         // If not found, check if user is a staff member of a store
         if (!data) {

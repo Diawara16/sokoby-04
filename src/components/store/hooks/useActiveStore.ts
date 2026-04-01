@@ -21,11 +21,13 @@ export const useActiveStore = () => {
         }
 
         const { data, error } = await supabase
-          .from('store_settings')
+          .from('stores')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('owner_id', user.id)
           .limit(1)
           .maybeSingle();
+
+        console.log("ACTIVE STORE (stores.owner_id):", data);
 
         if (error) throw error;
         if (!isMounted) return;
