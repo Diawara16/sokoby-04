@@ -51,11 +51,13 @@ export function StoreVideoPlayer({ storeId }: StoreVideoPlayerProps) {
         autoPlay
         muted
         loop
+        playsInline
         poster={video.thumbnail_url || undefined}
         className="w-full rounded-lg shadow-lg aspect-video bg-muted"
         preload="metadata"
       >
         <source src={video.video_url} type="video/mp4" />
+        Votre navigateur ne supporte pas la lecture vidéo.
       </video>
     </div>
   );
