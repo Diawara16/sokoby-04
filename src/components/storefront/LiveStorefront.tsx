@@ -39,7 +39,7 @@ export function LiveStorefront({ products, storeName, isLoading, storeId }: Live
 
       {/* Main Content */}
       <main>
-        {storeId && <StoreVideoPlayer storeId={storeId} />}
+        {storeId && <StoreVideoPlayer storeId={storeId} storeName={storeName} />}
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
