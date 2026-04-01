@@ -1,8 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Video } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface StoreVideoPlayerProps {
   storeId: string;
@@ -11,6 +11,37 @@ interface StoreVideoPlayerProps {
 
 export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) {
   const [videoReady, setVideoReady] = useState(false);
+  const queryClient = useQueryClient();
+
+  // Realtime subscription: invalidate query when a new "ready" video arrives
+  useEffect(() => {
+    if (!storeId) return;
+
+    const channel = supabase
+      .channel(`store-video-${storeId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "store_videos",
+          filter: `store_id=eq.${storeId}`,
+        },
+        (payload) => {
+          console.log("Realtime store_videos update:", payload);
+          const newRecord = payload.new as Record<string, unknown> | undefined;
+          if (newRecord?.status === "ready") {
+            setVideoReady(false);
+            queryClient.invalidateQueries({ queryKey: ["store-video", storeId] });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [storeId, queryClient]);
 
   const { data: video, isLoading } = useQuery({
     queryKey: ["store-video", storeId],
