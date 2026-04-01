@@ -39,19 +39,19 @@ export function useStoreMode(userId: string | undefined): StoreMode {
         if (!data) {
           const { data: staffData, error: staffError } = await supabase
             .from('staff_members')
-            .select('store_id, store_settings:store_id(id, is_production, store_name, user_id)')
+            .select('store_id, stores:store_id(id, store_name, owner_id, status)')
             .eq('user_id', userId)
             .eq('status', 'active')
             .limit(1)
             .maybeSingle();
 
-          if (!staffError && staffData && staffData.store_settings) {
-            const storeSettings = staffData.store_settings as any;
+          if (!staffError && staffData && (staffData as any).stores) {
+            const storeRow = (staffData as any).stores;
             data = {
-              id: storeSettings.id,
-              is_production: storeSettings.is_production,
-              store_name: storeSettings.store_name,
-              user_id: storeSettings.user_id,
+              id: storeRow.id,
+              store_name: storeRow.store_name,
+              owner_id: storeRow.owner_id,
+              status: storeRow.status,
             };
           }
         }
@@ -59,10 +59,10 @@ export function useStoreMode(userId: string | undefined): StoreMode {
         if (error) {
           console.error('Error fetching store mode:', error);
         } else if (data) {
-          setIsProduction(data.is_production || false);
+          setIsProduction(data.status === 'active');
           setStoreName(data.store_name || null);
           setStoreId(data.id || null);
-          setStoreOwnerId(data.user_id || null);
+          setStoreOwnerId(data.owner_id || null);
         }
       } catch (err) {
         console.error('Error in useStoreMode:', err);
