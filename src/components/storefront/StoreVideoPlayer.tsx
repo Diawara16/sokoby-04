@@ -19,6 +19,8 @@ export function StoreVideoPlayer({ storeId }: StoreVideoPlayerProps) {
         .limit(1)
         .maybeSingle();
 
+      console.log("STORE ID:", storeId);
+      console.log("VIDEO RESULT:", data);
       if (error) throw error;
       return data as { video_url: string; thumbnail_url: string | null } | null;
     },
