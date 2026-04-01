@@ -56,6 +56,7 @@ export function StoreVideoPlayer({ storeId }: StoreVideoPlayerProps) {
         preload="metadata"
       >
         <source src={video.video_url} type="video/mp4" />
+        Votre navigateur ne supporte pas la lecture vidéo.
       </video>
     </div>
   );
