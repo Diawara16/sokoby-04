@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Video } from "lucide-react";
+import { Video } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCallback, useState } from "react";
 
 interface StoreVideoPlayerProps {
   storeId: string;
@@ -8,6 +10,8 @@ interface StoreVideoPlayerProps {
 }
 
 export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) {
+  const [videoReady, setVideoReady] = useState(false);
+
   const { data: video, isLoading } = useQuery({
     queryKey: ["store-video", storeId],
     queryFn: async () => {
@@ -20,18 +24,23 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
         .limit(1)
         .maybeSingle();
 
-      console.log("STORE ID:", storeId);
-      console.log("VIDEO RESULT:", data);
       if (error) throw error;
       return data as { video_url: string; thumbnail_url: string | null } | null;
     },
     enabled: !!storeId,
   });
 
+  const handleCanPlay = useCallback(() => setVideoReady(true), []);
+
   if (isLoading) {
     return (
-      <div className="relative w-full h-[60vh] flex items-center justify-center bg-muted">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="relative w-full h-[60vh]">
+        <Skeleton className="absolute inset-0 w-full h-full rounded-none" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+          <Skeleton className="h-10 w-64 rounded-lg" />
+          <Skeleton className="h-5 w-48 rounded-lg" />
+          <Skeleton className="h-12 w-36 rounded-lg mt-4" />
+        </div>
       </div>
     );
   }
@@ -46,15 +55,26 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
   }
 
   return (
-    <div className="relative w-full h-[60vh] overflow-hidden">
+    <div className="relative w-full h-[60vh] overflow-hidden bg-muted">
+      {/* Thumbnail shown immediately */}
+      {video.thumbnail_url && (
+        <img
+          src={video.thumbnail_url}
+          alt={storeName || "Store"}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      )}
+
+      {/* Video fades in over thumbnail when ready */}
       <video
         autoPlay
         muted
         loop
         playsInline
-        poster={video.thumbnail_url || undefined}
-        className="absolute inset-0 w-full h-full object-cover"
-        preload="metadata"
+        onCanPlay={handleCanPlay}
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+        style={{ opacity: videoReady ? 1 : 0 }}
+        preload="auto"
       >
         <source src={video.video_url} type="video/mp4" />
       </video>
