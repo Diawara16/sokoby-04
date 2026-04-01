@@ -51,6 +51,7 @@ export function StoreVideoPlayer({ storeId }: StoreVideoPlayerProps) {
         autoPlay
         muted
         loop
+        playsInline
         poster={video.thumbnail_url || undefined}
         className="w-full rounded-lg shadow-lg aspect-video bg-muted"
         preload="metadata"
