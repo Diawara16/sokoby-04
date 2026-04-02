@@ -32,8 +32,8 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
           const newRecord = payload.new as Record<string, unknown> | undefined;
           if (newRecord?.status === "ready") {
             setVideoReady(false);
-            queryClient.invalidateQueries({ queryKey: ["store-video", storeId] });
           }
+          queryClient.invalidateQueries({ queryKey: ["store-video", storeId] });
         }
       )
       .subscribe();
@@ -43,23 +43,25 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
     };
   }, [storeId, queryClient]);
 
-  const { data: video, isLoading } = useQuery({
+  const { data: latestVideo, isLoading } = useQuery({
     queryKey: ["store-video", storeId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("store_videos")
         .select("*")
         .eq("store_id", storeId)
-        .eq("status", "ready")
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
 
       if (error) throw error;
-      return data as { video_url: string; thumbnail_url: string | null } | null;
+      return data as { video_url: string; thumbnail_url: string | null; status: string } | null;
     },
     enabled: !!storeId,
   });
+
+  const video = latestVideo?.status === "ready" ? latestVideo : null;
+  const isProcessing = latestVideo && latestVideo.status !== "ready" && latestVideo.status !== "failed";
 
   const handleCanPlay = useCallback(() => setVideoReady(true), []);
 
@@ -80,7 +82,9 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
     return (
       <div className="relative w-full h-[60vh] flex flex-col items-center justify-center bg-muted gap-3 text-muted-foreground">
         <Video className="h-12 w-12 animate-pulse" />
-        <p className="text-sm font-medium">Génération de la vidéo en cours...</p>
+        <p className="text-sm font-medium">
+          {isProcessing ? "Génération de la vidéo en cours..." : "Aucune vidéo disponible"}
+        </p>
       </div>
     );
   }

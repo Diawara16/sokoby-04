@@ -3850,7 +3850,7 @@ export type Database = {
           store_id: string
           thumbnail_url?: string | null
           updated_at?: string
-          video_type: string
+          video_type?: string
           video_url?: string | null
         }
         Update: {
