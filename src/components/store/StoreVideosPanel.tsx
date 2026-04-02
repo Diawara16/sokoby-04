@@ -131,7 +131,7 @@ export function StoreVideosPanel({ storeId }: StoreVideosPanelProps) {
   );
 }
 
-function VideoCard({ video, onRetry }: { video: StoreVideo; onRetry: () => void }) {
+function VideoCard({ video, onRetry, isNew }: { video: StoreVideo; onRetry: () => void; isNew?: boolean }) {
   const [downloading, setDownloading] = useState(false);
   const config = statusConfig[video.status] || statusConfig.pending;
   const StatusIcon = config.icon;
