@@ -46,16 +46,33 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
   const { data: latestVideo, isLoading } = useQuery({
     queryKey: ["store-video", storeId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First try to get the latest "ready" video
+      const { data: readyVideo, error: readyError } = await supabase
         .from("store_videos")
         .select("*")
+        .eq("store_id", storeId)
+        .eq("status", "ready")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (readyError) throw readyError;
+      if (readyVideo) return { ...readyVideo, _hasProcessing: false } as { video_url: string; thumbnail_url: string | null; status: string; _hasProcessing: boolean };
+
+      // No ready video — check if there's one processing
+      const { data: latestAny } = await supabase
+        .from("store_videos")
+        .select("status")
         .eq("store_id", storeId)
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
 
-      if (error) throw error;
-      return data as { video_url: string; thumbnail_url: string | null; status: string } | null;
+      if (latestAny && latestAny.status !== "failed") {
+        return { video_url: "", thumbnail_url: null, status: latestAny.status, _hasProcessing: true } as any;
+      }
+
+      return null;
     },
     enabled: !!storeId,
   });
