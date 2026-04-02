@@ -122,7 +122,7 @@ export function StoreVideosPanel({ storeId }: StoreVideosPanelProps) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {videos.map((video) => (
-              <VideoCard key={video.id} video={video} onRetry={fetchVideos} />
+              <VideoCard key={video.id} video={video} onRetry={fetchVideos} isNew={newReadyIds.has(video.id)} />
             ))}
           </div>
         )}
