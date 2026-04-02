@@ -90,7 +90,7 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
   }
 
   return (
-    <div className="relative w-full h-[60vh] overflow-hidden bg-muted">
+    <div className="relative w-full h-[80vh] overflow-hidden bg-muted">
       {/* Thumbnail shown immediately */}
       {video.thumbnail_url && (
         <img
