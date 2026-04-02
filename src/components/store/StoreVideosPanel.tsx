@@ -103,13 +103,34 @@ export function StoreVideosPanel({ storeId }: StoreVideosPanelProps) {
 }
 
 function VideoCard({ video, onRetry }: { video: StoreVideo; onRetry: () => void }) {
+  const [downloading, setDownloading] = useState(false);
   const config = statusConfig[video.status] || statusConfig.pending;
   const StatusIcon = config.icon;
+
+  const handleDownload = async () => {
+    if (!video.video_url) return;
+    setDownloading(true);
+    try {
+      const response = await fetch(video.video_url);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `video-${video.video_type}-${video.id.slice(0, 8)}.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      window.open(video.video_url, "_blank");
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   if (video.status === "ready") {
     return (
       <div className="rounded-lg border bg-card overflow-hidden">
-        {/* Video preview */}
         <div className="aspect-video bg-muted relative">
           {video.video_url ? (
             <video
@@ -136,11 +157,13 @@ function VideoCard({ video, onRetry }: { video: StoreVideo; onRetry: () => void 
             <span className="text-xs text-muted-foreground capitalize">{video.video_type}</span>
           </div>
           {video.video_url && (
-            <Button variant="outline" size="sm" asChild>
-              <a href={video.video_url} download target="_blank" rel="noopener noreferrer">
+            <Button variant="outline" size="sm" onClick={handleDownload} disabled={downloading}>
+              {downloading ? (
+                <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+              ) : (
                 <Download className="h-3.5 w-3.5 mr-1.5" />
-                Télécharger
-              </a>
+              )}
+              Télécharger
             </Button>
           )}
         </div>
