@@ -159,8 +159,16 @@ function VideoCard({ video, onRetry, isNew }: { video: StoreVideo; onRetry: () =
 
   if (video.status === "ready") {
     return (
-      <div className="rounded-lg border bg-card overflow-hidden">
+      <div className={`rounded-lg border bg-card overflow-hidden transition-all duration-500 ${isNew ? "ring-2 ring-primary shadow-lg" : ""}`}>
         <div className="aspect-video bg-muted relative">
+          {isNew && (
+            <div className="absolute top-2 right-2 z-10">
+              <Badge className="bg-primary text-primary-foreground text-xs animate-pulse">
+                <Sparkles className="h-3 w-3 mr-1" />
+                Nouveau
+              </Badge>
+            </div>
+          )}
           {video.video_url ? (
             <video
               src={video.video_url}
