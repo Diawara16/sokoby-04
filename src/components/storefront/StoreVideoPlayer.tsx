@@ -32,8 +32,8 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
           const newRecord = payload.new as Record<string, unknown> | undefined;
           if (newRecord?.status === "ready") {
             setVideoReady(false);
-            queryClient.invalidateQueries({ queryKey: ["store-video", storeId] });
           }
+          queryClient.invalidateQueries({ queryKey: ["store-video", storeId] });
         }
       )
       .subscribe();
