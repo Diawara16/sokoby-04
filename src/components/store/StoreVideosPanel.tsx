@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Video, Download, Loader2, RefreshCw, AlertTriangle, Clock, CheckCircle2 } from "lucide-react";
+import { Video, Download, Loader2, RefreshCw, AlertTriangle, Clock, CheckCircle2, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
 interface StoreVideo {
   id: string;
@@ -29,6 +30,8 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
 export function StoreVideosPanel({ storeId }: StoreVideosPanelProps) {
   const [videos, setVideos] = useState<StoreVideo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [newReadyIds, setNewReadyIds] = useState<Set<string>>(new Set());
+  const previousStatusRef = useRef<Map<string, string>>(new Map());
 
   const fetchVideos = useCallback(async () => {
     setLoading(true);
@@ -39,24 +42,50 @@ export function StoreVideosPanel({ storeId }: StoreVideosPanelProps) {
       .order("created_at", { ascending: false });
 
     if (!error && data) {
-      setVideos(data as unknown as StoreVideo[]);
+      const typed = data as unknown as StoreVideo[];
+
+      // Detect videos that just became "ready"
+      typed.forEach((v) => {
+        const prev = previousStatusRef.current.get(v.id);
+        if (prev && prev !== "ready" && v.status === "ready") {
+          toast.success("🎬 Votre vidéo marketing est prête !", {
+            description: "Vous pouvez la prévisualiser et la télécharger.",
+          });
+          setNewReadyIds((s) => new Set(s).add(v.id));
+          setTimeout(() => setNewReadyIds((s) => { const n = new Set(s); n.delete(v.id); return n; }), 8000);
+        }
+      });
+
+      // Update status map
+      const map = new Map<string, string>();
+      typed.forEach((v) => map.set(v.id, v.status));
+      previousStatusRef.current = map;
+
+      setVideos(typed);
     }
     setLoading(false);
   }, [storeId]);
 
+  // Realtime subscription for instant updates
+  useEffect(() => {
+    if (!storeId) return;
+    const channel = supabase
+      .channel(`dashboard-videos-${storeId}`)
+      .on("postgres_changes", {
+        event: "*",
+        schema: "public",
+        table: "store_videos",
+        filter: `store_id=eq.${storeId}`,
+      }, () => {
+        fetchVideos();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [storeId, fetchVideos]);
+
   useEffect(() => {
     fetchVideos();
-
-    // Poll for updates when there are pending/processing videos
-    const interval = setInterval(() => {
-      setVideos((prev) => {
-        const hasPending = prev.some((v) => v.status === "pending" || v.status === "processing");
-        if (hasPending) fetchVideos();
-        return prev;
-      });
-    }, 10000);
-
-    return () => clearInterval(interval);
   }, [fetchVideos]);
 
   return (
