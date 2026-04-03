@@ -85,7 +85,7 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
   if (isLoading) {
     return (
       <div className="relative w-full h-[80vh]">
-        <Skeleton className="absolute inset-0 w-full h-full rounded-none" />
+        <Skeleton className="absolute inset-0 w-full h-full rounded-none md:h-[90vh]" />
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
           <Skeleton className="h-10 w-64 rounded-lg" />
           <Skeleton className="h-5 w-48 rounded-lg" />
