@@ -29,13 +29,13 @@ function StorefrontProductCard({ product, index }: { product: Product; index: nu
       className="group block animate-fade-in"
       style={{ animationDelay: `${index * 80}ms`, animationFillMode: "both" }}
     >
-      <div className="rounded-2xl overflow-hidden bg-card border border-border/50 transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1">
+      <div className="rounded-2xl overflow-hidden bg-card border border-border/50 transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-2 group-hover:border-primary/20">
         {/* Image */}
         <div className="relative overflow-hidden bg-muted">
           <img
             src={imageUrl}
             alt={product.name}
-            className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full aspect-square object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             loading="lazy"
             onError={(e) => {
               (e.target as HTMLImageElement).src =
