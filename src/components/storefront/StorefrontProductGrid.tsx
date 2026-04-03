@@ -29,13 +29,13 @@ function StorefrontProductCard({ product, index }: { product: Product; index: nu
       className="group block animate-fade-in"
       style={{ animationDelay: `${index * 80}ms`, animationFillMode: "both" }}
     >
-      <div className="rounded-2xl overflow-hidden bg-card border border-border/50 transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1">
+      <div className="rounded-2xl overflow-hidden bg-card border border-border/50 transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-2 group-hover:border-primary/20">
         {/* Image */}
         <div className="relative overflow-hidden bg-muted">
           <img
             src={imageUrl}
             alt={product.name}
-            className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full aspect-square object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             loading="lazy"
             onError={(e) => {
               (e.target as HTMLImageElement).src =
@@ -43,7 +43,10 @@ function StorefrontProductCard({ product, index }: { product: Product; index: nu
             }}
           />
           {/* Quick-view overlay */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100">
+          {/* Permanent overlay */}
+          <div className="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition-colors duration-500" />
+          {/* Quick-view overlay */}
+          <div className="absolute inset-0 flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             <span className="bg-card/90 backdrop-blur-sm text-foreground text-xs font-semibold px-4 py-2 rounded-full shadow-lg translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
               Voir le produit
             </span>
