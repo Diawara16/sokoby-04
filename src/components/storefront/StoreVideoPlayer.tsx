@@ -131,10 +131,10 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
         <source src={video.video_url} type="video/mp4" />
       </video>
 
-      {/* Gradient overlay */}
+      {/* Overlay */}
       <div
         className="absolute inset-0"
-        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.2))" }}
+        style={{ backgroundColor: "rgba(0,0,0,0.25)" }}
       />
 
       {/* Content */}
