@@ -124,8 +124,8 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
         loop
         playsInline
         onCanPlay={handleCanPlay}
-        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out"
-        style={{ opacity: videoReady ? 1 : 0 }}
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ opacity: videoReady ? 1 : 0, transition: 'opacity 0.8s ease' }}
         preload="auto"
       >
         <source src={video.video_url} type="video/mp4" />
