@@ -84,8 +84,8 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
 
   if (isLoading) {
     return (
-      <div className="relative w-full h-[80vh]">
-        <Skeleton className="absolute inset-0 w-full h-full rounded-none" />
+      <div className="relative w-full h-[70vh] md:h-[90vh]">
+        <Skeleton className="absolute inset-0 w-full h-full rounded-none md:h-[90vh]" />
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
           <Skeleton className="h-10 w-64 rounded-lg" />
           <Skeleton className="h-5 w-48 rounded-lg" />
@@ -97,7 +97,7 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
 
   if (!video) {
     return (
-      <div className="relative w-full h-[80vh] flex flex-col items-center justify-center bg-muted gap-3 text-muted-foreground">
+      <div className="relative w-full h-[70vh] md:h-[90vh] flex flex-col items-center justify-center bg-muted gap-3 text-muted-foreground">
         <Video className="h-12 w-12 animate-pulse" />
         <p className="text-sm font-medium">
           {isProcessing ? "Génération de la vidéo en cours..." : "Aucune vidéo disponible"}
@@ -107,7 +107,7 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
   }
 
   return (
-    <div className="relative w-full h-[80vh] overflow-hidden bg-muted">
+    <div className="relative w-full h-[70vh] md:h-[90vh] overflow-hidden bg-muted">
       {/* Thumbnail shown immediately */}
       {video.thumbnail_url && (
         <img
@@ -124,17 +124,17 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
         loop
         playsInline
         onCanPlay={handleCanPlay}
-        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out"
-        style={{ opacity: videoReady ? 1 : 0 }}
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ opacity: videoReady ? 1 : 0, transition: 'opacity 0.8s ease' }}
         preload="auto"
       >
         <source src={video.video_url} type="video/mp4" />
       </video>
 
-      {/* Gradient overlay */}
+      {/* Overlay */}
       <div
         className="absolute inset-0"
-        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.2))" }}
+        style={{ backgroundColor: "rgba(0,0,0,0.25)" }}
       />
 
       {/* Content */}
