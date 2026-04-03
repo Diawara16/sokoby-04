@@ -43,7 +43,10 @@ function StorefrontProductCard({ product, index }: { product: Product; index: nu
             }}
           />
           {/* Quick-view overlay */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100">
+          {/* Permanent overlay */}
+          <div className="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition-colors duration-500" />
+          {/* Quick-view overlay */}
+          <div className="absolute inset-0 flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             <span className="bg-card/90 backdrop-blur-sm text-foreground text-xs font-semibold px-4 py-2 rounded-full shadow-lg translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
               Voir le produit
             </span>

@@ -85,7 +85,7 @@ export function LiveStorefront({ products, storeName, isLoading, storeId }: Live
 
             {/* All Products */}
             {allProducts.length > 6 && (
-              <section id="all-products" className="py-16 md:py-20 px-6">
+              <section id="all-products" className="py-20 md:py-28 px-6">
                 <div className="container mx-auto max-w-7xl">
                   <div className="text-center mb-12 animate-fade-in">
                     <p className="text-sm font-semibold uppercase tracking-widest text-primary mb-2">
