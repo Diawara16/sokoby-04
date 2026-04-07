@@ -107,24 +107,47 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
   }
 
   return (
-    <div className="relative w-full h-[70vh] md:h-[90vh] overflow-hidden bg-muted">
+    <div className="relative w-full h-[70vh] md:h-[90vh] overflow-hidden bg-black">
       {/* Thumbnail shown immediately */}
       {video.thumbnail_url && (
-        <img
-          src={video.thumbnail_url}
-          alt={storeName || "Store"}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <>
+          {/* Blurred background fill for mobile letterboxing */}
+          <img
+            src={video.thumbnail_url}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-60"
+          />
+          <img
+            src={video.thumbnail_url}
+            alt={storeName || "Store"}
+            className="absolute object-cover md:object-cover object-contain top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-full md:h-full"
+            style={{ objectFit: undefined }}
+          />
+        </>
       )}
 
-      {/* Video fades in over thumbnail when ready */}
+      {/* Blurred video background fill for mobile letterboxing */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-50 md:hidden"
+        preload="auto"
+      >
+        <source src={video.video_url} type="video/mp4" />
+      </video>
+
+      {/* Main video: cover on desktop, contain on mobile */}
       <video
         autoPlay
         muted
         loop
         playsInline
         onCanPlay={handleCanPlay}
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full object-contain md:object-cover"
         style={{ opacity: videoReady ? 1 : 0, transition: 'opacity 0.8s ease' }}
         preload="auto"
       >
