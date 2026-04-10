@@ -13,41 +13,27 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
   const [videoReady, setVideoReady] = useState(false);
   const queryClient = useQueryClient();
 
-  // Realtime subscription: invalidate query when a new "ready" video arrives
   useEffect(() => {
     if (!storeId) return;
-
     const channel = supabase
       .channel(`store-video-${storeId}`)
       .on(
         "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "store_videos",
-          filter: `store_id=eq.${storeId}`,
-        },
+        { event: "*", schema: "public", table: "store_videos", filter: `store_id=eq.${storeId}` },
         (payload) => {
-          console.log("Realtime store_videos update:", payload);
           const newRecord = payload.new as Record<string, unknown> | undefined;
-          if (newRecord?.status === "ready") {
-            setVideoReady(false);
-          }
+          if (newRecord?.status === "ready") setVideoReady(false);
           queryClient.invalidateQueries({ queryKey: ["store-video", storeId] });
         }
       )
       .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, [storeId, queryClient]);
 
   const { data: latestVideo, isLoading } = useQuery({
     queryKey: ["store-video", storeId],
     queryFn: async () => {
-      // First try to get the latest "ready" video
-      const { data: readyVideo, error: readyError } = await supabase
+      const { data: readyVideo, error } = await supabase
         .from("store_videos")
         .select("*")
         .eq("store_id", storeId)
@@ -55,11 +41,9 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
+      if (error) throw error;
+      if (readyVideo) return readyVideo;
 
-      if (readyError) throw readyError;
-      if (readyVideo) return { ...readyVideo, _hasProcessing: false } as { video_url: string; thumbnail_url: string | null; status: string; _hasProcessing: boolean };
-
-      // No ready video — check if there's one processing
       const { data: latestAny } = await supabase
         .from("store_videos")
         .select("status")
@@ -67,11 +51,9 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
-
       if (latestAny && latestAny.status !== "failed") {
-        return { video_url: "", thumbnail_url: null, status: latestAny.status, _hasProcessing: true } as any;
+        return { video_url: "", thumbnail_url: null, status: latestAny.status } as any;
       }
-
       return null;
     },
     enabled: !!storeId,
@@ -79,99 +61,70 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
 
   const video = latestVideo?.status === "ready" ? latestVideo : null;
   const isProcessing = latestVideo && latestVideo.status !== "ready" && latestVideo.status !== "failed";
-
   const handleCanPlay = useCallback(() => setVideoReady(true), []);
 
   if (isLoading) {
     return (
-      <div className="relative w-full h-[70vh] md:h-[90vh]">
-        <Skeleton className="absolute inset-0 w-full h-full rounded-none md:h-[90vh]" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-          <Skeleton className="h-10 w-64 rounded-lg" />
-          <Skeleton className="h-5 w-48 rounded-lg" />
-          <Skeleton className="h-12 w-36 rounded-lg mt-4" />
-        </div>
+      <div className="relative w-full h-[90vh]">
+        <Skeleton className="absolute inset-0 w-full h-full rounded-none" />
       </div>
     );
   }
 
   if (!video) {
     return (
-      <div className="relative w-full h-[70vh] md:h-[90vh] flex flex-col items-center justify-center bg-muted gap-3 text-muted-foreground">
+      <div className="relative w-full h-[90vh] flex flex-col items-center justify-center bg-black gap-3 text-white/50">
         <Video className="h-12 w-12 animate-pulse" />
         <p className="text-sm font-medium">
-          {isProcessing ? "Génération de la vidéo en cours..." : "Aucune vidéo disponible"}
+          {isProcessing ? "Generating video…" : "No video available"}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-[70vh] md:h-[90vh] overflow-hidden bg-black">
-      {/* Thumbnail shown immediately */}
+    <div className="relative w-full h-[90vh] overflow-hidden bg-black">
+      {/* Thumbnail fallback */}
       {video.thumbnail_url && (
-        <>
-          {/* Blurred background fill for mobile letterboxing */}
-          <img
-            src={video.thumbnail_url}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-60"
-          />
-          <img
-            src={video.thumbnail_url}
-            alt={storeName || "Store"}
-            className="absolute object-cover md:object-cover object-contain top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full md:w-full md:h-full"
-            style={{ objectFit: undefined }}
-          />
-        </>
+        <img
+          src={video.thumbnail_url}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+        />
       )}
 
-      {/* Blurred video background fill for mobile letterboxing */}
+      {/* Background video */}
       <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-50 md:hidden"
-        preload="auto"
-      >
-        <source src={video.video_url} type="video/mp4" />
-      </video>
-
-      {/* Main video: cover on desktop, contain on mobile */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
+        autoPlay muted loop playsInline
         onCanPlay={handleCanPlay}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full object-contain md:object-cover"
-        style={{ opacity: videoReady ? 1 : 0, transition: 'opacity 0.8s ease' }}
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ opacity: videoReady ? 1 : 0, transition: "opacity 1s ease-out" }}
         preload="auto"
       >
         <source src={video.video_url} type="video/mp4" />
       </video>
 
-      {/* Overlay */}
-      <div
-        className="absolute inset-0"
-        style={{ backgroundColor: "rgba(0,0,0,0.25)" }}
-      />
+      {/* Cinematic overlay */}
+      <div className="absolute inset-0 bg-black/40" />
 
-      {/* Content */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 z-10">
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg">
+      {/* Hero Content */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-10">
+        <h1
+          className="text-[clamp(2.5rem,5vw,4rem)] font-bold text-white mb-5 tracking-[1px] leading-tight"
+          style={{ animationDelay: "0.2s", animationFillMode: "both" }}
+        >
           {storeName || "Ma Boutique"}
         </h1>
-        <p className="text-lg sm:text-xl text-white/90 mb-8 max-w-2xl">
-          Découvrez notre collection exclusive
+        <p
+          className="text-[clamp(0.875rem,1.5vw,1.125rem)] text-[#e5e5e5] mb-10 max-w-xl leading-relaxed animate-fade-in"
+          style={{ animationDelay: "0.4s", animationFillMode: "both" }}
+        >
+          Discover premium products crafted for modern lifestyle
         </p>
         <a
           href="#featured-products"
-          className="inline-block px-6 py-3 font-bold text-white rounded-lg transition-all duration-200 hover:scale-105 hover:brightness-110"
-          style={{ backgroundColor: "#ff4d4f" }}
+          className="inline-flex items-center justify-center bg-white text-black font-semibold text-sm px-8 py-3.5 rounded-full transition-all duration-300 hover:scale-[1.06] hover:shadow-[0_8px_30px_rgba(255,255,255,0.2)] animate-fade-in"
+          style={{ animationDelay: "0.6s", animationFillMode: "both" }}
         >
           Shop Now
         </a>
