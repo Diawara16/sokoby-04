@@ -1,53 +1,50 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useStoreSettings } from "../hooks/useStoreSettings";
+import { useAutosave } from "@/hooks/useAutosave";
+import { AutosaveIndicator } from "./AutosaveIndicator";
 
 export const StoreAboutSettings = () => {
   const { settings, setSettings } = useStoreSettings();
-  const [aboutText, setAboutText] = useState(settings?.about_text || "");
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const [aboutText, setAboutText] = useState("");
 
-  const handleSave = async () => {
-    if (!settings) return;
-    
-    setIsLoading(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Utilisateur non connecté");
-
-      const { error } = await supabase
-        .from('store_settings')
-        .update({ about_text: aboutText })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      setSettings({ ...settings, about_text: aboutText });
-      toast({
-        title: "Succès",
-        description: "Description de la boutique mise à jour",
-      });
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible de sauvegarder la description",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+  // Sync local state when settings load asynchronously
+  useEffect(() => {
+    if (settings?.about_text != null) {
+      setAboutText(settings.about_text);
     }
+  }, [settings?.about_text]);
+
+  const saveToDb = useCallback(async (text: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !settings) return false;
+    const { error } = await supabase
+      .from("store_settings")
+      .update({ about_text: text })
+      .eq("user_id", user.id);
+    if (!error) {
+      setSettings({ ...settings, about_text: text });
+    }
+    return !error;
+  }, [settings, setSettings]);
+
+  const { status, debouncedSave } = useAutosave({ onSave: saveToDb });
+
+  const handleChange = (value: string) => {
+    setAboutText(value);
+    debouncedSave(value);
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>À propos de votre boutique</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>À propos de votre boutique</CardTitle>
+          <AutosaveIndicator status={status} />
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
@@ -56,14 +53,11 @@ export const StoreAboutSettings = () => {
             id="about-text"
             placeholder="Décrivez votre boutique, votre mission, vos valeurs..."
             value={aboutText}
-            onChange={(e) => setAboutText(e.target.value)}
+            onChange={(e) => handleChange(e.target.value)}
             rows={6}
             className="mt-2"
           />
         </div>
-        <Button onClick={handleSave} disabled={isLoading}>
-          {isLoading ? "Sauvegarde..." : "Sauvegarder"}
-        </Button>
       </CardContent>
     </Card>
   );
