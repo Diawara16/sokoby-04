@@ -3568,6 +3568,59 @@ export type Database = {
         }
         Relationships: []
       }
+      store_payment_configs: {
+        Row: {
+          account_id: string | null
+          config: Json | null
+          created_at: string
+          encrypted_secret_key: string | null
+          id: string
+          is_active: boolean | null
+          provider: string
+          publishable_key: string | null
+          store_id: string
+          updated_at: string
+          user_id: string
+          webhook_secret_encrypted: string | null
+        }
+        Insert: {
+          account_id?: string | null
+          config?: Json | null
+          created_at?: string
+          encrypted_secret_key?: string | null
+          id?: string
+          is_active?: boolean | null
+          provider: string
+          publishable_key?: string | null
+          store_id: string
+          updated_at?: string
+          user_id: string
+          webhook_secret_encrypted?: string | null
+        }
+        Update: {
+          account_id?: string | null
+          config?: Json | null
+          created_at?: string
+          encrypted_secret_key?: string | null
+          id?: string
+          is_active?: boolean | null
+          provider?: string
+          publishable_key?: string | null
+          store_id?: string
+          updated_at?: string
+          user_id?: string
+          webhook_secret_encrypted?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_payment_configs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "store_settings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_policies: {
         Row: {
           content: string
