@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, Link2, ShoppingCart } from "lucide-react";
+import { Globe, Link2, ShoppingCart, Package } from "lucide-react";
 import { MyDomainsTab } from "./MyDomainsTab";
 import { ConnectDomainTab } from "./ConnectDomainTab";
-import { BuyDomainTab } from "./BuyDomainTab";
+import { DomainPurchaseTab } from "./DomainPurchaseTab";
+import { PurchasedDomainsTab } from "./PurchasedDomainsTab";
 
 export const DomainsDashboard = () => {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -24,7 +25,7 @@ export const DomainsDashboard = () => {
       </div>
 
       <Tabs defaultValue="my-domains" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3 h-auto">
+        <TabsList className="grid w-full grid-cols-4 h-auto">
           <TabsTrigger value="my-domains" className="flex items-center gap-2 text-xs sm:text-sm py-2">
             <Globe className="h-4 w-4" />
             Mes domaines
@@ -36,6 +37,10 @@ export const DomainsDashboard = () => {
           <TabsTrigger value="buy" className="flex items-center gap-2 text-xs sm:text-sm py-2">
             <ShoppingCart className="h-4 w-4" />
             Acheter
+          </TabsTrigger>
+          <TabsTrigger value="purchased" className="flex items-center gap-2 text-xs sm:text-sm py-2">
+            <Package className="h-4 w-4" />
+            Achetés
           </TabsTrigger>
         </TabsList>
 
@@ -67,10 +72,22 @@ export const DomainsDashboard = () => {
           <Card>
             <CardHeader>
               <CardTitle>Acheter un domaine</CardTitle>
-              <CardDescription>Recherchez et vérifiez la disponibilité d'un nom de domaine</CardDescription>
+              <CardDescription>Recherchez un domaine, réservez-le et configurez-le automatiquement</CardDescription>
             </CardHeader>
             <CardContent>
-              <BuyDomainTab />
+              <DomainPurchaseTab onDomainPurchased={handleDomainAdded} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="purchased">
+          <Card>
+            <CardHeader>
+              <CardTitle>Mes domaines achetés</CardTitle>
+              <CardDescription>Domaines enregistrés via le système d'achat Sokoby</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PurchasedDomainsTab />
             </CardContent>
           </Card>
         </TabsContent>

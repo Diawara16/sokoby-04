@@ -3549,21 +3549,51 @@ export type Database = {
       }
       store_domains: {
         Row: {
+          currency: string | null
+          dns_auto_configured: boolean
+          dns_setup_error: string | null
           domain: string | null
           id: string
+          is_primary: boolean
+          provider: string
+          provider_order_id: string | null
+          purchase_price: number | null
+          status: string
           store_id: string | null
+          updated_at: string
+          user_id: string | null
           verified: boolean | null
         }
         Insert: {
+          currency?: string | null
+          dns_auto_configured?: boolean
+          dns_setup_error?: string | null
           domain?: string | null
           id?: string
+          is_primary?: boolean
+          provider?: string
+          provider_order_id?: string | null
+          purchase_price?: number | null
+          status?: string
           store_id?: string | null
+          updated_at?: string
+          user_id?: string | null
           verified?: boolean | null
         }
         Update: {
+          currency?: string | null
+          dns_auto_configured?: boolean
+          dns_setup_error?: string | null
           domain?: string | null
           id?: string
+          is_primary?: boolean
+          provider?: string
+          provider_order_id?: string | null
+          purchase_price?: number | null
+          status?: string
           store_id?: string | null
+          updated_at?: string
+          user_id?: string | null
           verified?: boolean | null
         }
         Relationships: []
