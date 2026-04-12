@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -8,13 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAutosave } from "@/hooks/useAutosave";
 import { AutosaveIndicator } from "./AutosaveIndicator";
-import { CreditCard, Shield, AlertCircle, Check } from "lucide-react";
+import { CreditCard, Shield, AlertCircle, Check, Info } from "lucide-react";
 
+// Only store non-sensitive config in client-accessible JSONB
 interface PaymentData {
   stripeEnabled: boolean;
   paypalEnabled: boolean;
   stripePublicKey: string;
-  stripeSecretKey: string;
   paypalClientId: string;
 }
 
@@ -23,7 +22,6 @@ export function StorePaymentSettings() {
     stripeEnabled: false,
     paypalEnabled: false,
     stripePublicKey: "",
-    stripeSecretKey: "",
     paypalClientId: "",
   });
   const [loaded, setLoaded] = useState(false);
@@ -44,7 +42,6 @@ export function StorePaymentSettings() {
             stripeEnabled: ps.stripeEnabled || false,
             paypalEnabled: ps.paypalEnabled || false,
             stripePublicKey: ps.stripePublicKey || "",
-            stripeSecretKey: ps.stripeSecretKey || "",
             paypalClientId: ps.paypalClientId || "",
           });
         }
@@ -59,6 +56,7 @@ export function StorePaymentSettings() {
   const saveToDb = useCallback(async (saveData: PaymentData) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return false;
+    // Never store secret keys in client-accessible storage
     const { error } = await supabase
       .from("store_settings")
       .update({ payment_settings: saveData, updated_at: new Date().toISOString() } as any)
@@ -123,9 +121,21 @@ export function StorePaymentSettings() {
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-2"><CreditCard className="h-5 w-5" />Configuration Stripe</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg"><AlertCircle className="h-4 w-4 text-blue-600" /><p className="text-sm text-blue-800">Créez un compte Stripe sur <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="underline">stripe.com</a> pour obtenir vos clés API.</p></div>
-            <div className="space-y-2"><Label>Clé publique Stripe</Label><Input placeholder="pk_test_..." value={data.stripePublicKey} onChange={(e) => update({ stripePublicKey: e.target.value })} /></div>
-            <div className="space-y-2"><Label>Clé secrète Stripe</Label><Input type="password" placeholder="sk_test_..." value={data.stripeSecretKey} onChange={(e) => update({ stripeSecretKey: e.target.value })} /></div>
+            <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
+              <AlertCircle className="h-4 w-4 text-blue-600" />
+              <p className="text-sm text-blue-800">Créez un compte Stripe sur <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="underline">stripe.com</a> pour obtenir vos clés API.</p>
+            </div>
+            <div className="space-y-2">
+              <Label>Clé publique Stripe</Label>
+              <Input placeholder="pk_test_..." value={data.stripePublicKey} onChange={(e) => update({ stripePublicKey: e.target.value })} />
+            </div>
+            <div className="flex items-center gap-2 p-3 bg-amber-50 rounded-lg">
+              <Info className="h-4 w-4 text-amber-600" />
+              <p className="text-sm text-amber-800">
+                La clé secrète Stripe est stockée de manière sécurisée côté serveur via les variables d'environnement. 
+                Configurez-la dans les paramètres Supabase Edge Functions.
+              </p>
+            </div>
           </CardContent>
         </Card>
       )}

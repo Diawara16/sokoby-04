@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useStoreSettings } from "../hooks/useStoreSettings";
+import { useAutosave } from "@/hooks/useAutosave";
+import { AutosaveIndicator } from "./AutosaveIndicator";
 
 const AVAILABLE_LANGUAGES = [
   { code: 'fr', name: 'Français' },
@@ -17,96 +18,82 @@ const AVAILABLE_LANGUAGES = [
   { code: 'pt', name: 'Português' },
 ];
 
+interface LangData {
+  enabledLanguages: string[];
+  defaultLanguage: string;
+}
+
 export const StoreLanguageSettings = () => {
   const { settings, setSettings } = useStoreSettings();
-  const [enabledLanguages, setEnabledLanguages] = useState<string[]>(
-    settings?.enabled_languages || ['fr']
-  );
-  const [defaultLanguage, setDefaultLanguage] = useState(
-    settings?.default_language || 'fr'
-  );
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const [enabledLanguages, setEnabledLanguages] = useState<string[]>(['fr']);
+  const [defaultLanguage, setDefaultLanguage] = useState('fr');
+
+  // Sync local state when settings load asynchronously
+  useEffect(() => {
+    if (settings?.enabled_languages) {
+      setEnabledLanguages(settings.enabled_languages);
+    }
+    if (settings?.default_language) {
+      setDefaultLanguage(settings.default_language);
+    }
+  }, [settings?.enabled_languages, settings?.default_language]);
+
+  const saveToDb = useCallback(async (data: LangData) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !settings) return false;
+    const { error } = await supabase
+      .from("store_settings")
+      .update({
+        enabled_languages: data.enabledLanguages,
+        default_language: data.defaultLanguage,
+      })
+      .eq("user_id", user.id);
+    if (!error) {
+      setSettings({
+        ...settings,
+        enabled_languages: data.enabledLanguages,
+        default_language: data.defaultLanguage,
+      });
+    }
+    return !error;
+  }, [settings, setSettings]);
+
+  const { status, debouncedSave } = useAutosave({ onSave: saveToDb });
 
   const handleLanguageToggle = (languageCode: string, checked: boolean) => {
-    let newEnabledLanguages = [...enabledLanguages];
-    
+    let newEnabled = [...enabledLanguages];
+    let newDefault = defaultLanguage;
+
     if (checked) {
-      if (!newEnabledLanguages.includes(languageCode)) {
-        newEnabledLanguages.push(languageCode);
-      }
+      if (!newEnabled.includes(languageCode)) newEnabled.push(languageCode);
     } else {
-      newEnabledLanguages = newEnabledLanguages.filter(lang => lang !== languageCode);
-      // Si la langue par défaut est désactivée, la changer
-      if (languageCode === defaultLanguage && newEnabledLanguages.length > 0) {
-        setDefaultLanguage(newEnabledLanguages[0]);
+      if (newEnabled.length <= 1) {
+        toast.error("Vous devez activer au moins une langue");
+        return;
+      }
+      newEnabled = newEnabled.filter(l => l !== languageCode);
+      if (languageCode === newDefault && newEnabled.length > 0) {
+        newDefault = newEnabled[0];
       }
     }
-    
-    setEnabledLanguages(newEnabledLanguages);
+
+    setEnabledLanguages(newEnabled);
+    setDefaultLanguage(newDefault);
+    debouncedSave({ enabledLanguages: newEnabled, defaultLanguage: newDefault });
   };
 
-  const handleSave = async () => {
-    if (!settings) return;
-    
-    if (enabledLanguages.length === 0) {
-      toast({
-        title: "Erreur",
-        description: "Vous devez activer au moins une langue",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!enabledLanguages.includes(defaultLanguage)) {
-      toast({
-        title: "Erreur",
-        description: "La langue par défaut doit être activée",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    setIsLoading(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Utilisateur non connecté");
-
-      const { error } = await supabase
-        .from('store_settings')
-        .update({ 
-          enabled_languages: enabledLanguages,
-          default_language: defaultLanguage
-        })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      setSettings({ 
-        ...settings, 
-        enabled_languages: enabledLanguages,
-        default_language: defaultLanguage
-      });
-      
-      toast({
-        title: "Succès",
-        description: "Paramètres de langue mis à jour",
-      });
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible de sauvegarder les paramètres",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  const handleDefaultChange = (value: string) => {
+    setDefaultLanguage(value);
+    debouncedSave({ enabledLanguages, defaultLanguage: value });
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Gestion multilingue</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Gestion multilingue</CardTitle>
+          <AutosaveIndicator status={status} />
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
@@ -117,9 +104,7 @@ export const StoreLanguageSettings = () => {
                 <Checkbox
                   id={language.code}
                   checked={enabledLanguages.includes(language.code)}
-                  onCheckedChange={(checked) => 
-                    handleLanguageToggle(language.code, checked as boolean)
-                  }
+                  onCheckedChange={(checked) => handleLanguageToggle(language.code, checked as boolean)}
                 />
                 <Label htmlFor={language.code}>{language.name}</Label>
               </div>
@@ -129,25 +114,17 @@ export const StoreLanguageSettings = () => {
 
         <div>
           <Label htmlFor="default-language">Langue par défaut</Label>
-          <Select value={defaultLanguage} onValueChange={setDefaultLanguage}>
-            <SelectTrigger className="mt-2">
-              <SelectValue />
-            </SelectTrigger>
+          <Select value={defaultLanguage} onValueChange={handleDefaultChange}>
+            <SelectTrigger className="mt-2"><SelectValue /></SelectTrigger>
             <SelectContent>
               {AVAILABLE_LANGUAGES
                 .filter(lang => enabledLanguages.includes(lang.code))
                 .map((language) => (
-                  <SelectItem key={language.code} value={language.code}>
-                    {language.name}
-                  </SelectItem>
+                  <SelectItem key={language.code} value={language.code}>{language.name}</SelectItem>
                 ))}
             </SelectContent>
           </Select>
         </div>
-
-        <Button onClick={handleSave} disabled={isLoading}>
-          {isLoading ? "Sauvegarde..." : "Sauvegarder"}
-        </Button>
       </CardContent>
     </Card>
   );
