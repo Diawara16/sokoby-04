@@ -3604,9 +3604,13 @@ export type Database = {
       store_settings: {
         Row: {
           about_text: string | null
+          analytics_enabled: boolean | null
           banner_url: string | null
           category: string | null
+          cookie_consent_enabled: boolean | null
           created_at: string
+          custom_css: string | null
+          custom_js: string | null
           default_currency: string | null
           default_language: string | null
           display_settings: Json | null
@@ -3614,6 +3618,7 @@ export type Database = {
           email_template_invoice: Json | null
           email_template_order: Json | null
           enabled_languages: string[] | null
+          ga_tracking_id: string | null
           gdpr_settings: Json | null
           id: string
           initial_products_generated: boolean | null
@@ -3623,13 +3628,18 @@ export type Database = {
           invoice_template: Json | null
           is_custom_domain: boolean | null
           is_production: boolean
+          maintenance_mode: boolean | null
           niche: string | null
           notification_settings: Json | null
           og_image_url: string | null
+          payment_settings: Json | null
           payment_status: string | null
           production_activated_at: string | null
+          published_at: string | null
           seo_description: string | null
+          seo_keywords: string | null
           seo_title: string | null
+          shipping_settings: Json | null
           social_media: Json | null
           store_address: string | null
           store_description: string | null
@@ -3652,9 +3662,13 @@ export type Database = {
         }
         Insert: {
           about_text?: string | null
+          analytics_enabled?: boolean | null
           banner_url?: string | null
           category?: string | null
+          cookie_consent_enabled?: boolean | null
           created_at?: string
+          custom_css?: string | null
+          custom_js?: string | null
           default_currency?: string | null
           default_language?: string | null
           display_settings?: Json | null
@@ -3662,6 +3676,7 @@ export type Database = {
           email_template_invoice?: Json | null
           email_template_order?: Json | null
           enabled_languages?: string[] | null
+          ga_tracking_id?: string | null
           gdpr_settings?: Json | null
           id?: string
           initial_products_generated?: boolean | null
@@ -3671,13 +3686,18 @@ export type Database = {
           invoice_template?: Json | null
           is_custom_domain?: boolean | null
           is_production?: boolean
+          maintenance_mode?: boolean | null
           niche?: string | null
           notification_settings?: Json | null
           og_image_url?: string | null
+          payment_settings?: Json | null
           payment_status?: string | null
           production_activated_at?: string | null
+          published_at?: string | null
           seo_description?: string | null
+          seo_keywords?: string | null
           seo_title?: string | null
+          shipping_settings?: Json | null
           social_media?: Json | null
           store_address?: string | null
           store_description?: string | null
@@ -3700,9 +3720,13 @@ export type Database = {
         }
         Update: {
           about_text?: string | null
+          analytics_enabled?: boolean | null
           banner_url?: string | null
           category?: string | null
+          cookie_consent_enabled?: boolean | null
           created_at?: string
+          custom_css?: string | null
+          custom_js?: string | null
           default_currency?: string | null
           default_language?: string | null
           display_settings?: Json | null
@@ -3710,6 +3734,7 @@ export type Database = {
           email_template_invoice?: Json | null
           email_template_order?: Json | null
           enabled_languages?: string[] | null
+          ga_tracking_id?: string | null
           gdpr_settings?: Json | null
           id?: string
           initial_products_generated?: boolean | null
@@ -3719,13 +3744,18 @@ export type Database = {
           invoice_template?: Json | null
           is_custom_domain?: boolean | null
           is_production?: boolean
+          maintenance_mode?: boolean | null
           niche?: string | null
           notification_settings?: Json | null
           og_image_url?: string | null
+          payment_settings?: Json | null
           payment_status?: string | null
           production_activated_at?: string | null
+          published_at?: string | null
           seo_description?: string | null
+          seo_keywords?: string | null
           seo_title?: string | null
+          shipping_settings?: Json | null
           social_media?: Json | null
           store_address?: string | null
           store_description?: string | null

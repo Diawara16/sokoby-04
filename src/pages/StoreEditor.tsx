@@ -1,26 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { 
-  ArrowLeft, 
-  Store, 
-  Settings, 
-  Palette, 
-  Package, 
-  CreditCard, 
-  Truck, 
-  Eye,
-  Globe,
-  Plus
+import {
+  ArrowLeft, Store, Settings, Palette, Package, CreditCard, Truck, Eye, Globe, Plus, Loader2
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-// Import des composants de configuration
 import { StoreGeneralSettings } from "@/components/store/editor/StoreGeneralSettings";
 import { StoreDesignSettings } from "@/components/store/editor/StoreDesignSettings";
 import { StoreProductsManager } from "@/components/store/editor/StoreProductsManager";
@@ -56,121 +45,63 @@ interface BrandData {
 
 export default function StoreEditor() {
   const [loading, setLoading] = useState(true);
+  const [publishing, setPublishing] = useState(false);
   const [storeData, setStoreData] = useState<StoreData | null>(null);
   const [brandData, setBrandData] = useState<BrandData>({});
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  
+
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
-  
-  // Get initial tab from URL params or localStorage
+
   const getInitialTab = () => {
-    const urlTab = searchParams.get('tab');
-    const validTabs = ['general', 'about', 'testimonials', 'languages', 'banner', 'footer', 'policies', 'design', 'products', 'payments', 'shipping', 'settings'];
-    if (urlTab && validTabs.includes(urlTab)) {
-      return urlTab;
-    }
-    const savedTab = localStorage.getItem('storeEditor_activeTab');
-    return savedTab && validTabs.includes(savedTab) 
-      ? savedTab 
-      : 'general';
+    const urlTab = searchParams.get("tab");
+    const validTabs = ["general", "about", "testimonials", "languages", "banner", "footer", "policies", "design", "products", "payments", "shipping", "settings"];
+    if (urlTab && validTabs.includes(urlTab)) return urlTab;
+    const saved = localStorage.getItem("storeEditor_activeTab");
+    return saved && validTabs.includes(saved) ? saved : "general";
   };
-  
+
   const [activeTab, setActiveTab] = useState(getInitialTab());
 
-  // Update URL and localStorage when tab changes
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     setSearchParams({ tab });
-    localStorage.setItem('storeEditor_activeTab', tab);
+    localStorage.setItem("storeEditor_activeTab", tab);
   };
 
-  useEffect(() => {
-    loadStoreData();
-  }, []);
+  useEffect(() => { loadStoreData(); }, []);
 
-  // Update tab from URL changes
   useEffect(() => {
-    const urlTab = searchParams.get('tab');
-    if (urlTab && urlTab !== activeTab) {
-      setActiveTab(urlTab);
-    }
+    const urlTab = searchParams.get("tab");
+    if (urlTab && urlTab !== activeTab) setActiveTab(urlTab);
   }, [searchParams]);
 
   const loadStoreData = async () => {
     try {
       setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour accéder à l'éditeur",
-          variant: "destructive"
-        });
-        navigate('/connexion');
-        return;
-      }
+      if (!user) { toast.error("Vous devez être connecté"); navigate("/connexion"); return; }
 
-      // Charger les données de la boutique
       const { data: store, error: storeError } = await supabase
-        .from('store_settings')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        .from("store_settings").select("*").eq("user_id", user.id).maybeSingle();
+      if (storeError) throw storeError;
 
-      if (storeError) {
-        console.error('Error loading store:', storeError);
-        throw storeError;
-      }
-
-      // Charger les données de marque
-      const { data: brand, error: brandError } = await supabase
-        .from('brand_settings')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      console.log('Loaded brand settings:', brand);
-
-      if (brandError) {
-        console.error('Error loading brand:', brandError);
-        // Continue même si les données de marque ne sont pas trouvées
-      }
+      const { data: brand } = await supabase
+        .from("brand_settings").select("*").eq("user_id", user.id).maybeSingle();
 
       if (!store) {
-        // Créer une boutique de base si elle n'existe pas
         const { data: newStore, error: createError } = await supabase
-          .from('store_settings')
-          .insert({
-            user_id: user.id,
-            store_name: 'Ma Boutique',
-            store_email: user.email,
-            is_custom_domain: false
-          })
-          .select()
-          .single();
-
-        if (createError) {
-          console.error('Error creating store:', createError);
-          throw createError;
-        }
-
+          .from("store_settings")
+          .insert({ user_id: user.id, store_name: "Ma Boutique", store_email: user.email, is_custom_domain: false })
+          .select().single();
+        if (createError) throw createError;
         setStoreData(newStore);
       } else {
         setStoreData(store);
       }
-
       setBrandData(brand || {});
-
     } catch (error) {
-      console.error('Error loading store data:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les données de la boutique",
-        variant: "destructive"
-      });
+      console.error("Error loading store data:", error);
+      toast.error("Impossible de charger les données de la boutique");
     } finally {
       setLoading(false);
     }
@@ -178,27 +109,32 @@ export default function StoreEditor() {
 
   const handlePreviewStore = () => {
     if (!storeData) return;
-    
-    // Créer l'URL d'aperçu locale
-    const previewUrl = `/boutique-apercu/${storeData.id}`;
-    window.open(previewUrl, '_blank');
+    window.open(`/boutique-apercu/${storeData.id}`, "_blank");
   };
 
   const handlePublishStore = async () => {
     if (!storeData) return;
-
+    setPublishing(true);
     try {
-      // Logique de publication de la boutique
-      toast({
-        title: "Boutique publiée",
-        description: "Votre boutique est maintenant en ligne !",
-      });
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Non connecté");
+
+      const { error } = await supabase
+        .from("store_settings")
+        .update({
+          published_at: new Date().toISOString(),
+          store_status: "active",
+          updated_at: new Date().toISOString(),
+        } as any)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      toast.success("Boutique publiée avec succès !");
     } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible de publier la boutique",
-        variant: "destructive"
-      });
+      console.error("Publish error:", error);
+      toast.error("Impossible de publier la boutique");
+    } finally {
+      setPublishing(false);
     }
   };
 
@@ -207,7 +143,7 @@ export default function StoreEditor() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
             <p className="text-muted-foreground">Chargement de l'éditeur...</p>
           </div>
         </div>
@@ -217,16 +153,10 @@ export default function StoreEditor() {
 
   if (!storeData) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Aucune boutique trouvée</h1>
-          <p className="text-muted-foreground mb-6">
-            Vous devez d'abord créer une boutique pour accéder à l'éditeur.
-          </p>
-          <Button onClick={() => navigate('/creer-boutique-manuelle')}>
-            Créer ma boutique
-          </Button>
-        </div>
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="text-2xl font-bold mb-4">Aucune boutique trouvée</h1>
+        <p className="text-muted-foreground mb-6">Vous devez d'abord créer une boutique.</p>
+        <Button onClick={() => navigate("/creer-boutique-manuelle")}>Créer ma boutique</Button>
       </div>
     );
   }
@@ -235,14 +165,9 @@ export default function StoreEditor() {
     <div className="container mx-auto px-4 py-6 max-w-7xl">
       {/* Header */}
       <div className="mb-6">
-        <Link 
-          to="/tableau-de-bord" 
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Retour au dashboard
+        <Link to="/tableau-de-bord" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4">
+          <ArrowLeft className="h-4 w-4" />Retour au dashboard
         </Link>
-        
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
@@ -252,164 +177,60 @@ export default function StoreEditor() {
               <h1 className="text-3xl font-bold">{storeData.store_name}</h1>
               <p className="text-muted-foreground">Éditeur de boutique</p>
             </div>
-            {hasUnsavedChanges && (
-              <Badge variant="secondary" className="ml-2">
-                Modifications non sauvegardées
-              </Badge>
-            )}
           </div>
-          
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" onClick={handlePreviewStore}>
-              <Eye className="h-4 w-4 mr-2" />
-              Aperçu
+              <Eye className="h-4 w-4 mr-2" />Aperçu
             </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate('/parametres/domaine')}>
-              <Globe className="h-4 w-4 mr-2" />
-              Domaine
+            <Button variant="outline" size="sm" onClick={() => navigate("/parametres/domaine")}>
+              <Globe className="h-4 w-4 mr-2" />Domaine
             </Button>
-            <Button size="sm" onClick={handlePublishStore}>
-              Publier
+            <Button size="sm" onClick={handlePublishStore} disabled={publishing}>
+              {publishing && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {publishing ? "Publication…" : "Publier"}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Onglets de configuration */}
+      {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4 lg:grid-cols-12 gap-1">
-          <TabsTrigger value="general" className="flex items-center gap-1 text-xs">
-            <Settings className="h-3 w-3" />
-            Général
-          </TabsTrigger>
-          <TabsTrigger value="about" className="flex items-center gap-1 text-xs">
-            À propos
-          </TabsTrigger>
-          <TabsTrigger value="testimonials" className="flex items-center gap-1 text-xs">
-            Témoignages
-          </TabsTrigger>
-          <TabsTrigger value="languages" className="flex items-center gap-1 text-xs">
-            Langues
-          </TabsTrigger>
-          <TabsTrigger value="banner" className="flex items-center gap-1 text-xs">
-            Bannière
-          </TabsTrigger>
-          <TabsTrigger value="footer" className="flex items-center gap-1 text-xs">
-            Footer
-          </TabsTrigger>
-          <TabsTrigger value="policies" className="flex items-center gap-1 text-xs">
-            Sections
-          </TabsTrigger>
-          <TabsTrigger value="design" className="flex items-center gap-1 text-xs">
-            <Palette className="h-3 w-3" />
-            Design
-          </TabsTrigger>
-          <TabsTrigger value="products" className="flex items-center gap-1 text-xs">
-            <Package className="h-3 w-3" />
-            Produits
-          </TabsTrigger>
-          <TabsTrigger value="payments" className="flex items-center gap-1 text-xs">
-            <CreditCard className="h-3 w-3" />
-            Paiements
-          </TabsTrigger>
-          <TabsTrigger value="shipping" className="flex items-center gap-1 text-xs">
-            <Truck className="h-3 w-3" />
-            Livraison
-          </TabsTrigger>
-          <TabsTrigger value="settings" className="flex items-center gap-1 text-xs">
-            <Settings className="h-3 w-3" />
-            Paramètres
-          </TabsTrigger>
+          <TabsTrigger value="general" className="flex items-center gap-1 text-xs"><Settings className="h-3 w-3" />Général</TabsTrigger>
+          <TabsTrigger value="about" className="text-xs">À propos</TabsTrigger>
+          <TabsTrigger value="testimonials" className="text-xs">Témoignages</TabsTrigger>
+          <TabsTrigger value="languages" className="text-xs">Langues</TabsTrigger>
+          <TabsTrigger value="banner" className="text-xs">Bannière</TabsTrigger>
+          <TabsTrigger value="footer" className="text-xs">Footer</TabsTrigger>
+          <TabsTrigger value="policies" className="text-xs">Sections</TabsTrigger>
+          <TabsTrigger value="design" className="flex items-center gap-1 text-xs"><Palette className="h-3 w-3" />Design</TabsTrigger>
+          <TabsTrigger value="products" className="flex items-center gap-1 text-xs"><Package className="h-3 w-3" />Produits</TabsTrigger>
+          <TabsTrigger value="payments" className="flex items-center gap-1 text-xs"><CreditCard className="h-3 w-3" />Paiements</TabsTrigger>
+          <TabsTrigger value="shipping" className="flex items-center gap-1 text-xs"><Truck className="h-3 w-3" />Livraison</TabsTrigger>
+          <TabsTrigger value="settings" className="flex items-center gap-1 text-xs"><Settings className="h-3 w-3" />Paramètres</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="general" className="space-y-6">
-          <StoreGeneralSettings 
-            storeData={storeData}
-            onDataChange={(newData) => {
-              setStoreData({ ...storeData, ...newData });
-              setHasUnsavedChanges(true);
-            }}
-          />
-        </TabsContent>
-
-        <TabsContent value="about" className="space-y-6">
-          <StoreAboutSettings />
-        </TabsContent>
-
-        <TabsContent value="testimonials" className="space-y-6">
-          <StoreTestimonialsManager />
-        </TabsContent>
-
-        <TabsContent value="languages" className="space-y-6">
-          <StoreLanguageSettings />
-        </TabsContent>
-
-        <TabsContent value="banner" className="space-y-6">
-          <StoreBannerEditor />
-        </TabsContent>
-
-        <TabsContent value="footer" className="space-y-6">
-          <StoreFooterManager />
-        </TabsContent>
-
-        <TabsContent value="policies" className="space-y-6">
-          <StorePoliciesEditor />
-        </TabsContent>
-
-        <TabsContent value="design" className="space-y-6">
-          <ThemeGallery 
+        <TabsContent value="general"><StoreGeneralSettings storeData={storeData} onDataChange={(d) => setStoreData({ ...storeData, ...d })} /></TabsContent>
+        <TabsContent value="about"><StoreAboutSettings /></TabsContent>
+        <TabsContent value="testimonials"><StoreTestimonialsManager /></TabsContent>
+        <TabsContent value="languages"><StoreLanguageSettings /></TabsContent>
+        <TabsContent value="banner"><StoreBannerEditor /></TabsContent>
+        <TabsContent value="footer"><StoreFooterManager /></TabsContent>
+        <TabsContent value="policies"><StorePoliciesEditor /></TabsContent>
+        <TabsContent value="design">
+          <ThemeGallery
             onThemeSelect={(theme) => {
-              setBrandData(prev => ({
-                ...prev,
-                primary_color: theme.config.colors.primary,
-                secondary_color: theme.config.colors.secondary
-              }));
-              setHasUnsavedChanges(true);
+              setBrandData((prev) => ({ ...prev, primary_color: theme.config.colors.primary, secondary_color: theme.config.colors.secondary }));
             }}
-            selectedTheme={brandData.primary_color === '#000000' ? 'minimal' : undefined}
+            selectedTheme={brandData.primary_color === "#000000" ? "minimal" : undefined}
           />
-          
-          <StoreDesignSettings 
-            brandData={brandData}
-            onDataChange={(newData) => {
-              setBrandData({ ...brandData, ...newData });
-              // Don't set unsaved changes for auto-saved items (colors, slogan, logo)
-              if (!newData.primary_color && !newData.secondary_color && !newData.slogan && !newData.logo_url) {
-                setHasUnsavedChanges(true);
-              }
-            }}
-          />
+          <StoreDesignSettings brandData={brandData} onDataChange={(d) => setBrandData({ ...brandData, ...d })} />
         </TabsContent>
-
-        <TabsContent value="products" className="space-y-6">
-          <StoreProductsManager />
-        </TabsContent>
-
-        <TabsContent value="payments" className="space-y-6">
-          <StorePaymentSettings />
-        </TabsContent>
-
-        <TabsContent value="shipping" className="space-y-6">
-          <StoreShippingSettings />
-        </TabsContent>
-
-        <TabsContent value="settings" className="space-y-6">
-          <StoreAdvancedSettings 
-            storeData={storeData}
-            onDataChange={(newData) => {
-              setStoreData({ ...storeData, ...newData });
-              setHasUnsavedChanges(true);
-            }}
-          />
-        </TabsContent>
+        <TabsContent value="products"><StoreProductsManager /></TabsContent>
+        <TabsContent value="payments"><StorePaymentSettings /></TabsContent>
+        <TabsContent value="shipping"><StoreShippingSettings /></TabsContent>
+        <TabsContent value="settings"><StoreAdvancedSettings storeData={storeData} onDataChange={(d) => setStoreData({ ...storeData, ...d })} /></TabsContent>
       </Tabs>
-
-      {/* Actions rapides flottantes */}
-      <div className="fixed bottom-6 right-6 flex flex-col gap-3">
-        <Button size="sm" className="rounded-full shadow-lg">
-          <Plus className="h-4 w-4" />
-        </Button>
-      </div>
     </div>
   );
 }
