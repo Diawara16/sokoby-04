@@ -92,6 +92,14 @@ export const DomainPurchaseTab = ({ onDomainPurchased }: DomainPurchaseTabProps)
 
   return (
     <div className="space-y-6">
+      {/* MVP notice */}
+      <Alert className="bg-amber-50 border-amber-200">
+        <Info className="h-4 w-4 text-amber-600" />
+        <AlertDescription className="text-amber-800 text-sm">
+          <strong>Mode MVP :</strong> La vérification de disponibilité est estimée (basée sur le DNS) et ne reflète pas la disponibilité réelle chez un registrar. L'achat crée un enregistrement « en attente » — aucun achat réel n'est effectué.
+        </AlertDescription>
+      </Alert>
+
       {/* Search */}
       <div className="flex gap-3 max-w-lg">
         <Input
