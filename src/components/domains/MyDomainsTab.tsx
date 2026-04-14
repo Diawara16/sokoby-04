@@ -151,6 +151,15 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
   const handleVerify = async (domain: Domain) => {
     setVerifyingId(domain.id);
     try {
+      // Ownership check
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: record } = await supabase.from("domains").select("user_id").eq("id", domain.id).single();
+      if (record?.user_id !== user.id) {
+        toast({ title: "Accès refusé", variant: "destructive" });
+        return;
+      }
+
       await supabase
         .from("domains")
         .update({ status: "verifying", updated_at: new Date().toISOString() })
@@ -164,11 +173,12 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
 
       if (verified) {
         // Domain activates immediately; SSL tracked independently
+        const sslStatus = aRecordValid ? "provisioning" : "pending";
         await supabase
           .from("domains")
           .update({
             status: "active",
-            ssl_status: aRecordValid ? "provisioning" : "pending",
+            ssl_status: sslStatus,
             updated_at: new Date().toISOString(),
           })
           .eq("id", domain.id);
@@ -179,12 +189,13 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
           description: `${domain.domain_name} activé via ${method}. SSL en cours de provisionnement.`,
         });
 
-        // Non-blocking SSL provisioning
+        // Non-blocking SSL provisioning (only if A record valid)
         if (aRecordValid) {
           setTimeout(async () => {
             try {
+              const sslResult = await simulateSslProvisioning(domain.id, domain.domain_name || "");
               await supabase.from("domains")
-                .update({ ssl_status: "active", updated_at: new Date().toISOString() })
+                .update({ ssl_status: sslResult, updated_at: new Date().toISOString() })
                 .eq("id", domain.id)
                 .eq("status", "active");
             } catch (e) {
