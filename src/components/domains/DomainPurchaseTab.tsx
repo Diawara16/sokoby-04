@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
 import {
-  Search, Check, X, Loader2, ShoppingCart, ExternalLink, Globe, Copy, Info,
+  Search, Check, X, Loader2, ShoppingCart, ExternalLink, Globe, Copy, Info, Rocket, Link2,
 } from "lucide-react";
 import { useStoreDomains } from "@/hooks/useStoreDomains";
 import { useToast } from "@/hooks/use-toast";
@@ -20,9 +21,10 @@ interface DomainResult {
 
 interface DomainPurchaseTabProps {
   onDomainPurchased?: () => void;
+  onSwitchToConnect?: () => void;
 }
 
-export const DomainPurchaseTab = ({ onDomainPurchased }: DomainPurchaseTabProps) => {
+export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: DomainPurchaseTabProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState<DomainResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -74,7 +76,6 @@ export const DomainPurchaseTab = ({ onDomainPurchased }: DomainPurchaseTabProps)
   const handlePurchase = async (domain: string) => {
     setPurchasingDomain(domain);
     try {
-      // Since registrar API is not yet integrated, register in pending state
       const success = await purchaseDomain(domain, "manual");
       if (success) {
         setPurchasedDomain(domain);
@@ -92,13 +93,46 @@ export const DomainPurchaseTab = ({ onDomainPurchased }: DomainPurchaseTabProps)
 
   return (
     <div className="space-y-6">
-      {/* MVP notice */}
+      {/* Coming soon badge + MVP notice */}
       <Alert className="bg-amber-50 border-amber-200">
         <Info className="h-4 w-4 text-amber-600" />
         <AlertDescription className="text-amber-800 text-sm">
+          <div className="flex items-center gap-2 mb-1">
+            <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 text-xs">
+              <Rocket className="h-3 w-3 mr-1" />
+              Bientôt disponible
+            </Badge>
+            <span className="font-semibold">Achat direct de domaines dans Sokoby</span>
+          </div>
           <strong>Mode MVP :</strong> La vérification de disponibilité est estimée (basée sur le DNS) et ne reflète pas la disponibilité réelle chez un registrar. L'achat crée un enregistrement « en attente » — aucun achat réel n'est effectué.
         </AlertDescription>
       </Alert>
+
+      {/* "I already own a domain" shortcut */}
+      <Card className="border-dashed border-primary/30 bg-primary/5">
+        <CardContent className="p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link2 className="h-5 w-5 text-primary" />
+            <div>
+              <p className="font-medium text-sm">Vous possédez déjà un domaine ?</p>
+              <p className="text-xs text-muted-foreground">
+                Connectez un domaine acheté chez un registrar externe (Namecheap, GoDaddy, Cloudflare…)
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onSwitchToConnect?.()}
+            className="shrink-0"
+          >
+            <Globe className="h-4 w-4 mr-2" />
+            Connecter mon domaine
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Separator />
 
       {/* Search */}
       <div className="flex gap-3 max-w-lg">
@@ -148,7 +182,7 @@ export const DomainPurchaseTab = ({ onDomainPurchased }: DomainPurchaseTabProps)
                       variant={result.available ? "default" : "secondary"}
                       className={result.available ? "bg-green-100 text-green-800 hover:bg-green-100" : ""}
                     >
-                      {result.available ? "Disponible" : "Indisponible"}
+                      {result.available ? "Disponible (estimation)" : "Indisponible"}
                     </Badge>
                   )}
                 </div>

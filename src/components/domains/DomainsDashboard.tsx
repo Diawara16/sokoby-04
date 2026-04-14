@@ -9,6 +9,7 @@ import { PurchasedDomainsTab } from "./PurchasedDomainsTab";
 
 export const DomainsDashboard = () => {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [activeTab, setActiveTab] = useState("my-domains");
 
   const handleDomainAdded = () => {
     setRefreshKey((k) => k + 1);
@@ -24,7 +25,7 @@ export const DomainsDashboard = () => {
         </div>
       </div>
 
-      <Tabs defaultValue="my-domains" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid w-full grid-cols-4 h-auto">
           <TabsTrigger value="my-domains" className="flex items-center gap-2 text-xs sm:text-sm py-2">
             <Globe className="h-4 w-4" />
@@ -75,7 +76,10 @@ export const DomainsDashboard = () => {
               <CardDescription>Recherchez un domaine, réservez-le et configurez-le automatiquement</CardDescription>
             </CardHeader>
             <CardContent>
-              <DomainPurchaseTab onDomainPurchased={handleDomainAdded} />
+              <DomainPurchaseTab
+                onDomainPurchased={handleDomainAdded}
+                onSwitchToConnect={() => setActiveTab("connect")}
+              />
             </CardContent>
           </Card>
         </TabsContent>
