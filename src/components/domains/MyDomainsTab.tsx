@@ -67,6 +67,49 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
     return () => { supabase.removeChannel(channel); };
   }, [fetchDomains]);
 
+  // Periodic DNS re-verification for active domains (every 5 minutes)
+  useEffect(() => {
+    const reVerifyActiveDomains = async () => {
+      const activeDomains = domains.filter(d => d.status === "active" && d.domain_name);
+      for (const domain of activeDomains) {
+        try {
+          const aValid = await verifyARecord(domain.domain_name!);
+          if (aValid) continue; // Still valid
+
+          const txtValid = await verifyTxtRecord(domain.domain_name!);
+          if (txtValid) continue; // Still valid via TXT
+
+          // DNS no longer points to Sokoby — revert to pending (non-breaking)
+          console.warn(`[DNS Re-check] ${domain.domain_name} no longer resolves to Sokoby. Reverting to pending.`);
+          await supabase.from("domains")
+            .update({ status: "pending", ssl_status: "pending", updated_at: new Date().toISOString() })
+            .eq("id", domain.id)
+            .eq("status", "active"); // Only update if still active (race protection)
+
+          toast({
+            title: "DNS modifié",
+            description: `${domain.domain_name} ne pointe plus vers Sokoby. Statut repassé en attente.`,
+            variant: "destructive",
+          });
+        } catch {
+          // Silent fail — re-verification is non-critical
+        }
+      }
+      if (activeDomains.length > 0) {
+        await fetchDomains();
+      }
+    };
+
+    // Initial check after 30s, then every 5 minutes
+    const initialTimeout = setTimeout(reVerifyActiveDomains, 30000);
+    const interval = setInterval(reVerifyActiveDomains, 5 * 60 * 1000);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(interval);
+    };
+  }, [domains, fetchDomains, toast]);
+
   const simulateSslProvisioning = async (domainId: string, domainName: string): Promise<"active" | "error"> => {
     // Check if the domain resolves correctly (simulating SSL provisioning)
     try {
