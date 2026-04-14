@@ -65,17 +65,30 @@ export const useStoreDomains = (storeId?: string) => {
         return false;
       }
 
-      // Get store_id
       const resolvedStoreId = storeId || await getDefaultStoreId(user.id);
       if (!resolvedStoreId) {
         toast({ title: "Erreur", description: "Aucune boutique trouvée.", variant: "destructive" });
         return false;
       }
 
+      const cleanDomain = domain.toLowerCase().trim();
+
+      // Ownership protection: check if domain already exists for another user
+      const { data: existing } = await supabase
+        .from("store_domains")
+        .select("id, user_id")
+        .eq("domain", cleanDomain)
+        .maybeSingle();
+
+      if (existing && existing.user_id !== user.id) {
+        toast({ title: "Domaine déjà utilisé", description: "Ce domaine est associé à une autre boutique.", variant: "destructive" });
+        return false;
+      }
+
       const { error } = await supabase.from("store_domains").insert({
         store_id: resolvedStoreId,
         user_id: user.id,
-        domain: domain.toLowerCase().trim(),
+        domain: cleanDomain,
         provider,
         status: "pending",
         is_primary: false,
@@ -86,16 +99,14 @@ export const useStoreDomains = (storeId?: string) => {
 
       if (error) {
         if (error.code === "23505") {
-          toast({ title: "Domaine déjà enregistré", description: "Ce domaine est déjà associé à votre boutique.", variant: "destructive" });
+          toast({ title: "Domaine déjà enregistré", description: "Ce domaine est déjà associé à une boutique.", variant: "destructive" });
         } else {
           throw error;
         }
         return false;
       }
 
-      // Attempt auto DNS setup (simulated — in production this would call registrar API)
-      await attemptAutoDnsSetup(domain, resolvedStoreId);
-
+      await attemptAutoDnsSetup(cleanDomain, resolvedStoreId);
       await fetchDomains();
       toast({ title: "Domaine ajouté", description: `${domain} a été enregistré avec le statut « en attente ».` });
       return true;
@@ -192,10 +203,16 @@ export const useStoreDomains = (storeId?: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Unset all primary
-      await supabase.from("store_domains").update({ is_primary: false }).eq("user_id", user.id);
+      const resolvedStoreId = storeId || await getDefaultStoreId(user.id);
+
+      // Scope primary unset to same store (prevent cross-store interference)
+      if (resolvedStoreId) {
+        await supabase.from("store_domains").update({ is_primary: false }).eq("store_id", resolvedStoreId);
+      } else {
+        await supabase.from("store_domains").update({ is_primary: false }).eq("user_id", user.id);
+      }
       // Set new primary
-      await supabase.from("store_domains").update({ is_primary: true }).eq("id", domainId);
+      await supabase.from("store_domains").update({ is_primary: true }).eq("id", domainId).eq("user_id", user.id);
       await fetchDomains();
       toast({ title: "Domaine principal mis à jour" });
     } catch {
