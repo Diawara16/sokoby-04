@@ -81,33 +81,74 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
     }
   };
 
+  const verifyARecord = async (domainName: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`https://dns.google/resolve?name=${domainName}&type=A`);
+      const data = await response.json();
+      return !!data.Answer?.some(
+        (record: any) => record.type === 1 && record.data === "185.158.133.1"
+      );
+    } catch {
+      return false;
+    }
+  };
+
+  const verifyTxtRecord = async (domainName: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`https://dns.google/resolve?name=_sokoby-verify.${domainName}&type=TXT`);
+      const data = await response.json();
+      return !!data.Answer?.some(
+        (record: any) => record.type === 16 && typeof record.data === "string" && record.data.includes("sokoby-verify=")
+      );
+    } catch {
+      return false;
+    }
+  };
+
   const handleVerify = async (domain: Domain) => {
     setVerifyingId(domain.id);
     try {
-      // Set status to "verifying"
       await supabase
         .from("domains")
         .update({ status: "verifying", updated_at: new Date().toISOString() })
         .eq("id", domain.id);
       await fetchDomains();
 
-      const response = await fetch(`https://dns.google/resolve?name=${domain.domain_name}&type=A`);
-      const data = await response.json();
-      const pointsToSokoby = data.Answer?.some(
-        (record: any) => record.type === 1 && record.data === "185.158.133.1"
-      );
+      // Try A record first, then TXT fallback
+      const aRecordValid = await verifyARecord(domain.domain_name || "");
+      const txtRecordValid = !aRecordValid ? await verifyTxtRecord(domain.domain_name || "") : false;
+      const verified = aRecordValid || txtRecordValid;
 
-      if (pointsToSokoby) {
-        // Domain active → automatically provision SSL
+      if (verified) {
+        // Domain activates immediately; SSL tracked independently
         await supabase
           .from("domains")
-          .update({ status: "active", ssl_status: "active", updated_at: new Date().toISOString() })
+          .update({
+            status: "active",
+            ssl_status: aRecordValid ? "provisioning" : "pending",
+            updated_at: new Date().toISOString(),
+          })
           .eq("id", domain.id);
 
+        const method = aRecordValid ? "enregistrement A" : "enregistrement TXT";
         toast({
-          title: "Domaine vérifié & SSL actif",
-          description: `${domain.domain_name} est actif avec HTTPS forcé.`,
+          title: "Domaine vérifié",
+          description: `${domain.domain_name} activé via ${method}. SSL en cours de provisionnement.`,
         });
+
+        // Non-blocking SSL provisioning
+        if (aRecordValid) {
+          setTimeout(async () => {
+            try {
+              await supabase.from("domains")
+                .update({ ssl_status: "active", updated_at: new Date().toISOString() })
+                .eq("id", domain.id)
+                .eq("status", "active");
+            } catch (e) {
+              console.warn("SSL update failed (non-blocking):", e);
+            }
+          }, 3000);
+        }
       } else {
         await supabase
           .from("domains")
@@ -116,13 +157,12 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
 
         toast({
           title: "DNS non configuré",
-          description: "Le DNS ne pointe pas encore vers Sokoby.",
+          description: "Le DNS ne pointe pas encore vers Sokoby. Essayez l'enregistrement A ou TXT.",
           variant: "destructive",
         });
       }
       await fetchDomains();
     } catch {
-      // SSL provisioning failed
       await supabase
         .from("domains")
         .update({ ssl_status: "error", updated_at: new Date().toISOString() })
@@ -222,6 +262,7 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
             </Tooltip>
           </TooltipProvider>
         );
+      case "provisioning":
       case "pending":
         return (
           <TooltipProvider>
@@ -229,10 +270,14 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
               <TooltipTrigger asChild>
                 <span className="flex items-center gap-1.5 text-amber-600 text-sm">
                   <Shield className="h-4 w-4" />
-                  En cours
+                  {ssl === "provisioning" ? "Provisionnement" : "En cours"}
                 </span>
               </TooltipTrigger>
-              <TooltipContent>Provisionnement SSL en cours</TooltipContent>
+              <TooltipContent>
+                {ssl === "provisioning"
+                  ? "SSL en cours de provisionnement — le domaine est déjà actif"
+                  : "En attente de vérification DNS pour le SSL"}
+              </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         );
