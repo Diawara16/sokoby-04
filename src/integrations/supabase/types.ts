@@ -2737,6 +2737,48 @@ export type Database = {
         }
         Relationships: []
       }
+      plans: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          feature_limits: Json
+          id: string
+          is_active: boolean
+          name: string
+          price_monthly: number
+          price_yearly: number
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          feature_limits?: Json
+          id?: string
+          is_active?: boolean
+          name: string
+          price_monthly?: number
+          price_yearly?: number
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          feature_limits?: Json
+          id?: string
+          is_active?: boolean
+          name?: string
+          price_monthly?: number
+          price_yearly?: number
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       post_hashtags: {
         Row: {
           created_at: string
@@ -3861,6 +3903,59 @@ export type Database = {
         }
         Relationships: []
       }
+      store_subscriptions: {
+        Row: {
+          billing_cycle: string
+          canceled_at: string | null
+          created_at: string
+          end_date: string | null
+          id: string
+          plan_id: string
+          renewal_date: string | null
+          start_date: string
+          status: string
+          store_id: string
+          stripe_subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          billing_cycle?: string
+          canceled_at?: string | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          plan_id: string
+          renewal_date?: string | null
+          start_date?: string
+          status?: string
+          store_id: string
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          billing_cycle?: string
+          canceled_at?: string | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          plan_id?: string
+          renewal_date?: string | null
+          start_date?: string
+          status?: string
+          store_id?: string
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_theme_assignments: {
         Row: {
           created_at: string
@@ -4188,6 +4283,38 @@ export type Database = {
           payload?: Json | null
         }
         Relationships: []
+      }
+      subscription_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          store_subscription_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          store_subscription_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          store_subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_events_store_subscription_id_fkey"
+            columns: ["store_subscription_id"]
+            isOneToOne: false
+            referencedRelation: "store_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscriptions: {
         Row: {
@@ -5029,6 +5156,10 @@ export type Database = {
       http_reset_curlopt: { Args: never; Returns: boolean }
       http_set_curlopt: {
         Args: { curlopt: string; value: string }
+        Returns: boolean
+      }
+      is_feature_allowed: {
+        Args: { _feature_key: string; _store_id: string }
         Returns: boolean
       }
       is_profile_public: { Args: { user_uuid: string }; Returns: boolean }
