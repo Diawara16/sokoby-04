@@ -126,31 +126,49 @@ export const useStoreDomains = (storeId?: string) => {
 
   const verifyDomain = async (domainId: string, domainName: string): Promise<boolean> => {
     try {
-      const response = await fetch(`https://dns.google/resolve?name=${domainName}&type=A`);
-      const data = await response.json();
-      const pointsToSokoby = data.Answer?.some(
+      // Try A record first
+      const aResponse = await fetch(`https://dns.google/resolve?name=${domainName}&type=A`);
+      const aData = await aResponse.json();
+      const aRecordValid = !!aData.Answer?.some(
         (record: any) => record.type === 1 && record.data === "185.158.133.1"
       );
+
+      // TXT fallback if A record fails
+      let txtRecordValid = false;
+      if (!aRecordValid) {
+        try {
+          const txtResponse = await fetch(`https://dns.google/resolve?name=_sokoby-verify.${domainName}&type=TXT`);
+          const txtData = await txtResponse.json();
+          txtRecordValid = !!txtData.Answer?.some(
+            (record: any) => record.type === 16 && typeof record.data === "string" && record.data.includes("sokoby-verify=")
+          );
+        } catch {
+          txtRecordValid = false;
+        }
+      }
+
+      const verified = aRecordValid || txtRecordValid;
 
       await supabase
         .from("store_domains")
         .update({
-          status: pointsToSokoby ? "active" : "pending",
-          verified: pointsToSokoby,
-          dns_auto_configured: pointsToSokoby,
-          dns_setup_error: pointsToSokoby ? null : "Le DNS ne pointe pas encore vers 185.158.133.1",
+          status: verified ? "active" : "pending",
+          verified,
+          dns_auto_configured: aRecordValid,
+          dns_setup_error: verified ? null : "Le DNS ne pointe pas encore vers 185.158.133.1. Essayez aussi le TXT _sokoby-verify.",
         })
         .eq("id", domainId);
 
       await fetchDomains();
 
-      if (pointsToSokoby) {
-        toast({ title: "Domaine vérifié !", description: `${domainName} pointe correctement vers Sokoby.` });
+      if (verified) {
+        const method = aRecordValid ? "enregistrement A" : "enregistrement TXT";
+        toast({ title: "Domaine vérifié !", description: `${domainName} vérifié via ${method}.` });
       } else {
-        toast({ title: "DNS non configuré", description: "Configurez l'enregistrement A vers 185.158.133.1", variant: "destructive" });
+        toast({ title: "DNS non configuré", description: "Configurez l'enregistrement A ou TXT", variant: "destructive" });
       }
 
-      return pointsToSokoby;
+      return verified;
     } catch (error) {
       console.error("Verify domain error:", error);
       toast({ title: "Erreur de vérification", variant: "destructive" });
