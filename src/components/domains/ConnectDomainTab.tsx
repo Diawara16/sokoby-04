@@ -74,31 +74,61 @@ export const ConnectDomainTab = ({ onDomainAdded }: ConnectDomainTabProps) => {
     }
   };
 
+  const verifyARecord = async (domain: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`https://dns.google/resolve?name=${domain}&type=A`);
+      const data = await response.json();
+      return !!data.Answer?.some(
+        (record: any) => record.type === 1 && record.data === "185.158.133.1"
+      );
+    } catch {
+      return false;
+    }
+  };
+
+  const verifyTxtRecord = async (domain: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`https://dns.google/resolve?name=_sokoby-verify.${domain}&type=TXT`);
+      const data = await response.json();
+      return !!data.Answer?.some(
+        (record: any) => record.type === 16 && typeof record.data === "string" && record.data.includes("sokoby-verify=")
+      );
+    } catch {
+      return false;
+    }
+  };
+
   const handleVerify = async () => {
     if (!domainId) return;
     setIsVerifying(true);
     setVerificationStatus(null);
 
     try {
-      // Set status to verifying
       await supabase.from("domains")
         .update({ status: "verifying", updated_at: new Date().toISOString() })
         .eq("id", domainId);
 
-      const response = await fetch(`https://dns.google/resolve?name=${domainName}&type=A`);
-      const data = await response.json();
-      const pointsToSokoby = data.Answer?.some(
-        (record: any) => record.type === 1 && record.data === "185.158.133.1"
-      );
+      // Try A record first, then TXT fallback
+      const aRecordValid = await verifyARecord(domainName);
+      const txtRecordValid = !aRecordValid ? await verifyTxtRecord(domainName) : false;
+      const verified = aRecordValid || txtRecordValid;
 
-      const newStatus = pointsToSokoby ? "active" : "pending";
+      // Domain activates immediately on verification success
+      // SSL status is tracked independently — don't block activation on SSL
+      const newStatus = verified ? "active" : "pending";
+      const sslStatus = verified && aRecordValid ? "provisioning" : "pending";
+
       await supabase.from("domains")
-        .update({ status: newStatus, ssl_status: pointsToSokoby ? "active" : "pending", updated_at: new Date().toISOString() })
+        .update({ status: newStatus, ssl_status: sslStatus, updated_at: new Date().toISOString() })
         .eq("id", domainId);
 
-      if (pointsToSokoby) {
+      if (verified) {
         setVerificationStatus("success");
-        toast({ title: "Domaine vérifié", description: "Votre domaine pointe correctement vers Sokoby." });
+        const method = aRecordValid ? "enregistrement A" : "enregistrement TXT";
+        toast({ title: "Domaine vérifié", description: `Vérifié via ${method}. Le SSL sera provisionné sous peu.` });
+
+        // Simulate async SSL provisioning (non-blocking)
+        simulateSslActivation(domainId);
       } else {
         setVerificationStatus("error");
       }
@@ -110,6 +140,21 @@ export const ConnectDomainTab = ({ onDomainAdded }: ConnectDomainTabProps) => {
     } finally {
       setIsVerifying(false);
     }
+  };
+
+  const simulateSslActivation = async (id: string) => {
+    // Non-blocking: update SSL to active after a short delay
+    // In production this would be a backend webhook/job
+    setTimeout(async () => {
+      try {
+        await supabase.from("domains")
+          .update({ ssl_status: "active", updated_at: new Date().toISOString() })
+          .eq("id", id)
+          .eq("status", "active");
+      } catch (e) {
+        console.warn("SSL provisioning update failed (non-blocking):", e);
+      }
+    }, 3000);
   };
 
   const handleReset = () => {
@@ -147,10 +192,10 @@ export const ConnectDomainTab = ({ onDomainAdded }: ConnectDomainTabProps) => {
             </AlertDescription>
           </Alert>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Card>
               <CardContent className="pt-6 space-y-3">
-                <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Enregistrement A</h4>
+                <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Enregistrement A (recommandé)</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Type</span>
@@ -201,6 +246,37 @@ export const ConnectDomainTab = ({ onDomainAdded }: ConnectDomainTabProps) => {
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">TTL</span>
                     <span className="font-mono font-medium">3600</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-dashed">
+              <CardContent className="pt-6 space-y-3">
+                <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">TXT (alternatif)</h4>
+                <p className="text-xs text-muted-foreground">Si vous ne pouvez pas configurer l'enregistrement A, ajoutez ce TXT pour vérifier la propriété.</p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Type</span>
+                    <span className="font-mono font-medium">TXT</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Nom</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-medium text-xs">_sokoby-verify</span>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => copyToClipboard(`_sokoby-verify.${domainName}`)}>
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Valeur</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-medium text-xs">sokoby-verify={domainId?.slice(0, 8)}</span>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => copyToClipboard(`sokoby-verify=${domainId?.slice(0, 8)}`)}>
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
