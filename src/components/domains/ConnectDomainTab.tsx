@@ -47,10 +47,32 @@ export const ConnectDomainTab = ({ onDomainAdded }: ConnectDomainTabProps) => {
         return;
       }
 
+      const cleanDomain = domainName.trim().toLowerCase();
+
+      // Ownership protection: check if domain is already taken by another user
+      const { data: existing } = await supabase
+        .from("domains")
+        .select("id, user_id, status")
+        .eq("domain_name", cleanDomain)
+        .maybeSingle();
+
+      if (existing) {
+        if (existing.user_id !== user.id) {
+          toast({ title: "Domaine déjà utilisé", description: "Ce domaine est déjà connecté à une autre boutique.", variant: "destructive" });
+          return;
+        }
+        // Domain already belongs to this user — resume verification
+        setDomainId(existing.id);
+        setSubmitted(true);
+        setVerificationStatus(null);
+        toast({ title: "Domaine existant", description: "Reprise de la vérification DNS." });
+        return;
+      }
+
       const storeId = await getStoreId(user.id);
 
       const { data, error } = await supabase.from("domains").insert({
-        domain_name: domainName.trim().toLowerCase(),
+        domain_name: cleanDomain,
         user_id: user.id,
         store_id: storeId,
         domain_type: "external",
@@ -59,7 +81,13 @@ export const ConnectDomainTab = ({ onDomainAdded }: ConnectDomainTabProps) => {
         is_primary: false,
       }).select("id").single();
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === "23505") {
+          toast({ title: "Domaine déjà utilisé", description: "Ce domaine est déjà enregistré sur la plateforme.", variant: "destructive" });
+          return;
+        }
+        throw error;
+      }
 
       setDomainId(data.id);
       setSubmitted(true);
@@ -104,6 +132,21 @@ export const ConnectDomainTab = ({ onDomainAdded }: ConnectDomainTabProps) => {
     setVerificationStatus(null);
 
     try {
+      // Ownership re-check: ensure this domain still belongs to the current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: domainRecord } = await supabase
+        .from("domains")
+        .select("user_id")
+        .eq("id", domainId)
+        .single();
+
+      if (domainRecord?.user_id !== user.id) {
+        toast({ title: "Accès refusé", description: "Ce domaine ne vous appartient pas.", variant: "destructive" });
+        return;
+      }
+
       await supabase.from("domains")
         .update({ status: "verifying", updated_at: new Date().toISOString() })
         .eq("id", domainId);
@@ -127,7 +170,7 @@ export const ConnectDomainTab = ({ onDomainAdded }: ConnectDomainTabProps) => {
         const method = aRecordValid ? "enregistrement A" : "enregistrement TXT";
         toast({ title: "Domaine vérifié", description: `Vérifié via ${method}. Le SSL sera provisionné sous peu.` });
 
-        // Simulate async SSL provisioning (non-blocking)
+        // Non-blocking SSL provisioning
         simulateSslActivation(domainId);
       } else {
         setVerificationStatus("error");
