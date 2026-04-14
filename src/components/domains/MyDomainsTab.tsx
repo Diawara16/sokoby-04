@@ -262,6 +262,7 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
             </Tooltip>
           </TooltipProvider>
         );
+      case "provisioning":
       case "pending":
         return (
           <TooltipProvider>
@@ -269,10 +270,14 @@ export const MyDomainsTab = ({ refreshKey }: MyDomainsTabProps) => {
               <TooltipTrigger asChild>
                 <span className="flex items-center gap-1.5 text-amber-600 text-sm">
                   <Shield className="h-4 w-4" />
-                  En cours
+                  {ssl === "provisioning" ? "Provisionnement" : "En cours"}
                 </span>
               </TooltipTrigger>
-              <TooltipContent>Provisionnement SSL en cours</TooltipContent>
+              <TooltipContent>
+                {ssl === "provisioning"
+                  ? "SSL en cours de provisionnement — le domaine est déjà actif"
+                  : "En attente de vérification DNS pour le SSL"}
+              </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         );
