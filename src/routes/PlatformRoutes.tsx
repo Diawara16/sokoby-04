@@ -9,6 +9,7 @@ import Pricing from "@/pages/Pricing";
 import Features from "@/pages/Features";
 import Resources from "@/pages/Resources";
 import Roadmap from "@/pages/Roadmap";
+import AIStoreGenerator from "@/pages/AIStoreGenerator";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 interface PlatformRoutesProps {
@@ -25,6 +26,11 @@ export function PlatformRoutes({ handleSubscribe }: PlatformRoutesProps) {
       <Route path="/tarifs" element={<Pricing />} />
       <Route path="/ressources" element={<Resources />} />
       <Route path="/roadmap" element={<Roadmap />} />
+      <Route path="/generer-boutique-ia" element={
+        <ProtectedRoute>
+          <AIStoreGenerator />
+        </ProtectedRoute>
+      } />
       
       <Route path="/tableau-de-bord" element={
         <ProtectedRoute>
