@@ -7,10 +7,13 @@ import { QuickActions } from "@/components/dashboard/QuickActions";
 import { MarketplaceIntegrationsCard } from "@/components/integrations/MarketplaceIntegrationsCard";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { TrialBanner } from "@/components/subscription/TrialBanner";
+import { useCurrentStoreId } from "@/hooks/useCurrentStoreId";
 
 export default function Dashboard() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { storeId } = useCurrentStoreId();
   const payment = searchParams.get('payment');
   const sessionId = searchParams.get('session_id');
 
@@ -28,6 +31,7 @@ export default function Dashboard() {
         <link rel="canonical" href={window.location.origin + "/"} />
       </Helmet>
       <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8">Tableau de bord</h1>
+      <TrialBanner storeId={storeId} />
       
       <Tabs defaultValue="overview" className="space-y-4 sm:space-y-6">
         <TabsList className="grid w-full grid-cols-3 h-auto">
