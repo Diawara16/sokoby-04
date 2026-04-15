@@ -8,6 +8,7 @@ interface GenerationProgressProps {
   message: string;
   productsCreated: number;
   totalProducts: number;
+  isResuming?: boolean;
 }
 
 const PHASES = [
@@ -18,11 +19,10 @@ const PHASES = [
   { key: "finalizing", label: "Finalisation", icon: Flag },
 ];
 
-export function GenerationProgress({ phase, progress, message, productsCreated, totalProducts }: GenerationProgressProps) {
+export function GenerationProgress({ phase, progress, message, productsCreated, totalProducts, isResuming }: GenerationProgressProps) {
   const phaseOrder = PHASES.map((p) => p.key);
   const currentIdx = phaseOrder.indexOf(phase);
 
-  // Warn user before closing page during generation
   useEffect(() => {
     const handler = (e: BeforeUnloadEvent) => {
       e.preventDefault();
@@ -36,11 +36,12 @@ export function GenerationProgress({ phase, progress, message, productsCreated, 
     <div className="max-w-lg mx-auto space-y-6 py-8">
       <div className="text-center space-y-2">
         <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
-        <h2 className="text-2xl font-bold text-foreground">Génération en cours…</h2>
+        <h2 className="text-2xl font-bold text-foreground">
+          {isResuming ? "Reprise en cours…" : "Génération en cours…"}
+        </h2>
         <p className="text-muted-foreground">{message}</p>
       </div>
 
-      {/* Progress bar */}
       <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
         <div
           className="h-full bg-primary rounded-full transition-all duration-500"
@@ -49,12 +50,16 @@ export function GenerationProgress({ phase, progress, message, productsCreated, 
       </div>
       <p className="text-center text-sm text-muted-foreground">{progress}%</p>
 
-      {/* Warning */}
       <p className="text-center text-xs text-destructive font-medium">
         ⚠️ Ne fermez pas cette page pendant la génération
       </p>
 
-      {/* Phase checklist */}
+      {isResuming && (
+        <p className="text-center text-xs text-primary font-medium">
+          🔄 Reprise depuis le dernier point de sauvegarde
+        </p>
+      )}
+
       <Card className="p-5 space-y-3">
         {PHASES.map((p, i) => {
           const done = i < currentIdx || phase === "complete";
@@ -81,7 +86,6 @@ export function GenerationProgress({ phase, progress, message, productsCreated, 
         })}
       </Card>
 
-      {/* Estimated time */}
       <p className="text-center text-xs text-muted-foreground">
         Temps estimé : ~30 secondes
       </p>
