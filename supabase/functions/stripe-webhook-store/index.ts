@@ -508,9 +508,9 @@ serve(async (req) => {
         // Update renewal date on existing subscription
         const { data: existingSub } = await supabaseClient
           .from('store_subscriptions')
-          .select('id, store_id')
+          .select('id, store_id, status')
           .eq('stripe_subscription_id', stripeSubId)
-          .eq('status', 'active')
+          .in('status', ['active', 'trial'])
           .maybeSingle();
 
         if (existingSub) {
