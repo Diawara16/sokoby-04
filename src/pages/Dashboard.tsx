@@ -63,9 +63,7 @@ export default function Dashboard() {
         </TabsContent>
         
         <TabsContent value="analytics" className="space-y-4 sm:space-y-6">
-          <div className="text-center py-8 sm:py-12">
-            <p className="text-sm sm:text-base text-gray-600">Analyses bientôt disponibles</p>
-          </div>
+          <KPIDashboard />
         </TabsContent>
       </Tabs>
     </div>
