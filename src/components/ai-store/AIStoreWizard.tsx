@@ -3,6 +3,8 @@ import { NicheStep } from "./steps/NicheStep";
 import { PreviewStep } from "./steps/PreviewStep";
 import { PlanStep } from "./steps/PlanStep";
 import { LaunchStep } from "./steps/LaunchStep";
+import { GenerationProgress, GenerationError } from "./GenerationProgress";
+import { useAIStoreGeneration } from "@/hooks/useAIStoreGeneration";
 
 export type AIStoreData = {
   niche: string;
@@ -131,6 +133,9 @@ function generateStorePreview(niche: string): AIStoreData {
 export function AIStoreWizard() {
   const [currentStep, setCurrentStep] = useState(0);
   const [storeData, setStoreData] = useState<AIStoreData | null>(null);
+  const { state: genState, generate, reset } = useAIStoreGeneration();
+
+  const isGenerating = genState.phase !== "idle" && genState.phase !== "complete" && genState.phase !== "error";
 
   const handleNicheSelect = (nicheId: string) => {
     const data = generateStorePreview(nicheId);
@@ -140,6 +145,17 @@ export function AIStoreWizard() {
 
   const handleCustomize = (updates: Partial<AIStoreData>) => {
     if (storeData) setStoreData({ ...storeData, ...updates });
+  };
+
+  const handleLaunch = async () => {
+    if (!storeData) return;
+    setCurrentStep(3);
+    await generate(storeData);
+  };
+
+  const handleRetry = () => {
+    reset();
+    setCurrentStep(2);
   };
 
   const steps = [
@@ -182,10 +198,22 @@ export function AIStoreWizard() {
         <PreviewStep data={storeData} onCustomize={handleCustomize} onNext={() => setCurrentStep(2)} onBack={() => setCurrentStep(0)} />
       )}
       {currentStep === 2 && storeData && (
-        <PlanStep data={storeData} onNext={() => setCurrentStep(3)} onBack={() => setCurrentStep(1)} />
+        <PlanStep data={storeData} onNext={handleLaunch} onBack={() => setCurrentStep(1)} />
       )}
-      {currentStep === 3 && storeData && (
-        <LaunchStep data={storeData} onBack={() => setCurrentStep(2)} />
+      {currentStep === 3 && isGenerating && (
+        <GenerationProgress
+          phase={genState.phase}
+          progress={genState.progress}
+          message={genState.message}
+          productsCreated={genState.productsCreated}
+          totalProducts={genState.totalProducts}
+        />
+      )}
+      {currentStep === 3 && genState.phase === "error" && (
+        <GenerationError message={genState.error || "Erreur inconnue"} onRetry={handleRetry} />
+      )}
+      {currentStep === 3 && genState.phase === "complete" && storeData && (
+        <LaunchStep data={storeData} productsCreated={genState.productsCreated} onBack={() => setCurrentStep(2)} />
       )}
     </div>
   );
