@@ -79,13 +79,14 @@ export const DomainsDashboard = () => {
             </CardHeader>
             <CardContent>
               {!gating.isLoading && !gating.customDomainAllowed ? (
-                <DomainUpgradePrompt currentPlan={gating.currentPlan} reason="no_custom_domain" />
+                <DomainUpgradePrompt currentPlan={gating.currentPlan} reason="no_custom_domain" storeId={gating.storeId} />
               ) : !gating.isLoading && !gating.canAddDomain ? (
                 <DomainUpgradePrompt
                   currentPlan={gating.currentPlan}
                   reason="limit_reached"
                   domainsUsed={gating.domainsUsed}
                   domainsAllowed={gating.domainsAllowed}
+                  storeId={gating.storeId}
                 />
               ) : (
                 <ConnectDomainTab onDomainAdded={handleDomainAdded} />
