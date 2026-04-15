@@ -413,6 +413,158 @@ serve(async (req) => {
       );
     }
 
+    // ============================================================
+    // STORE SUBSCRIPTION EVENTS (separate from store creation)
+    // ============================================================
+
+    // Handle subscription checkout completion
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as any;
+      // Only process store_subscription type checkouts
+      if (session.metadata?.type === 'store_subscription' && session.mode === 'subscription') {
+        const storeId = session.metadata.store_id;
+        const planId = session.metadata.plan_id;
+        const planSlug = session.metadata.plan_slug;
+        const billingCycle = session.metadata.billing_cycle || 'monthly';
+        const stripeSubId = session.subscription as string;
+
+        console.log('[STRIPE-WEBHOOK] Processing store_subscription checkout:', { storeId, planId, planSlug, stripeSubId });
+
+        // Cancel existing active subscriptions for this store
+        const now = new Date().toISOString();
+        await supabaseClient
+          .from('store_subscriptions')
+          .update({ status: 'canceled', canceled_at: now })
+          .eq('store_id', storeId)
+          .in('status', ['active', 'trial']);
+
+        // Get Stripe subscription details for renewal date
+        let renewalDate: string | null = null;
+        try {
+          const stripe2 = new Stripe(stripeSecretKey, { apiVersion: '2023-10-16', httpClient: Stripe.createFetchHttpClient() });
+          const stripeSub = await stripe2.subscriptions.retrieve(stripeSubId);
+          renewalDate = new Date(stripeSub.current_period_end * 1000).toISOString();
+        } catch (e) {
+          console.error('[STRIPE-WEBHOOK] Failed to fetch subscription details:', e.message);
+        }
+
+        // Create new active subscription
+        const { error: subError } = await supabaseClient
+          .from('store_subscriptions')
+          .insert({
+            store_id: storeId,
+            plan_id: planId,
+            status: 'active',
+            billing_cycle: billingCycle,
+            start_date: now,
+            renewal_date: renewalDate,
+            stripe_subscription_id: stripeSubId,
+          });
+
+        if (subError) {
+          console.error('[STRIPE-WEBHOOK] Failed to create store_subscription:', subError);
+        } else {
+          console.log('[STRIPE-WEBHOOK] ✓ store_subscription activated:', { storeId, planSlug });
+        }
+
+        // Log subscription event
+        await supabaseClient.from('subscription_events').insert({
+          store_id: storeId,
+          event_type: 'plan_activated',
+          metadata: { plan_slug: planSlug, plan_id: planId, billing_cycle: billingCycle, stripe_subscription_id: stripeSubId },
+        });
+
+        return new Response(
+          JSON.stringify({ received: true, processed: 'store_subscription_activated' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+        );
+      }
+    }
+
+    // Handle invoice.paid — renew/confirm subscription
+    if (event.type === 'invoice.paid') {
+      const invoice = event.data.object as any;
+      const stripeSubId = invoice.subscription as string;
+
+      if (stripeSubId) {
+        console.log('[STRIPE-WEBHOOK] invoice.paid for subscription:', stripeSubId);
+
+        // Update renewal date on existing subscription
+        const { data: existingSub } = await supabaseClient
+          .from('store_subscriptions')
+          .select('id, store_id')
+          .eq('stripe_subscription_id', stripeSubId)
+          .eq('status', 'active')
+          .maybeSingle();
+
+        if (existingSub) {
+          let renewalDate: string | null = null;
+          try {
+            const stripe2 = new Stripe(stripeSecretKey, { apiVersion: '2023-10-16', httpClient: Stripe.createFetchHttpClient() });
+            const stripeSub = await stripe2.subscriptions.retrieve(stripeSubId);
+            renewalDate = new Date(stripeSub.current_period_end * 1000).toISOString();
+          } catch (e) {
+            console.error('[STRIPE-WEBHOOK] Failed to fetch sub for renewal:', e.message);
+          }
+
+          if (renewalDate) {
+            await supabaseClient
+              .from('store_subscriptions')
+              .update({ renewal_date: renewalDate, status: 'active' })
+              .eq('id', existingSub.id);
+          }
+
+          await supabaseClient.from('subscription_events').insert({
+            store_id: existingSub.store_id,
+            event_type: 'invoice_paid',
+            metadata: { stripe_subscription_id: stripeSubId, renewal_date: renewalDate },
+          });
+
+          console.log('[STRIPE-WEBHOOK] ✓ Subscription renewed:', existingSub.id);
+        }
+
+        return new Response(
+          JSON.stringify({ received: true, processed: 'invoice_paid' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+        );
+      }
+    }
+
+    // Handle subscription cancellation
+    if (event.type === 'customer.subscription.deleted') {
+      const subscription = event.data.object as any;
+      const stripeSubId = subscription.id;
+
+      console.log('[STRIPE-WEBHOOK] Subscription deleted:', stripeSubId);
+
+      const { data: existingSub } = await supabaseClient
+        .from('store_subscriptions')
+        .select('id, store_id')
+        .eq('stripe_subscription_id', stripeSubId)
+        .maybeSingle();
+
+      if (existingSub) {
+        const now = new Date().toISOString();
+        await supabaseClient
+          .from('store_subscriptions')
+          .update({ status: 'canceled', canceled_at: now })
+          .eq('id', existingSub.id);
+
+        await supabaseClient.from('subscription_events').insert({
+          store_id: existingSub.store_id,
+          event_type: 'subscription_canceled',
+          metadata: { stripe_subscription_id: stripeSubId },
+        });
+
+        console.log('[STRIPE-WEBHOOK] ✓ Subscription canceled:', existingSub.id);
+      }
+
+      return new Response(
+        JSON.stringify({ received: true, processed: 'subscription_deleted' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
     // Unhandled event type
     console.log('[STRIPE-WEBHOOK] Unhandled event type:', event.type);
     return new Response(
