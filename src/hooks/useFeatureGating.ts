@@ -49,7 +49,7 @@ export const useFeatureGating = (storeId: string | null) => {
           .from('store_subscriptions')
           .select('*, plans(*)')
           .eq('store_id', storeId)
-          .in('status', ['active', 'trial'])
+          .in('status', ['active', 'trial', 'canceling'])
           .limit(1)
           .maybeSingle();
 
