@@ -1,7 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ExternalLink, Share2, Pencil, Video, MessageSquare, Zap, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, Share2, Pencil, Video, MessageSquare, Zap, CheckCircle2, Copy } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 import type { AIStoreData } from "../AIStoreWizard";
 
 interface LaunchStepProps {
@@ -11,6 +12,18 @@ interface LaunchStepProps {
 }
 
 export function LaunchStep({ data, productsCreated, onBack }: LaunchStepProps) {
+  const { toast } = useToast();
+  const storeUrl = `${window.location.origin}/boutique`;
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      toast({
+        title: "Copié !",
+        description: `${label} copié dans le presse-papier`,
+      });
+    });
+  };
+
   const marketingPreviews = [
     {
       platform: "TikTok",
@@ -54,13 +67,11 @@ export function LaunchStep({ data, productsCreated, onBack }: LaunchStepProps) {
             <ExternalLink className="h-4 w-4 mr-2" /> Voir ma boutique
           </Link>
         </Button>
-        <Button size="lg" variant="outline" className="w-full" onClick={() => {
-          navigator.clipboard.writeText(window.location.origin + "/boutique");
-        }}>
+        <Button size="lg" variant="outline" className="w-full" onClick={() => copyToClipboard(storeUrl, "Lien de la boutique")}>
           <Share2 className="h-4 w-4 mr-2" /> Partager
         </Button>
         <Button size="lg" variant="outline" className="w-full" asChild>
-          <Link to="/products">
+          <Link to="/produits">
             <Pencil className="h-4 w-4 mr-2" /> Éditer produits
           </Link>
         </Button>
@@ -77,7 +88,13 @@ export function LaunchStep({ data, productsCreated, onBack }: LaunchStepProps) {
                 <h4 className="font-semibold text-foreground">{mp.platform}</h4>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">{mp.content}</p>
-              <Button variant="ghost" size="sm" className="w-full text-xs" onClick={() => navigator.clipboard.writeText(mp.content)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full text-xs gap-1"
+                onClick={() => copyToClipboard(mp.content, `Texte ${mp.platform}`)}
+              >
+                <Copy className="h-3 w-3" />
                 Copier le texte
               </Button>
             </Card>

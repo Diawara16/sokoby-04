@@ -73,7 +73,7 @@ const StoreDashboard = () => {
           return;
         }
 
-        // Fetch store
+        // Try store_settings first
         let storeQuery = supabase
           .from('store_settings')
           .select('*')
@@ -83,15 +83,39 @@ const StoreDashboard = () => {
           storeQuery = storeQuery.eq('id', storeId);
         }
         
-        const { data: storeData, error: storeError } = await storeQuery.maybeSingle();
+        let { data: storeData, error: storeError } = await storeQuery.maybeSingle();
         
         if (storeError) throw storeError;
+
+        // Fallback: check stores table
         if (!storeData) {
-          toast({
-            title: "Boutique introuvable",
-            description: "Aucune boutique trouvée pour cet utilisateur",
-            variant: "destructive",
-          });
+          let storesQuery = supabase
+            .from('stores')
+            .select('*')
+            .eq('owner_id', user.id);
+          
+          if (storeId) {
+            storesQuery = storesQuery.eq('id', storeId);
+          }
+
+          const { data: altStore, error: altError } = await storesQuery.maybeSingle();
+          if (altError) throw altError;
+
+          if (altStore) {
+            storeData = {
+              id: altStore.id,
+              store_name: altStore.name || 'Ma Boutique',
+              domain_name: altStore.domain || '',
+              store_type: altStore.store_type || 'ai',
+              payment_status: altStore.payment_status || 'active',
+              initial_products_generated: true,
+              created_at: altStore.created_at,
+              user_id: user.id,
+            };
+          }
+        }
+
+        if (!storeData) {
           return;
         }
         
@@ -162,12 +186,20 @@ const StoreDashboard = () => {
           <p className="text-muted-foreground">
             Vous n'avez pas encore de boutique. Créez-en une pour commencer.
           </p>
-          <Button asChild>
-            <Link to="/creer-boutique-ia">
-              <Plus className="w-4 h-4 mr-2" />
-              Créer une boutique
-            </Link>
-          </Button>
+          <div className="flex justify-center gap-3">
+            <Button asChild>
+              <Link to="/generer-boutique-ia">
+                <Plus className="w-4 h-4 mr-2" />
+                Créer une boutique IA
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/tableau-de-bord">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Tableau de bord
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     );
