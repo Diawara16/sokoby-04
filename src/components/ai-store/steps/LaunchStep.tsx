@@ -1,25 +1,26 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ExternalLink, Share2, Pencil, Video, MessageSquare, Zap } from "lucide-react";
+import { ArrowLeft, ExternalLink, Share2, Pencil, Video, MessageSquare, Zap, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { AIStoreData } from "../AIStoreWizard";
 
 interface LaunchStepProps {
   data: AIStoreData;
+  productsCreated: number;
   onBack: () => void;
 }
 
-export function LaunchStep({ data, onBack }: LaunchStepProps) {
+export function LaunchStep({ data, productsCreated, onBack }: LaunchStepProps) {
   const marketingPreviews = [
     {
       platform: "TikTok",
       icon: Video,
-      content: `🔥 ${data.storeName} vient d'ouvrir ! Découvrez nos ${data.products.length} produits tendance. Lien en bio 👆 #ecommerce #${data.niche} #shopping`,
+      content: `🔥 ${data.storeName} vient d'ouvrir ! Découvrez nos ${productsCreated} produits tendance. Lien en bio 👆 #ecommerce #${data.niche} #shopping`,
     },
     {
       platform: "Facebook",
       icon: MessageSquare,
-      content: `✨ Nouveau ! ${data.storeName} — ${data.slogan}. Profitez de notre sélection de ${data.products.length} produits soigneusement choisis. Découvrez maintenant →`,
+      content: `✨ Nouveau ! ${data.storeName} — ${data.slogan}. Profitez de notre sélection de ${productsCreated} produits soigneusement choisis. Découvrez maintenant →`,
     },
     {
       platform: "Viral Hook",
@@ -32,13 +33,17 @@ export function LaunchStep({ data, onBack }: LaunchStepProps) {
     <div className="space-y-6">
       {/* Success banner */}
       <div className="text-center space-y-4 py-8">
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 text-green-600 text-4xl mx-auto">
-          🎉
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mx-auto">
+          <CheckCircle2 className="h-10 w-10 text-green-600" />
         </div>
         <h2 className="text-3xl font-bold text-foreground">Votre boutique est prête !</h2>
         <p className="text-lg text-muted-foreground max-w-md mx-auto">
-          {data.storeName} est configurée avec {data.products.length} produits. 
-          Lancez-la maintenant avec le système existant.
+          {data.storeName} a été créée avec {productsCreated} produits.
+          {productsCreated < data.products.length && (
+            <span className="block text-sm mt-1">
+              Certains produits peuvent être ajoutés manuellement depuis l'éditeur.
+            </span>
+          )}
         </p>
       </div>
 

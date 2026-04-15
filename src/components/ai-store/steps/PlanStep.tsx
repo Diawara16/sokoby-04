@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ArrowRight, LayoutGrid, Search, ShoppingBag } from "lucide-react";
+import { ArrowLeft, LayoutGrid, Search, ShoppingBag, Rocket } from "lucide-react";
 import type { AIStoreData } from "../AIStoreWizard";
 
 interface PlanStepProps {
@@ -79,8 +79,8 @@ export function PlanStep({ data, onNext, onBack }: PlanStepProps) {
         <Button variant="outline" onClick={onBack}>
           <ArrowLeft className="h-4 w-4 mr-2" /> Retour
         </Button>
-        <Button onClick={onNext} className="bg-primary text-primary-foreground font-semibold px-8">
-          🚀 Lancer ma boutique <ArrowRight className="h-4 w-4 ml-2" />
+        <Button onClick={onNext} size="lg" className="bg-primary text-primary-foreground font-semibold px-8">
+          <Rocket className="h-4 w-4 mr-2" /> Générer ma boutique maintenant
         </Button>
       </div>
     </div>
