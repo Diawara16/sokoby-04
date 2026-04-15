@@ -546,7 +546,7 @@ serve(async (req) => {
       }
     }
 
-    // Handle subscription cancellation
+    // Handle subscription cancellation (final deletion)
     if (event.type === 'customer.subscription.deleted') {
       const subscription = event.data.object as any;
       const stripeSubId = subscription.id;
@@ -561,22 +561,118 @@ serve(async (req) => {
 
       if (existingSub) {
         const now = new Date().toISOString();
+        // Set to expired — store stays active, only feature gating applies
         await supabaseClient
           .from('store_subscriptions')
-          .update({ status: 'canceled', canceled_at: now })
+          .update({ status: 'expired', canceled_at: now })
           .eq('id', existingSub.id);
 
         await supabaseClient.from('subscription_events').insert({
           store_id: existingSub.store_id,
-          event_type: 'subscription_canceled',
+          event_type: 'subscription_expired',
           metadata: { stripe_subscription_id: stripeSubId },
         });
 
-        console.log('[STRIPE-WEBHOOK] ✓ Subscription canceled:', existingSub.id);
+        console.log('[STRIPE-WEBHOOK] ✓ Subscription expired (store stays active):', existingSub.id);
       }
 
       return new Response(
         JSON.stringify({ received: true, processed: 'subscription_deleted' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
+    // Handle subscription updates (cancel_at_period_end, plan changes)
+    if (event.type === 'customer.subscription.updated') {
+      const subscription = event.data.object as any;
+      const stripeSubId = subscription.id;
+
+      console.log('[STRIPE-WEBHOOK] Subscription updated:', stripeSubId, { 
+        status: subscription.status, 
+        cancel_at_period_end: subscription.cancel_at_period_end 
+      });
+
+      const { data: existingSub } = await supabaseClient
+        .from('store_subscriptions')
+        .select('id, store_id, status')
+        .eq('stripe_subscription_id', stripeSubId)
+        .maybeSingle();
+
+      if (existingSub) {
+        const updates: any = {};
+
+        // User requested cancellation at period end (grace period)
+        if (subscription.cancel_at_period_end && subscription.status === 'active') {
+          updates.status = 'canceling';
+          updates.canceled_at = new Date().toISOString();
+          updates.end_date = new Date(subscription.current_period_end * 1000).toISOString();
+          console.log('[STRIPE-WEBHOOK] Subscription set to cancel at period end');
+        }
+        // User reactivated (undid cancellation)
+        else if (!subscription.cancel_at_period_end && subscription.status === 'active' && existingSub.status === 'canceling') {
+          updates.status = 'active';
+          updates.canceled_at = null;
+          console.log('[STRIPE-WEBHOOK] Subscription reactivated');
+        }
+        // Plan changed (downgrade/upgrade) — Stripe fires update with new plan
+        if (subscription.items?.data?.[0]?.price) {
+          updates.renewal_date = new Date(subscription.current_period_end * 1000).toISOString();
+        }
+
+        if (Object.keys(updates).length > 0) {
+          await supabaseClient
+            .from('store_subscriptions')
+            .update(updates)
+            .eq('id', existingSub.id);
+        }
+
+        await supabaseClient.from('subscription_events').insert({
+          store_id: existingSub.store_id,
+          event_type: 'subscription_updated',
+          metadata: { 
+            stripe_subscription_id: stripeSubId, 
+            cancel_at_period_end: subscription.cancel_at_period_end,
+            status: subscription.status,
+            updates 
+          },
+        });
+      }
+
+      return new Response(
+        JSON.stringify({ received: true, processed: 'subscription_updated' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
+    // Handle payment failure
+    if (event.type === 'invoice.payment_failed') {
+      const invoice = event.data.object as any;
+      const stripeSubId = invoice.subscription as string;
+
+      if (stripeSubId) {
+        console.log('[STRIPE-WEBHOOK] Payment failed for subscription:', stripeSubId);
+
+        const { data: existingSub } = await supabaseClient
+          .from('store_subscriptions')
+          .select('id, store_id')
+          .eq('stripe_subscription_id', stripeSubId)
+          .maybeSingle();
+
+        if (existingSub) {
+          // Don't cancel — just log event. Stripe handles retries.
+          // Store and domains stay fully active.
+          await supabaseClient.from('subscription_events').insert({
+            store_id: existingSub.store_id,
+            event_type: 'payment_failed',
+            metadata: { stripe_subscription_id: stripeSubId, attempt_count: invoice.attempt_count },
+          });
+
+          console.log('[STRIPE-WEBHOOK] ✓ Payment failure logged (no action taken, Stripe retries)');
+        }
+      }
+
+      return new Response(
+        JSON.stringify({ received: true, processed: 'payment_failed' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
