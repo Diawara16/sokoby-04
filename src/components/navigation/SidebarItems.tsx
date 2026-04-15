@@ -13,7 +13,8 @@ import {
   Plug,
   Bot,
   Wand2,
-  CreditCard
+  CreditCard,
+  Rocket
 } from "lucide-react";
 
 export const sidebarItems = [
@@ -94,5 +95,11 @@ export const sidebarItems = [
     icon: Bell, 
     label: "Notifications", 
     href: "/notifications" 
+  },
+  { 
+    icon: Rocket, 
+    label: "Roadmap", 
+    href: "/roadmap",
+    className: "text-primary hover:text-primary/90"
   }
 ];
