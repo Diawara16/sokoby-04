@@ -8,9 +8,10 @@ interface PlanStepProps {
   data: AIStoreData;
   onNext: () => void;
   onBack: () => void;
+  isGenerating?: boolean;
 }
 
-export function PlanStep({ data, onNext, onBack }: PlanStepProps) {
+export function PlanStep({ data, onNext, onBack, isGenerating = false }: PlanStepProps) {
   const categories = [...new Set(data.products.map((p) => p.category))];
 
   return (
@@ -79,8 +80,8 @@ export function PlanStep({ data, onNext, onBack }: PlanStepProps) {
         <Button variant="outline" onClick={onBack}>
           <ArrowLeft className="h-4 w-4 mr-2" /> Retour
         </Button>
-        <Button onClick={onNext} size="lg" className="bg-primary text-primary-foreground font-semibold px-8">
-          <Rocket className="h-4 w-4 mr-2" /> Générer ma boutique maintenant
+        <Button onClick={onNext} size="lg" className="bg-primary text-primary-foreground font-semibold px-8" disabled={isGenerating}>
+          <Rocket className="h-4 w-4 mr-2" /> {isGenerating ? "Génération en cours…" : "Générer ma boutique maintenant"}
         </Button>
       </div>
     </div>
