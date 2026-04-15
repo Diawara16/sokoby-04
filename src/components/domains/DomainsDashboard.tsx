@@ -6,13 +6,18 @@ import { MyDomainsTab } from "./MyDomainsTab";
 import { ConnectDomainTab } from "./ConnectDomainTab";
 import { DomainPurchaseTab } from "./DomainPurchaseTab";
 import { PurchasedDomainsTab } from "./PurchasedDomainsTab";
+import { DomainPlanBadge } from "./DomainPlanBadge";
+import { DomainUpgradePrompt } from "./DomainUpgradePrompt";
+import { useDomainFeatureGating } from "@/hooks/useDomainFeatureGating";
 
 export const DomainsDashboard = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [activeTab, setActiveTab] = useState("my-domains");
+  const gating = useDomainFeatureGating();
 
   const handleDomainAdded = () => {
     setRefreshKey((k) => k + 1);
+    gating.refresh();
   };
 
   return (
@@ -24,6 +29,15 @@ export const DomainsDashboard = () => {
           <p className="text-sm text-muted-foreground">Gérez les noms de domaine de votre boutique</p>
         </div>
       </div>
+
+      {!gating.isLoading && (
+        <DomainPlanBadge
+          currentPlan={gating.currentPlan}
+          domainsUsed={gating.domainsUsed}
+          domainsAllowed={gating.domainsAllowed}
+          remainingDomains={gating.remainingDomains}
+        />
+      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid w-full grid-cols-4 h-auto">
@@ -64,7 +78,18 @@ export const DomainsDashboard = () => {
               <CardDescription>Ajoutez un domaine existant en configurant vos enregistrements DNS</CardDescription>
             </CardHeader>
             <CardContent>
-              <ConnectDomainTab onDomainAdded={handleDomainAdded} />
+              {!gating.isLoading && !gating.customDomainAllowed ? (
+                <DomainUpgradePrompt currentPlan={gating.currentPlan} reason="no_custom_domain" />
+              ) : !gating.isLoading && !gating.canAddDomain ? (
+                <DomainUpgradePrompt
+                  currentPlan={gating.currentPlan}
+                  reason="limit_reached"
+                  domainsUsed={gating.domainsUsed}
+                  domainsAllowed={gating.domainsAllowed}
+                />
+              ) : (
+                <ConnectDomainTab onDomainAdded={handleDomainAdded} />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
