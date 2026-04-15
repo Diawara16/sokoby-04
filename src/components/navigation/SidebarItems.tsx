@@ -72,8 +72,8 @@ export const sidebarItems = [
   },
   {
     icon: Wand2,
-    label: "Créer ma boutique IA",
-    href: "/creer-boutique-ia",
+    label: "Générer boutique IA",
+    href: "/generer-boutique-ia",
     className: "text-primary hover:text-primary/90 font-semibold"
   },
   { 
