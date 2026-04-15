@@ -1,14 +1,15 @@
 import { Badge } from "@/components/ui/badge";
-import { Crown } from "lucide-react";
+import { Crown, Clock } from "lucide-react";
 
 interface DomainPlanBadgeProps {
   currentPlan: string;
   domainsUsed: number;
   domainsAllowed: number;
   remainingDomains: number | null;
+  isTrial?: boolean;
 }
 
-export const DomainPlanBadge = ({ currentPlan, domainsUsed, domainsAllowed, remainingDomains }: DomainPlanBadgeProps) => {
+export const DomainPlanBadge = ({ currentPlan, domainsUsed, domainsAllowed, remainingDomains, isTrial = false }: DomainPlanBadgeProps) => {
   const planLabel = currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1);
   const isUnlimited = remainingDomains === null;
 
@@ -18,6 +19,12 @@ export const DomainPlanBadge = ({ currentPlan, domainsUsed, domainsAllowed, rema
         <Crown className="h-3.5 w-3.5" />
         Plan {planLabel}
       </Badge>
+      {isTrial && (
+        <Badge variant="secondary" className="flex items-center gap-1.5 px-3 py-1">
+          <Clock className="h-3.5 w-3.5" />
+          Essai actif
+        </Badge>
+      )}
       <span className="text-sm text-muted-foreground">
         {isUnlimited
           ? `${domainsUsed} domaine${domainsUsed !== 1 ? "s" : ""} connecté${domainsUsed !== 1 ? "s" : ""} (illimité)`

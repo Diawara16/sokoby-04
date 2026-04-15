@@ -36,6 +36,7 @@ export const DomainsDashboard = () => {
           domainsUsed={gating.domainsUsed}
           domainsAllowed={gating.domainsAllowed}
           remainingDomains={gating.remainingDomains}
+          isTrial={gating.isTrial}
         />
       )}
 
