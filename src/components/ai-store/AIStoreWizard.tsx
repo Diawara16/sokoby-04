@@ -5,6 +5,8 @@ import { PlanStep } from "./steps/PlanStep";
 import { LaunchStep } from "./steps/LaunchStep";
 import { GenerationProgress, GenerationError } from "./GenerationProgress";
 import { useAIStoreGeneration } from "@/hooks/useAIStoreGeneration";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
 
 export type AIStoreData = {
   niche: string;
@@ -133,9 +135,10 @@ function generateStorePreview(niche: string): AIStoreData {
 export function AIStoreWizard() {
   const [currentStep, setCurrentStep] = useState(0);
   const [storeData, setStoreData] = useState<AIStoreData | null>(null);
-  const { state: genState, generate, reset } = useAIStoreGeneration();
+  const { state: genState, generate, reset, resume, hasPendingGeneration } = useAIStoreGeneration();
 
   const isGenerating = genState.isLocked || (genState.phase !== "idle" && genState.phase !== "complete" && genState.phase !== "error");
+  const canResume = hasPendingGeneration() && !isGenerating && genState.phase === "idle";
 
   const handleNicheSelect = (nicheId: string) => {
     const data = generateStorePreview(nicheId);
@@ -158,6 +161,11 @@ export function AIStoreWizard() {
     setCurrentStep(2);
   };
 
+  const handleResume = async () => {
+    setCurrentStep(3);
+    await resume();
+  };
+
   const steps = [
     { title: "Niche", description: "Choisissez votre marché" },
     { title: "Aperçu", description: "Prévisualisez votre boutique" },
@@ -167,6 +175,20 @@ export function AIStoreWizard() {
 
   return (
     <div className="space-y-6">
+      {/* Resume banner */}
+      {canResume && (
+        <div className="flex items-center justify-between p-4 rounded-lg border border-primary/30 bg-primary/5">
+          <div>
+            <p className="text-sm font-medium text-foreground">Génération interrompue détectée</p>
+            <p className="text-xs text-muted-foreground">Vous pouvez reprendre là où vous en étiez.</p>
+          </div>
+          <Button size="sm" onClick={handleResume} className="gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Reprendre
+          </Button>
+        </div>
+      )}
+
       {/* Progress bar */}
       <div className="flex items-center gap-2">
         {steps.map((step, i) => (
@@ -207,6 +229,7 @@ export function AIStoreWizard() {
           message={genState.message}
           productsCreated={genState.productsCreated}
           totalProducts={genState.totalProducts}
+          isResuming={genState.isResuming}
         />
       )}
       {currentStep === 3 && genState.phase === "error" && (
