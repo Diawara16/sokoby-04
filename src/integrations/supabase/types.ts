@@ -4291,6 +4291,7 @@ export type Database = {
           id: string
           metadata: Json | null
           store_subscription_id: string
+          stripe_event_id: string | null
         }
         Insert: {
           created_at?: string
@@ -4298,6 +4299,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           store_subscription_id: string
+          stripe_event_id?: string | null
         }
         Update: {
           created_at?: string
@@ -4305,6 +4307,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           store_subscription_id?: string
+          stripe_event_id?: string | null
         }
         Relationships: [
           {
