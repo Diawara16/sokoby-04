@@ -104,14 +104,14 @@ const StoreDashboard = () => {
           if (altStore) {
             storeData = {
               id: altStore.id,
-              store_name: altStore.name || 'Ma Boutique',
-              domain_name: altStore.domain || '',
-              store_type: altStore.store_type || 'ai',
-              payment_status: altStore.payment_status || 'active',
+              store_name: altStore.store_name || 'Ma Boutique',
+              domain_name: '',
+              store_type: 'ai',
+              payment_status: altStore.billing_status || 'active',
               initial_products_generated: true,
               created_at: altStore.created_at,
               user_id: user.id,
-            };
+            } as any;
           }
         }
 
