@@ -5,3 +5,24 @@ verify_jwt = true
 
 [functions.send-marketing-email]
 verify_jwt = true
+
+[functions.namecheap-domain-check]
+verify_jwt = true
+
+[functions.namecheap-domain-purchase]
+verify_jwt = true
+
+[functions.namecheap-dns-configure]
+verify_jwt = true
+
+[functions.cloudflare-domain-check]
+verify_jwt = true
+
+[functions.cloudflare-domain-purchase]
+verify_jwt = true
+
+[functions.cloudflare-dns-configure]
+verify_jwt = true
+
+[functions.cancel-store-subscription]
+verify_jwt = true
