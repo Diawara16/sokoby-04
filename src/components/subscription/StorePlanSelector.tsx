@@ -3,9 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Check, Crown, Zap, Rocket, Gift } from "lucide-react";
+import { Check, Crown, Zap, Rocket, Gift, Loader2 } from "lucide-react";
 import { useStoreSubscription, Plan } from "@/hooks/useStoreSubscription";
-import { Loader2 } from "lucide-react";
 
 interface StorePlanSelectorProps {
   storeId: string | null;
@@ -37,7 +36,7 @@ const featureLabels: Record<string, string> = {
 };
 
 export const StorePlanSelector = ({ storeId }: StorePlanSelectorProps) => {
-  const { plans, subscription, isLoading, selectPlan } = useStoreSubscription(storeId);
+  const { plans, subscription, isLoading, isCheckingOut, selectPlan } = useStoreSubscription(storeId);
   const [isYearly, setIsYearly] = useState(false);
 
   if (isLoading) {
@@ -140,9 +139,12 @@ export const StorePlanSelector = ({ storeId }: StorePlanSelectorProps) => {
                 <Button
                   className="w-full"
                   variant={isCurrent ? "outline" : plan.slug === "pro" ? "default" : "outline"}
-                  disabled={isCurrent}
+                  disabled={isCurrent || isCheckingOut}
                   onClick={() => selectPlan(plan.id, isYearly ? "yearly" : "monthly")}
                 >
+                  {isCheckingOut ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : null}
                   {isCurrent ? "Plan actuel" : price === 0 ? "Commencer gratuitement" : "Choisir ce plan"}
                 </Button>
               </CardContent>

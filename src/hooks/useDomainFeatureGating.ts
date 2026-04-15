@@ -102,5 +102,31 @@ export const useDomainFeatureGating = () => {
 
   useEffect(() => { load(); }, [load]);
 
+  // Realtime: auto-refresh when subscription changes
+  useEffect(() => {
+    if (!gating.storeId) return;
+
+    const channel = supabase
+      .channel(`domain_gating_${gating.storeId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'store_subscriptions',
+          filter: `store_id=eq.${gating.storeId}`,
+        },
+        () => {
+          console.log('[useDomainFeatureGating] Subscription changed, refreshing gating...');
+          load();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [gating.storeId, load]);
+
   return { ...gating, refresh: load };
 };
