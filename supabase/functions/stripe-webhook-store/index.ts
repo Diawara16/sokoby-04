@@ -448,16 +448,32 @@ serve(async (req) => {
           console.error('[STRIPE-WEBHOOK] Failed to fetch subscription details:', e.message);
         }
 
-        // Create new active subscription
+        // Determine if this is a trial subscription
+        let isTrial = false;
+        let trialEndDate: string | null = null;
+        try {
+          const stripe3 = new Stripe(stripeSecretKey, { apiVersion: '2023-10-16', httpClient: Stripe.createFetchHttpClient() });
+          const stripeSub = await stripe3.subscriptions.retrieve(stripeSubId);
+          if (stripeSub.status === 'trialing' && stripeSub.trial_end) {
+            isTrial = true;
+            trialEndDate = new Date(stripeSub.trial_end * 1000).toISOString();
+            console.log('[STRIPE-WEBHOOK] Trial detected, ends:', trialEndDate);
+          }
+        } catch (e) {
+          console.error('[STRIPE-WEBHOOK] Failed to check trial status:', e.message);
+        }
+
+        // Create new subscription (trial or active)
         const { error: subError } = await supabaseClient
           .from('store_subscriptions')
           .insert({
             store_id: storeId,
             plan_id: planId,
-            status: 'active',
+            status: isTrial ? 'trial' : 'active',
             billing_cycle: billingCycle,
             start_date: now,
-            renewal_date: renewalDate,
+            end_date: trialEndDate,
+            renewal_date: renewalDate || trialEndDate,
             stripe_subscription_id: stripeSubId,
           });
 

@@ -166,6 +166,7 @@ serve(async (req) => {
         billing_cycle: billingCycle,
       },
       subscription_data: {
+        trial_period_days: 14,
         metadata: {
           type: "store_subscription",
           store_id: storeId,
