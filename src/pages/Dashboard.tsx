@@ -5,10 +5,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ActiveStoreCard } from "@/components/dashboard/ActiveStoreCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { MarketplaceIntegrationsCard } from "@/components/integrations/MarketplaceIntegrationsCard";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { KPIDashboard } from "@/components/ai-store/KPIDashboard";
+import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { TrialBanner } from "@/components/subscription/TrialBanner";
 import { useCurrentStoreId } from "@/hooks/useCurrentStoreId";
+import { Button } from "@/components/ui/button";
+import { Sparkles } from "lucide-react";
 
 export default function Dashboard() {
   const [searchParams] = useSearchParams();
@@ -30,7 +33,15 @@ export default function Dashboard() {
         <meta name="description" content="Tableau de bord boutique: accès rapide, boutique active et intégrations marketplace." />
         <link rel="canonical" href={window.location.origin + "/"} />
       </Helmet>
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8">Tableau de bord</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold">Tableau de bord</h1>
+        <Button size="lg" className="font-semibold" asChild>
+          <Link to="/generer-boutique-ia">
+            <Sparkles className="h-4 w-4 mr-2" />
+            Générer une boutique avec l'IA
+          </Link>
+        </Button>
+      </div>
       <TrialBanner storeId={storeId} />
       
       <Tabs defaultValue="overview" className="space-y-4 sm:space-y-6">
