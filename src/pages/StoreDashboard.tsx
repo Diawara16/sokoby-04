@@ -5,26 +5,18 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Store, 
-  Package, 
-  Palette, 
-  Settings, 
-  ExternalLink, 
-  ArrowLeft,
-  Plus,
-  Edit,
-  Eye,
-  Loader2,
-  ShoppingCart,
-  BarChart3,
-  Globe,
-  Bell,
-  Video
+import { Badge } from "@/components/ui/badge";
+import {
+  Store, Package, Palette, Settings, ExternalLink, ArrowLeft,
+  Plus, Eye, Loader2, ShoppingCart, BarChart3, Globe, Bell,
+  Video, CheckCircle, Copy, Share2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { StoreNotificationsPanel } from "@/components/notifications/StoreNotificationsPanel";
 import { StoreVideosPanel } from "@/components/store/StoreVideosPanel";
+import { ProductCard } from "@/components/store/dashboard/ProductCard";
+import { PremiumStorePreview } from "@/components/store/dashboard/PremiumStorePreview";
+import { ThemePresets } from "@/components/store/dashboard/ThemePresets";
 
 interface StoreData {
   id: string;
@@ -59,116 +51,127 @@ const StoreDashboard = () => {
   const [store, setStore] = useState<StoreData | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [brandSettings, setBrandSettings] = useState<BrandSettings | null>(null);
+  const [isPublished, setIsPublished] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [activeTheme, setActiveTheme] = useState("minimal-luxury");
+  const [savingTheme, setSavingTheme] = useState(false);
+  const [editPrimary, setEditPrimary] = useState("#E53935");
+  const [editSecondary, setEditSecondary] = useState("#1976D2");
 
   useEffect(() => {
     const fetchStoreData = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          toast({
-            title: "Erreur",
-            description: "Vous devez être connecté",
-            variant: "destructive",
-          });
+          toast({ title: "Erreur", description: "Vous devez être connecté", variant: "destructive" });
           return;
         }
 
-        // Try store_settings first
-        let storeQuery = supabase
-          .from('store_settings')
-          .select('*')
-          .eq('user_id', user.id);
-        
-        if (storeId) {
-          storeQuery = storeQuery.eq('id', storeId);
-        }
-        
+        let storeQuery = supabase.from('store_settings').select('*').eq('user_id', user.id);
+        if (storeId) storeQuery = storeQuery.eq('id', storeId);
         let { data: storeData, error: storeError } = await storeQuery.maybeSingle();
-        
         if (storeError) throw storeError;
 
-        // Fallback: check stores table
         if (!storeData) {
-          let storesQuery = supabase
-            .from('stores')
-            .select('*')
-            .eq('owner_id', user.id);
-          
-          if (storeId) {
-            storesQuery = storesQuery.eq('id', storeId);
-          }
-
+          let storesQuery = supabase.from('stores').select('*').eq('owner_id', user.id);
+          if (storeId) storesQuery = storesQuery.eq('id', storeId);
           const { data: altStore, error: altError } = await storesQuery.maybeSingle();
           if (altError) throw altError;
-
           if (altStore) {
             storeData = {
-              id: altStore.id,
-              store_name: altStore.store_name || 'Ma Boutique',
-              domain_name: '',
-              store_type: 'ai',
-              payment_status: altStore.billing_status || 'active',
-              initial_products_generated: true,
-              created_at: altStore.created_at,
-              user_id: user.id,
+              id: altStore.id, store_name: altStore.store_name || 'Ma Boutique',
+              domain_name: '', store_type: 'ai', payment_status: altStore.billing_status || 'active',
+              initial_products_generated: true, created_at: altStore.created_at, user_id: user.id,
             } as any;
           }
         }
 
-        if (!storeData) {
-          return;
-        }
-        
-        setStore(storeData);
+        if (!storeData) return;
 
-        // Fetch products from products table (source of truth for LIVE stores)
-        const { data: productsData, error: productsError } = await supabase
-          .from('products')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(20);
-        
-        if (productsError) {
-          console.error('Error fetching products:', productsError);
-        }
-        
-        if (productsData && productsData.length > 0) {
+        setStore(storeData);
+        setIsPublished(!!(storeData as any).published_at || (storeData as any).store_status === 'active');
+
+        const { data: productsData } = await supabase
+          .from('products').select('*').eq('user_id', user.id)
+          .order('created_at', { ascending: false }).limit(50);
+
+        if (productsData?.length) {
           setProducts(productsData.map(p => ({
-            id: p.id,
-            name: p.name,
-            description: p.description || '',
-            price: p.price,
-            image_url: p.image,
-            is_active: p.status === 'active' && p.is_visible === true,
+            id: p.id, name: p.name, description: p.description || '',
+            price: p.price, image_url: p.image, is_active: p.status === 'active' && p.is_visible === true,
           })));
         }
 
-        // Fetch brand settings
         const { data: brandData } = await supabase
-          .from('brand_settings')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-        
+          .from('brand_settings').select('*').eq('user_id', user.id).maybeSingle();
         if (brandData) {
           setBrandSettings(brandData);
+          setEditPrimary(brandData.primary_color || '#E53935');
+          setEditSecondary(brandData.secondary_color || '#1976D2');
         }
-
       } catch (error) {
         console.error('Error fetching store data:', error);
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les données de la boutique",
-          variant: "destructive",
-        });
+        toast({ title: "Erreur", description: "Impossible de charger les données", variant: "destructive" });
       } finally {
         setLoading(false);
       }
     };
-
     fetchStoreData();
   }, [storeId, toast]);
+
+  const handlePublish = async () => {
+    if (!store) return;
+    setPublishing(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Non connecté");
+      await supabase.from("store_settings").update({
+        published_at: new Date().toISOString(),
+        store_status: "active",
+        updated_at: new Date().toISOString(),
+      } as any).eq("user_id", user.id);
+      setIsPublished(true);
+      toast({ title: "🎉 Boutique publiée !", description: "Votre boutique est maintenant en ligne" });
+    } catch {
+      toast({ title: "Erreur", description: "Impossible de publier", variant: "destructive" });
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  const handleProductUpdate = (updated: Product) => {
+    setProducts(prev => prev.map(p => p.id === updated.id ? updated : p));
+  };
+
+  const handleSaveTheme = async () => {
+    setSavingTheme(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Non connecté");
+
+      const payload = { primary_color: editPrimary, secondary_color: editSecondary, updated_at: new Date().toISOString() };
+
+      if (brandSettings) {
+        await supabase.from('brand_settings').update(payload).eq('user_id', user.id);
+      } else {
+        await supabase.from('brand_settings').insert({ ...payload, user_id: user.id });
+      }
+
+      setBrandSettings(prev => ({ ...(prev || { logo_url: '', slogan: '' }), primary_color: editPrimary, secondary_color: editSecondary }));
+      toast({ title: "Thème sauvegardé" });
+    } catch {
+      toast({ title: "Erreur", variant: "destructive" });
+    } finally {
+      setSavingTheme(false);
+    }
+  };
+
+  const shareUrl = store ? `${window.location.origin}/boutique-apercu/${store.id}` : '';
+
+  const copyShareLink = () => {
+    navigator.clipboard.writeText(shareUrl);
+    toast({ title: "Lien copié !", description: shareUrl });
+  };
 
   if (loading) {
     return (
@@ -180,35 +183,21 @@ const StoreDashboard = () => {
 
   if (!store) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold">Aucune boutique trouvée</h1>
-          <p className="text-muted-foreground">
-            Vous n'avez pas encore de boutique. Créez-en une pour commencer.
-          </p>
-          <div className="flex justify-center gap-3">
-            <Button asChild>
-              <Link to="/generer-boutique-ia">
-                <Plus className="w-4 h-4 mr-2" />
-                Créer une boutique IA
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link to="/tableau-de-bord">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Tableau de bord
-              </Link>
-            </Button>
-          </div>
+      <div className="container mx-auto px-4 py-8 text-center space-y-4">
+        <h1 className="text-2xl font-bold">Aucune boutique trouvée</h1>
+        <p className="text-muted-foreground">Créez-en une pour commencer.</p>
+        <div className="flex justify-center gap-3">
+          <Button asChild><Link to="/generer-boutique-ia"><Plus className="w-4 h-4 mr-2" />Créer une boutique IA</Link></Button>
+          <Button variant="outline" asChild><Link to="/tableau-de-bord"><ArrowLeft className="w-4 h-4 mr-2" />Tableau de bord</Link></Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl">
       <Helmet>
-        <title>{store.store_name} - Tableau de bord | Sokoby</title>
+        <title>{store.store_name} - Dashboard | Sokoby</title>
         <meta name="description" content={`Gérez votre boutique ${store.store_name}`} />
       </Helmet>
 
@@ -216,377 +205,210 @@ const StoreDashboard = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" asChild>
-            <Link to="/tableau-de-bord">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
+            <Link to="/tableau-de-bord"><ArrowLeft className="h-5 w-5" /></Link>
           </Button>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold">{store.store_name}</h1>
-            <p className="text-sm text-muted-foreground">{store.domain_name}</p>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold">{store.store_name}</h1>
+              {isPublished && (
+                <Badge className="bg-green-100 text-green-700 border-green-200 text-xs">
+                  <CheckCircle className="h-3 w-3 mr-1" /> En ligne
+                </Badge>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground">{store.domain_name || "Boutique Sokoby"}</p>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Eye className="h-4 w-4 mr-2" />
-            Aperçu
+        <div className="flex gap-2 flex-wrap">
+          {isPublished && (
+            <Button variant="outline" size="sm" onClick={copyShareLink}>
+              <Share2 className="h-4 w-4 mr-2" />Partager
+            </Button>
+          )}
+          <Button variant="outline" size="sm" asChild>
+            <Link to={`/boutique-apercu/${store.id}`} target="_blank">
+              <Eye className="h-4 w-4 mr-2" />Aperçu
+            </Link>
           </Button>
-          <Button size="sm" className="bg-primary hover:bg-primary/90">
-            <Globe className="h-4 w-4 mr-2" />
-            Publier
-          </Button>
+          {isPublished ? (
+            <Button size="sm" variant="outline" className="text-green-700 border-green-300 bg-green-50">
+              <CheckCircle className="h-4 w-4 mr-2" />Publiée
+            </Button>
+          ) : (
+            <Button size="sm" onClick={handlePublish} disabled={publishing}>
+              {publishing ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Globe className="h-4 w-4 mr-2" />}
+              {publishing ? "Publication…" : "Publier"}
+            </Button>
+          )}
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Published banner */}
+      {isPublished && (
+        <Card className="mb-6 border-green-200 bg-green-50/50">
+          <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              <div>
+                <p className="font-semibold text-green-800">Votre boutique est en ligne !</p>
+                <p className="text-sm text-green-600 truncate max-w-md">{shareUrl}</p>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" onClick={copyShareLink} className="border-green-300">
+              <Copy className="h-4 w-4 mr-2" />Copier le lien
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Package className="h-5 w-5 text-primary" />
+        {[
+          { icon: Package, value: products.length, label: "Produits", color: "bg-primary/10 text-primary" },
+          { icon: ShoppingCart, value: 0, label: "Commandes", color: "bg-green-100 text-green-600" },
+          { icon: BarChart3, value: "0€", label: "Ventes", color: "bg-blue-100 text-blue-600" },
+          { icon: Eye, value: 0, label: "Visiteurs", color: "bg-purple-100 text-purple-600" },
+        ].map(({ icon: Icon, value, label, color }) => (
+          <Card key={label}>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-lg ${color.split(' ')[0]}`}>
+                  <Icon className={`h-5 w-5 ${color.split(' ')[1]}`} />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{value}</p>
+                  <p className="text-xs text-muted-foreground">{label}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-2xl font-bold">{products.length}</p>
-                <p className="text-xs text-muted-foreground">Produits</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <ShoppingCart className="h-5 w-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">0</p>
-                <p className="text-xs text-muted-foreground">Commandes</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <BarChart3 className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">0€</p>
-                <p className="text-xs text-muted-foreground">Ventes</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Eye className="h-5 w-5 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">0</p>
-                <p className="text-xs text-muted-foreground">Visiteurs</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      {/* Main Tabs */}
+      {/* Tabs */}
       <Tabs defaultValue="products" className="space-y-4">
         <TabsList className="grid w-full grid-cols-6 h-auto">
-          <TabsTrigger value="products" className="text-xs sm:text-sm py-2">
-            <Package className="h-4 w-4 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Produits</span>
-          </TabsTrigger>
-          <TabsTrigger value="preview" className="text-xs sm:text-sm py-2">
-            <Store className="h-4 w-4 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Aperçu</span>
-          </TabsTrigger>
-          <TabsTrigger value="videos" className="text-xs sm:text-sm py-2">
-            <Video className="h-4 w-4 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Vidéos</span>
-          </TabsTrigger>
-          <TabsTrigger value="theme" className="text-xs sm:text-sm py-2">
-            <Palette className="h-4 w-4 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Thème</span>
-          </TabsTrigger>
-          <TabsTrigger value="notifications" className="text-xs sm:text-sm py-2">
-            <Bell className="h-4 w-4 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Notifs</span>
-          </TabsTrigger>
-          <TabsTrigger value="settings" className="text-xs sm:text-sm py-2">
-            <Settings className="h-4 w-4 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Paramètres</span>
-          </TabsTrigger>
+          {[
+            { value: "products", icon: Package, label: "Produits" },
+            { value: "preview", icon: Store, label: "Aperçu" },
+            { value: "videos", icon: Video, label: "Vidéos" },
+            { value: "theme", icon: Palette, label: "Thème" },
+            { value: "notifications", icon: Bell, label: "Notifs" },
+            { value: "settings", icon: Settings, label: "Paramètres" },
+          ].map(({ value, icon: Icon, label }) => (
+            <TabsTrigger key={value} value={value} className="text-xs sm:text-sm py-2">
+              <Icon className="h-4 w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">{label}</span>
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        {/* Products Tab */}
+        {/* Products */}
         <TabsContent value="products" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-semibold">Vos produits</h2>
-            <Button size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Ajouter un produit
-            </Button>
+            <Button size="sm"><Plus className="h-4 w-4 mr-2" />Ajouter un produit</Button>
           </div>
-          
           {products.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
                 <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium mb-2">Aucun produit</h3>
-                <p className="text-muted-foreground mb-4">
-                  Ajoutez votre premier produit pour commencer à vendre.
-                </p>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Ajouter un produit
-                </Button>
+                <p className="text-muted-foreground mb-4">Ajoutez votre premier produit pour commencer.</p>
+                <Button><Plus className="h-4 w-4 mr-2" />Ajouter un produit</Button>
               </CardContent>
             </Card>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {products.map((product) => (
-                <Card key={product.id} className="overflow-hidden">
-                  <div className="aspect-square bg-muted flex items-center justify-center">
-                    {product.image_url ? (
-                      <img 
-                        src={product.image_url} 
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Package className="h-12 w-12 text-muted-foreground" />
-                    )}
-                  </div>
-                  <CardContent className="p-3">
-                    <h3 className="font-medium text-sm truncate">{product.name}</h3>
-                    <p className="text-primary font-bold">{product.price.toFixed(2)}€</p>
-                    <div className="flex gap-2 mt-2">
-                      <Button variant="outline" size="sm" className="flex-1">
-                        <Edit className="h-3 w-3 mr-1" />
-                        Modifier
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <ProductCard key={product.id} product={product} onProductUpdate={handleProductUpdate} />
               ))}
             </div>
           )}
         </TabsContent>
 
-        {/* Store Preview Tab */}
+        {/* Preview */}
         <TabsContent value="preview">
-          <Card>
-            <CardHeader>
-              <CardTitle>Aperçu de votre boutique</CardTitle>
-              <CardDescription>
-                Voici comment vos clients verront votre boutique
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div 
-                className="border rounded-lg overflow-hidden"
-                style={{ 
-                  '--store-primary': brandSettings?.primary_color || '#E53935',
-                  '--store-secondary': brandSettings?.secondary_color || '#1976D2',
-                } as React.CSSProperties}
-              >
-                {/* Store Header Preview */}
-                <div 
-                  className="p-4 text-white"
-                  style={{ backgroundColor: brandSettings?.primary_color || '#E53935' }}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      {brandSettings?.logo_url ? (
-                        <img 
-                          src={brandSettings.logo_url} 
-                          alt="Logo" 
-                          className="h-10 w-10 rounded object-cover"
-                        />
-                      ) : (
-                        <div className="h-10 w-10 bg-white/20 rounded flex items-center justify-center">
-                          <Store className="h-6 w-6" />
-                        </div>
-                      )}
-                      <span className="font-bold text-lg">{store.store_name}</span>
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="text-white border-white/50 hover:bg-white/10"
-                    >
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Ouvrir
-                    </Button>
-                  </div>
-                  {brandSettings?.slogan && (
-                    <p className="text-white/80 text-sm mt-2">{brandSettings.slogan}</p>
-                  )}
-                </div>
-                
-                {/* Products Grid Preview */}
-                <div className="p-4 bg-muted/30">
-                  <h3 className="font-medium mb-3">Produits en vedette</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {products.slice(0, 4).map((product) => (
-                      <div key={product.id} className="bg-background rounded-lg p-2 shadow-sm">
-                        <div className="aspect-square bg-muted rounded mb-2 flex items-center justify-center">
-                          {product.image_url ? (
-                            <img 
-                              src={product.image_url} 
-                              alt={product.name}
-                              className="w-full h-full object-cover rounded"
-                            />
-                          ) : (
-                            <Package className="h-8 w-8 text-muted-foreground" />
-                          )}
-                        </div>
-                        <p className="text-xs font-medium truncate">{product.name}</p>
-                        <p className="text-xs text-primary font-bold">{product.price.toFixed(2)}€</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <PremiumStorePreview
+            storeName={store.store_name}
+            products={products}
+            brandSettings={brandSettings}
+            activeTheme={activeTheme}
+          />
         </TabsContent>
 
-        {/* Videos Tab */}
+        {/* Videos */}
         <TabsContent value="videos">
           <StoreVideosPanel storeId={store.id} />
         </TabsContent>
 
-        {/* Theme Tab */}
+        {/* Theme */}
         <TabsContent value="theme">
           <Card>
             <CardHeader>
               <CardTitle>Personnaliser le thème</CardTitle>
-              <CardDescription>
-                Modifiez les couleurs et le style de votre boutique
-              </CardDescription>
+              <CardDescription>Choisissez un thème et personnalisez les couleurs</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Couleur principale</label>
-                  <div className="flex items-center gap-3">
-                    <div 
-                      className="w-12 h-12 rounded-lg border shadow-sm"
-                      style={{ backgroundColor: brandSettings?.primary_color || '#E53935' }}
-                    />
-                    <input 
-                      type="color" 
-                      value={brandSettings?.primary_color || '#E53935'}
-                      className="h-10"
-                      onChange={() => {}}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Couleur secondaire</label>
-                  <div className="flex items-center gap-3">
-                    <div 
-                      className="w-12 h-12 rounded-lg border shadow-sm"
-                      style={{ backgroundColor: brandSettings?.secondary_color || '#1976D2' }}
-                    />
-                    <input 
-                      type="color" 
-                      value={brandSettings?.secondary_color || '#1976D2'}
-                      className="h-10"
-                      onChange={() => {}}
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium mb-2 block">Logo</label>
-                <div className="flex items-center gap-4">
-                  {brandSettings?.logo_url ? (
-                    <img 
-                      src={brandSettings.logo_url} 
-                      alt="Logo"
-                      className="h-16 w-16 rounded-lg object-cover border"
-                    />
-                  ) : (
-                    <div className="h-16 w-16 rounded-lg border-2 border-dashed flex items-center justify-center text-muted-foreground">
-                      <Store className="h-6 w-6" />
-                    </div>
-                  )}
-                  <Button variant="outline">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Télécharger un logo
-                  </Button>
-                </div>
-              </div>
-
-              <Button className="w-full sm:w-auto">
-                Enregistrer les modifications
-              </Button>
+            <CardContent>
+              <ThemePresets
+                activeTheme={activeTheme}
+                onThemeChange={setActiveTheme}
+                primaryColor={editPrimary}
+                secondaryColor={editSecondary}
+                onColorChange={(field, value) => {
+                  if (field === "primary") setEditPrimary(value);
+                  else setEditSecondary(value);
+                }}
+                onSave={handleSaveTheme}
+                saving={savingTheme}
+              />
             </CardContent>
           </Card>
+
+          {/* Live mini preview */}
+          <div className="mt-6">
+            <h3 className="text-sm font-semibold mb-3">Aperçu en direct</h3>
+            <PremiumStorePreview
+              storeName={store.store_name}
+              products={products.slice(0, 4)}
+              brandSettings={{ ...(brandSettings || { logo_url: '', slogan: '' }), primary_color: editPrimary, secondary_color: editSecondary }}
+              activeTheme={activeTheme}
+            />
+          </div>
         </TabsContent>
 
-        {/* Notifications Tab */}
+        {/* Notifications */}
         <TabsContent value="notifications">
           <StoreNotificationsPanel storeId={store.id} />
         </TabsContent>
 
-        {/* Settings Tab */}
+        {/* Settings */}
         <TabsContent value="settings">
           <Card>
             <CardHeader>
               <CardTitle>Paramètres de la boutique</CardTitle>
-              <CardDescription>
-                Gérez les informations et paramètres de votre boutique
-              </CardDescription>
+              <CardDescription>Informations et configuration</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <label className="text-sm font-medium mb-1 block">Nom de la boutique</label>
-                <input 
-                  type="text"
-                  value={store.store_name}
-                  className="w-full p-2 border rounded-md"
-                  readOnly
-                />
+                <input type="text" value={store.store_name} className="w-full p-2 border rounded-md" readOnly />
               </div>
               <div>
                 <label className="text-sm font-medium mb-1 block">Domaine</label>
-                <input 
-                  type="text"
-                  value={store.domain_name || ''}
-                  className="w-full p-2 border rounded-md bg-muted"
-                  readOnly
-                />
+                <input type="text" value={store.domain_name || ''} className="w-full p-2 border rounded-md bg-muted" readOnly />
               </div>
               <div>
                 <label className="text-sm font-medium mb-1 block">Type de boutique</label>
                 <div className="flex items-center gap-2">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    store.store_type === 'ai' 
-                      ? 'bg-purple-100 text-purple-800' 
-                      : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    {store.store_type === 'ai' ? 'Boutique IA' : 'Boutique Manuelle'}
-                  </span>
-                  {store.payment_status === 'completed' && (
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      Payé
-                    </span>
-                  )}
+                  <Badge variant="secondary">{store.store_type === 'ai' ? 'Boutique IA' : 'Boutique Manuelle'}</Badge>
+                  {store.payment_status === 'completed' && <Badge className="bg-green-100 text-green-800">Payé</Badge>}
+                  {isPublished && <Badge className="bg-green-100 text-green-800">En ligne</Badge>}
                 </div>
               </div>
               <div className="pt-4 border-t">
                 <h3 className="font-medium mb-3">Zone de danger</h3>
-                <Button variant="destructive" size="sm">
-                  Supprimer la boutique
-                </Button>
+                <Button variant="destructive" size="sm">Supprimer la boutique</Button>
               </div>
             </CardContent>
           </Card>
