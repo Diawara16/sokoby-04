@@ -9,6 +9,7 @@ interface DomainGating {
   domainsUsed: number;
   canAddDomain: boolean;
   remainingDomains: number | null; // null = unlimited
+  storeId: string | null;
 }
 
 const PLAN_DEFAULTS: Record<string, { custom_domain: boolean; domains_allowed: number }> = {
@@ -27,6 +28,7 @@ export const useDomainFeatureGating = () => {
     domainsUsed: 0,
     canAddDomain: false,
     remainingDomains: 0,
+    storeId: null,
   });
 
   const load = useCallback(async () => {
@@ -89,6 +91,7 @@ export const useDomainFeatureGating = () => {
         domainsUsed,
         canAddDomain,
         remainingDomains: isUnlimited ? null : Math.max(0, domainsAllowed - domainsUsed),
+        storeId: storeId || null,
       });
     } catch (error) {
       console.error("Domain feature gating error:", error);
