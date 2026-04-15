@@ -13,7 +13,8 @@ import {
   Plug,
   Bot,
   Wand2,
-  CreditCard
+  CreditCard,
+  Rocket
 } from "lucide-react";
 
 export const sidebarItems = [
