@@ -10,6 +10,7 @@ interface DomainGating {
   canAddDomain: boolean;
   remainingDomains: number | null; // null = unlimited
   storeId: string | null;
+  isTrial: boolean;
 }
 
 const PLAN_DEFAULTS: Record<string, { custom_domain: boolean; domains_allowed: number }> = {
@@ -29,6 +30,7 @@ export const useDomainFeatureGating = () => {
     canAddDomain: false,
     remainingDomains: 0,
     storeId: null,
+    isTrial: false,
   });
 
   const load = useCallback(async () => {
@@ -58,6 +60,7 @@ export const useDomainFeatureGating = () => {
 
       let planSlug = "free";
       let featureLimits: any = null;
+      let isTrial = false;
 
       if (storeId) {
         const { data: sub } = await supabase
@@ -72,6 +75,7 @@ export const useDomainFeatureGating = () => {
           const plan = sub.plans as any;
           planSlug = plan.slug || "free";
           featureLimits = plan.feature_limits;
+          isTrial = sub.status === "trial";
         }
       }
 
@@ -92,6 +96,7 @@ export const useDomainFeatureGating = () => {
         canAddDomain,
         remainingDomains: isUnlimited ? null : Math.max(0, domainsAllowed - domainsUsed),
         storeId: storeId || null,
+        isTrial,
       });
     } catch (error) {
       console.error("Domain feature gating error:", error);
