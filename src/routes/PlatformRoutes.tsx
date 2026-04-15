@@ -9,6 +9,7 @@ import Pricing from "@/pages/Pricing";
 import Features from "@/pages/Features";
 import Resources from "@/pages/Resources";
 import Roadmap from "@/pages/Roadmap";
+import AIStoreGenerator from "@/pages/AIStoreGenerator";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 interface PlatformRoutesProps {
