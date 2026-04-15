@@ -87,7 +87,7 @@ export const SubscriptionStatusCard = ({ storeId }: SubscriptionStatusCardProps)
             <Progress value={trialProgress} className="h-2" />
             <p className="text-xs text-muted-foreground">
               {trialDaysRemaining > 0
-                ? `${trialDaysRemaining} jour${trialDaysRemaining > 1 ? "s" : ""} restant${trialDaysRemaining > 1 ? "s" : ""} — toutes les fonctionnalités sont débloquées`
+                ? `${trialDaysRemaining} jour${trialDaysRemaining > 1 ? "s" : ""} restant${trialDaysRemaining > 1 ? "s" : ""} — toutes les fonctionnalités sont débloquées. Aucune facturation pendant l'essai.`
                 : "Période d'essai terminée — les limitations du plan s'appliquent"}
             </p>
           </div>
