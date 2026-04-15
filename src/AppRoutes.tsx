@@ -32,6 +32,7 @@ import ZapierIntegration from "@/pages/ZapierIntegration";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DynamicLanding } from "@/components/landing/DynamicLanding";
 import { SettingsRoutes } from "@/routes/SettingsRoutes";
+import AIStoreGenerator from "@/pages/AIStoreGenerator";
 import TestSupabase from "@/pages/TestSupabase";
 import AuthTest from "@/pages/AuthTest";
 import Success from "@/pages/Success";
@@ -263,6 +264,13 @@ export function AppRoutes() {
       <Route path="/legal/terms" element={<TermsOfService />} />
       <Route path="/legal/privacy" element={<PrivacyPolicy />} />
       
+      {/* AI Store Generator */}
+      <Route path="/generer-boutique-ia" element={
+        <ProtectedRoute>
+          <AIStoreGenerator />
+        </ProtectedRoute>
+      } />
+
       {/* Catch-all route for dynamic landing pages */}
       <Route path="/:slug" element={<DynamicLanding />} />
     </Routes>

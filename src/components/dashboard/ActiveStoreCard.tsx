@@ -2,10 +2,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useActiveStore } from "@/components/store/hooks/useActiveStore";
-import { Store, ExternalLink } from "lucide-react";
+import { Store, ExternalLink, RefreshCw } from "lucide-react";
 
 export const ActiveStoreCard = () => {
-  const { store, isLoading } = useActiveStore();
+  const { store, isLoading, hasError, refetch } = useActiveStore();
 
   return (
     <Card className="border-muted">
@@ -17,7 +17,24 @@ export const ActiveStoreCard = () => {
       </CardHeader>
       <CardContent className="p-4 sm:p-6">
         {isLoading ? (
-          <div className="h-16 animate-pulse rounded-md bg-muted" />
+          <div className="space-y-2">
+            <div className="h-5 w-48 animate-pulse rounded-md bg-muted" />
+            <div className="h-4 w-32 animate-pulse rounded-md bg-muted" />
+            <p className="text-xs text-muted-foreground mt-2">Chargement de votre boutique…</p>
+          </div>
+        ) : hasError ? (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-base sm:text-lg font-semibold">Erreur de chargement</h3>
+              <CardDescription className="text-xs sm:text-sm">
+                Impossible de récupérer vos boutiques.
+              </CardDescription>
+            </div>
+            <Button variant="outline" onClick={refetch} className="w-full sm:w-auto text-sm">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Réessayer
+            </Button>
+          </div>
         ) : store ? (
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
@@ -65,12 +82,18 @@ export const ActiveStoreCard = () => {
             <div>
               <h3 className="text-base sm:text-lg font-semibold">Aucune boutique trouvée</h3>
               <CardDescription className="text-xs sm:text-sm">
-                Créez votre boutique pour commencer à vendre.
+                Créez votre première boutique pour commencer à vendre.
               </CardDescription>
             </div>
-            <Button asChild className="w-full sm:w-auto text-sm">
-              <Link to="/boutique-ia">Créer ma boutique</Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <Button asChild className="w-full sm:w-auto text-sm">
+                <Link to="/generer-boutique-ia">Créer ma boutique</Link>
+              </Button>
+              <Button variant="outline" onClick={refetch} className="w-full sm:w-auto text-sm">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Rafraîchir
+              </Button>
+            </div>
           </div>
         )}
       </CardContent>
