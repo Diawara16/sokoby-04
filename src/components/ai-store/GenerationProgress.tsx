@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
-import { Loader2, CheckCircle2, AlertCircle, Store, Palette, ShoppingBag, UserCheck } from "lucide-react";
+import { Loader2, CheckCircle2, AlertCircle, Store, Palette, ShoppingBag, UserCheck, Flag } from "lucide-react";
+import { useEffect } from "react";
 
 interface GenerationProgressProps {
   phase: string;
@@ -14,11 +15,22 @@ const PHASES = [
   { key: "store", label: "Création boutique", icon: Store },
   { key: "branding", label: "Branding", icon: Palette },
   { key: "products", label: "Produits", icon: ShoppingBag },
+  { key: "finalizing", label: "Finalisation", icon: Flag },
 ];
 
 export function GenerationProgress({ phase, progress, message, productsCreated, totalProducts }: GenerationProgressProps) {
   const phaseOrder = PHASES.map((p) => p.key);
   const currentIdx = phaseOrder.indexOf(phase);
+
+  // Warn user before closing page during generation
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, []);
 
   return (
     <div className="max-w-lg mx-auto space-y-6 py-8">
@@ -36,6 +48,11 @@ export function GenerationProgress({ phase, progress, message, productsCreated, 
         />
       </div>
       <p className="text-center text-sm text-muted-foreground">{progress}%</p>
+
+      {/* Warning */}
+      <p className="text-center text-xs text-destructive font-medium">
+        ⚠️ Ne fermez pas cette page pendant la génération
+      </p>
 
       {/* Phase checklist */}
       <Card className="p-5 space-y-3">
@@ -63,6 +80,11 @@ export function GenerationProgress({ phase, progress, message, productsCreated, 
           );
         })}
       </Card>
+
+      {/* Estimated time */}
+      <p className="text-center text-xs text-muted-foreground">
+        Temps estimé : ~30 secondes
+      </p>
     </div>
   );
 }

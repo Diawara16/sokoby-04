@@ -8,6 +8,7 @@ interface PlanStepProps {
   data: AIStoreData;
   onNext: () => void;
   onBack: () => void;
+  isGenerating?: boolean;
 }
 
 export function PlanStep({ data, onNext, onBack }: PlanStepProps) {

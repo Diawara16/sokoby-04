@@ -135,7 +135,7 @@ export function AIStoreWizard() {
   const [storeData, setStoreData] = useState<AIStoreData | null>(null);
   const { state: genState, generate, reset } = useAIStoreGeneration();
 
-  const isGenerating = genState.phase !== "idle" && genState.phase !== "complete" && genState.phase !== "error";
+  const isGenerating = genState.isLocked || (genState.phase !== "idle" && genState.phase !== "complete" && genState.phase !== "error");
 
   const handleNicheSelect = (nicheId: string) => {
     const data = generateStorePreview(nicheId);
@@ -148,7 +148,7 @@ export function AIStoreWizard() {
   };
 
   const handleLaunch = async () => {
-    if (!storeData) return;
+    if (!storeData || isGenerating) return;
     setCurrentStep(3);
     await generate(storeData);
   };
@@ -198,7 +198,7 @@ export function AIStoreWizard() {
         <PreviewStep data={storeData} onCustomize={handleCustomize} onNext={() => setCurrentStep(2)} onBack={() => setCurrentStep(0)} />
       )}
       {currentStep === 2 && storeData && (
-        <PlanStep data={storeData} onNext={handleLaunch} onBack={() => setCurrentStep(1)} />
+        <PlanStep data={storeData} onNext={handleLaunch} onBack={() => setCurrentStep(1)} isGenerating={isGenerating} />
       )}
       {currentStep === 3 && isGenerating && (
         <GenerationProgress

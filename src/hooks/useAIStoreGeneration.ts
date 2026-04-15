@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { supabase } from "@/lib/supabase";
+import { useState, useCallback, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { AIStoreData } from "@/components/ai-store/AIStoreWizard";
 
@@ -9,6 +9,7 @@ type GenerationPhase =
   | "store"
   | "branding"
   | "products"
+  | "finalizing"
   | "complete"
   | "error";
 
@@ -19,6 +20,7 @@ interface GenerationState {
   productsCreated: number;
   totalProducts: number;
   error: string | null;
+  isLocked: boolean;
 }
 
 const INITIAL_STATE: GenerationState = {
@@ -28,6 +30,7 @@ const INITIAL_STATE: GenerationState = {
   productsCreated: 0,
   totalProducts: 0,
   error: null,
+  isLocked: false,
 };
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -35,12 +38,22 @@ const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export function useAIStoreGeneration() {
   const [state, setState] = useState<GenerationState>(INITIAL_STATE);
   const { toast } = useToast();
+  const lockRef = useRef(false);
 
   const update = (partial: Partial<GenerationState>) =>
     setState((prev) => ({ ...prev, ...partial }));
 
   const generate = useCallback(async (data: AIStoreData) => {
-    update({ phase: "auth", progress: 5, message: "Vérification du compte…" });
+    // Execution lock — prevent duplicate pipelines
+    if (lockRef.current) {
+      toast({
+        title: "Génération en cours",
+        description: "Veuillez patienter, votre boutique est en cours de création.",
+      });
+      return;
+    }
+    lockRef.current = true;
+    update({ phase: "auth", progress: 5, message: "Vérification du compte…", isLocked: true });
 
     try {
       // 1. Auth check
@@ -52,20 +65,23 @@ export function useAIStoreGeneration() {
         throw new Error("Vous devez être connecté pour générer une boutique.");
       }
 
-      // 2. Create / update store_settings (existing pipeline)
-      update({ phase: "store", progress: 15, message: "Création de la boutique…" });
+      // 2. Idempotency — check if store already exists for this user
+      update({ phase: "store", progress: 10, message: "Vérification de boutique existante…" });
+
+      const { data: existingStore } = await supabase
+        .from("store_settings")
+        .select("id, store_name")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      // 3. Create / update store_settings
+      update({ progress: 15, message: "Création de la boutique…" });
 
       const cleanNiche = data.niche.toLowerCase().replace(/[^a-z0-9]/g, "");
       const suffix = Math.random().toString(36).substring(2, 8);
       const domainName = `${cleanNiche}-${suffix}`;
 
-      const { data: existing } = await supabase
-        .from("store_settings")
-        .select("id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (existing) {
+      if (existingStore) {
         const { error } = await supabase
           .from("store_settings")
           .update({
@@ -86,7 +102,7 @@ export function useAIStoreGeneration() {
         if (error) throw new Error(`Erreur boutique: ${error.message}`);
       }
 
-      // 3. Apply branding (existing brand_settings)
+      // 4. Apply branding (sequential — after store)
       update({ phase: "branding", progress: 30, message: "Application du branding…" });
 
       const { data: existingBrand } = await supabase
@@ -112,7 +128,7 @@ export function useAIStoreGeneration() {
           .insert({ user_id: user.id, ...brandPayload });
       }
 
-      // 4. Sequential product creation (max 10, with delay)
+      // 5. Sequential product creation (max 10, with delay)
       const productsToCreate = data.products.slice(0, 10);
       update({
         phase: "products",
@@ -149,7 +165,7 @@ export function useAIStoreGeneration() {
           }
         }
 
-        const pct = 40 + Math.round(((i + 1) / productsToCreate.length) * 50);
+        const pct = 40 + Math.round(((i + 1) / productsToCreate.length) * 45);
         update({
           progress: pct,
           productsCreated: created,
@@ -162,7 +178,9 @@ export function useAIStoreGeneration() {
         }
       }
 
-      // 5. Create notification (existing system)
+      // 6. Finalize
+      update({ phase: "finalizing", progress: 90, message: "Finalisation…" });
+
       await supabase.from("notifications").insert({
         user_id: user.id,
         title: "Boutique IA créée",
@@ -170,12 +188,13 @@ export function useAIStoreGeneration() {
         read: false,
       }).then(() => {});
 
-      // 6. Done
+      // 7. Done
       update({
         phase: "complete",
         progress: 100,
         message: "Votre boutique est prête !",
         productsCreated: created,
+        isLocked: false,
       });
 
       toast({
@@ -184,16 +203,21 @@ export function useAIStoreGeneration() {
       });
     } catch (err: any) {
       const msg = err?.message || "Une erreur inattendue s'est produite";
-      update({ phase: "error", error: msg, message: msg });
+      update({ phase: "error", error: msg, message: msg, isLocked: false });
       toast({
         title: "Erreur",
         description: msg,
         variant: "destructive",
       });
+    } finally {
+      lockRef.current = false;
     }
   }, [toast]);
 
-  const reset = useCallback(() => setState(INITIAL_STATE), []);
+  const reset = useCallback(() => {
+    lockRef.current = false;
+    setState(INITIAL_STATE);
+  }, []);
 
   return { state, generate, reset };
 }
