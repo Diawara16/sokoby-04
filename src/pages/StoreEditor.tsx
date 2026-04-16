@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  ArrowLeft, Store, Settings, Palette, Package, CreditCard, Truck, Eye, Globe, Plus, Loader2
+  ArrowLeft, Store, Settings, Palette, Package, CreditCard, Truck, Eye, Globe, Plus, Loader2, Check, Copy, ExternalLink
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -46,6 +46,8 @@ interface BrandData {
 export default function StoreEditor() {
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState(false);
+  const [published, setPublished] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [storeData, setStoreData] = useState<StoreData | null>(null);
   const [brandData, setBrandData] = useState<BrandData>({});
 
@@ -112,6 +114,8 @@ export default function StoreEditor() {
     window.open(`/boutique-apercu/${storeData.id}`, "_blank");
   };
 
+  const storePublicUrl = storeData ? `${window.location.origin}/boutique-apercu/${storeData.id}` : '';
+
   const handlePublishStore = async () => {
     if (!storeData) return;
     setPublishing(true);
@@ -129,6 +133,7 @@ export default function StoreEditor() {
         .eq("user_id", user.id);
 
       if (error) throw error;
+      setPublished(true);
       toast.success("Boutique publiée avec succès !");
     } catch (error) {
       console.error("Publish error:", error);
@@ -136,6 +141,15 @@ export default function StoreEditor() {
     } finally {
       setPublishing(false);
     }
+  };
+
+  const handleCopyStoreLink = () => {
+    if (!storePublicUrl) return;
+    navigator.clipboard.writeText(storePublicUrl).then(() => {
+      setLinkCopied(true);
+      toast.success("Lien copié !");
+      setTimeout(() => setLinkCopied(false), 2000);
+    });
   };
 
   if (loading) {
@@ -185,12 +199,27 @@ export default function StoreEditor() {
             <Button variant="outline" size="sm" onClick={() => navigate("/parametres/domaine")}>
               <Globe className="h-4 w-4 mr-2" />Domaine
             </Button>
-            <Button size="sm" onClick={handlePublishStore} disabled={publishing}>
+            <Button size="sm" onClick={handlePublishStore} disabled={publishing || published}>
               {publishing && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              {publishing ? "Publication…" : "Publier"}
+              {published ? <><Check className="h-4 w-4 mr-2" />En ligne</> : publishing ? "Publication…" : "Publier"}
             </Button>
           </div>
         </div>
+
+        {/* Published link banner */}
+        {published && storePublicUrl && (
+          <div className="mt-4 flex items-center gap-3 p-3 rounded-lg border bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800">
+            <Check className="h-5 w-5 text-green-600 shrink-0" />
+            <p className="text-sm font-medium text-green-800 dark:text-green-300">Votre boutique est en ligne !</p>
+            <code className="text-xs bg-background px-2 py-1 rounded border truncate max-w-xs">{storePublicUrl}</code>
+            <Button variant="outline" size="sm" onClick={handleCopyStoreLink}>
+              {linkCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <a href={storePublicUrl} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3.5 w-3.5" /></a>
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Tabs */}
