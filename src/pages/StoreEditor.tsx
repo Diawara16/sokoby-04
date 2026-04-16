@@ -46,6 +46,8 @@ interface BrandData {
 export default function StoreEditor() {
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState(false);
+  const [published, setPublished] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [storeData, setStoreData] = useState<StoreData | null>(null);
   const [brandData, setBrandData] = useState<BrandData>({});
 
