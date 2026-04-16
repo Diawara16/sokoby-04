@@ -1,8 +1,10 @@
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ExternalLink, Share2, Pencil, Video, MessageSquare, Zap, CheckCircle2, Copy } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import type { AIStoreData } from "../AIStoreWizard";
 
 interface LaunchStepProps {
@@ -13,7 +15,40 @@ interface LaunchStepProps {
 
 export function LaunchStep({ data, productsCreated, onBack }: LaunchStepProps) {
   const { toast } = useToast();
-  const storeUrl = `${window.location.origin}/boutique`;
+  const [storeId, setStoreId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const findStore = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Check store_settings first
+      const { data: ss } = await supabase
+        .from('store_settings')
+        .select('id')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (ss) { setStoreId(ss.id); return; }
+
+      // Fallback to stores table
+      const { data: st } = await supabase
+        .from('stores')
+        .select('id')
+        .eq('owner_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (st) setStoreId(st.id);
+    };
+    findStore();
+  }, []);
+
+  const previewPath = storeId ? `/boutique-apercu/${storeId}` : '/boutique';
+  const storeUrl = `${window.location.origin}${previewPath}`;
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -63,7 +98,7 @@ export function LaunchStep({ data, productsCreated, onBack }: LaunchStepProps) {
       {/* Action buttons */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
         <Button size="lg" className="w-full font-semibold" asChild>
-          <Link to="/boutique">
+          <Link to={previewPath}>
             <ExternalLink className="h-4 w-4 mr-2" /> Voir ma boutique
           </Link>
         </Button>
@@ -71,7 +106,7 @@ export function LaunchStep({ data, productsCreated, onBack }: LaunchStepProps) {
           <Share2 className="h-4 w-4 mr-2" /> Partager
         </Button>
         <Button size="lg" variant="outline" className="w-full" asChild>
-          <Link to="/produits">
+          <Link to={storeId ? `/dashboard/store/${storeId}` : '/tableau-de-bord'}>
             <Pencil className="h-4 w-4 mr-2" /> Éditer produits
           </Link>
         </Button>

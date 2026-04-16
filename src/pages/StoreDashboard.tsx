@@ -143,6 +143,10 @@ const StoreDashboard = () => {
     setProducts(prev => prev.map(p => p.id === updated.id ? updated : p));
   };
 
+  const handleProductDelete = (id: string) => {
+    setProducts(prev => prev.filter(p => p.id !== id));
+  };
+
   const handleSaveTheme = async () => {
     setSavingTheme(true);
     try {
@@ -321,7 +325,7 @@ const StoreDashboard = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {products.map((product) => (
-                <ProductCard key={product.id} product={product} onProductUpdate={handleProductUpdate} />
+                <ProductCard key={product.id} product={product} onProductUpdate={handleProductUpdate} onProductDelete={handleProductDelete} />
               ))}
             </div>
           )}

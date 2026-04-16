@@ -85,37 +85,67 @@ export default function StorePreview() {
     try {
       setLoading(true);
 
-      const { data: store, error: storeError } = await supabase
+      // Try store_settings first
+      let storeResult: StoreData | null = null;
+
+      const { data: ssData } = await supabase
         .from('store_settings')
         .select('*')
         .eq('id', storeId)
         .maybeSingle();
 
-      if (storeError || !store) {
-        console.error('Error loading store:', storeError);
+      if (ssData) {
+        storeResult = ssData;
+      } else {
+        // Fallback: try stores table
+        const { data: altStore } = await supabase
+          .from('stores')
+          .select('*')
+          .eq('id', storeId)
+          .maybeSingle();
+
+        if (altStore) {
+          storeResult = {
+            id: altStore.id,
+            user_id: altStore.owner_id,
+            store_name: altStore.store_name || 'Ma Boutique',
+            store_description: (altStore as any).store_description || '',
+            store_email: (altStore as any).store_email || '',
+            store_phone: (altStore as any).store_phone || '',
+            store_address: (altStore as any).store_address || '',
+          };
+        }
+      }
+
+      if (!storeResult) {
+        console.error('Store not found in any table');
         return;
       }
 
-      const { data: brand, error: brandError } = await supabase
-        .rpc('get_store_brand_public', { store_user_id: store.user_id })
+      const { data: brand } = await supabase
+        .rpc('get_store_brand_public', { store_user_id: storeResult.user_id })
         .maybeSingle();
 
-      if (brandError) {
-        console.error('Error loading brand:', brandError);
-      }
-
-      const { data: productsData, error: productsError } = await supabase
+      // Try products by store_id first, then by user_id
+      let productsData: Product[] | null = null;
+      const { data: p1 } = await supabase
         .from('products')
         .select('*')
-        .eq('user_id', store.user_id)
-        .eq('status', 'active')
-        .limit(12);
+        .eq('store_id', storeId)
+        .limit(50);
 
-      if (productsError) {
-        console.error('Error loading products:', productsError);
+      if (p1 && p1.length > 0) {
+        productsData = p1;
+      } else {
+        const { data: p2 } = await supabase
+          .from('products')
+          .select('*')
+          .eq('user_id', storeResult.user_id)
+          .limit(50);
+        productsData = p2;
       }
 
-      setStoreData(store);
+      setStoreData(storeResult);
       setBrandData(brand || {});
       setProducts(productsData || []);
       setFilteredProducts(productsData || []);
@@ -248,10 +278,13 @@ export default function StorePreview() {
   if (!storeData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Boutique non trouvée</h1>
-          <p className="text-muted-foreground mb-6">Cette boutique n'existe pas ou n'est pas accessible.</p>
-          <Button onClick={() => window.close()}>Fermer</Button>
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-bold">Boutique non trouvée</h1>
+          <p className="text-muted-foreground">Cette boutique n'existe pas ou n'est pas accessible.</p>
+          <div className="flex gap-3 justify-center">
+            <Button variant="outline" onClick={() => window.history.back()}>Retour</Button>
+            <Button onClick={() => window.location.href = '/tableau-de-bord'}>Tableau de bord</Button>
+          </div>
         </div>
       </div>
     );
