@@ -5,9 +5,19 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Plus, Search, Upload, ShoppingCart, TrendingUp, AlertCircle, Filter } from "lucide-react";
+import { Package, Plus, Search, Upload, ShoppingCart, TrendingUp, AlertCircle, Filter, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { EditProductDialog } from "@/components/products/EditProductDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Product {
   id: string;
@@ -26,6 +36,8 @@ export function StoreProductsManager() {
   const [searchTerm, setSearchTerm] = useState("");
   const [storeId, setStoreId] = useState<string | null>(null);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
+  const [deleteProduct, setDeleteProduct] = useState<Product | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => { loadProducts(); }, []);
@@ -36,7 +48,6 @@ export function StoreProductsManager() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Resolve store
       const { data: store } = await supabase
         .from('store_settings')
         .select('id')
@@ -70,6 +81,28 @@ export function StoreProductsManager() {
       toast({ title: "Erreur", description: "Impossible de charger les produits", variant: "destructive" });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteProduct = async () => {
+    if (!deleteProduct) return;
+    setDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', deleteProduct.id);
+
+      if (error) throw error;
+
+      setProducts(prev => prev.filter(p => p.id !== deleteProduct.id));
+      toast({ title: "Produit supprimé", description: `"${deleteProduct.name}" a été supprimé.` });
+    } catch (error) {
+      console.error('[StoreProductsManager] Delete error:', error);
+      toast({ title: "Erreur", description: "Impossible de supprimer le produit", variant: "destructive" });
+    } finally {
+      setDeleting(false);
+      setDeleteProduct(null);
     }
   };
 
@@ -166,7 +199,12 @@ export function StoreProductsManager() {
                   <div className="text-right">
                     <p className="font-bold">€{product.price.toFixed(2)}</p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => setEditProduct(product)}>Modifier</Button>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setEditProduct(product)}>Modifier</Button>
+                    <Button variant="destructive" size="sm" onClick={() => setDeleteProduct(product)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -191,6 +229,24 @@ export function StoreProductsManager() {
           onSaved={loadProducts}
         />
       )}
+
+      {/* Delete confirmation */}
+      <AlertDialog open={!!deleteProduct} onOpenChange={(open) => { if (!open) setDeleteProduct(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer ce produit ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Voulez-vous vraiment supprimer « {deleteProduct?.name} » ? Cette action est irréversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteProduct} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {deleting ? "Suppression…" : "Supprimer"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
