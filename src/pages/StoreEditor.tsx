@@ -114,6 +114,8 @@ export default function StoreEditor() {
     window.open(`/boutique-apercu/${storeData.id}`, "_blank");
   };
 
+  const storePublicUrl = storeData ? `${window.location.origin}/boutique-apercu/${storeData.id}` : '';
+
   const handlePublishStore = async () => {
     if (!storeData) return;
     setPublishing(true);
@@ -131,6 +133,7 @@ export default function StoreEditor() {
         .eq("user_id", user.id);
 
       if (error) throw error;
+      setPublished(true);
       toast.success("Boutique publiée avec succès !");
     } catch (error) {
       console.error("Publish error:", error);
@@ -138,6 +141,15 @@ export default function StoreEditor() {
     } finally {
       setPublishing(false);
     }
+  };
+
+  const handleCopyStoreLink = () => {
+    if (!storePublicUrl) return;
+    navigator.clipboard.writeText(storePublicUrl).then(() => {
+      setLinkCopied(true);
+      toast.success("Lien copié !");
+      setTimeout(() => setLinkCopied(false), 2000);
+    });
   };
 
   if (loading) {
