@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  ArrowLeft, Store, Settings, Palette, Package, CreditCard, Truck, Eye, Globe, Plus, Loader2
+  ArrowLeft, Store, Settings, Palette, Package, CreditCard, Truck, Eye, Globe, Plus, Loader2, Check, Copy, ExternalLink
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
