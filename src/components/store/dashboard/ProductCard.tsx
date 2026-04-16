@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Package, Edit, Save, X, ImageIcon } from "lucide-react";
+import { Package, Edit, Save, X, Trash2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 
@@ -19,11 +19,13 @@ interface Product {
 interface ProductCardProps {
   product: Product;
   onProductUpdate: (updated: Product) => void;
+  onProductDelete?: (id: string) => void;
 }
 
-export function ProductCard({ product, onProductUpdate }: ProductCardProps) {
+export function ProductCard({ product, onProductUpdate, onProductDelete }: ProductCardProps) {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [draft, setDraft] = useState(product);
   const { toast } = useToast();
 
@@ -49,6 +51,26 @@ export function ProductCard({ product, onProductUpdate }: ProductCardProps) {
       toast({ title: "Erreur", description: "Impossible de sauvegarder", variant: "destructive" });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm("Supprimer ce produit ?")) return;
+    setDeleting(true);
+    try {
+      const { error } = await supabase
+        .from("products")
+        .delete()
+        .eq("id", product.id);
+
+      if (error) throw error;
+
+      onProductDelete?.(product.id);
+      toast({ title: "Produit supprimé" });
+    } catch {
+      toast({ title: "Erreur", description: "Impossible de supprimer", variant: "destructive" });
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -124,15 +146,26 @@ export function ProductCard({ product, onProductUpdate }: ProductCardProps) {
       <CardContent className="p-3">
         <h3 className="font-medium text-sm truncate">{product.name}</h3>
         <p className="text-primary font-bold">{product.price.toFixed(2)}€</p>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full mt-2"
-          onClick={() => { setDraft(product); setEditing(true); }}
-        >
-          <Edit className="h-3 w-3 mr-1" />
-          Modifier
-        </Button>
+        <div className="flex gap-2 mt-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1"
+            onClick={() => { setDraft(product); setEditing(true); }}
+          >
+            <Edit className="h-3 w-3 mr-1" />
+            Modifier
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            onClick={handleDelete}
+            disabled={deleting}
+          >
+            <Trash2 className="h-3 w-3" />
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
