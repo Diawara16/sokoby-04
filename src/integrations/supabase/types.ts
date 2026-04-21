@@ -1155,6 +1155,42 @@ export type Database = {
           },
         ]
       }
+      domain_purchases: {
+        Row: {
+          created_at: string
+          domain_name: string
+          id: string
+          price_estimate: number | null
+          provider: string
+          status: string
+          store_id: string | null
+          tld: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          domain_name: string
+          id?: string
+          price_estimate?: number | null
+          provider?: string
+          status?: string
+          store_id?: string | null
+          tld?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          domain_name?: string
+          id?: string
+          price_estimate?: number | null
+          provider?: string
+          status?: string
+          store_id?: string | null
+          tld?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       domain_verifications: {
         Row: {
           created_at: string
