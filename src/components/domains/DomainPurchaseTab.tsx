@@ -320,7 +320,7 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
       )}
 
       {/* Registrar links */}
-      {hasSearched && !purchasedDomain && (
+      {hasSearched && !reservedDomain && (
         <Alert>
           <AlertDescription className="text-sm text-muted-foreground">
             L'achat direct de domaine sera bientôt disponible. En attendant, achetez votre domaine chez un registrar :
