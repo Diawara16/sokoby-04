@@ -60,9 +60,16 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
     enabled: !!storeId,
   });
 
-  const video = latestVideo?.status === "ready" ? latestVideo : null;
+  const isValidUrl = (u: unknown): u is string =>
+    typeof u === "string" && /^https?:\/\//i.test(u);
+
+  const video =
+    latestVideo?.status === "ready" && isValidUrl((latestVideo as any).video_url)
+      ? latestVideo
+      : null;
   const isProcessing = latestVideo && latestVideo.status !== "ready" && latestVideo.status !== "failed";
   const handleCanPlay = useCallback(() => setVideoReady(true), []);
+  const handleVideoError = useCallback(() => setVideoError(true), []);
 
   if (isLoading) {
     return (
