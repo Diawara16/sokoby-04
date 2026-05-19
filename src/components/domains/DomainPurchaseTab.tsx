@@ -59,7 +59,10 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
 
     setIsSearching(true);
     setHasSearched(true);
-    setPurchasedDomain(null);
+    setReservedDomain(null);
+    setReservedDomainId(null);
+    setPurchaseCompleted(false);
+    setPurchaseError(null);
 
     const initialResults: DomainResult[] = EXTENSIONS.map((ext) => ({
       domain: `${clean}${ext}`,
@@ -83,11 +86,45 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
     try {
       const success = await purchaseDomain(domain, "manual");
       if (success) {
-        setPurchasedDomain(domain);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: row } = await supabase
+            .from("store_domains")
+            .select("id")
+            .eq("user_id", user.id)
+            .eq("domain", domain.toLowerCase().trim())
+            .order("updated_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          setReservedDomainId(row?.id ?? null);
+        }
+        setReservedDomain(domain);
         onDomainPurchased?.();
       }
     } finally {
       setPurchasingDomain(null);
+    }
+  };
+
+  const handleCompletePurchase = async () => {
+    if (!reservedDomainId) return;
+    setCompleting(true);
+    setPurchaseError(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("purchase-domain-secure", {
+        body: { domainId: reservedDomainId, years: 1 },
+      });
+      if (error) throw new Error(error.message);
+      if (!data?.success) throw new Error(data?.error || "Achat échoué");
+      setPurchaseCompleted(true);
+      toast({ title: "Domaine acheté", description: `${reservedDomain} a été acheté avec succès.` });
+      onDomainPurchased?.();
+    } catch (e: any) {
+      const msg = e?.message || "L'achat a échoué. Veuillez réessayer.";
+      setPurchaseError(msg);
+      toast({ title: "Échec de l'achat", description: msg, variant: "destructive" });
+    } finally {
+      setCompleting(false);
     }
   };
 
