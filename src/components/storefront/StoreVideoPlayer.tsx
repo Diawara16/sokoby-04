@@ -101,16 +101,25 @@ export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) 
         />
       )}
 
-      {/* Background video */}
-      <video
-        autoPlay muted loop playsInline
-        onCanPlay={handleCanPlay}
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ opacity: videoReady ? 1 : 0, transition: "opacity 1s ease-out" }}
-        preload="auto"
-      >
-        <source src={video.video_url} type="video/mp4" />
-      </video>
+      {/* Background video — hidden when failed */}
+      {!videoError && (
+        <video
+          key={video.video_url}
+          autoPlay muted loop playsInline
+          onCanPlay={handleCanPlay}
+          onError={handleVideoError}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ opacity: videoReady ? 1 : 0, transition: "opacity 1s ease-out" }}
+          preload="auto"
+        >
+          <source src={video.video_url} type="video/mp4" />
+        </video>
+      )}
+
+      {/* Fallback gradient if no thumbnail + video failed */}
+      {videoError && !video.thumbnail_url && (
+        <div className="absolute inset-0 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900" />
+      )}
 
       {/* Cinematic overlay */}
       <div className="absolute inset-0 bg-black/40" />
