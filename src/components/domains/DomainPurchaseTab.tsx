@@ -234,16 +234,16 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
                       size="sm"
                       className="gap-2"
                       onClick={() => handlePurchase(result.domain)}
-                      disabled={purchasingDomain === result.domain || purchasedDomain === result.domain}
+                      disabled={purchasingDomain === result.domain || reservedDomain === result.domain}
                     >
                       {purchasingDomain === result.domain ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : purchasedDomain === result.domain ? (
+                      ) : reservedDomain === result.domain ? (
                         <Check className="h-4 w-4" />
                       ) : (
                         <ShoppingCart className="h-4 w-4" />
                       )}
-                      {purchasedDomain === result.domain ? "Enregistré" : "Réserver"}
+                      {reservedDomain === result.domain ? "Réservé" : "Réserver"}
                     </Button>
                   )}
                 </div>
@@ -253,16 +253,39 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
         </div>
       )}
 
-      {/* Post-purchase DNS instructions */}
-      {purchasedDomain && (
-        <Alert className="bg-blue-50 border-blue-200">
-          <Info className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-blue-800 space-y-3">
+      {/* Complete Purchase step (after reservation) */}
+      {reservedDomain && !purchaseCompleted && (
+        <Alert className="bg-amber-50 border-amber-200">
+          <Info className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="text-amber-900 space-y-3">
             <p className="font-semibold">
-              Domaine « {purchasedDomain} » enregistré en attente de configuration DNS.
+              « {reservedDomain} » réservé. Finalisez l'achat pour l'enregistrer auprès du registrar.
             </p>
             <p className="text-sm">
-              L'achat automatique via registrar n'est pas encore disponible. Achetez ce domaine chez un registrar, puis configurez les enregistrements DNS suivants :
+              L'achat est exécuté de manière sécurisée côté serveur via Namecheap. Aucun frais n'est prélevé en mode sandbox.
+            </p>
+            {purchaseError && <p className="text-sm text-destructive">Erreur : {purchaseError}</p>}
+            <Button
+              size="sm"
+              className="gap-2"
+              onClick={handleCompletePurchase}
+              disabled={completing || !reservedDomainId}
+            >
+              {completing ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+              {completing ? "Achat en cours..." : purchaseError ? "Réessayer l'achat" : "Finaliser l'achat"}
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Post-purchase success + DNS instructions */}
+      {purchaseCompleted && reservedDomain && (
+        <Alert className="bg-green-50 border-green-200">
+          <Check className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-green-900 space-y-3">
+            <p className="font-semibold">✅ Domaine « {reservedDomain} » acheté avec succès.</p>
+            <p className="text-sm">
+              Pour l'activer sur votre boutique, connectez-le via l'onglet « Connecter » et configurez les enregistrements DNS suivants :
             </p>
             <div className="grid gap-3 md:grid-cols-2 mt-2">
               <div className="bg-background p-3 rounded-md border text-sm space-y-1">
@@ -288,20 +311,10 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
                 </p>
               </div>
             </div>
-            <div className="flex gap-3 mt-2 flex-wrap">
-              <a href="https://www.namecheap.com/" target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline inline-flex items-center gap-1">
-                Namecheap <ExternalLink className="h-3 w-3" />
-              </a>
-              <a href="https://www.godaddy.com/" target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline inline-flex items-center gap-1">
-                GoDaddy <ExternalLink className="h-3 w-3" />
-              </a>
-              <a href="https://www.cloudflare.com/products/registrar/" target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline inline-flex items-center gap-1">
-                Cloudflare <ExternalLink className="h-3 w-3" />
-              </a>
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Une fois le DNS configuré, vérifiez le domaine dans l'onglet « Mes domaines achetés ».
-            </p>
+            <Button variant="outline" size="sm" onClick={() => onSwitchToConnect?.()} className="gap-2">
+              <Globe className="h-4 w-4" />
+              Connecter ce domaine
+            </Button>
           </AlertDescription>
         </Alert>
       )}
