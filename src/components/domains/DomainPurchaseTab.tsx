@@ -6,10 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import {
-  Search, Check, X, Loader2, ShoppingCart, ExternalLink, Globe, Copy, Info, Rocket, Link2,
+  Search, Check, X, Loader2, ShoppingCart, ExternalLink, Globe, Copy, Info, Rocket, Link2, CreditCard,
 } from "lucide-react";
 import { useStoreDomains } from "@/hooks/useStoreDomains";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const EXTENSIONS = [".com", ".net", ".store", ".shop", ".online"];
 
