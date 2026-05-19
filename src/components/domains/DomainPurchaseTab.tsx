@@ -8,9 +8,8 @@ import { Separator } from "@/components/ui/separator";
 import {
   Search, Check, X, Loader2, ShoppingCart, ExternalLink, Globe, Copy, Info, Rocket, Link2, CreditCard,
 } from "lucide-react";
-import { useStoreDomains } from "@/hooks/useStoreDomains";
+import { useDomainPurchases } from "@/hooks/useDomainPurchases";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 const EXTENSIONS = [".com", ".net", ".store", ".shop", ".online"];
 
@@ -37,7 +36,7 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
   const [purchaseCompleted, setPurchaseCompleted] = useState(false);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
-  const { purchaseDomain } = useStoreDomains();
+  const { reserveDomain, completePurchase } = useDomainPurchases();
   const { toast } = useToast();
 
   const cleanDomainName = (input: string) =>
@@ -84,20 +83,9 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
   const handlePurchase = async (domain: string) => {
     setPurchasingDomain(domain);
     try {
-      const success = await purchaseDomain(domain, "manual");
-      if (success) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const { data: row } = await supabase
-            .from("store_domains")
-            .select("id")
-            .eq("user_id", user.id)
-            .eq("domain", domain.toLowerCase().trim())
-            .order("updated_at", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          setReservedDomainId(row?.id ?? null);
-        }
+      const { success, id } = await reserveDomain(domain, { provider: "namecheap" });
+      if (success && id) {
+        setReservedDomainId(id);
         setReservedDomain(domain);
         onDomainPurchased?.();
       }
@@ -110,22 +98,17 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
     if (!reservedDomainId) return;
     setCompleting(true);
     setPurchaseError(null);
-    try {
-      const { data, error } = await supabase.functions.invoke("purchase-domain-secure", {
-        body: { domainId: reservedDomainId, years: 1 },
-      });
-      if (error) throw new Error(error.message);
-      if (!data?.success) throw new Error(data?.error || "Achat échoué");
+    const { success, error } = await completePurchase(reservedDomainId, 1);
+    if (success) {
       setPurchaseCompleted(true);
       toast({ title: "Domaine acheté", description: `${reservedDomain} a été acheté avec succès.` });
       onDomainPurchased?.();
-    } catch (e: any) {
-      const msg = e?.message || "L'achat a échoué. Veuillez réessayer.";
+    } else {
+      const msg = error || "L'achat a échoué. Veuillez réessayer.";
       setPurchaseError(msg);
       toast({ title: "Échec de l'achat", description: msg, variant: "destructive" });
-    } finally {
-      setCompleting(false);
     }
+    setCompleting(false);
   };
 
   const copyToClipboard = (text: string) => {
