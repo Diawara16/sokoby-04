@@ -6,10 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import {
-  Search, Check, X, Loader2, ShoppingCart, ExternalLink, Globe, Copy, Info, Rocket, Link2,
+  Search, Check, X, Loader2, ShoppingCart, ExternalLink, Globe, Copy, Info, Rocket, Link2, CreditCard,
 } from "lucide-react";
 import { useStoreDomains } from "@/hooks/useStoreDomains";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const EXTENSIONS = [".com", ".net", ".store", ".shop", ".online"];
 
@@ -30,7 +31,11 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [purchasingDomain, setPurchasingDomain] = useState<string | null>(null);
-  const [purchasedDomain, setPurchasedDomain] = useState<string | null>(null);
+  const [reservedDomain, setReservedDomain] = useState<string | null>(null);
+  const [reservedDomainId, setReservedDomainId] = useState<string | null>(null);
+  const [completing, setCompleting] = useState(false);
+  const [purchaseCompleted, setPurchaseCompleted] = useState(false);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
   const { purchaseDomain } = useStoreDomains();
   const { toast } = useToast();
@@ -54,7 +59,10 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
 
     setIsSearching(true);
     setHasSearched(true);
-    setPurchasedDomain(null);
+    setReservedDomain(null);
+    setReservedDomainId(null);
+    setPurchaseCompleted(false);
+    setPurchaseError(null);
 
     const initialResults: DomainResult[] = EXTENSIONS.map((ext) => ({
       domain: `${clean}${ext}`,
@@ -78,11 +86,45 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
     try {
       const success = await purchaseDomain(domain, "manual");
       if (success) {
-        setPurchasedDomain(domain);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: row } = await supabase
+            .from("store_domains")
+            .select("id")
+            .eq("user_id", user.id)
+            .eq("domain", domain.toLowerCase().trim())
+            .order("updated_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          setReservedDomainId(row?.id ?? null);
+        }
+        setReservedDomain(domain);
         onDomainPurchased?.();
       }
     } finally {
       setPurchasingDomain(null);
+    }
+  };
+
+  const handleCompletePurchase = async () => {
+    if (!reservedDomainId) return;
+    setCompleting(true);
+    setPurchaseError(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("purchase-domain-secure", {
+        body: { domainId: reservedDomainId, years: 1 },
+      });
+      if (error) throw new Error(error.message);
+      if (!data?.success) throw new Error(data?.error || "Achat échoué");
+      setPurchaseCompleted(true);
+      toast({ title: "Domaine acheté", description: `${reservedDomain} a été acheté avec succès.` });
+      onDomainPurchased?.();
+    } catch (e: any) {
+      const msg = e?.message || "L'achat a échoué. Veuillez réessayer.";
+      setPurchaseError(msg);
+      toast({ title: "Échec de l'achat", description: msg, variant: "destructive" });
+    } finally {
+      setCompleting(false);
     }
   };
 
@@ -192,16 +234,16 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
                       size="sm"
                       className="gap-2"
                       onClick={() => handlePurchase(result.domain)}
-                      disabled={purchasingDomain === result.domain || purchasedDomain === result.domain}
+                      disabled={purchasingDomain === result.domain || reservedDomain === result.domain}
                     >
                       {purchasingDomain === result.domain ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : purchasedDomain === result.domain ? (
+                      ) : reservedDomain === result.domain ? (
                         <Check className="h-4 w-4" />
                       ) : (
                         <ShoppingCart className="h-4 w-4" />
                       )}
-                      {purchasedDomain === result.domain ? "Enregistré" : "Réserver"}
+                      {reservedDomain === result.domain ? "Réservé" : "Réserver"}
                     </Button>
                   )}
                 </div>
@@ -211,16 +253,39 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
         </div>
       )}
 
-      {/* Post-purchase DNS instructions */}
-      {purchasedDomain && (
-        <Alert className="bg-blue-50 border-blue-200">
-          <Info className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-blue-800 space-y-3">
+      {/* Complete Purchase step (after reservation) */}
+      {reservedDomain && !purchaseCompleted && (
+        <Alert className="bg-amber-50 border-amber-200">
+          <Info className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="text-amber-900 space-y-3">
             <p className="font-semibold">
-              Domaine « {purchasedDomain} » enregistré en attente de configuration DNS.
+              « {reservedDomain} » réservé. Finalisez l'achat pour l'enregistrer auprès du registrar.
             </p>
             <p className="text-sm">
-              L'achat automatique via registrar n'est pas encore disponible. Achetez ce domaine chez un registrar, puis configurez les enregistrements DNS suivants :
+              L'achat est exécuté de manière sécurisée côté serveur via Namecheap. Aucun frais n'est prélevé en mode sandbox.
+            </p>
+            {purchaseError && <p className="text-sm text-destructive">Erreur : {purchaseError}</p>}
+            <Button
+              size="sm"
+              className="gap-2"
+              onClick={handleCompletePurchase}
+              disabled={completing || !reservedDomainId}
+            >
+              {completing ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+              {completing ? "Achat en cours..." : purchaseError ? "Réessayer l'achat" : "Finaliser l'achat"}
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Post-purchase success + DNS instructions */}
+      {purchaseCompleted && reservedDomain && (
+        <Alert className="bg-green-50 border-green-200">
+          <Check className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-green-900 space-y-3">
+            <p className="font-semibold">✅ Domaine « {reservedDomain} » acheté avec succès.</p>
+            <p className="text-sm">
+              Pour l'activer sur votre boutique, connectez-le via l'onglet « Connecter » et configurez les enregistrements DNS suivants :
             </p>
             <div className="grid gap-3 md:grid-cols-2 mt-2">
               <div className="bg-background p-3 rounded-md border text-sm space-y-1">
@@ -246,26 +311,16 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
                 </p>
               </div>
             </div>
-            <div className="flex gap-3 mt-2 flex-wrap">
-              <a href="https://www.namecheap.com/" target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline inline-flex items-center gap-1">
-                Namecheap <ExternalLink className="h-3 w-3" />
-              </a>
-              <a href="https://www.godaddy.com/" target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline inline-flex items-center gap-1">
-                GoDaddy <ExternalLink className="h-3 w-3" />
-              </a>
-              <a href="https://www.cloudflare.com/products/registrar/" target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline inline-flex items-center gap-1">
-                Cloudflare <ExternalLink className="h-3 w-3" />
-              </a>
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Une fois le DNS configuré, vérifiez le domaine dans l'onglet « Mes domaines achetés ».
-            </p>
+            <Button variant="outline" size="sm" onClick={() => onSwitchToConnect?.()} className="gap-2">
+              <Globe className="h-4 w-4" />
+              Connecter ce domaine
+            </Button>
           </AlertDescription>
         </Alert>
       )}
 
       {/* Registrar links */}
-      {hasSearched && !purchasedDomain && (
+      {hasSearched && !reservedDomain && (
         <Alert>
           <AlertDescription className="text-sm text-muted-foreground">
             L'achat direct de domaine sera bientôt disponible. En attendant, achetez votre domaine chez un registrar :
