@@ -1,7 +1,8 @@
 // purchase-domain-secure
 // Completes a pending domain reservation by calling Namecheap securely.
 // Sandbox-first: defaults to Namecheap sandbox unless NAMECHEAP_SANDBOX="false".
-// Never exposes credentials to the client.
+// Operates EXCLUSIVELY on public.domain_purchases.
+// Never reads from or writes to public.store_domains (DNS lifecycle isolation).
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -32,7 +33,6 @@ async function callNamecheap(domain: string, years: number): Promise<PurchaseRes
   const apiKey = Deno.env.get("NAMECHEAP_API_KEY");
   const userName = Deno.env.get("NAMECHEAP_USERNAME") || apiUser;
   const clientIp = Deno.env.get("NAMECHEAP_CLIENT_IP") || "0.0.0.0";
-  // Default to sandbox for safety. Production requires explicit opt-in.
   const sandbox = (Deno.env.get("NAMECHEAP_SANDBOX") ?? "true").toLowerCase() !== "false";
 
   if (!apiUser || !apiKey || !userName) {
@@ -116,11 +116,12 @@ Deno.serve(async (req) => {
     if (authErr || !user) return json({ error: "AUTH_REQUIRED" }, 401);
 
     const body = await req.json().catch(() => ({}));
-    const domainId: string | undefined = body.domainId;
+    // Accept either purchaseId (preferred) or legacy domainId param.
+    const purchaseId: string | undefined = body.purchaseId ?? body.domainId;
     const years = Math.min(Math.max(Number(body.years) || 1, 1), 10);
 
-    if (!domainId || typeof domainId !== "string") {
-      return json({ error: "domainId required" }, 400);
+    if (!purchaseId || typeof purchaseId !== "string") {
+      return json({ error: "purchaseId required" }, 400);
     }
 
     const admin = createClient(
@@ -128,41 +129,41 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    // Verify ownership + load row.
+    // Load reservation from domain_purchases (single source of truth).
     const { data: row, error: loadErr } = await admin
-      .from("store_domains")
-      .select("id, user_id, domain, status, provider")
-      .eq("id", domainId)
+      .from("domain_purchases")
+      .select("id, user_id, domain_name, status, provider")
+      .eq("id", purchaseId)
       .maybeSingle();
 
     if (loadErr) return json({ error: loadErr.message }, 500);
-    if (!row) return json({ error: "Domain reservation not found" }, 404);
+    if (!row) return json({ error: "Purchase reservation not found" }, 404);
     if (row.user_id !== user.id) return json({ error: "FORBIDDEN" }, 403);
-    if (!row.domain) return json({ error: "Invalid reservation" }, 400);
+    if (!row.domain_name) return json({ error: "Invalid reservation" }, 400);
 
     // Duplicate-purchase protection.
-    if (row.status === "purchased" || row.status === "active") {
-      return json({ success: true, status: row.status, orderId: null, alreadyPurchased: true });
+    if (row.status === "purchased") {
+      return json({ success: true, status: "purchased", orderId: null, alreadyPurchased: true });
     }
     if (row.status === "purchasing") {
       return json({ error: "Purchase already in progress" }, 409);
     }
 
-    // Transition: pending -> purchasing (guarded).
+    // Transition: pending|failed -> purchasing (guarded, atomic).
     const { data: locked, error: lockErr } = await admin
-      .from("store_domains")
-      .update({ status: "purchasing", dns_setup_error: null })
-      .eq("id", domainId)
-      .eq("status", "pending")
+      .from("domain_purchases")
+      .update({ status: "purchasing", error_message: null, years })
+      .eq("id", purchaseId)
+      .in("status", ["pending", "failed"])
       .select("id")
       .maybeSingle();
 
     if (lockErr) return json({ error: lockErr.message }, 500);
-    if (!locked) return json({ error: "Reservation no longer pending" }, 409);
+    if (!locked) return json({ error: "Reservation not in a state that can be purchased" }, 409);
 
-    console.log(`[purchase-domain-secure] user=${user.id} domain=${row.domain} years=${years}`);
+    console.log(`[purchase-domain-secure] user=${user.id} domain=${row.domain_name} years=${years}`);
 
-    const result = await callNamecheap(row.domain, years);
+    const result = await callNamecheap(row.domain_name, years);
 
     const update: Record<string, unknown> = {
       status: result.status,
@@ -170,15 +171,15 @@ Deno.serve(async (req) => {
     };
     if (result.success) {
       update.provider_order_id = result.orderId;
-      update.dns_setup_error = null;
+      update.error_message = null;
     } else {
-      update.dns_setup_error = result.error;
+      update.error_message = result.error;
     }
 
     const { error: updErr } = await admin
-      .from("store_domains")
+      .from("domain_purchases")
       .update(update)
-      .eq("id", domainId);
+      .eq("id", purchaseId);
     if (updErr) console.error("[purchase-domain-secure] update error", updErr);
 
     return json(result, result.success ? 200 : 502);
