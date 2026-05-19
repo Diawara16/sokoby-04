@@ -223,7 +223,8 @@ export const useStoreDomains = (storeId?: string) => {
   return {
     domains,
     isLoading,
-    purchaseDomain,
+    // NOTE: purchase lifecycle moved to useDomainPurchases (writes to domain_purchases).
+    // This hook is now dedicated to DNS connection lifecycle on store_domains only.
     verifyDomain,
     removeDomain,
     setPrimary,
