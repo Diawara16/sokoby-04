@@ -11,6 +11,7 @@ interface StoreVideoPlayerProps {
 
 export function StoreVideoPlayer({ storeId, storeName }: StoreVideoPlayerProps) {
   const [videoReady, setVideoReady] = useState(false);
+  const [videoError, setVideoError] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
