@@ -31,7 +31,11 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [purchasingDomain, setPurchasingDomain] = useState<string | null>(null);
-  const [purchasedDomain, setPurchasedDomain] = useState<string | null>(null);
+  const [reservedDomain, setReservedDomain] = useState<string | null>(null);
+  const [reservedDomainId, setReservedDomainId] = useState<string | null>(null);
+  const [completing, setCompleting] = useState(false);
+  const [purchaseCompleted, setPurchaseCompleted] = useState(false);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
   const { purchaseDomain } = useStoreDomains();
   const { toast } = useToast();
