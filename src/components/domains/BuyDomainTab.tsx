@@ -5,10 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Check, X, Loader2, ShoppingCart, ExternalLink, Info, ArrowRight } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useCurrentStoreId } from "@/hooks/useCurrentStoreId";
+import { useDomainPurchases } from "@/hooks/useDomainPurchases";
 
 const EXTENSIONS = [".com", ".net", ".store", ".shop"];
 
@@ -30,6 +30,7 @@ export const BuyDomainTab = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { storeId } = useCurrentStoreId();
+  const { reserveDomain } = useDomainPurchases(storeId ?? undefined);
 
   const cleanDomainName = (input: string) => {
     return input.toLowerCase().replace(/[^a-z0-9-]/g, "").replace(/^-+|-+$/g, "");
@@ -73,34 +74,15 @@ export const BuyDomainTab = () => {
   const handleReserve = async (result: DomainResult) => {
     setResults((prev) => prev.map((r) => (r.domain === result.domain ? { ...r, reserving: true } : r)));
 
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({ title: "Connexion requise", description: "Connectez-vous pour réserver un domaine.", variant: "destructive" });
-        return;
-      }
+    const { success } = await reserveDomain(result.domain, {
+      provider: "none",
+      storeId: storeId ?? null,
+    });
 
-      const { error } = await supabase.from("domain_purchases").insert({
-        user_id: user.id,
-        store_id: storeId ?? null,
-        domain_name: result.domain,
-        tld: result.tld,
-        status: "pending",
-        provider: "none",
-        price_estimate: null,
-      });
-
-      if (error) throw error;
-
+    if (success) {
       setResults((prev) => prev.map((r) => (r.domain === result.domain ? { ...r, reserving: false, reserved: true } : r)));
       setLastReserved(result.domain);
-      toast({
-        title: "Domaine réservé",
-        description: `${result.domain} a été réservé. Pour l'utiliser, connectez-le dans « Connecter un domaine ».`,
-      });
-    } catch (e: any) {
-      console.error("Reserve domain error:", e);
-      toast({ title: "Erreur", description: e.message || "Impossible de réserver ce domaine.", variant: "destructive" });
+    } else {
       setResults((prev) => prev.map((r) => (r.domain === result.domain ? { ...r, reserving: false } : r)));
     }
   };
