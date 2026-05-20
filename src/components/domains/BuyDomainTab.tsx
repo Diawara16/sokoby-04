@@ -74,34 +74,15 @@ export const BuyDomainTab = () => {
   const handleReserve = async (result: DomainResult) => {
     setResults((prev) => prev.map((r) => (r.domain === result.domain ? { ...r, reserving: true } : r)));
 
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({ title: "Connexion requise", description: "Connectez-vous pour réserver un domaine.", variant: "destructive" });
-        return;
-      }
+    const { success } = await reserveDomain(result.domain, {
+      provider: "none",
+      storeId: storeId ?? null,
+    });
 
-      const { error } = await supabase.from("domain_purchases").insert({
-        user_id: user.id,
-        store_id: storeId ?? null,
-        domain_name: result.domain,
-        tld: result.tld,
-        status: "pending",
-        provider: "none",
-        price_estimate: null,
-      });
-
-      if (error) throw error;
-
+    if (success) {
       setResults((prev) => prev.map((r) => (r.domain === result.domain ? { ...r, reserving: false, reserved: true } : r)));
       setLastReserved(result.domain);
-      toast({
-        title: "Domaine réservé",
-        description: `${result.domain} a été réservé. Pour l'utiliser, connectez-le dans « Connecter un domaine ».`,
-      });
-    } catch (e: any) {
-      console.error("Reserve domain error:", e);
-      toast({ title: "Erreur", description: e.message || "Impossible de réserver ce domaine.", variant: "destructive" });
+    } else {
       setResults((prev) => prev.map((r) => (r.domain === result.domain ? { ...r, reserving: false } : r)));
     }
   };
