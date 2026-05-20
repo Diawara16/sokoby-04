@@ -5,10 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Check, X, Loader2, ShoppingCart, ExternalLink, Info, ArrowRight } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useCurrentStoreId } from "@/hooks/useCurrentStoreId";
+import { useDomainPurchases } from "@/hooks/useDomainPurchases";
 
 const EXTENSIONS = [".com", ".net", ".store", ".shop"];
 
