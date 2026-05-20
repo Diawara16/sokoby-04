@@ -1,7 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { domainService } from "./DomainService";
-import { DOMAIN_FEATURE_FLAGS } from "./featureFlags";
-import type { DomainProvider, DomainPurchaseResult } from "./types";
+import type { DomainProvider } from "./types";
 
 // ---------------------------------------------------------------------------
 // Domain ownership verification methods
