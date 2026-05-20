@@ -30,6 +30,7 @@ export const BuyDomainTab = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { storeId } = useCurrentStoreId();
+  const { reserveDomain } = useDomainPurchases(storeId ?? undefined);
 
   const cleanDomainName = (input: string) => {
     return input.toLowerCase().replace(/[^a-z0-9-]/g, "").replace(/^-+|-+$/g, "");
