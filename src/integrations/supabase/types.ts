@@ -1158,36 +1158,51 @@ export type Database = {
       domain_purchases: {
         Row: {
           created_at: string
+          currency: string | null
           domain_name: string
+          error_message: string | null
           id: string
           price_estimate: number | null
           provider: string
+          provider_order_id: string | null
           status: string
           store_id: string | null
           tld: string | null
+          updated_at: string
           user_id: string
+          years: number | null
         }
         Insert: {
           created_at?: string
+          currency?: string | null
           domain_name: string
+          error_message?: string | null
           id?: string
           price_estimate?: number | null
           provider?: string
+          provider_order_id?: string | null
           status?: string
           store_id?: string | null
           tld?: string | null
+          updated_at?: string
           user_id: string
+          years?: number | null
         }
         Update: {
           created_at?: string
+          currency?: string | null
           domain_name?: string
+          error_message?: string | null
           id?: string
           price_estimate?: number | null
           provider?: string
+          provider_order_id?: string | null
           status?: string
           store_id?: string | null
           tld?: string | null
+          updated_at?: string
           user_id?: string
+          years?: number | null
         }
         Relationships: []
       }
