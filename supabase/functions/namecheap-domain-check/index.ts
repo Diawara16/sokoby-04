@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { buildNamecheapRequest } from "../_shared/namecheap-relay.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -32,31 +33,22 @@ Deno.serve(async (req) => {
     const apiUser = Deno.env.get("NAMECHEAP_API_USER");
     const apiKey = Deno.env.get("NAMECHEAP_API_KEY");
     const clientIp = Deno.env.get("NAMECHEAP_CLIENT_IP") || "0.0.0.0";
-    const sandbox = Deno.env.get("NAMECHEAP_SANDBOX") === "true";
 
     if (!apiUser || !apiKey) {
       throw new Error("Namecheap API credentials not configured");
     }
 
-    const baseUrl = sandbox
-      ? "https://api.sandbox.namecheap.com/xml.response"
-      : "https://api.namecheap.com/xml.response";
-
-    // Extract SLD and TLD
-    const parts = domain.split(".");
-    const tld = parts.slice(1).join(".");
-    const sld = parts[0];
-
-    const params = new URLSearchParams({
+    const params = {
       ApiUser: apiUser,
       ApiKey: apiKey,
       UserName: apiUser,
       ClientIp: clientIp,
       Command: "namecheap.domains.check",
       DomainList: domain,
-    });
+    };
 
-    const response = await fetch(`${baseUrl}?${params.toString()}`);
+    const { url, init } = buildNamecheapRequest(params);
+    const response = await fetch(url, init);
     const xmlText = await response.text();
 
     // Parse XML response
