@@ -32,22 +32,17 @@ Deno.serve(async (req) => {
     const apiUser = Deno.env.get("NAMECHEAP_API_USER");
     const apiKey = Deno.env.get("NAMECHEAP_API_KEY");
     const clientIp = Deno.env.get("NAMECHEAP_CLIENT_IP") || "0.0.0.0";
-    const sandbox = Deno.env.get("NAMECHEAP_SANDBOX") === "true";
 
     if (!apiUser || !apiKey) {
       throw new Error("Namecheap API credentials not configured");
     }
-
-    const baseUrl = sandbox
-      ? "https://api.sandbox.namecheap.com/xml.response"
-      : "https://api.namecheap.com/xml.response";
 
     const parts = domain.split(".");
     const tld = parts.slice(1).join(".");
     const sld = parts[0];
 
     // Registrant contact info from env (platform-level defaults)
-    const params = new URLSearchParams({
+    const paramsObj: Record<string, string> = ({
       ApiUser: apiUser,
       ApiKey: apiKey,
       UserName: apiUser,
