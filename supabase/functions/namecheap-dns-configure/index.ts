@@ -32,21 +32,16 @@ Deno.serve(async (req) => {
     const apiUser = Deno.env.get("NAMECHEAP_API_USER");
     const apiKey = Deno.env.get("NAMECHEAP_API_KEY");
     const clientIp = Deno.env.get("NAMECHEAP_CLIENT_IP") || "0.0.0.0";
-    const sandbox = Deno.env.get("NAMECHEAP_SANDBOX") === "true";
 
     if (!apiUser || !apiKey) {
       throw new Error("Namecheap API credentials not configured");
     }
 
-    const baseUrl = sandbox
-      ? "https://api.sandbox.namecheap.com/xml.response"
-      : "https://api.namecheap.com/xml.response";
-
     const parts = domain.split(".");
     const tld = parts.slice(1).join(".");
     const sld = parts[0];
 
-    const params = new URLSearchParams({
+    const params: Record<string, string> = {
       ApiUser: apiUser,
       ApiKey: apiKey,
       UserName: apiUser,
@@ -54,18 +49,19 @@ Deno.serve(async (req) => {
       Command: "namecheap.domains.dns.setHosts",
       SLD: sld,
       TLD: tld,
-    });
+    };
 
     // Add DNS records
     records.forEach((record: { type: string; host: string; value: string; ttl: number }, i: number) => {
       const idx = i + 1;
-      params.set(`HostName${idx}`, record.host);
-      params.set(`RecordType${idx}`, record.type);
-      params.set(`Address${idx}`, record.value);
-      params.set(`TTL${idx}`, String(record.ttl || 1800));
+      params[`HostName${idx}`] = record.host;
+      params[`RecordType${idx}`] = record.type;
+      params[`Address${idx}`] = record.value;
+      params[`TTL${idx}`] = String(record.ttl || 1800);
     });
 
-    const response = await fetch(`${baseUrl}?${params.toString()}`);
+    const { url, init } = buildNamecheapRequest(params);
+    const response = await fetch(url, init);
     const xmlText = await response.text();
 
     const successMatch = xmlText.match(/Status="(OK|ERROR)"/i);
