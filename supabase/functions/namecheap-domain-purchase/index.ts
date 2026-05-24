@@ -90,7 +90,8 @@ Deno.serve(async (req) => {
       AuxBillingEmailAddress: Deno.env.get("REGISTRANT_EMAIL") || "domains@sokoby.com",
     });
 
-    const response = await fetch(`${baseUrl}?${params.toString()}`);
+    const { url, init } = buildNamecheapRequest(paramsObj);
+    const response = await fetch(url, init);
     const xmlText = await response.text();
 
     const successMatch = xmlText.match(/Status="(OK|ERROR)"/i);
