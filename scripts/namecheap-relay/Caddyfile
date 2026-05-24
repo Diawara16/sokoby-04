@@ -1,0 +1,8 @@
+{$RELAY_DOMAIN} {
+    encode gzip
+    reverse_proxy relay:8080
+    log {
+        output stdout
+        format json
+    }
+}
