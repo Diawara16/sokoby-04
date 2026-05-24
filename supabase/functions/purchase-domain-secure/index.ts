@@ -40,10 +40,6 @@ async function callNamecheap(domain: string, years: number): Promise<PurchaseRes
     return { success: false, status: "failed", orderId: null, error: "Namecheap credentials not configured" };
   }
 
-  const baseUrl = sandbox
-    ? "https://api.sandbox.namecheap.com/xml.response"
-    : "https://api.namecheap.com/xml.response";
-
   const registrant = {
     FirstName: Deno.env.get("REGISTRANT_FIRST_NAME") || "Sokoby",
     LastName: Deno.env.get("REGISTRANT_LAST_NAME") || "Platform",
@@ -75,7 +71,8 @@ async function callNamecheap(domain: string, years: number): Promise<PurchaseRes
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
 
   try {
-    const res = await fetch(`${baseUrl}?${new URLSearchParams(params)}`, { signal: ctrl.signal });
+    const { url, init } = buildNamecheapRequest(params);
+    const res = await fetch(url, { ...init, signal: ctrl.signal });
     const xml = await res.text();
 
     const statusMatch = xml.match(/Status="(OK|ERROR)"/i);
