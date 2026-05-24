@@ -5,6 +5,7 @@
 // Never reads from or writes to public.store_domains (DNS lifecycle isolation).
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { buildNamecheapRequest } from "../_shared/namecheap-relay.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
