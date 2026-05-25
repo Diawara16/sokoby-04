@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import {
-  Search, Check, X, Loader2, ShoppingCart, ExternalLink, Globe, Copy, Info, Rocket, Link2, CreditCard,
+  Search, Check, X, Loader2, ShoppingCart, Globe, Link2, CreditCard, AlertCircle,
 } from "lucide-react";
 import { useDomainPurchases } from "@/hooks/useDomainPurchases";
 import { useToast } from "@/hooks/use-toast";
@@ -30,14 +31,14 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [purchasingDomain, setPurchasingDomain] = useState<string | null>(null);
-  const [reservedDomain, setReservedDomain] = useState<string | null>(null);
-  const [reservedDomainId, setReservedDomainId] = useState<string | null>(null);
-  const [completing, setCompleting] = useState(false);
-  const [purchaseCompleted, setPurchaseCompleted] = useState(false);
+  const [finalizing, setFinalizing] = useState(false);
+  const [finalizedDomain, setFinalizedDomain] = useState<string | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
-  const { reserveDomain, completePurchase } = useDomainPurchases();
+  const { reserveDomain, completePurchase, startDomainCheckout, refetch } = useDomainPurchases();
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const handledCallback = useRef(false);
 
   const cleanDomainName = (input: string) =>
     input.toLowerCase().replace(/[^a-z0-9-]/g, "").replace(/^-+|-+$/g, "");
@@ -52,15 +53,74 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
     }
   };
 
+  // Handle Stripe return: ?purchase=success|cancelled&session_id=...&purchaseId=...
+  useEffect(() => {
+    if (handledCallback.current) return;
+    const purchaseStatus = searchParams.get("purchase");
+    if (!purchaseStatus) return;
+    handledCallback.current = true;
+
+    const sessionId = searchParams.get("session_id") || undefined;
+    const purchaseId = searchParams.get("purchaseId") || undefined;
+
+    const clearParams = () => {
+      const next = new URLSearchParams(searchParams);
+      ["purchase", "session_id", "purchaseId"].forEach((k) => next.delete(k));
+      setSearchParams(next, { replace: true });
+    };
+
+    if (purchaseStatus === "cancelled") {
+      toast({
+        title: "Paiement annulé",
+        description: "Vous avez annulé le paiement. Aucun domaine n'a été enregistré.",
+        variant: "destructive",
+      });
+      clearParams();
+      return;
+    }
+
+    if (purchaseStatus === "success") {
+      if (!purchaseId || !sessionId) {
+        setPurchaseError("Session de paiement invalide. Contactez le support.");
+        toast({
+          title: "Erreur",
+          description: "Session de paiement manquante après retour de Stripe.",
+          variant: "destructive",
+        });
+        clearParams();
+        return;
+      }
+
+      (async () => {
+        setFinalizing(true);
+        setPurchaseError(null);
+        const { success, error } = await completePurchase(purchaseId, 1, sessionId);
+        if (success) {
+          setFinalizedDomain(purchaseId);
+          toast({
+            title: "Domaine enregistré",
+            description: "Votre domaine a été acheté et enregistré avec succès auprès du registrar.",
+          });
+          onDomainPurchased?.();
+          await refetch();
+        } else {
+          const msg = error || "L'enregistrement a échoué après le paiement. Contactez le support.";
+          setPurchaseError(msg);
+          toast({ title: "Échec de l'enregistrement", description: msg, variant: "destructive" });
+        }
+        setFinalizing(false);
+        clearParams();
+      })();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleSearch = async () => {
     const clean = cleanDomainName(searchTerm);
     if (!clean) return;
 
     setIsSearching(true);
     setHasSearched(true);
-    setReservedDomain(null);
-    setReservedDomainId(null);
-    setPurchaseCompleted(false);
     setPurchaseError(null);
 
     const initialResults: DomainResult[] = EXTENSIONS.map((ext) => ({
@@ -82,58 +142,55 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
 
   const handlePurchase = async (domain: string) => {
     setPurchasingDomain(domain);
+    setPurchaseError(null);
     try {
+      // 1) Reserve
       const { success, id } = await reserveDomain(domain, { provider: "namecheap" });
-      if (success && id) {
-        setReservedDomainId(id);
-        setReservedDomain(domain);
-        onDomainPurchased?.();
+      if (!success || !id) {
+        return;
       }
+      // 2) Start Stripe Checkout
+      const { success: ok, url, error } = await startDomainCheckout(id, 1);
+      if (!ok || !url) {
+        const msg = error || "Impossible d'ouvrir le paiement Stripe.";
+        setPurchaseError(msg);
+        toast({ title: "Erreur de paiement", description: msg, variant: "destructive" });
+        return;
+      }
+      // 3) Redirect to Stripe
+      window.location.href = url;
     } finally {
       setPurchasingDomain(null);
     }
   };
 
-  const handleCompletePurchase = async () => {
-    if (!reservedDomainId) return;
-    setCompleting(true);
-    setPurchaseError(null);
-    const { success, error } = await completePurchase(reservedDomainId, 1);
-    if (success) {
-      setPurchaseCompleted(true);
-      toast({ title: "Domaine acheté", description: `${reservedDomain} a été acheté avec succès.` });
-      onDomainPurchased?.();
-    } else {
-      const msg = error || "L'achat a échoué. Veuillez réessayer.";
-      setPurchaseError(msg);
-      toast({ title: "Échec de l'achat", description: msg, variant: "destructive" });
-    }
-    setCompleting(false);
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast({ title: "Copié !", description: text });
-  };
-
   return (
     <div className="space-y-6">
-      {/* Coming soon badge + MVP notice */}
-      <Alert className="bg-amber-50 border-amber-200">
-        <Info className="h-4 w-4 text-amber-600" />
-        <AlertDescription className="text-amber-800 text-sm">
-          <div className="flex items-center gap-2 mb-1">
-            <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 text-xs">
-              <Rocket className="h-3 w-3 mr-1" />
-              Bientôt disponible
-            </Badge>
-            <span className="font-semibold">Achat direct de domaines dans Sokoby</span>
-          </div>
-          <strong>Mode MVP :</strong> La vérification de disponibilité est estimée (basée sur le DNS) et ne reflète pas la disponibilité réelle chez un registrar. L'achat crée un enregistrement « en attente » — aucun achat réel n'est effectué.
-        </AlertDescription>
-      </Alert>
+      {/* Stripe callback states */}
+      {finalizing && (
+        <Alert>
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <AlertDescription>
+            Paiement confirmé. Enregistrement du domaine auprès du registrar en cours…
+          </AlertDescription>
+        </Alert>
+      )}
+      {!finalizing && finalizedDomain && (
+        <Alert className="bg-green-50 border-green-200">
+          <Check className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-green-900">
+            ✅ Votre domaine a été acheté et enregistré avec succès. Retrouvez-le dans l'onglet « Achetés ».
+          </AlertDescription>
+        </Alert>
+      )}
+      {!finalizing && purchaseError && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{purchaseError}</AlertDescription>
+        </Alert>
+      )}
 
-      {/* "I already own a domain" shortcut */}
+      {/* Already own a domain shortcut */}
       <Card className="border-dashed border-primary/30 bg-primary/5">
         <CardContent className="p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -207,7 +264,7 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
                       variant={result.available ? "default" : "secondary"}
                       className={result.available ? "bg-green-100 text-green-800 hover:bg-green-100" : ""}
                     >
-                      {result.available ? "Disponible (estimation)" : "Indisponible"}
+                      {result.available ? "Disponible" : "Indisponible"}
                     </Badge>
                   )}
                 </div>
@@ -217,16 +274,14 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
                       size="sm"
                       className="gap-2"
                       onClick={() => handlePurchase(result.domain)}
-                      disabled={purchasingDomain === result.domain || reservedDomain === result.domain}
+                      disabled={purchasingDomain !== null}
                     >
                       {purchasingDomain === result.domain ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : reservedDomain === result.domain ? (
-                        <Check className="h-4 w-4" />
                       ) : (
-                        <ShoppingCart className="h-4 w-4" />
+                        <CreditCard className="h-4 w-4" />
                       )}
-                      {reservedDomain === result.domain ? "Réservé" : "Réserver"}
+                      {purchasingDomain === result.domain ? "Redirection vers Stripe…" : "Acheter"}
                     </Button>
                   )}
                 </div>
@@ -234,92 +289,6 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
             </Card>
           ))}
         </div>
-      )}
-
-      {/* Complete Purchase step (after reservation) */}
-      {reservedDomain && !purchaseCompleted && (
-        <Alert className="bg-amber-50 border-amber-200">
-          <Info className="h-4 w-4 text-amber-600" />
-          <AlertDescription className="text-amber-900 space-y-3">
-            <p className="font-semibold">
-              « {reservedDomain} » réservé. Finalisez l'achat pour l'enregistrer auprès du registrar.
-            </p>
-            <p className="text-sm">
-              L'achat est exécuté de manière sécurisée côté serveur via Namecheap. Aucun frais n'est prélevé en mode sandbox.
-            </p>
-            {purchaseError && <p className="text-sm text-destructive">Erreur : {purchaseError}</p>}
-            <Button
-              size="sm"
-              className="gap-2"
-              onClick={handleCompletePurchase}
-              disabled={completing || !reservedDomainId}
-            >
-              {completing ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-              {completing ? "Achat en cours..." : purchaseError ? "Réessayer l'achat" : "Finaliser l'achat"}
-            </Button>
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {/* Post-purchase success + DNS instructions */}
-      {purchaseCompleted && reservedDomain && (
-        <Alert className="bg-green-50 border-green-200">
-          <Check className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-900 space-y-3">
-            <p className="font-semibold">✅ Domaine « {reservedDomain} » acheté avec succès.</p>
-            <p className="text-sm">
-              Pour l'activer sur votre boutique, connectez-le via l'onglet « Connecter » et configurez les enregistrements DNS suivants :
-            </p>
-            <div className="grid gap-3 md:grid-cols-2 mt-2">
-              <div className="bg-background p-3 rounded-md border text-sm space-y-1">
-                <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">Enregistrement A</p>
-                <p>Type : <span className="font-mono">A</span></p>
-                <p>Nom : <span className="font-mono">@</span></p>
-                <p className="flex items-center gap-1">
-                  Valeur : <span className="font-mono">185.158.133.1</span>
-                  <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => copyToClipboard("185.158.133.1")}>
-                    <Copy className="h-3 w-3" />
-                  </Button>
-                </p>
-              </div>
-              <div className="bg-background p-3 rounded-md border text-sm space-y-1">
-                <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">Enregistrement www</p>
-                <p>Type : <span className="font-mono">A</span></p>
-                <p>Nom : <span className="font-mono">www</span></p>
-                <p className="flex items-center gap-1">
-                  Valeur : <span className="font-mono">185.158.133.1</span>
-                  <Button variant="ghost" size="sm" className="h-5 w-5 p-0" onClick={() => copyToClipboard("185.158.133.1")}>
-                    <Copy className="h-3 w-3" />
-                  </Button>
-                </p>
-              </div>
-            </div>
-            <Button variant="outline" size="sm" onClick={() => onSwitchToConnect?.()} className="gap-2">
-              <Globe className="h-4 w-4" />
-              Connecter ce domaine
-            </Button>
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {/* Registrar links */}
-      {hasSearched && !reservedDomain && (
-        <Alert>
-          <AlertDescription className="text-sm text-muted-foreground">
-            L'achat direct de domaine sera bientôt disponible. En attendant, achetez votre domaine chez un registrar :
-            <div className="flex gap-3 mt-2">
-              <a href="https://www.namecheap.com/" target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1 text-xs">
-                Namecheap <ExternalLink className="h-3 w-3" />
-              </a>
-              <a href="https://www.godaddy.com/" target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1 text-xs">
-                GoDaddy <ExternalLink className="h-3 w-3" />
-              </a>
-              <a href="https://www.cloudflare.com/products/registrar/" target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1 text-xs">
-                Cloudflare <ExternalLink className="h-3 w-3" />
-              </a>
-            </div>
-          </AlertDescription>
-        </Alert>
       )}
     </div>
   );
