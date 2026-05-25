@@ -16,12 +16,10 @@ export const DomainRouter = () => {
       try {
         console.log('DomainRouter - Vérification du domaine de boutique:', hostname);
         
-        // Vérifier si le domaine existe dans store_settings
-        const { data: storeSettings } = await supabase
-          .from('store_settings')
-          .select('*')
-          .eq('domain_name', hostname)
-          .maybeSingle();
+        // Vérifier si le domaine existe (RPC public sécurisée)
+        const { data: storeRows } = await supabase
+          .rpc('get_public_store_by_domain', { _domain: hostname });
+        const storeSettings = Array.isArray(storeRows) ? storeRows[0] : storeRows;
 
         if (storeSettings) {
           console.log('DomainRouter - Domaine trouvé dans store_settings:', storeSettings);
