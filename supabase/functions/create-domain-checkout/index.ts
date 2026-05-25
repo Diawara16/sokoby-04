@@ -4,7 +4,7 @@
 // later verified by purchase-domain-secure before any Namecheap call.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
+import Stripe from "npm:stripe@14.21.0";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
