@@ -68,7 +68,9 @@ serve(async (req) => {
     const { data: returns, error: fetchError } = await supabaseClient
       .from("returns")
       .select("*")
-      .eq("automated_status", "pending");
+      .eq("automated_status", "pending")
+      .eq("user_id", u.user.id);
+
 
     if (fetchError) throw fetchError;
 
