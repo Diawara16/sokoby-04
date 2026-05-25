@@ -62,24 +62,16 @@ export class NamecheapProvider implements DomainProviderAdapter {
     };
   }
 
-  async purchaseDomain(request: DomainPurchaseRequest): Promise<DomainPurchaseResult> {
-    const result = await this.callEdgeFunction<{
-      success: boolean;
-      orderId: string | null;
-      error: string | null;
-    }>("namecheap-domain-purchase", {
-      domain: request.domain,
-      storeId: request.storeId,
-      userId: request.userId,
-      years: request.years ?? 1,
-    });
-
-    return {
-      success: result.success,
-      orderId: result.orderId,
-      error: result.error,
-      status: result.success ? "pending" : "failed",
-    };
+  async purchaseDomain(_request: DomainPurchaseRequest): Promise<DomainPurchaseResult> {
+    // SECURITY: The legacy `namecheap-domain-purchase` edge function has been removed.
+    // All real Namecheap registrations MUST go through the Stripe-gated
+    // `purchase-domain-secure` edge function (invoked via
+    // `src/lib/domainProviders/namecheap.ts#purchaseDomain`).
+    // This adapter method is intentionally disabled to prevent any path that
+    // bypasses server-side payment verification.
+    throw new Error(
+      "[NamecheapProvider] Direct purchase disabled. Use purchase-domain-secure (Stripe-verified flow).",
+    );
   }
 
   async configureDns(domain: string, records: DnsRecord[]): Promise<boolean> {
