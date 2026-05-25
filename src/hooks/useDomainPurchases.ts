@@ -136,8 +136,8 @@ export const useDomainPurchases = (storeId?: string) => {
         body: {
           purchaseId,
           years,
-          successUrl: `${window.location.origin}/parametres/domaines?purchase=success`,
-          cancelUrl: `${window.location.origin}/parametres/domaines?purchase=cancelled`,
+          successUrl: `${window.location.origin}/parametres/domaine?purchase=success`,
+          cancelUrl: `${window.location.origin}/parametres/domaine?purchase=cancelled`,
         },
       });
       if (error) throw new Error(error.message);
