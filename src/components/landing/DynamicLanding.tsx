@@ -26,11 +26,9 @@ export const DynamicLanding = () => {
       try {
         console.log('Recherche de boutique avec domain_name:', slug);
         
-        const { data: storeSettings, error } = await supabase
-          .from("store_settings")
-          .select("*")
-          .eq("domain_name", slug)
-          .maybeSingle();
+        const { data: rows, error } = await supabase
+          .rpc('get_public_store_by_domain', { _domain: slug as string });
+        const storeSettings = Array.isArray(rows) ? rows[0] : rows;
 
         if (error) {
           console.error('Erreur lors de la recherche de boutique:', error);
