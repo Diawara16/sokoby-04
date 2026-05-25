@@ -36,13 +36,12 @@ export const useDomainCheck = () => {
     setIsCheckingDomain(true);
     try {
       // Vérifier si le domaine existe déjà dans notre base de données
-      const { data: existingDomain, error } = await supabase
-        .from("store_settings")
-        .select("domain_name")
-        .eq("domain_name", domain)
-        .maybeSingle();
+      const { data: taken, error } = await supabase
+        .rpc("is_domain_taken", { _domain: domain });
 
       if (error) throw error;
+
+      const existingDomain = taken === true;
 
       if (existingDomain) {
         setDomainStatus('taken');

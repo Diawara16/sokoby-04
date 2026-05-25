@@ -88,11 +88,9 @@ export default function StorePreview() {
       // Try store_settings first
       let storeResult: StoreData | null = null;
 
-      const { data: ssData } = await supabase
-        .from('store_settings')
-        .select('*')
-        .eq('id', storeId)
-        .maybeSingle();
+      const { data: ssRows } = await supabase
+        .rpc('get_public_store_by_id', { _id: storeId });
+      const ssData = Array.isArray(ssRows) ? ssRows[0] : ssRows;
 
       if (ssData) {
         storeResult = ssData;
