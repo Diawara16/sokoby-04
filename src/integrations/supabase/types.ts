@@ -104,6 +104,13 @@ export type Database = {
             foreignKeyName: "ai_generated_products_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "public_storefronts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_generated_products_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "store_settings"
             referencedColumns: ["id"]
           },
@@ -2596,6 +2603,13 @@ export type Database = {
             foreignKeyName: "notifications_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "public_storefronts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "store_settings"
             referencedColumns: ["id"]
           },
@@ -2731,6 +2745,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "pages_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "public_storefronts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "pages_store_id_fkey"
             columns: ["store_id"]
@@ -3606,6 +3627,13 @@ export type Database = {
             foreignKeyName: "staff_members_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "public_storefronts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_members_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "store_settings"
             referencedColumns: ["id"]
           },
@@ -3750,6 +3778,13 @@ export type Database = {
           webhook_secret_encrypted?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "store_payment_configs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "public_storefronts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "store_payment_configs_store_id_fkey"
             columns: ["store_id"]
@@ -4051,6 +4086,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "store_theme_assignments_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "public_storefronts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "store_theme_assignments_store_id_fkey"
             columns: ["store_id"]
@@ -5052,7 +5094,114 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_creator_profiles: {
+        Row: {
+          bio: string | null
+          created_at: string | null
+          creator_name: string | null
+          id: string | null
+          is_verified: boolean | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string | null
+          creator_name?: string | null
+          id?: string | null
+          is_verified?: boolean | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string | null
+          creator_name?: string | null
+          id?: string | null
+          is_verified?: boolean | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      public_storefronts: {
+        Row: {
+          about_text: string | null
+          banner_url: string | null
+          category: string | null
+          created_at: string | null
+          default_currency: string | null
+          default_language: string | null
+          domain_name: string | null
+          enabled_languages: string[] | null
+          id: string | null
+          is_custom_domain: boolean | null
+          is_production: boolean | null
+          maintenance_mode: boolean | null
+          niche: string | null
+          og_image_url: string | null
+          published_at: string | null
+          seo_description: string | null
+          seo_keywords: string | null
+          seo_title: string | null
+          social_media: Json | null
+          store_description: string | null
+          store_name: string | null
+          store_status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          about_text?: string | null
+          banner_url?: string | null
+          category?: string | null
+          created_at?: string | null
+          default_currency?: string | null
+          default_language?: string | null
+          domain_name?: string | null
+          enabled_languages?: string[] | null
+          id?: string | null
+          is_custom_domain?: boolean | null
+          is_production?: boolean | null
+          maintenance_mode?: boolean | null
+          niche?: string | null
+          og_image_url?: string | null
+          published_at?: string | null
+          seo_description?: string | null
+          seo_keywords?: string | null
+          seo_title?: string | null
+          social_media?: Json | null
+          store_description?: string | null
+          store_name?: string | null
+          store_status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          about_text?: string | null
+          banner_url?: string | null
+          category?: string | null
+          created_at?: string | null
+          default_currency?: string | null
+          default_language?: string | null
+          domain_name?: string | null
+          enabled_languages?: string[] | null
+          id?: string | null
+          is_custom_domain?: boolean | null
+          is_production?: boolean | null
+          maintenance_mode?: boolean | null
+          niche?: string | null
+          og_image_url?: string | null
+          published_at?: string | null
+          seo_description?: string | null
+          seo_keywords?: string | null
+          seo_title?: string | null
+          social_media?: Json | null
+          store_description?: string | null
+          store_name?: string | null
+          store_status?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       bytea_to_text: { Args: { data: string }; Returns: string }
@@ -5074,6 +5223,31 @@ export type Database = {
         Returns: boolean
       }
       get_my_stream_key: { Args: { _stream_id: string }; Returns: string }
+      get_public_store_by_domain: {
+        Args: { _domain: string }
+        Returns: {
+          about_text: string
+          banner_url: string
+          category: string
+          default_currency: string
+          default_language: string
+          domain_name: string
+          id: string
+          is_custom_domain: boolean
+          is_production: boolean
+          maintenance_mode: boolean
+          niche: string
+          og_image_url: string
+          seo_description: string
+          seo_keywords: string
+          seo_title: string
+          social_media: Json
+          store_description: string
+          store_name: string
+          store_status: string
+          user_id: string
+        }[]
+      }
       get_secret: { Args: { name: string }; Returns: string }
       get_store_brand_public: {
         Args: { store_user_id: string }
