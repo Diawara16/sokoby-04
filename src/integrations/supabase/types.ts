@@ -5248,6 +5248,31 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_public_store_by_id: {
+        Args: { _id: string }
+        Returns: {
+          about_text: string
+          banner_url: string
+          category: string
+          default_currency: string
+          default_language: string
+          domain_name: string
+          id: string
+          is_custom_domain: boolean
+          is_production: boolean
+          maintenance_mode: boolean
+          niche: string
+          og_image_url: string
+          seo_description: string
+          seo_keywords: string
+          seo_title: string
+          social_media: Json
+          store_description: string
+          store_name: string
+          store_status: string
+          user_id: string
+        }[]
+      }
       get_secret: { Args: { name: string }; Returns: string }
       get_store_brand_public: {
         Args: { store_user_id: string }
@@ -5402,6 +5427,7 @@ export type Database = {
         Args: { curlopt: string; value: string }
         Returns: boolean
       }
+      is_domain_taken: { Args: { _domain: string }; Returns: boolean }
       is_feature_allowed: {
         Args: { _feature_key: string; _store_id: string }
         Returns: boolean
