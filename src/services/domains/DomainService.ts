@@ -81,26 +81,16 @@ export class DomainService {
     }
   }
 
+  /**
+   * SECURITY: Direct provider purchase is disabled at the service layer.
+   * The only sanctioned registration path is the Stripe-gated
+   * `purchase-domain-secure` edge function, invoked from
+   * `src/lib/domainProviders/namecheap.ts#purchaseDomain` (and consumed by
+   * `useDomainPurchases`). This method is preserved only as a manual fallback
+   * (no real registrar call) to avoid breaking the adapter contract.
+   */
   async purchaseDomain(request: DomainPurchaseRequest): Promise<DomainPurchaseResult> {
-    if (!DOMAIN_FEATURE_FLAGS.enableDomainCheckout) {
-      return this.manual.purchaseDomain(request);
-    }
-
-    const adapter = this.resolve(request.provider, request.storeId);
-    if (adapter === this.manual) {
-      return this.manual.purchaseDomain(request);
-    }
-
-    // Attempt real provider with automatic fallback
-    try {
-      return await adapter.purchaseDomain(request);
-    } catch (err) {
-      console.warn(
-        `[DomainService] ${adapter.name} purchase failed, falling back to ManualProvider`,
-        err,
-      );
-      return this.manual.purchaseDomain(request);
-    }
+    return this.manual.purchaseDomain(request);
   }
 
   async configureDns(
