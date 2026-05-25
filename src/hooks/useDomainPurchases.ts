@@ -105,11 +105,12 @@ export const useDomainPurchases = (storeId?: string) => {
 
   const completePurchase = async (
     purchaseId: string,
-    years = 1
+    years = 1,
+    stripeSessionId?: string,
   ): Promise<{ success: boolean; error?: string }> => {
     try {
       const { data, error } = await supabase.functions.invoke("purchase-domain-secure", {
-        body: { purchaseId, years },
+        body: { purchaseId, years, stripeSessionId },
       });
       if (error) throw new Error(error.message);
       if (!data?.success) throw new Error(data?.error || "Achat échoué");
@@ -121,5 +122,32 @@ export const useDomainPurchases = (storeId?: string) => {
     }
   };
 
-  return { purchases, isLoading, reserveDomain, completePurchase, refetch: fetchPurchases };
+  /**
+   * Starts a Stripe Checkout session for a reserved domain.
+   * Redirects to Stripe; on return, the success page must call
+   * completePurchase(purchaseId, years, sessionId) to finalize registration.
+   */
+  const startDomainCheckout = async (
+    purchaseId: string,
+    years = 1,
+  ): Promise<{ success: boolean; url?: string; error?: string }> => {
+    try {
+      const { data, error } = await supabase.functions.invoke("create-domain-checkout", {
+        body: {
+          purchaseId,
+          years,
+          successUrl: `${window.location.origin}/parametres/domaines?purchase=success`,
+          cancelUrl: `${window.location.origin}/parametres/domaines?purchase=cancelled`,
+        },
+      });
+      if (error) throw new Error(error.message);
+      if (!data?.url) throw new Error(data?.error || "Impossible de démarrer le paiement");
+      return { success: true, url: data.url };
+    } catch (e: any) {
+      toast({ title: "Erreur de paiement", description: e.message, variant: "destructive" });
+      return { success: false, error: e.message };
+    }
+  };
+
+  return { purchases, isLoading, reserveDomain, completePurchase, startDomainCheckout, refetch: fetchPurchases };
 };
