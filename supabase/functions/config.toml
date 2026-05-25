@@ -9,8 +9,6 @@ verify_jwt = true
 [functions.namecheap-domain-check]
 verify_jwt = true
 
-[functions.namecheap-domain-purchase]
-verify_jwt = true
 
 [functions.namecheap-dns-configure]
 verify_jwt = true
