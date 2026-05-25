@@ -29,8 +29,10 @@ serve(async (req) => {
 
 
   try {
-    const { customerId } = await req.json();
+    // Always use authenticated user; ignore body customerId to prevent IDOR
+    const customerId = u.user.id;
     console.log("Generating recommendations for customer:", customerId);
+
 
     // Récupérer l'historique des commandes du client
     const { data: orders, error: ordersError } = await supabase
