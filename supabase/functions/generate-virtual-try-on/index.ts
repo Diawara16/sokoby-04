@@ -13,8 +13,19 @@ serve(async (req) => {
   }
 
   try {
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+    const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!);
+    const { data: u, error: ue } = await sb.auth.getUser(authHeader.replace('Bearer ', ''));
+    if (ue || !u?.user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
     const { userImageUrl, productId } = await req.json()
     console.log('Received request:', { userImageUrl, productId })
+
 
     // Initialize Hugging Face with your API token
     const hf = new HfInference(Deno.env.get('HUGGING_FACE_ACCESS_TOKEN'))
