@@ -107,7 +107,10 @@ Deno.serve(async (req) => {
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) return json({ error: "Stripe not configured" }, 500);
-    const stripe = new Stripe(stripeKey, { apiVersion: "2024-04-10" });
+    const stripe = new Stripe(stripeKey, {
+      apiVersion: "2024-04-10",
+      httpClient: Stripe.createFetchHttpClient(),
+    });
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
