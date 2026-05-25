@@ -47,14 +47,26 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const emailRequest: EmailRequest = await req.json();
-    
-    // Basic validation - no arbitrary HTML allowed, only trusted templates
+
     if (!emailRequest.to || !emailRequest.subject || !emailRequest.html) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // SECURITY: only allow sending to the authenticated user's own email
+    // to prevent abuse of the platform's email identity for phishing.
+    const userEmail = userData.user.email?.toLowerCase();
+    const recipients = (Array.isArray(emailRequest.to) ? emailRequest.to : [emailRequest.to])
+      .map((e) => String(e).toLowerCase());
+    if (!userEmail || recipients.some((r) => r !== userEmail)) {
+      return new Response(
+        JSON.stringify({ error: "Recipients restricted to the authenticated user's email" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     
     console.log("Sending email with Resend:", {
       to: emailRequest.to,

@@ -1,71 +1,50 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// SECURITY: this endpoint previously trusted an unauthenticated `userId` query
+// param and marked any store as paid. It is now disabled. Real activation
+// happens through the Stripe webhook (`stripe-webhook-store`) and
+// `verify-and-generate-store`. Kept only to preserve any legacy redirects.
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const url = new URL(req.url);
-    const checkoutId = url.searchParams.get("checkoutId");
-    const email = url.searchParams.get("email");
-    const userId = url.searchParams.get("userId");
-
-    console.log("Payment success received:", { checkoutId, email, userId });
-
-    if (!userId) {
-      throw new Error("User ID is required");
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const token = authHeader.replace('Bearer ', '');
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!
+    );
+    const { data: userData, error: authErr } = await supabase.auth.getUser(token);
+    if (authErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error('Missing Supabase configuration');
-    }
-
-    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Update store status to active
-    const { error: updateError } = await supabase
-      .from('store_settings')
-      .update({
-        status: 'active',
-        payment_status: 'paid',
-        checkout_id: checkoutId,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('user_id', userId);
-
-    if (updateError) {
-      console.error("Error updating store:", updateError);
-      throw updateError;
-    }
-
-    console.log("AI store activated successfully");
-
-    // Redirect to dashboard with success parameter
-    return new Response(null, {
-      status: 302,
-      headers: {
-        ...corsHeaders,
-        'Location': '/dashboard?success=1',
-      },
-    });
-  } catch (error) {
-    console.error("Error in create-store:", error);
+    // No client-driven activation. Tell callers to use the proper flow.
     return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+      JSON.stringify({
+        error: 'Deprecated endpoint. Activation requires verified Stripe payment via verify-and-generate-store.',
+      }),
+      { status: 410, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ error: (error as Error).message }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   }
 });

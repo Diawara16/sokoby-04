@@ -5073,6 +5073,7 @@ export type Database = {
         Args: { user_email: string }
         Returns: boolean
       }
+      get_my_stream_key: { Args: { _stream_id: string }; Returns: string }
       get_secret: { Args: { name: string }; Returns: string }
       get_store_brand_public: {
         Args: { store_user_id: string }

@@ -431,10 +431,30 @@ serve(async (req) => {
   }
 
   try {
+    // AUTH: validate caller and derive userId from JWT (no trusting body)
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    const token = authHeader.replace('Bearer ', '');
+    const authClient = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!
+    );
+    const { data: claimsData, error: claimsErr } = await authClient.auth.getUser(token);
+    if (claimsErr || !claimsData?.user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    const authedUserId = claimsData.user.id;
+
     // Parse request body
     const body = await req.text();
     console.log('[GENERATE-AI-STORE] Raw body:', body);
-    
+
     let requestData;
     try {
       requestData = JSON.parse(body);
@@ -442,11 +462,13 @@ serve(async (req) => {
       console.error('[GENERATE-AI-STORE] Failed to parse JSON body:', e.message);
       throw new Error('Invalid JSON body');
     }
-    
-    const { userId, storeName, plan, niche, sessionId, storeId, isProduction } = requestData;
-    
+
+    // Force userId to authenticated user (ignore any body-provided value)
+    const { storeName, plan, niche, sessionId, storeId, isProduction } = requestData;
+    const userId = authedUserId;
+
     console.log('[GENERATE-AI-STORE] Request parameters:');
-    console.log('  - userId:', userId);
+    console.log('  - userId (from JWT):', userId);
     console.log('  - storeName:', storeName);
     console.log('  - plan:', plan);
     console.log('  - niche:', niche);
@@ -454,10 +476,6 @@ serve(async (req) => {
     console.log('  - storeId:', storeId);
     console.log('  - isProduction:', isProduction);
 
-    if (!userId) {
-      console.error('[GENERATE-AI-STORE] Missing userId');
-      throw new Error('Missing required field: userId');
-    }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
