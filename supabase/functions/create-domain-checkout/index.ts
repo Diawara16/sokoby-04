@@ -4,7 +4,7 @@
 // later verified by purchase-domain-secure before any Namecheap call.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
+import Stripe from "npm:stripe@14.21.0";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -107,7 +107,10 @@ Deno.serve(async (req) => {
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) return json({ error: "Stripe not configured" }, 500);
-    const stripe = new Stripe(stripeKey, { apiVersion: "2024-04-10" });
+    const stripe = new Stripe(stripeKey, {
+      apiVersion: "2024-04-10",
+      httpClient: Stripe.createFetchHttpClient(),
+    });
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
