@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Search, Check, X, Loader2, Globe, Link2, CreditCard, AlertCircle, Sparkles,
+  Search, Check, X, Loader2, Globe, Link2, CreditCard, AlertCircle, Sparkles, RefreshCw, AlertTriangle,
 } from "lucide-react";
 import { useDomainPurchases } from "@/hooks/useDomainPurchases";
 import { useToast } from "@/hooks/use-toast";
