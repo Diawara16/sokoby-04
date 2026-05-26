@@ -181,9 +181,15 @@ Deno.serve(async (req) => {
       .maybeSingle();
     const planOk = !!(stripeProfile && stripeProfile.plan && stripeProfile.plan !== "free");
 
-    // --- Price cap ----------------------------------------------------------
-    const basePrice = Number(row.price_estimate) > 0 ? Number(row.price_estimate) : DEFAULT_DOMAIN_PRICE_USD;
-    const requiredUsd = (basePrice + MARKUP_USD) * years;
+    // --- Price gate: stored quote must exist ---------------------------------
+    const storedBase = Number(row.price_estimate);
+    if (!(storedBase > 0)) {
+      return json({
+        error: "PRICE_QUOTE_REQUIRED",
+        message: "Reservation has no registrar price quote. Re-search the domain to refresh pricing.",
+      }, 400);
+    }
+    const requiredUsd = (storedBase + MARKUP_USD) * years;
     if (requiredUsd > MAX_DOMAIN_PRICE_USD) {
       return json({ error: "PRICE_EXCEEDS_MAX", maxUsd: MAX_DOMAIN_PRICE_USD, requiredUsd }, 400);
     }
