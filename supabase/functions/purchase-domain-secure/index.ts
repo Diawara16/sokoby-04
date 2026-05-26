@@ -16,6 +16,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
 import { buildNamecheapRequest } from "../_shared/namecheap-relay.ts";
+import { checkAvailabilityAndPrice } from "../_shared/namecheap-pricing.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
