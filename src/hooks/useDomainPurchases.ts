@@ -69,6 +69,31 @@ export const useDomainPurchases = (storeId?: string) => {
       const parts = cleanDomain.split(".");
       const tld = parts.length > 1 ? parts.slice(1).join(".") : null;
 
+      // Resume-or-create: reuse the user's existing reservation for the same domain
+      // when it has not been paid/purchased yet. This avoids 23505 conflicts and
+      // lets the caller proceed directly to startDomainCheckout(existingId, years).
+      const { data: existing, error: lookupErr } = await supabase
+        .from("domain_purchases")
+        .select("id, status, paid_at")
+        .eq("user_id", user.id)
+        .eq("domain_name", cleanDomain)
+        .maybeSingle();
+
+      if (lookupErr) throw lookupErr;
+
+      if (existing) {
+        if (existing.status === "purchased" || existing.paid_at) {
+          toast({
+            title: "Domaine déjà acheté",
+            description: `${cleanDomain} est déjà enregistré sur votre compte.`,
+            variant: "destructive",
+          });
+          return { success: false, id: null };
+        }
+        // pending / failed / purchasing-without-payment → reuse this reservation
+        return { success: true, id: existing.id };
+      }
+
       const { data, error } = await supabase
         .from("domain_purchases")
         .insert({
@@ -85,16 +110,29 @@ export const useDomainPurchases = (storeId?: string) => {
         .single();
 
       if (error) {
+        // Race: another concurrent insert won. Resume the existing row instead of failing.
         if (error.code === "23505") {
-          toast({ title: "Domaine déjà réservé", description: "Vous avez déjà une réservation active pour ce domaine.", variant: "destructive" });
-        } else {
-          throw error;
+          const { data: raceRow } = await supabase
+            .from("domain_purchases")
+            .select("id, status, paid_at")
+            .eq("user_id", user.id)
+            .eq("domain_name", cleanDomain)
+            .maybeSingle();
+
+          if (raceRow && raceRow.status !== "purchased" && !raceRow.paid_at) {
+            return { success: true, id: raceRow.id };
+          }
+          toast({
+            title: "Domaine déjà acheté",
+            description: `${cleanDomain} est déjà enregistré.`,
+            variant: "destructive",
+          });
+          return { success: false, id: null };
         }
-        return { success: false, id: null };
+        throw error;
       }
 
       await fetchPurchases();
-      toast({ title: "Domaine réservé", description: `${cleanDomain} est en attente d'achat.` });
       return { success: true, id: data.id };
     } catch (e: any) {
       console.error("reserveDomain error:", e);
