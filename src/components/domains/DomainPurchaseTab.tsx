@@ -76,6 +76,7 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
         body: { domain },
       });
       if (error) return { available: false, premium: false, price: null, currency: "USD", error: error.message };
+      if (data?.error) return { available: false, premium: false, price: null, currency: "USD", error: String(data.error) };
       return {
         available: !!data?.available,
         premium: !!data?.premium,
