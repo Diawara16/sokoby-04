@@ -185,6 +185,28 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
     setIsSearching(false);
   };
 
+  const retryDomain = async (domain: string) => {
+    setResults((prev) => prev.map((r) =>
+      r.domain === domain ? { ...r, checking: true, lookupFailed: false, quoteError: undefined } : r,
+    ));
+    const q = await quoteDomain(domain);
+    setResults((prev) => prev.map((r) =>
+      r.domain === domain
+        ? {
+            ...r,
+            checking: false,
+            available: q.error ? null : q.available,
+            premium: q.premium,
+            price: q.price,
+            currency: q.currency,
+            quoteError: q.error,
+            lookupFailed: !!q.error,
+          }
+        : r,
+    ));
+  };
+
+
   const displayTotal = (r: DomainResult): string | null => {
     if (r.price == null || r.price <= 0) return null;
     return `${(r.price + MARKUP_USD).toFixed(2)} ${r.currency}/an`;
