@@ -80,19 +80,9 @@ Deno.serve(async (req) => {
     if (row.status === "purchasing") return json({ error: "Purchase already in progress" }, 409);
     if (row.paid_at) return json({ error: "Payment already completed for this reservation" }, 409);
 
-    // Server-side subscription validation
-    const { data: stripeProfile } = await admin
-      .from("Stripe")
-      .select("plan, trial_expired")
-      .eq("id", user.id)
-      .maybeSingle();
-    const planOk = stripeProfile && stripeProfile.plan && stripeProfile.plan !== "free";
-    if (!planOk) {
-      return json({
-        error: "SUBSCRIPTION_REQUIRED",
-        message: "An active paid plan is required to purchase domains.",
-      }, 402);
-    }
+    // Note: No subscription gate here. Domain purchase is a one-time paid
+    // transaction available to any authenticated user. Actual payment
+    // verification happens in purchase-domain-secure before Namecheap is called.
 
     // Price computation (USD cents)
     const basePrice = Number(row.price_estimate) > 0 ? Number(row.price_estimate) : DEFAULT_DOMAIN_PRICE_USD;
