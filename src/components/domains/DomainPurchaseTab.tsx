@@ -7,17 +7,34 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import {
-  Search, Check, X, Loader2, ShoppingCart, Globe, Link2, CreditCard, AlertCircle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Search, Check, X, Loader2, Globe, Link2, CreditCard, AlertCircle, Sparkles,
 } from "lucide-react";
 import { useDomainPurchases } from "@/hooks/useDomainPurchases";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const EXTENSIONS = [".com", ".net", ".store", ".shop", ".online"];
+const MARKUP_USD = 5; // must match DOMAIN_MARKUP_USD on the server
 
 interface DomainResult {
   domain: string;
   available: boolean | null;
   checking: boolean;
+  /** Registrar wholesale price in USD (null = unknown / quote failed) */
+  price: number | null;
+  currency: string;
+  premium: boolean;
+  quoteError?: string;
 }
 
 interface DomainPurchaseTabProps {
@@ -34,6 +51,7 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
   const [finalizing, setFinalizing] = useState(false);
   const [finalizedDomain, setFinalizedDomain] = useState<string | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const [premiumConfirm, setPremiumConfirm] = useState<DomainResult | null>(null);
 
   const { reserveDomain, completePurchase, startDomainCheckout, refetch } = useDomainPurchases();
   const { toast } = useToast();
@@ -43,13 +61,30 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
   const cleanDomainName = (input: string) =>
     input.toLowerCase().replace(/[^a-z0-9-]/g, "").replace(/^-+|-+$/g, "");
 
-  const checkDomain = async (domain: string): Promise<boolean> => {
+  /** Single call: availability + real registrar pricing from Namecheap. */
+  const quoteDomain = async (domain: string): Promise<{
+    available: boolean;
+    premium: boolean;
+    price: number | null;
+    currency: string;
+    error?: string;
+  }> => {
     try {
-      const response = await fetch(`https://dns.google/resolve?name=${domain}`);
-      const data = await response.json();
-      return !data.Answer;
-    } catch {
-      return false;
+      const { data, error } = await supabase.functions.invoke("namecheap-domain-check", {
+        body: { domain },
+      });
+      if (error) return { available: false, premium: false, price: null, currency: "USD", error: error.message };
+      return {
+        available: !!data?.available,
+        premium: !!data?.premium,
+        price: typeof data?.price === "number" ? data.price : null,
+        currency: data?.currency || "USD",
+      };
+    } catch (e) {
+      return {
+        available: false, premium: false, price: null, currency: "USD",
+        error: e instanceof Error ? e.message : "Network error",
+      };
     }
   };
 
@@ -82,11 +117,6 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
     if (purchaseStatus === "success") {
       if (!purchaseId || !sessionId) {
         setPurchaseError("Session de paiement invalide. Contactez le support.");
-        toast({
-          title: "Erreur",
-          description: "Session de paiement manquante après retour de Stripe.",
-          variant: "destructive",
-        });
         clearParams();
         return;
       }
@@ -99,7 +129,7 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
           setFinalizedDomain(purchaseId);
           toast({
             title: "Domaine enregistré",
-            description: "Votre domaine a été acheté et enregistré avec succès auprès du registrar.",
+            description: "Votre domaine a été acheté et enregistré avec succès.",
           });
           onDomainPurchased?.();
           await refetch();
@@ -127,29 +157,62 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
       domain: `${clean}${ext}`,
       available: null,
       checking: true,
+      price: null,
+      currency: "USD",
+      premium: false,
     }));
     setResults(initialResults);
 
-    const updatedResults = await Promise.all(
-      initialResults.map(async (result) => {
-        const available = await checkDomain(result.domain);
-        return { ...result, available, checking: false };
-      })
+    const updated = await Promise.all(
+      initialResults.map(async (r) => {
+        const q = await quoteDomain(r.domain);
+        return {
+          ...r,
+          checking: false,
+          available: q.available,
+          premium: q.premium,
+          price: q.price,
+          currency: q.currency,
+          quoteError: q.error,
+        };
+      }),
     );
-    setResults(updatedResults);
+    setResults(updated);
     setIsSearching(false);
   };
 
-  const handlePurchase = async (domain: string) => {
-    setPurchasingDomain(domain);
+  const displayTotal = (r: DomainResult): string | null => {
+    if (r.price == null || r.price <= 0) return null;
+    return `${(r.price + MARKUP_USD).toFixed(2)} ${r.currency}/an`;
+  };
+
+  const beginPurchase = async (r: DomainResult) => {
+    if (!r.available || r.price == null || r.price <= 0) {
+      const msg = r.quoteError
+        ? `Impossible d'obtenir le prix du registrar (${r.quoteError}).`
+        : "Aucun prix registrar disponible pour ce domaine.";
+      setPurchaseError(msg);
+      toast({ title: "Prix indisponible", description: msg, variant: "destructive" });
+      return;
+    }
+    if (r.premium) {
+      setPremiumConfirm(r);
+      return;
+    }
+    await runPurchase(r);
+  };
+
+  const runPurchase = async (r: DomainResult) => {
+    setPurchasingDomain(r.domain);
     setPurchaseError(null);
     try {
-      // 1) Reserve
-      const { success, id } = await reserveDomain(domain, { provider: "namecheap" });
-      if (!success || !id) {
-        return;
-      }
-      // 2) Start Stripe Checkout
+      const { success, id } = await reserveDomain(r.domain, {
+        provider: "namecheap",
+        price: r.price ?? undefined,
+        currency: r.currency,
+      });
+      if (!success || !id) return;
+
       const { success: ok, url, error } = await startDomainCheckout(id, 1);
       if (!ok || !url) {
         const msg = error || "Impossible d'ouvrir le paiement Stripe.";
@@ -157,7 +220,6 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
         toast({ title: "Erreur de paiement", description: msg, variant: "destructive" });
         return;
       }
-      // 3) Redirect to Stripe
       window.location.href = url;
     } finally {
       setPurchasingDomain(null);
@@ -166,7 +228,6 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
 
   return (
     <div className="space-y-6">
-      {/* Stripe callback states */}
       {finalizing && (
         <Alert>
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -179,7 +240,7 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
         <Alert className="bg-green-50 border-green-200">
           <Check className="h-4 w-4 text-green-600" />
           <AlertDescription className="text-green-900">
-            ✅ Votre domaine a été acheté et enregistré avec succès. Retrouvez-le dans l'onglet « Achetés ».
+            ✅ Votre domaine a été acheté et enregistré avec succès.
           </AlertDescription>
         </Alert>
       )}
@@ -190,7 +251,6 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
         </Alert>
       )}
 
-      {/* Already own a domain shortcut */}
       <Card className="border-dashed border-primary/30 bg-primary/5">
         <CardContent className="p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -198,16 +258,11 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
             <div>
               <p className="font-medium text-sm">Vous possédez déjà un domaine ?</p>
               <p className="text-xs text-muted-foreground">
-                Connectez un domaine acheté chez un registrar externe (Namecheap, GoDaddy, Cloudflare…)
+                Connectez un domaine acheté chez un registrar externe.
               </p>
             </div>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onSwitchToConnect?.()}
-            className="shrink-0"
-          >
+          <Button variant="outline" size="sm" onClick={() => onSwitchToConnect?.()} className="shrink-0">
             <Globe className="h-4 w-4 mr-2" />
             Connecter mon domaine
           </Button>
@@ -216,7 +271,6 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
 
       <Separator />
 
-      {/* Search */}
       <div className="flex gap-3 max-w-lg">
         <Input
           placeholder="Rechercher un nom de domaine..."
@@ -231,11 +285,10 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
         </Button>
       </div>
 
-      {/* Empty state */}
       {!hasSearched && (
         <div className="text-center py-8 space-y-2">
           <Search className="h-10 w-10 mx-auto text-muted-foreground/40" />
-          <p className="text-muted-foreground">Entrez un nom pour vérifier la disponibilité du domaine.</p>
+          <p className="text-muted-foreground">Entrez un nom pour vérifier la disponibilité et le prix.</p>
           <div className="flex justify-center gap-2 mt-3">
             {EXTENSIONS.map((ext) => (
               <Badge key={ext} variant="outline" className="text-xs">{ext}</Badge>
@@ -244,52 +297,103 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
         </div>
       )}
 
-      {/* Results */}
       {hasSearched && (
         <div className="grid gap-3">
-          {results.map((result) => (
-            <Card key={result.domain} className="overflow-hidden">
-              <CardContent className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {result.checking ? (
-                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                  ) : result.available ? (
-                    <Check className="h-5 w-5 text-green-600" />
-                  ) : (
-                    <X className="h-5 w-5 text-red-500" />
-                  )}
-                  <span className="font-mono font-medium">{result.domain}</span>
-                  {!result.checking && (
-                    <Badge
-                      variant={result.available ? "default" : "secondary"}
-                      className={result.available ? "bg-green-100 text-green-800 hover:bg-green-100" : ""}
-                    >
-                      {result.available ? "Disponible" : "Indisponible"}
-                    </Badge>
-                  )}
-                </div>
-                <div>
-                  {!result.checking && result.available && (
-                    <Button
-                      size="sm"
-                      className="gap-2"
-                      onClick={() => handlePurchase(result.domain)}
-                      disabled={purchasingDomain !== null}
-                    >
-                      {purchasingDomain === result.domain ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <CreditCard className="h-4 w-4" />
-                      )}
-                      {purchasingDomain === result.domain ? "Redirection vers Stripe…" : "Acheter"}
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {results.map((result) => {
+            const total = displayTotal(result);
+            const canBuy = result.available && result.price != null && result.price > 0;
+            return (
+              <Card key={result.domain} className="overflow-hidden">
+                <CardContent className="p-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {result.checking ? (
+                      <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                    ) : result.available ? (
+                      <Check className="h-5 w-5 text-green-600" />
+                    ) : (
+                      <X className="h-5 w-5 text-red-500" />
+                    )}
+                    <span className="font-mono font-medium truncate">{result.domain}</span>
+                    {!result.checking && (
+                      <Badge
+                        variant={result.available ? "default" : "secondary"}
+                        className={result.available ? "bg-green-100 text-green-800 hover:bg-green-100" : ""}
+                      >
+                        {result.available ? "Disponible" : "Indisponible"}
+                      </Badge>
+                    )}
+                    {result.premium && (
+                      <Badge className="bg-amber-100 text-amber-900 hover:bg-amber-100 gap-1">
+                        <Sparkles className="h-3 w-3" /> Premium
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    {!result.checking && result.available && (
+                      <div className="text-right">
+                        {total ? (
+                          <p className="font-semibold text-sm">{total}</p>
+                        ) : (
+                          <p className="text-xs text-destructive">Prix indisponible</p>
+                        )}
+                      </div>
+                    )}
+                    {!result.checking && result.available && (
+                      <Button
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => beginPurchase(result)}
+                        disabled={purchasingDomain !== null || !canBuy}
+                      >
+                        {purchasingDomain === result.domain ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <CreditCard className="h-4 w-4" />
+                        )}
+                        {purchasingDomain === result.domain ? "Redirection…" : "Acheter"}
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
+
+      <AlertDialog open={!!premiumConfirm} onOpenChange={(o) => !o && setPremiumConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-amber-500" />
+              Domaine premium
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              <strong>{premiumConfirm?.domain}</strong> est un domaine premium dont le tarif est fixé par le registrar.
+              Le prix total facturé sera de{" "}
+              <strong>
+                {premiumConfirm
+                  ? `${((premiumConfirm.price ?? 0) + MARKUP_USD).toFixed(2)} ${premiumConfirm.currency}`
+                  : ""}
+              </strong>{" "}
+              pour la première année. Les années suivantes peuvent être facturées au prix standard du TLD.
+              Confirmez-vous l'achat ?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                const r = premiumConfirm;
+                setPremiumConfirm(null);
+                if (r) void runPurchase(r);
+              }}
+            >
+              Acheter au prix premium
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
