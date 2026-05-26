@@ -42,8 +42,25 @@ function namecheapBaseParams(): Record<string, string> {
 
 async function fetchXml(params: Record<string, string>): Promise<string> {
   const { url, init } = buildNamecheapRequest(params);
+  // Diagnostic: log non-secret transport info
+  const safeUrl = url.replace(/ApiKey=[^&]+/i, "ApiKey=***");
+  console.log("[namecheap] fetch", {
+    safeUrl,
+    sandbox: Deno.env.get("NAMECHEAP_SANDBOX"),
+    hasApiUser: !!Deno.env.get("NAMECHEAP_API_USER"),
+    hasApiKey: !!Deno.env.get("NAMECHEAP_API_KEY"),
+    hasUserName: !!Deno.env.get("NAMECHEAP_USERNAME"),
+    hasClientIp: !!Deno.env.get("NAMECHEAP_CLIENT_IP"),
+    hasRelayUrl: !!Deno.env.get("NAMECHEAP_RELAY_URL"),
+    hasRelayToken: !!Deno.env.get("NAMECHEAP_RELAY_TOKEN"),
+  });
   const res = await fetch(url, init);
-  return await res.text();
+  const text = await res.text();
+  console.log("[namecheap] response", {
+    status: res.status,
+    bodyHead: text.slice(0, 400),
+  });
+  return text;
 }
 
 /**
