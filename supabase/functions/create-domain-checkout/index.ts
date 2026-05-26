@@ -83,8 +83,15 @@ Deno.serve(async (req) => {
     // transaction available to any authenticated user. Actual payment
     // verification happens in purchase-domain-secure before Namecheap is called.
 
-    // Price computation (USD cents)
-    const basePrice = Number(row.price_estimate) > 0 ? Number(row.price_estimate) : DEFAULT_DOMAIN_PRICE_USD;
+    // Price computation (USD cents) — STRICT: require a real registrar quote
+    // captured by the UI during the search step. No silent fallback.
+    const basePrice = Number(row.price_estimate);
+    if (!(basePrice > 0)) {
+      return json({
+        error: "PRICE_QUOTE_REQUIRED",
+        message: "No registrar price quote attached to this reservation. Re-search the domain to refresh pricing.",
+      }, 400);
+    }
     const totalUsd = (basePrice + MARKUP_USD) * years;
     if (totalUsd > MAX_DOMAIN_PRICE_USD) {
       return json({
