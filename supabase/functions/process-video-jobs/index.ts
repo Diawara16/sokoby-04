@@ -9,27 +9,52 @@ const corsHeaders = {
 const CREATOMATE_API_URL = 'https://api.creatomate.com/v1/renders';
 
 async function collectStoreAssets(supabase: ReturnType<typeof createClient>, storeId: string) {
-  const [storeResult, productsResult] = await Promise.all([
-    supabase
-      .from('store_settings')
+  // Try store_settings first (legacy/AI-generator path)
+  let store: { store_name: string; logo_url: string | null; niche: string } | null = null;
+
+  const ssRes = await supabase
+    .from('store_settings')
+    .select('store_name, logo_url, niche')
+    .eq('id', storeId)
+    .maybeSingle();
+  if (ssRes.data) store = ssRes.data as any;
+
+  // Fallback to `stores` table (primary storefront table)
+  if (!store) {
+    const sRes = await supabase
+      .from('stores')
       .select('store_name, logo_url, niche')
       .eq('id', storeId)
-      .single(),
-    supabase
-      .from('ai_generated_products')
-      .select('name, description, image_url')
-      .eq('store_id', storeId)
-      .limit(6),
-  ]);
-
-  if (storeResult.error || !storeResult.data) {
-    throw new Error(`Store not found: ${storeId}`);
+      .maybeSingle();
+    if (sRes.data) store = sRes.data as any;
   }
 
-  return {
-    store: storeResult.data,
-    products: productsResult.data || [],
-  };
+  if (!store) throw new Error(`Store not found: ${storeId}`);
+
+  // Try ai_generated_products first
+  let products: { name: string; description: string | null; image_url: string | null }[] = [];
+  const aiRes = await supabase
+    .from('ai_generated_products')
+    .select('name, description, image_url')
+    .eq('store_id', storeId)
+    .limit(6);
+  if (aiRes.data && aiRes.data.length > 0) {
+    products = aiRes.data as any;
+  } else {
+    // Fallback to public.products (image column + images[] fallback)
+    const pRes = await supabase
+      .from('products')
+      .select('name, description, image, images')
+      .eq('store_id', storeId)
+      .limit(6);
+    products = (pRes.data || []).map((p: any) => ({
+      name: p.name,
+      description: p.description,
+      image_url: p.image || (Array.isArray(p.images) ? p.images[0] : null) || null,
+    }));
+  }
+
+  return { store, products };
 }
 
 function validateProducts(products: { name: string; description: string | null; image_url: string | null }[]) {
