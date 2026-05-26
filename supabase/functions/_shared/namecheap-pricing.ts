@@ -99,7 +99,7 @@ export async function checkAvailabilityAndPrice(domain: string): Promise<DomainQ
 
   const availableMatch = xml.match(/Available="(true|false)"/i);
   const premiumMatch = xml.match(/IsPremiumName="(true|false)"/i);
-  const premiumPriceMatch = xml.match(/PremiumRegistrationPrice="([\\d.]+)"/i);
+  const premiumPriceMatch = xml.match(/PremiumRegistrationPrice="([\d.]+)"/i);
 
   const available = availableMatch?.[1]?.toLowerCase() === "true";
   const premium = premiumMatch?.[1]?.toLowerCase() === "true";
