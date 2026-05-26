@@ -286,6 +286,51 @@ Deno.serve(async (req) => {
     if (lockErr) return json({ error: lockErr.message }, 500);
     if (!locked) return json({ error: "Reservation not in a state that can be purchased" }, 409);
 
+    // --- Live re-quote against Namecheap BEFORE the registration call -------
+    // Protects against price drift between checkout creation and registration.
+    // If the registrar now charges more than the customer paid (markup-inclusive),
+    // we abort and revert the lock so no out-of-pocket loss occurs.
+    if (!bypassPayment) {
+      try {
+        const liveQuote = await checkAvailabilityAndPrice(row.domain_name);
+        if (!liveQuote.available) {
+          await admin.from("domain_purchases").update({
+            status: "failed",
+            error_message: "Domain became unavailable before registration",
+          }).eq("id", purchaseId);
+          return json({ error: "DOMAIN_UNAVAILABLE" }, 409);
+        }
+        const livePrice = liveQuote.price;
+        if (!(livePrice && livePrice > 0)) {
+          await admin.from("domain_purchases").update({
+            status: "failed",
+            error_message: "Registrar returned no live price quote",
+          }).eq("id", purchaseId);
+          return json({ error: "LIVE_QUOTE_UNAVAILABLE" }, 502);
+        }
+        const liveRequiredCents = Math.round((livePrice + MARKUP_USD) * years * 100);
+        const paid = verifiedAmountCents ?? 0;
+        if (paid < liveRequiredCents) {
+          await admin.from("domain_purchases").update({
+            status: "failed",
+            error_message: `Registrar cost increased (paid ${paid}c, now requires ${liveRequiredCents}c)`,
+          }).eq("id", purchaseId);
+          return json({
+            error: "REGISTRAR_PRICE_INCREASED",
+            paidCents: paid,
+            liveRequiredCents,
+            livePriceUsd: livePrice,
+          }, 409);
+        }
+      } catch (e) {
+        await admin.from("domain_purchases").update({
+          status: "failed",
+          error_message: `Live quote failed: ${e instanceof Error ? e.message : String(e)}`,
+        }).eq("id", purchaseId);
+        return json({ error: "LIVE_QUOTE_FAILED" }, 502);
+      }
+    }
+
     console.log(
       `[purchase-domain-secure] user=${user.id} domain=${row.domain_name} years=${years} paid=${verifiedAmountCents}c session=${verifiedSessionId ?? "n/a"} bypass=${bypassPayment}`,
     );
