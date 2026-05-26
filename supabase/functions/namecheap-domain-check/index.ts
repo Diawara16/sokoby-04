@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { buildNamecheapRequest } from "../_shared/namecheap-relay.ts";
+import { checkAvailabilityAndPrice } from "../_shared/namecheap-pricing.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -10,7 +10,6 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
 
   try {
-    // Auth check
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("AUTH_REQUIRED");
 
@@ -30,44 +29,22 @@ Deno.serve(async (req) => {
       });
     }
 
-    const apiUser = Deno.env.get("NAMECHEAP_API_USER");
-    const apiKey = Deno.env.get("NAMECHEAP_API_KEY");
-    const clientIp = Deno.env.get("NAMECHEAP_CLIENT_IP") || "0.0.0.0";
-
-    if (!apiUser || !apiKey) {
-      throw new Error("Namecheap API credentials not configured");
-    }
-
-    const params = {
-      ApiUser: apiUser,
-      ApiKey: apiKey,
-      UserName: apiUser,
-      ClientIp: clientIp,
-      Command: "namecheap.domains.check",
-      DomainList: domain,
-    };
-
-    const { url, init } = buildNamecheapRequest(params);
-    const response = await fetch(url, init);
-    const xmlText = await response.text();
-
-    // Parse XML response
-    const availableMatch = xmlText.match(/Available="(true|false)"/i);
-    const premiumMatch = xmlText.match(/IsPremiumName="(true|false)"/i);
-    const priceMatch = xmlText.match(/PremiumRegistrationPrice="([^"]+)"/i);
-
-    const available = availableMatch ? availableMatch[1].toLowerCase() === "true" : false;
-    const premium = premiumMatch ? premiumMatch[1].toLowerCase() === "true" : false;
-    const price = priceMatch ? parseFloat(priceMatch[1]) : null;
+    const quote = await checkAvailabilityAndPrice(domain.trim().toLowerCase());
 
     return new Response(
-      JSON.stringify({ available, premium, price, currency: "USD" }),
+      JSON.stringify({
+        available: quote.available,
+        premium: quote.premium,
+        price: quote.price,
+        currency: quote.currency,
+        source: quote.source,
+      }),
       { headers: { ...CORS, "Content-Type": "application/json" } },
     );
   } catch (err) {
     console.error("[namecheap-domain-check]", err);
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
       { status: 500, headers: { ...CORS, "Content-Type": "application/json" } },
     );
   }

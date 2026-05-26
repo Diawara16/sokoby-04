@@ -16,6 +16,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
 import { buildNamecheapRequest } from "../_shared/namecheap-relay.ts";
+import { checkAvailabilityAndPrice } from "../_shared/namecheap-pricing.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -24,8 +25,7 @@ const CORS = {
 };
 
 const TIMEOUT_MS = 25_000;
-const DEFAULT_DOMAIN_PRICE_USD = Number(Deno.env.get("DOMAIN_DEFAULT_PRICE_USD") || "15");
-const MAX_DOMAIN_PRICE_USD = Number(Deno.env.get("DOMAIN_MAX_PRICE_USD") || "100");
+const MAX_DOMAIN_PRICE_USD = Number(Deno.env.get("DOMAIN_MAX_PRICE_USD") || "2500");
 const MARKUP_USD = Number(Deno.env.get("DOMAIN_MARKUP_USD") || "5");
 const RATE_LIMIT_PER_HOUR = Number(Deno.env.get("DOMAIN_RATE_LIMIT_PER_HOUR") || "10");
 // Safety switch: when "false", all real registrations require a verified Stripe payment.
@@ -181,9 +181,15 @@ Deno.serve(async (req) => {
       .maybeSingle();
     const planOk = !!(stripeProfile && stripeProfile.plan && stripeProfile.plan !== "free");
 
-    // --- Price cap ----------------------------------------------------------
-    const basePrice = Number(row.price_estimate) > 0 ? Number(row.price_estimate) : DEFAULT_DOMAIN_PRICE_USD;
-    const requiredUsd = (basePrice + MARKUP_USD) * years;
+    // --- Price gate: stored quote must exist ---------------------------------
+    const storedBase = Number(row.price_estimate);
+    if (!(storedBase > 0)) {
+      return json({
+        error: "PRICE_QUOTE_REQUIRED",
+        message: "Reservation has no registrar price quote. Re-search the domain to refresh pricing.",
+      }, 400);
+    }
+    const requiredUsd = (storedBase + MARKUP_USD) * years;
     if (requiredUsd > MAX_DOMAIN_PRICE_USD) {
       return json({ error: "PRICE_EXCEEDS_MAX", maxUsd: MAX_DOMAIN_PRICE_USD, requiredUsd }, 400);
     }
@@ -279,6 +285,51 @@ Deno.serve(async (req) => {
 
     if (lockErr) return json({ error: lockErr.message }, 500);
     if (!locked) return json({ error: "Reservation not in a state that can be purchased" }, 409);
+
+    // --- Live re-quote against Namecheap BEFORE the registration call -------
+    // Protects against price drift between checkout creation and registration.
+    // If the registrar now charges more than the customer paid (markup-inclusive),
+    // we abort and revert the lock so no out-of-pocket loss occurs.
+    if (!bypassPayment) {
+      try {
+        const liveQuote = await checkAvailabilityAndPrice(row.domain_name);
+        if (!liveQuote.available) {
+          await admin.from("domain_purchases").update({
+            status: "failed",
+            error_message: "Domain became unavailable before registration",
+          }).eq("id", purchaseId);
+          return json({ error: "DOMAIN_UNAVAILABLE" }, 409);
+        }
+        const livePrice = liveQuote.price;
+        if (!(livePrice && livePrice > 0)) {
+          await admin.from("domain_purchases").update({
+            status: "failed",
+            error_message: "Registrar returned no live price quote",
+          }).eq("id", purchaseId);
+          return json({ error: "LIVE_QUOTE_UNAVAILABLE" }, 502);
+        }
+        const liveRequiredCents = Math.round((livePrice + MARKUP_USD) * years * 100);
+        const paid = verifiedAmountCents ?? 0;
+        if (paid < liveRequiredCents) {
+          await admin.from("domain_purchases").update({
+            status: "failed",
+            error_message: `Registrar cost increased (paid ${paid}c, now requires ${liveRequiredCents}c)`,
+          }).eq("id", purchaseId);
+          return json({
+            error: "REGISTRAR_PRICE_INCREASED",
+            paidCents: paid,
+            liveRequiredCents,
+            livePriceUsd: livePrice,
+          }, 409);
+        }
+      } catch (e) {
+        await admin.from("domain_purchases").update({
+          status: "failed",
+          error_message: `Live quote failed: ${e instanceof Error ? e.message : String(e)}`,
+        }).eq("id", purchaseId);
+        return json({ error: "LIVE_QUOTE_FAILED" }, 502);
+      }
+    }
 
     console.log(
       `[purchase-domain-secure] user=${user.id} domain=${row.domain_name} years=${years} paid=${verifiedAmountCents}c session=${verifiedSessionId ?? "n/a"} bypass=${bypassPayment}`,
