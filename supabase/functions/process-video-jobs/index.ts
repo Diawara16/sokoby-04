@@ -230,7 +230,8 @@ async function processJob(
 
   console.log(`[PROCESS-VIDEO-JOBS] Stored video: ${storedVideoUrl}`);
 
-  const { error: videoUpdateError } = await supabase
+  // Try to update an existing row (pending or failed) for this store
+  const { data: updated, error: videoUpdateError } = await supabase
     .from('store_videos')
     .update({
       video_url: storedVideoUrl,
@@ -239,10 +240,27 @@ async function processJob(
       updated_at: new Date().toISOString(),
     })
     .eq('store_id', storeId)
-    .eq('status', 'pending');
+    .in('status', ['pending', 'failed', 'processing'])
+    .select('id');
 
   if (videoUpdateError) {
     console.error('[PROCESS-VIDEO-JOBS] Failed to update store_videos:', videoUpdateError.message);
+  }
+
+  // If no row was updated, insert a new one
+  if (!updated || updated.length === 0) {
+    const { error: insertErr } = await supabase
+      .from('store_videos')
+      .insert({
+        store_id: storeId,
+        video_type: 'hero',
+        video_url: storedVideoUrl,
+        thumbnail_url: storedThumbnailUrl,
+        status: 'ready',
+      });
+    if (insertErr) {
+      console.error('[PROCESS-VIDEO-JOBS] Failed to insert store_videos:', insertErr.message);
+    }
   }
 
   await supabase
