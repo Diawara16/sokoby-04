@@ -25,8 +25,7 @@ const CORS = {
 };
 
 const TIMEOUT_MS = 25_000;
-const DEFAULT_DOMAIN_PRICE_USD = Number(Deno.env.get("DOMAIN_DEFAULT_PRICE_USD") || "15");
-const MAX_DOMAIN_PRICE_USD = Number(Deno.env.get("DOMAIN_MAX_PRICE_USD") || "100");
+const MAX_DOMAIN_PRICE_USD = Number(Deno.env.get("DOMAIN_MAX_PRICE_USD") || "2500");
 const MARKUP_USD = Number(Deno.env.get("DOMAIN_MARKUP_USD") || "5");
 const RATE_LIMIT_PER_HOUR = Number(Deno.env.get("DOMAIN_RATE_LIMIT_PER_HOUR") || "10");
 // Safety switch: when "false", all real registrations require a verified Stripe payment.
