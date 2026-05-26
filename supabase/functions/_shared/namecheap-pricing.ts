@@ -43,7 +43,9 @@ function namecheapBaseParams(): Record<string, string> {
 async function fetchXml(params: Record<string, string>): Promise<string> {
   const { url, init } = buildNamecheapRequest(params);
   const res = await fetch(url, init);
-  return await res.text();
+  const text = await res.text();
+  console.log("[namecheap-pricing] cmd=", params.Command, "status=", res.status, "body=", text.slice(0, 600));
+  return text;
 }
 
 /**
