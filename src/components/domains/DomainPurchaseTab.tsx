@@ -35,6 +35,8 @@ interface DomainResult {
   currency: string;
   premium: boolean;
   quoteError?: string;
+  /** True when the registrar lookup itself failed (network/API/auth). */
+  lookupFailed?: boolean;
 }
 
 interface DomainPurchaseTabProps {
