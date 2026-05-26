@@ -172,11 +172,12 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
         return {
           ...r,
           checking: false,
-          available: q.available,
+          available: q.error ? null : q.available,
           premium: q.premium,
           price: q.price,
           currency: q.currency,
           quoteError: q.error,
+          lookupFailed: !!q.error,
         };
       }),
     );
