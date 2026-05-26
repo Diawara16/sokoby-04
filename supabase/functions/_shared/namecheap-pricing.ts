@@ -70,12 +70,12 @@ export async function getStandardTldPrice(tld: string): Promise<number | null> {
   // Example fragment:
   //   <Product Name="com"><Price Duration="1" ... Price="9.06" RegularPrice="9.06" YourPrice="9.06"/></Product>
   const productMatch = xml.match(
-    new RegExp(`<Product\\s+Name=\\"${key}\\"[\\s\\S]*?</Product>`, "i"),
+    new RegExp(`<Product\\s+Name="${key}"[\\s\\S]*?</Product>`, "i"),
   );
   if (!productMatch) return null;
 
   const prices = [...productMatch[0].matchAll(
-    /<Price\s[^>]*Duration=\\"1\\"[^>]*\bPrice=\\"([\\d.]+)\\"/gi,
+    /<Price\s[^>]*Duration="1"[^>]*\bPrice="([\d.]+)"/gi,
   )].map((m) => parseFloat(m[1])).filter((n) => !isNaN(n) && n > 0);
 
   if (prices.length === 0) return null;
@@ -99,7 +99,7 @@ export async function checkAvailabilityAndPrice(domain: string): Promise<DomainQ
 
   const availableMatch = xml.match(/Available="(true|false)"/i);
   const premiumMatch = xml.match(/IsPremiumName="(true|false)"/i);
-  const premiumPriceMatch = xml.match(/PremiumRegistrationPrice="([\\d.]+)"/i);
+  const premiumPriceMatch = xml.match(/PremiumRegistrationPrice="([\d.]+)"/i);
 
   const available = availableMatch?.[1]?.toLowerCase() === "true";
   const premium = premiumMatch?.[1]?.toLowerCase() === "true";

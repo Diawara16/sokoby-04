@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Search, Check, X, Loader2, Globe, Link2, CreditCard, AlertCircle, Sparkles,
+  Search, Check, X, Loader2, Globe, Link2, CreditCard, AlertCircle, Sparkles, RefreshCw, AlertTriangle,
 } from "lucide-react";
 import { useDomainPurchases } from "@/hooks/useDomainPurchases";
 import { useToast } from "@/hooks/use-toast";
@@ -35,6 +35,8 @@ interface DomainResult {
   currency: string;
   premium: boolean;
   quoteError?: string;
+  /** True when the registrar lookup itself failed (network/API/auth). */
+  lookupFailed?: boolean;
 }
 
 interface DomainPurchaseTabProps {
@@ -74,6 +76,7 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
         body: { domain },
       });
       if (error) return { available: false, premium: false, price: null, currency: "USD", error: error.message };
+      if (data?.error) return { available: false, premium: false, price: null, currency: "USD", error: String(data.error) };
       return {
         available: !!data?.available,
         premium: !!data?.premium,
@@ -169,17 +172,40 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
         return {
           ...r,
           checking: false,
-          available: q.available,
+          available: q.error ? null : q.available,
           premium: q.premium,
           price: q.price,
           currency: q.currency,
           quoteError: q.error,
+          lookupFailed: !!q.error,
         };
       }),
     );
     setResults(updated);
     setIsSearching(false);
   };
+
+  const retryDomain = async (domain: string) => {
+    setResults((prev) => prev.map((r) =>
+      r.domain === domain ? { ...r, checking: true, lookupFailed: false, quoteError: undefined } : r,
+    ));
+    const q = await quoteDomain(domain);
+    setResults((prev) => prev.map((r) =>
+      r.domain === domain
+        ? {
+            ...r,
+            checking: false,
+            available: q.error ? null : q.available,
+            premium: q.premium,
+            price: q.price,
+            currency: q.currency,
+            quoteError: q.error,
+            lookupFailed: !!q.error,
+          }
+        : r,
+    ));
+  };
+
 
   const displayTotal = (r: DomainResult): string | null => {
     if (r.price == null || r.price <= 0) return null;
@@ -301,13 +327,15 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
         <div className="grid gap-3">
           {results.map((result) => {
             const total = displayTotal(result);
-            const canBuy = result.available && result.price != null && result.price > 0;
+            const canBuy = !!result.available && result.price != null && result.price > 0 && !result.lookupFailed;
             return (
               <Card key={result.domain} className="overflow-hidden">
                 <CardContent className="p-4 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
                     {result.checking ? (
                       <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                    ) : result.lookupFailed ? (
+                      <AlertTriangle className="h-5 w-5 text-amber-500" />
                     ) : result.available ? (
                       <Check className="h-5 w-5 text-green-600" />
                     ) : (
@@ -315,21 +343,30 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
                     )}
                     <span className="font-mono font-medium truncate">{result.domain}</span>
                     {!result.checking && (
-                      <Badge
-                        variant={result.available ? "default" : "secondary"}
-                        className={result.available ? "bg-green-100 text-green-800 hover:bg-green-100" : ""}
-                      >
-                        {result.available ? "Disponible" : "Indisponible"}
-                      </Badge>
+                      result.lookupFailed ? (
+                        <Badge variant="outline" className="bg-amber-50 text-amber-900 border-amber-200">
+                          Registrar momentanément indisponible
+                        </Badge>
+                      ) : result.available ? (
+                        <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Disponible</Badge>
+                      ) : (
+                        <Badge variant="secondary">Indisponible</Badge>
+                      )
                     )}
-                    {result.premium && (
+                    {result.premium && !result.lookupFailed && (
                       <Badge className="bg-amber-100 text-amber-900 hover:bg-amber-100 gap-1">
                         <Sparkles className="h-3 w-3" /> Premium
                       </Badge>
                     )}
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
-                    {!result.checking && result.available && (
+                    {!result.checking && result.lookupFailed && (
+                      <Button size="sm" variant="outline" className="gap-2" onClick={() => retryDomain(result.domain)}>
+                        <RefreshCw className="h-4 w-4" />
+                        Réessayer
+                      </Button>
+                    )}
+                    {!result.checking && !result.lookupFailed && result.available && (
                       <div className="text-right">
                         {total ? (
                           <p className="font-semibold text-sm">{total}</p>
@@ -338,7 +375,7 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
                         )}
                       </div>
                     )}
-                    {!result.checking && result.available && (
+                    {!result.checking && !result.lookupFailed && result.available && (
                       <Button
                         size="sm"
                         className="gap-2"
@@ -350,7 +387,7 @@ export const DomainPurchaseTab = ({ onDomainPurchased, onSwitchToConnect }: Doma
                         ) : (
                           <CreditCard className="h-4 w-4" />
                         )}
-                        {purchasingDomain === result.domain ? "Redirection…" : "Acheter"}
+                        {purchasingDomain === result.domain ? "Redirection…" : !canBuy ? "Prix indisponible" : "Acheter"}
                       </Button>
                     )}
                   </div>
