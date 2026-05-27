@@ -29,6 +29,10 @@ export function ProductCard({ product, onProductUpdate, onProductDelete }: Produ
   const [deleting, setDeleting] = useState(false);
   const [draft, setDraft] = useState(product);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const invalidateProducts = () =>
+    queryClient.invalidateQueries({ predicate: (q) => Array.isArray(q.queryKey) && q.queryKey[0] === "products" });
 
   const handleSave = async () => {
     setSaving(true);
