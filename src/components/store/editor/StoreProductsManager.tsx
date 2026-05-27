@@ -40,6 +40,7 @@ export function StoreProductsManager() {
   const [deleteProduct, setDeleteProduct] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   useEffect(() => { loadProducts(); }, []);
 
