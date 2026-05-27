@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +40,7 @@ export function StoreProductsManager() {
   const [deleteProduct, setDeleteProduct] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   useEffect(() => { loadProducts(); }, []);
 
@@ -96,6 +98,7 @@ export function StoreProductsManager() {
       if (error) throw error;
 
       setProducts(prev => prev.filter(p => p.id !== deleteProduct.id));
+      await queryClient.invalidateQueries({ predicate: (q) => Array.isArray(q.queryKey) && q.queryKey[0] === "products" });
       toast({ title: "Produit supprimé", description: `"${deleteProduct.name}" a été supprimé.` });
     } catch (error) {
       console.error('[StoreProductsManager] Delete error:', error);

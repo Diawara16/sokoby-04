@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,11 +29,15 @@ export function ProductCard({ product, onProductUpdate, onProductDelete }: Produ
   const [deleting, setDeleting] = useState(false);
   const [draft, setDraft] = useState(product);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const invalidateProducts = () =>
+    queryClient.invalidateQueries({ predicate: (q) => Array.isArray(q.queryKey) && q.queryKey[0] === "products" });
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("products")
         .update({
           name: draft.name,
@@ -40,11 +45,14 @@ export function ProductCard({ product, onProductUpdate, onProductDelete }: Produ
           price: draft.price,
           image: draft.image_url || null,
         })
-        .eq("id", product.id);
+        .eq("id", product.id)
+        .select();
 
       if (error) throw error;
+      if (!data || data.length === 0) throw new Error("0 rows updated (RLS)");
 
       onProductUpdate(draft);
+      await invalidateProducts();
       setEditing(false);
       toast({ title: "Produit mis à jour" });
     } catch {
@@ -66,6 +74,7 @@ export function ProductCard({ product, onProductUpdate, onProductDelete }: Produ
       if (error) throw error;
 
       onProductDelete?.(product.id);
+      await invalidateProducts();
       toast({ title: "Produit supprimé" });
     } catch {
       toast({ title: "Erreur", description: "Impossible de supprimer", variant: "destructive" });

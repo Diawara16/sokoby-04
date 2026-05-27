@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +25,7 @@ interface EditProductDialogProps {
 
 export function EditProductDialog({ product, storeId, open, onOpenChange, onSaved }: EditProductDialogProps) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -56,11 +58,13 @@ export function EditProductDialog({ product, storeId, open, onOpenChange, onSave
 
     console.log("[EditProduct] Updating product:", product.id, updateData);
 
-    const { error } = await supabase
+    // NOTE: do NOT filter by store_id here — the caller may pass a store_settings.id
+    // while the row carries a stores.id. RLS already restricts to the owner's stores.
+    const { data, error } = await supabase
       .from("products")
       .update(updateData)
       .eq("id", product.id)
-      .eq("store_id", storeId);
+      .select();
 
     setLoading(false);
 
@@ -70,7 +74,15 @@ export function EditProductDialog({ product, storeId, open, onOpenChange, onSave
       return;
     }
 
-    console.log("[EditProduct] Product updated successfully");
+    if (!data || data.length === 0) {
+      console.warn("[EditProduct] Update affected 0 rows (RLS or wrong id)");
+      toast({ title: "Aucune modification", description: "Mise à jour bloquée — vérifiez vos permissions.", variant: "destructive" });
+      return;
+    }
+
+    console.log("[EditProduct] Product updated successfully", data);
+    // Invalidate every storefront/admin query keyed by 'products'
+    await queryClient.invalidateQueries({ predicate: (q) => Array.isArray(q.queryKey) && q.queryKey[0] === "products" });
     toast({ title: "Produit mis à jour" });
     onOpenChange(false);
     onSaved();
