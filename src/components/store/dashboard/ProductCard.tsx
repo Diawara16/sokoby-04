@@ -74,6 +74,7 @@ export function ProductCard({ product, onProductUpdate, onProductDelete }: Produ
       if (error) throw error;
 
       onProductDelete?.(product.id);
+      await invalidateProducts();
       toast({ title: "Produit supprimé" });
     } catch {
       toast({ title: "Erreur", description: "Impossible de supprimer", variant: "destructive" });
