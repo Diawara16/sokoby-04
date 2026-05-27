@@ -98,6 +98,7 @@ export function StoreProductsManager() {
       if (error) throw error;
 
       setProducts(prev => prev.filter(p => p.id !== deleteProduct.id));
+      await queryClient.invalidateQueries({ predicate: (q) => Array.isArray(q.queryKey) && q.queryKey[0] === "products" });
       toast({ title: "Produit supprimé", description: `"${deleteProduct.name}" a été supprimé.` });
     } catch (error) {
       console.error('[StoreProductsManager] Delete error:', error);
