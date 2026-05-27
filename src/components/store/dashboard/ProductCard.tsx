@@ -37,7 +37,7 @@ export function ProductCard({ product, onProductUpdate, onProductDelete }: Produ
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("products")
         .update({
           name: draft.name,
@@ -45,11 +45,14 @@ export function ProductCard({ product, onProductUpdate, onProductDelete }: Produ
           price: draft.price,
           image: draft.image_url || null,
         })
-        .eq("id", product.id);
+        .eq("id", product.id)
+        .select();
 
       if (error) throw error;
+      if (!data || data.length === 0) throw new Error("0 rows updated (RLS)");
 
       onProductUpdate(draft);
+      await invalidateProducts();
       setEditing(false);
       toast({ title: "Produit mis à jour" });
     } catch {
