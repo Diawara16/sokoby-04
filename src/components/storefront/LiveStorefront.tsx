@@ -23,8 +23,20 @@ export function LiveStorefront({ products, storeName, isLoading, storeId }: Live
   const featuredProducts = products.slice(0, 6);
   const allProducts = products;
 
+  const seoTitle = storeName || "Boutique";
+  const seoDescription = storeName
+    ? `Découvrez la collection de ${storeName} — produits sélectionnés, livraison rapide.`
+    : "Découvrez notre collection de produits soigneusement sélectionnés.";
+  const ogImage = featuredProducts[0]?.image || undefined;
+
   return (
     <div className="min-h-screen bg-white">
+      <StoreSEO
+        title={seoTitle}
+        description={seoDescription}
+        storeName={storeName || undefined}
+        ogImage={ogImage}
+      />
       {/* Premium Navbar */}
       <PremiumNavbar storeName={storeName} />
 
