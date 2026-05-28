@@ -7,6 +7,7 @@ import { PremiumNavbar } from "./PremiumNavbar";
 import { PremiumFooter } from "./PremiumFooter";
 import { TrustSection } from "./TrustSection";
 import { ShoppingBag } from "lucide-react";
+import { StoreSEO } from "@/components/seo/StoreSEO";
 
 interface LiveStorefrontProps {
   products: Product[];
